@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- Duplicate select name -->
+<orm:QueryList xmlns:orm="http://www.osames.org/osamesorm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osames.org/osamesorm http://osames.org/osamesorm/orm.xsd">
+  <orm:FieldEncloser start="[" end="]"/>
+  <orm:Inserts>
+      <orm:Insert name="BaseInsert">INSERT INTO {0} ({1}) values ({2});</orm:Insert>
+  </orm:Inserts>
+  <orm:Updates>  
+    <orm:Update name="BaseUpdateOne">UPDATE {0} SET {1} WHERE {2} = {3};</orm:Update>
+  </orm:Updates>
+  <orm:Selects>
+    <orm:Select name="BaseRead">SELECT {0} FROM {1};</orm:Select>
+    <orm:Select name="BaseReadWhere">SELECT {0} FROM {1} WHERE {2} = {3};</orm:Select>
+    <orm:Select name="BaseReadWhereAndWhere">SELECT {0} FROM {1} WHERE {2} = {3} AND {4} = {5};</orm:Select>
+    <orm:Select name="BaseReadWhere">SELECT {0} FROM {1} WHERE {2} = {3} limit 1;</orm:Select>
+    <!-- custom select, read customer with 2 joins -->
+    <orm:Select name="ReadSingleCustomer">SELECT {0} FROM {1} LEFT JOIN {2} ON {3} = {4} LEFT JOIN {5} ON {6} = {7} WHERE {8}={9};</orm:Select> 
+  </orm:Selects>
+  <orm:Deletes>
+    <orm:Delete name="BaseDeleteWhere">DELETE FROM {0} WHERE {1} = {2};</orm:Delete>
+  </orm:Deletes>
+  <orm:ProviderSpecific>
+    <!-- SQLite -->
+    <orm:Select name="getlastinsertid" provider="System.Data.SQLite">select last_insert_rowid();</orm:Select>
+  </orm:ProviderSpecific>
+</orm:QueryList>
+
