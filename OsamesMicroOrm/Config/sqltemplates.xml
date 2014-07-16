@@ -1,0 +1,54 @@
+﻿<!--/*
+This file is part of OSAMES Micro ORM.
+Copyright 2014 OSAMES
+
+OSAMES Micro ORM is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+OSAMES Micro ORM is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
+*/-->
+<?xml version="1.0" encoding="utf-8" ?>
+<orm:QueryList xmlns:orm="http://www.osames.org/osamesorm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osames.org/osamesorm xml_schemas\sqlTemplates.xsd" >
+  <orm:FieldEncloser start="[" end="]"/>
+  <orm:Inserts>
+    <orm:Insert name="BaseInsert">INSERT INTO {0} ({1}) values ({2});</orm:Insert>
+    <orm:Insert name="OtherBaseInsert">INSERT INTO {0} ({1}) values ({2});</orm:Insert>
+  </orm:Inserts>
+  <orm:Updates>
+    <!--<orm:Update name="BaseUpdate">UPDATE {0} SET {1} WHERE {2};</orm:Update>-->
+    <orm:Update name="BaseUpdateOne">UPDATE {0} SET {1} WHERE {2} = {3};</orm:Update>
+  </orm:Updates>
+  <orm:Selects>
+    <orm:Select name="BaseRead">SELECT {0} FROM {1};</orm:Select>
+    <orm:Select name="BaseReadAll">SELECT * FROM {0};</orm:Select>
+    <orm:Select name="BaseReadWhere">SELECT {0} FROM {1} WHERE {2} = {3};</orm:Select>
+    <orm:Select name="BaseReadAllWhere">SELECT * FROM {0} WHERE {1} = {2};</orm:Select>
+    <orm:Select name="BaseReadWhereAndWhere">SELECT {0} FROM {1} WHERE {2} = {3} AND {4} = {5};</orm:Select>
+    <!-- custom select, read customer with 2 joins -->
+    <orm:Select name="ReadSingleCustomer">SELECT {0} FROM {1} LEFT JOIN {2} ON {3} = {4} LEFT JOIN {5} ON {6} = {7} WHERE {8}={9};</orm:Select>
+  </orm:Selects>
+  <orm:Deletes>
+    <orm:Delete name="BaseDeleteWhere">DELETE FROM {0} WHERE {1} = {2};</orm:Delete>
+  </orm:Deletes>
+  <orm:ProviderSpecific>
+    <!-- SQLite -->
+    <orm:Select name="getlastinsertid" provider="System.Data.SQLite">select last_insert_rowid();</orm:Select>
+    <!-- MySQL -->
+    <orm:Select name="getlastinsertid" provider="MySql.Data.MySqlClient">select last_insert_id();</orm:Select>
+    <!-- MS SQL -->
+    <orm:Select name="getlastinsertid" provider="System.Data.SqlClient">select scope_identity()</orm:Select>
+    <!-- Oracle -->
+    <orm:Select name="getlastinsertid" provider="System.Data.OracleClient"></orm:Select>
+    <!-- SQL Server Compact -->
+    <orm:Select name="getlastinsertid" provider="System.Data.SqlServerCe.4.0"></orm:Select>
+  </orm:ProviderSpecific>
+</orm:QueryList>
+

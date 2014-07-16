@@ -1,0 +1,74 @@
+﻿<!--/*
+This file is part of OSAMES Micro ORM.
+Copyright 2014 OSAMES
+
+OSAMES Micro ORM is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+OSAMES Micro ORM is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
+*/-->
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- effectively used mapping  -->
+<orm:Tables xmlns:orm="http://www.osames.org/osamesorm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osames.org/osamesorm xml_schemas\omo-mapping.xsd">
+  <orm:Table name="clients">
+    <orm:MappingObject property="IdClient" column="id_client" />
+    <orm:MappingObject property="NumeroClient" column="numero_client"/>
+  	<orm:MappingObject property="NomSociete" column="nom_societe"/>
+  	<orm:MappingObject property="Telephone" column="telephone"/>
+  	<orm:MappingObject property="Fax" column="fax"/>
+  	<orm:MappingObject property="Email" column="email"/>
+  	<orm:MappingObject property="SiteWeb" column="site_internet"/>
+  	<orm:MappingObject property="Siret" column="siret"/>
+  	<orm:MappingObject property="Tva" column="tva_intra_communautaire"/>
+  	<orm:MappingObject property="Ape" column="ape"/>
+  	<orm:MappingObject property="IdConditionReglementRef" column="id_condition_reglement_ref"/>
+  	<orm:MappingObject property="IdTypeReglementRef" column="id_type_reglement_ref"/>
+  	<orm:MappingObject property="IdAdresseFacturationRef" column="id_adresse_facturation_ref"/>
+  	<orm:MappingObject property="IdContactFacturationRef" column="id_contact_facturation_ref"/>
+  	<orm:MappingObject property="IdContactPrincipalRef" column="id_contact_principal_ref"/>
+  	<orm:MappingObject property="ClientDate" column="client_date"/>
+  	<orm:MappingObject property="Logo" column="logo"/>
+  	<orm:MappingObject property="NomSocieteStripped" column="nom_societe_stripped"/>
+  </orm:Table>
+  <orm:Table name="adresses">
+  	<orm:MappingObject property="IdAdresse" column="id_adresse" />
+  	<orm:MappingObject property="NumberStreetName" column="number_street_name"/>
+  	<orm:MappingObject property="Town" column="town"/>
+  	<orm:MappingObject property="ZipCode" column="zip_code"/>
+  	<orm:MappingObject property="Country" column="country"/>
+  	<orm:MappingObject property="IsFacturation" column="isfacturation"/>
+  	<orm:MappingObject property="IdClient" column="id_client_ref"/>
+  </orm:Table>
+  <orm:Table name="contacts">
+  	<orm:MappingObject property="IdContact" column="id_contact" />
+  	<orm:MappingObject property="IsPrincipal" column="isprincipal"/>
+  	<orm:MappingObject property="IsFacturation" column="isfacturation"/>
+  	<orm:MappingObject property="Nom" column="nom_contact"/>
+  	<orm:MappingObject property="Qualite" column="qualite_contact"/>
+  	<orm:MappingObject property="Telephone" column="telephone"/>
+  	<orm:MappingObject property="Fax" column="fax"/>
+  	<orm:MappingObject property="Gsm" column="gsm"/>
+  	<orm:MappingObject property="Email" column="email"/>
+  	<orm:MappingObject property="IdClient" column="id_client_ref"/>
+  </orm:Table>
+  <orm:Table name="conditions_reglements">
+  	<orm:MappingObject property="IdConditionReglement" column="id_conditions_reglements" />
+  	<orm:MappingObject property="Libelle" column="libelle"/>
+  </orm:Table>
+  <orm:Table name="observations">
+  	<orm:MappingObject property="IdObservation" column="id_observation" />
+  	<orm:MappingObject property="IdClient" column="id_client_ref"/>
+  	<orm:MappingObject property="ObservationText" column="observation"/>
+  	<orm:MappingObject property="Materiel" column="materiel"/>
+  	<orm:MappingObject property="Gadget" column="gadget"/>
+  	<orm:MappingObject property="DateObservation" column="observation_date"/>
+  </orm:Table>
+</orm:Tables>
