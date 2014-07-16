@@ -1,4 +1,5 @@
-﻿<!--/*
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--/*
 This file is part of OSAMES Micro ORM.
 Copyright 2014 OSAMES
 
@@ -15,7 +16,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */-->
-<?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.osames.org/osamesorm"
   xmlns:orm="http://www.osames.org/osamesorm" targetNamespace="http://www.osames.org/osamesorm"
   elementFormDefault="qualified">
