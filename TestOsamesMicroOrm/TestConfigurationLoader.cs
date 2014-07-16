@@ -76,7 +76,7 @@ namespace TestOsamesMicroOrm
             Console.WriteLine(DbManager.ConnectionString);
             Console.WriteLine(DbManager.ProviderName);
 
-            Assert.AreEqual(string.Format("Data source={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\SocodifDb.sqlite;Version=3;UTF8Encoding=True;"), DbManager.ConnectionString);
+            Assert.AreEqual(string.Format("Data source={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook_Sqlite.sqlite;Version=3;UTF8Encoding=True;"), DbManager.ConnectionString);
             Assert.AreEqual(@"System.Data.SQLite", DbManager.ProviderName);
 
         }
@@ -138,12 +138,12 @@ namespace TestOsamesMicroOrm
         {
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
             Assert.AreEqual(5, ConfigurationLoader.MappingDictionnary.Keys.Count, "Expected 5 keys in tables dictionary after initialize");
-            Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("contacts"), "Expected to find 'contacts' key");
+            Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("Customer"), "Expected to find 'Customer' key");
             // Inspect detail for a specific case
-            Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["contacts"];
-            Assert.AreEqual(10, mappings.Keys.Count, "Expected 10 keys in dictionary for contacts mappings after initialize");
+            Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["Customer"];
+            Assert.AreEqual(13, mappings.Keys.Count, "Expected 13 keys in dictionary for Customer mappings after initialize");
             Assert.IsTrue(mappings.ContainsKey("Email"), "Expected to find 'Email' key");
-            Assert.AreEqual("email", mappings["Email"], "Expected column 'email' for property 'Email'");
+            Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
            
         }
 
@@ -159,13 +159,13 @@ namespace TestOsamesMicroOrm
         public void TestGetMappingDbColumnName()
         {
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-            Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("contacts"), "Expected to find 'contacts' key");
+            Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("Customer"), "Expected to find 'Customer' key");
             // Inspect detail for a specific case
-            Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["contacts"];
+            Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["Customer"];
             Assert.IsTrue(mappings.ContainsKey("Email"), "Expected to find 'Email' key");
-            Assert.AreEqual("email", mappings["Email"], "Expected column 'email' for property 'Email'");
+            Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
 
-            Assert.AreEqual("email", ConfigurationLoader.Instance.GetMappingDbColumnName("contacts", "Email"));
+            Assert.AreEqual("Email", ConfigurationLoader.Instance.GetMappingDbColumnName("Customer", "Email"));
 
         }
 

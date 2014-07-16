@@ -59,8 +59,8 @@ namespace OsamesMicroOrm.Configuration
         
         /// <summary>
         /// Mapping is stored as follows : an external dictionary and an internal dictionary.
-        /// External dictionary : key is "clients" for example, value is a set of property name/column name correspondance.
-        /// Property (dictionary key) and column name (dictionary value) are stored in the internal dictionary.
+        /// External dictionary : key is "clients" for example, value is a set of column name/column name correspondance.
+        /// column (dictionary key) and column name (dictionary value) are stored in the internal dictionary.
         /// </summary>
         internal static readonly Dictionary<string, Dictionary<string, string>> MappingDictionnary = new Dictionary<string, Dictionary<string, string>>();
 
@@ -296,17 +296,17 @@ namespace OsamesMicroOrm.Configuration
                 // Table nodes
                 XPathNodeIterator iter = xmlNavigator_.Select(string.Format("/*/{0}:Table", xmlRootTagPrefix_), nsmgr);
 
-                var propertyColumnDictionary = new Dictionary<string, string>();
+                var columnColumnDictionary = new Dictionary<string, string>();
                 while (iter.MoveNext()) // Read Table node
                 {
-                    MappingDictionnary.Add(iter.Current.GetAttribute("name", ""), propertyColumnDictionary);
+                    MappingDictionnary.Add(iter.Current.GetAttribute("name", ""), columnColumnDictionary);
                     iter.Current.MoveToFirstChild();
                     do 
                     {
-                        propertyColumnDictionary.Add(iter.Current.GetAttribute("property", ""), iter.Current.GetAttribute("column", ""));
+                        columnColumnDictionary.Add(iter.Current.GetAttribute("column", ""), iter.Current.GetAttribute("column", ""));
                     } while(iter.Current.MoveToNext()); // Read next Mapping node
 
-                    propertyColumnDictionary = new Dictionary<string, string>();
+                    columnColumnDictionary = new Dictionary<string, string>();
                 }
             }
             catch (Exception ex)
@@ -384,9 +384,9 @@ namespace OsamesMicroOrm.Configuration
         /// Asks mapping for a DB column name.
         /// </summary>
         /// <param name="mappingKey_">Mapping key (DB table name)</param>
-        /// <param name="propertyName_">(DB persistent object) peroperty name, ex "IdXXX"</param>
+        /// <param name="columnName_">(DB persistent object) peroperty name, ex "IdXXX"</param>
         /// <returns>Db column name, ex "id_xxx"</returns>
-        public string GetMappingDbColumnName(string mappingKey_, string propertyName_)
+        public string GetMappingDbColumnName(string mappingKey_, string columnName_)
         {
             Dictionary<string, string> mappingObjectSet;
             string resultColumnName;
@@ -394,32 +394,32 @@ namespace OsamesMicroOrm.Configuration
             MappingDictionnary.TryGetValue(mappingKey_, out mappingObjectSet);
             if(mappingObjectSet == null)
                 throw new Exception(string.Format("No mapping for key '{0}'", mappingKey_));
-            mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
+            mappingObjectSet.TryGetValue(columnName_, out resultColumnName);
             if (mappingObjectSet == null)
-                throw new Exception(string.Format("No mapping for key '{0}' and property name '{1}'", mappingKey_, propertyName_));
+                throw new Exception(string.Format("No mapping for key '{0}' and column name '{1}'", mappingKey_, columnName_));
 
             return resultColumnName;
         }
 
         /// <summary>
-        /// Asks mapping for a (DB persistent object) property name.
+        /// Asks mapping for a (DB persistent object) column name.
         /// </summary>
         /// <param name="mappingKey_">Mapping key (DB table name)</param>
         /// <param name="dbColumnName_">DB column name, ex "id_xxx"</param>
-        /// <returns>(Db persistent object) property name, ex "IdXXX"</returns>
-        public string GetMappingPropertyName(string mappingKey_, string dbColumnName_)
+        /// <returns>(Db persistent object) column name, ex "IdXXX"</returns>
+        public string GetMappingcolumnName(string mappingKey_, string dbColumnName_)
         {
             Dictionary<string, string> mappingObjectSet;
 
             MappingDictionnary.TryGetValue(mappingKey_, out mappingObjectSet);
             if (mappingObjectSet == null)
                 throw new Exception(string.Format("No mapping for key '{0}'", mappingKey_));
-            string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
+            string resultcolumnName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
 
-            if (resultPropertyName == null)
+            if (resultcolumnName == null)
                 throw new Exception(string.Format("No mapping for key '{0}' and DB column name '{1}'", mappingKey_, dbColumnName_));
 
-            return resultPropertyName;
+            return resultcolumnName;
         }
 
         /// <summary>

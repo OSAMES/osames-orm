@@ -42,15 +42,15 @@ namespace OsamesMicroOrm
         private DbProviderFactory _dbProviderFactory;
 
         /// <summary>
-        /// Connection string that is set/checked by corresponding property.
+        /// Connection string that is set/checked by corresponding column.
         /// </summary>
         private static string _connectionString;
         /// <summary>
-        /// Invariant provider name that is set/checked by corresponding property.
+        /// Invariant provider name that is set/checked by corresponding column.
         /// </summary>
         private static string _providerDefinition;
         /// <summary>
-        /// Provider specific SQL code for "select last insert id" that is set/checked by corresponding property.
+        /// Provider specific SQL code for "select last insert id" that is set/checked by corresponding column.
         /// </summary>
         private static string _selectLastInsertIdCommandText;
 
@@ -88,7 +88,7 @@ namespace OsamesMicroOrm
                 if (string.IsNullOrWhiteSpace(_connectionString))
                 {
                     ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Connection string not set!");
-                    throw new Exception("ConnectionString property not initialized, please set a value!");
+                    throw new Exception("ConnectionString column not initialized, please set a value!");
                 }
                 return _connectionString;
             }
@@ -106,7 +106,7 @@ namespace OsamesMicroOrm
                 if (_selectLastInsertIdCommandText == null)
                 {
                     ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Select Last Insert Id Command Text not set!");
-                    throw new Exception("SelectLastInsertIdCommandText property not initialized, please set a value!");
+                    throw new Exception("SelectLastInsertIdCommandText column not initialized, please set a value!");
                 }
                 return _selectLastInsertIdCommandText;
             }
@@ -123,7 +123,7 @@ namespace OsamesMicroOrm
                 if (_providerDefinition == null)
                 {
                     ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Database provider not set!");
-                    throw new Exception("ProviderName property not initialized, please set a value!");
+                    throw new Exception("ProviderName column not initialized, please set a value!");
                 }
                 return _providerDefinition;
             }
