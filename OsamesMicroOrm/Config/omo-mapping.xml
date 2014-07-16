@@ -50,7 +50,6 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
   	<orm:MappingObject property="TrackId" column=""/>
   	<orm:MappingObject property="UnitPrice" column=""/>
   	<orm:MappingObject property="Quantity" column=""/>
-
   </orm:Table>
   <orm:Table name="Invoice">
   	<orm:MappingObject property="InvoiceId" column="" />
