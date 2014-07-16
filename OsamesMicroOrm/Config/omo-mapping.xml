@@ -18,57 +18,66 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */-->
 <!-- effectively used mapping  -->
 <orm:Tables xmlns:orm="http://www.osames.org/osamesorm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osames.org/osamesorm xml_schemas\omo-mapping.xsd">
-  <orm:Table name="clients">
-    <orm:MappingObject property="IdClient" column="id_client" />
-    <orm:MappingObject property="NumeroClient" column="numero_client"/>
-  	<orm:MappingObject property="NomSociete" column="nom_societe"/>
-  	<orm:MappingObject property="Telephone" column="telephone"/>
-  	<orm:MappingObject property="Fax" column="fax"/>
-  	<orm:MappingObject property="Email" column="email"/>
-  	<orm:MappingObject property="SiteWeb" column="site_internet"/>
-  	<orm:MappingObject property="Siret" column="siret"/>
-  	<orm:MappingObject property="Tva" column="tva_intra_communautaire"/>
-  	<orm:MappingObject property="Ape" column="ape"/>
-  	<orm:MappingObject property="IdConditionReglementRef" column="id_condition_reglement_ref"/>
-  	<orm:MappingObject property="IdTypeReglementRef" column="id_type_reglement_ref"/>
-  	<orm:MappingObject property="IdAdresseFacturationRef" column="id_adresse_facturation_ref"/>
-  	<orm:MappingObject property="IdContactFacturationRef" column="id_contact_facturation_ref"/>
-  	<orm:MappingObject property="IdContactPrincipalRef" column="id_contact_principal_ref"/>
-  	<orm:MappingObject property="ClientDate" column="client_date"/>
-  	<orm:MappingObject property="Logo" column="logo"/>
-  	<orm:MappingObject property="NomSocieteStripped" column="nom_societe_stripped"/>
+  <orm:Table name="Customer">
+    <orm:MappingObject property="CustomerId" column="" />
+    <orm:MappingObject property="FirstName" column=""/>
+  	<orm:MappingObject property="LastName" column=""/>
+  	<orm:MappingObject property="Company" column=""/>
+  	<orm:MappingObject property="Address" column=""/>
+  	<orm:MappingObject property="City" column=""/>
+  	<orm:MappingObject property="State" column=""/>
+  	<orm:MappingObject property="Country" column=""/>
+  	<orm:MappingObject property="PostalCode" column=""/>
+  	<orm:MappingObject property="Phone" column=""/>
+  	<orm:MappingObject property="Fax" column=""/>
+  	<orm:MappingObject property="Email" column=""/>
+  	<orm:MappingObject property="SupportRepId" column=""/>
   </orm:Table>
-  <orm:Table name="adresses">
-  	<orm:MappingObject property="IdAdresse" column="id_adresse" />
-  	<orm:MappingObject property="NumberStreetName" column="number_street_name"/>
-  	<orm:MappingObject property="Town" column="town"/>
-  	<orm:MappingObject property="ZipCode" column="zip_code"/>
-  	<orm:MappingObject property="Country" column="country"/>
-  	<orm:MappingObject property="IsFacturation" column="isfacturation"/>
-  	<orm:MappingObject property="IdClient" column="id_client_ref"/>
+  <orm:Table name="Track">
+  	<orm:MappingObject property="TrackId" column="" />
+  	<orm:MappingObject property="Name" column=""/>
+  	<orm:MappingObject property="AlbumId" column=""/>
+  	<orm:MappingObject property="MediaTypeId" column=""/>
+  	<orm:MappingObject property="GenreId" column=""/>
+  	<orm:MappingObject property="Composer" column=""/>
+  	<orm:MappingObject property="Milliseconds" column=""/>
+    <orm:MappingObject property="Bytes" column=""/>
+    <orm:MappingObject property="UnitPrice" column=""/>
   </orm:Table>
-  <orm:Table name="contacts">
-  	<orm:MappingObject property="IdContact" column="id_contact" />
-  	<orm:MappingObject property="IsPrincipal" column="isprincipal"/>
-  	<orm:MappingObject property="IsFacturation" column="isfacturation"/>
-  	<orm:MappingObject property="Nom" column="nom_contact"/>
-  	<orm:MappingObject property="Qualite" column="qualite_contact"/>
-  	<orm:MappingObject property="Telephone" column="telephone"/>
-  	<orm:MappingObject property="Fax" column="fax"/>
-  	<orm:MappingObject property="Gsm" column="gsm"/>
-  	<orm:MappingObject property="Email" column="email"/>
-  	<orm:MappingObject property="IdClient" column="id_client_ref"/>
+  <orm:Table name="InvoiceLine">
+  	<orm:MappingObject property="InvoiceLineId" column="" />
+  	<orm:MappingObject property="InvoiceId" column=""/>
+  	<orm:MappingObject property="TrackId" column=""/>
+  	<orm:MappingObject property="UnitPrice" column=""/>
+  	<orm:MappingObject property="Quantity" column=""/>
+
   </orm:Table>
-  <orm:Table name="conditions_reglements">
-  	<orm:MappingObject property="IdConditionReglement" column="id_conditions_reglements" />
-  	<orm:MappingObject property="Libelle" column="libelle"/>
+  <orm:Table name="Invoice">
+  	<orm:MappingObject property="InvoiceId" column="" />
+  	<orm:MappingObject property="CustomerId" column=""/>
+    <orm:MappingObject property="InvoiceDate" column=""/>
+    <orm:MappingObject property="BillingAddress" column=""/>
+    <orm:MappingObject property="BillingCity" column=""/>
+    <orm:MappingObject property="BillingState" column=""/>
+    <orm:MappingObject property="BillingCountry" column=""/>
+    <orm:MappingObject property="BillingPostalCode" column=""/>
+    <orm:MappingObject property="Total" column=""/>
   </orm:Table>
-  <orm:Table name="observations">
-  	<orm:MappingObject property="IdObservation" column="id_observation" />
-  	<orm:MappingObject property="IdClient" column="id_client_ref"/>
-  	<orm:MappingObject property="ObservationText" column="observation"/>
-  	<orm:MappingObject property="Materiel" column="materiel"/>
-  	<orm:MappingObject property="Gadget" column="gadget"/>
-  	<orm:MappingObject property="DateObservation" column="observation_date"/>
+  <orm:Table name="Employee">
+  	<orm:MappingObject property="EmployeeId" column="" />
+  	<orm:MappingObject property="LastName" column=""/>
+  	<orm:MappingObject property="FirstName" column=""/>
+  	<orm:MappingObject property="Title" column=""/>
+  	<orm:MappingObject property="ReportsTo" column=""/>
+  	<orm:MappingObject property="BirthDate" column=""/>
+    <orm:MappingObject property="HireDate" column=""/>
+    <orm:MappingObject property="Address" column=""/>
+    <orm:MappingObject property="City" column=""/>
+    <orm:MappingObject property="State" column=""/>
+    <orm:MappingObject property="Country" column=""/>
+    <orm:MappingObject property="PostalCode" column=""/>
+    <orm:MappingObject property="Phone" column=""/>
+    <orm:MappingObject property="Fax" column=""/>
+    <orm:MappingObject property="Email" column=""/>
   </orm:Table>
 </orm:Tables>
