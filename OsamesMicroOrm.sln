@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsamesMicroOrm", "OsamesMicroOrm\OsamesMicroOrm.csproj", "{20AF5FBB-1F88-47F4-8411-F7D8F56721EF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestOsamesMicroOrm", "TestOsamesMicroOrm\TestOsamesMicroOrm.csproj", "{2D7B7F68-010D-44A4-8E08-80F74FD74CB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleEntities", "SampleEntities\SampleEntities.csproj", "{C8D022B3-6CED-432F-ACC6-C56C6BEA017C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +21,10 @@ Global
 		{2D7B7F68-010D-44A4-8E08-80F74FD74CB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D7B7F68-010D-44A4-8E08-80F74FD74CB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D7B7F68-010D-44A4-8E08-80F74FD74CB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8D022B3-6CED-432F-ACC6-C56C6BEA017C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8D022B3-6CED-432F-ACC6-C56C6BEA017C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8D022B3-6CED-432F-ACC6-C56C6BEA017C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8D022B3-6CED-432F-ACC6-C56C6BEA017C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
