@@ -41,6 +41,9 @@
   <ItemGroup>
     <Compile Include="Chinook\Customer.cs" />
     <Compile Include="Chinook\Empoyee.cs" />
+    <Compile Include="Chinook\Invoice.cs" />
+    <Compile Include="Chinook\InvoiceLine.cs" />
+    <Compile Include="Chinook\Track.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
