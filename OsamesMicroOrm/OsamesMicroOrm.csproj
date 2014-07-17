@@ -49,6 +49,7 @@
     <Compile Include="DbTools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\Common.cs" />
+    <Compile Include="Utilities\ExtensionMethods.cs" />
     <Compile Include="Utilities\MappingTools.cs" />
     <Compile Include="Utilities\XmlTools.cs" />
     <Compile Include="Utilities\XmlValidator.cs" />
