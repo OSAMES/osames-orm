@@ -7,8 +7,8 @@
     <ProjectGuid>{C8D022B3-6CED-432F-ACC6-C56C6BEA017C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SampleEntities</RootNamespace>
-    <AssemblyName>SampleEntities</AssemblyName>
+    <RootNamespace>SampleDbEntities</RootNamespace>
+    <AssemblyName>SampleDbEntities</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
