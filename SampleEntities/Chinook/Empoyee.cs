@@ -15,13 +15,19 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+using System;
+
 namespace SampleDbEntities.Chinook
 {
-    /* representation DB de l'objet Customer
-        CustomerId INTEGER NOT NULL,
-	    FirstName NVARCHAR(40) NOT NULL,
+     /* representation DB de l'objet Customer
+       	EmployeeId INTEGER NOT NULL,
 	    LastName NVARCHAR(20) NOT NULL,
-	    Company NVARCHAR(80),
+	    FirstName NVARCHAR(20) NOT NULL,
+	    Title NVARCHAR(30),
+	    ReportsTo INTEGER,
+	    BirthDate DATETIME,
+	    HireDate DATETIME,
 	    Address NVARCHAR(70),
 	    City NVARCHAR(40),
 	    State NVARCHAR(40),
@@ -29,42 +35,36 @@ namespace SampleDbEntities.Chinook
 	    PostalCode NVARCHAR(10),
 	    Phone NVARCHAR(24),
 	    Fax NVARCHAR(24),
-	    Email NVARCHAR(60) NOT NULL,
-	    SupportRepId INTEGER,
-	    CONSTRAINT CUSTOMER_PK PRIMARY KEY (CustomerId),
-	    CONSTRAINT CUSTOMER_FK_EMPLOYEE FOREIGN KEY (SupportRepId) REFERENCES Employee(EmployeeId)
-     */
-    /// <summary>
-    /// Objet/table "Customer" de la base de données Chinook.
-    /// </summary>
-    public class Customer
-    {
+	    Email NVARCHAR(60),
+	    CONSTRAINT EMPLOYEE_PK PRIMARY KEY (EmployeeId),
+	    CONSTRAINT EMPLOYEE_FK_EMPLOYEE FOREIGN KEY (ReportsTo) REFERENCES Employee(EmployeeId)
+      */
 
-        private string _firstName;
+    class Empoyee
+    {
+        private long _employeeId;
         private string _lastName;
-        private string _compagny;
+        private string _firstName;
+        private string _title;
+        private long _reportsTo;
+        private DateTime _birthDate;
+        private DateTime _hireDate;
         private string _address;
         private string _city;
         private string _state;
         private string _country;
-        private string postalCode;
+        private string _postalCode;
         private string _phone;
         private string _fax;
         private string _email;
-        private long _supportReId;
-
-        /// <summary>
-        /// Id Customer.
-        /// </summary>
-        public long IdCustomer { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string FirstName
+        public long EmployeeId
         {
-            get { return _firstName; }
-            set { _firstName = value.Trim(); }
+            get { return _employeeId; }
+            set { _employeeId = value; }
         }
 
         /// <summary>
@@ -76,13 +76,49 @@ namespace SampleDbEntities.Chinook
             set { _lastName = value.Trim(); }
         }
 
+       /// <summary>
+       /// 
+       /// </summary>
+        public string FirstName
+        {
+            get { return _firstName; }
+            set { _firstName = value.Trim(); }
+        }
+
         /// <summary>
         /// 
         /// </summary>
-        public string Compagny
+        public string Title
         {
-            get { return _compagny; }
-            set { _compagny = value.Trim(); }
+            get { return _title; }
+            set { _title = value.Trim(); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public long ReportsTo
+        {
+            get { return _reportsTo; }
+            set { _reportsTo = value; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public DateTime BirthDate
+        {
+            get { return _birthDate; }
+            set { _birthDate = value; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public DateTime HireDate
+        {
+            get { return _hireDate; }
+            set { _hireDate = value; }
         }
 
         /// <summary>
@@ -124,6 +160,15 @@ namespace SampleDbEntities.Chinook
         /// <summary>
         /// 
         /// </summary>
+        public string PostalCode
+        {
+            get { return _postalCode; }
+            set { _postalCode = value.Trim(); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string Phone
         {
             get { return _phone; }
@@ -146,15 +191,6 @@ namespace SampleDbEntities.Chinook
         {
             get { return _email; }
             set { _email = value.Trim(); }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public long SupportReId
-        {
-            get { return _supportReId; }
-            set { _supportReId = value; }
         }
     }
 }
