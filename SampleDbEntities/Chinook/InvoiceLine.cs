@@ -37,7 +37,7 @@ namespace SampleDbEntities.Chinook
         private long _invoiceId;
         private long _trackId;
         private decimal _unitPrice;
-        private long _quantity;
+        private int _quantity;
 
         /// <summary>
         /// 
@@ -78,22 +78,20 @@ namespace SampleDbEntities.Chinook
         /// <summary>
         /// 
         /// </summary>
-        public long Quantity
+        public int Quantity
         {
             get { return _quantity; }
             set { _quantity = value; }
         }
+
+        public Track Track { get; set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
         public InvoiceLine()
         {
-            
-        }
-        public InvoiceLine(int invoiceId_)
-        {
-            InvoiceId = invoiceId_;
+            Track = new Track();
         }
     }
 }

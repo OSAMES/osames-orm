@@ -16,6 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
+
 namespace SampleDbEntities.Chinook
 {
     /* representation DB de l'objet Track
@@ -32,8 +34,9 @@ namespace SampleDbEntities.Chinook
 	    CONSTRAINT TRACK_FK_ALBUM FOREIGN KEY (AlbumId) REFERENCES Album(AlbumId),
 	    CONSTRAINT TRACK_FK_GENRE FOREIGN KEY (GenreId) REFERENCES Genre(GenreId),
 	    CONSTRAINT TRACK_FK_MEDIATYPE FOREIGN KEY (MediaTypeId) REFERENCES MediaType(MediaTypeId)
-     * */
-    class Track
+     */
+    [Serializable]
+    public class Track
     {
         private long _trackId;
         private string _name;

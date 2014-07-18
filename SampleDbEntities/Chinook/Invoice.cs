@@ -136,11 +136,5 @@ namespace SampleDbEntities.Chinook
         {
             InvoiceLine = new ObservableCollection<InvoiceLine>();
         }
-
-        public Invoice(int customerId_)
-        {
-            CustomerId = customerId_;
-            InvoiceLine = new ObservableCollection<InvoiceLine>();
-        }
     }
 }

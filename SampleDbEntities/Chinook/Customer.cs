@@ -56,7 +56,7 @@ namespace SampleDbEntities.Chinook
         private string _phone;
         private string _fax;
         private string _email;
-        private long _supportReId;
+        private long _supportRepId;
 
         /// <summary>
         /// Id Customer.
@@ -161,10 +161,10 @@ namespace SampleDbEntities.Chinook
         /// <summary>
         /// 
         /// </summary>
-        public long SupportReId
+        public long SupportRepId
         {
-            get { return _supportReId; }
-            set { _supportReId = value; }
+            get { return _supportRepId; }
+            set { _supportRepId = value; }
         }
 
         /// <summary>
