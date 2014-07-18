@@ -15,6 +15,10 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+using System;
+using System.Collections.ObjectModel;
+
 namespace SampleDbEntities.Chinook
 {
     /* representation DB de l'objet Customer
@@ -37,6 +41,7 @@ namespace SampleDbEntities.Chinook
     /// <summary>
     /// Objet/table "Customer" de la base de données Chinook.
     /// </summary>
+    [Serializable]
     public class Customer
     {
 
@@ -47,7 +52,7 @@ namespace SampleDbEntities.Chinook
         private string _city;
         private string _state;
         private string _country;
-        private string postalCode;
+        private string _postalCode;
         private string _phone;
         private string _fax;
         private string _email;
@@ -121,6 +126,11 @@ namespace SampleDbEntities.Chinook
             set { _country = value.Trim(); }
         }
 
+        public string PostalCode
+        {
+            get { return _postalCode; }
+            set { _postalCode = value.Trim(); }
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -155,6 +165,19 @@ namespace SampleDbEntities.Chinook
         {
             get { return _supportReId; }
             set { _supportReId = value; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ObservableCollection<Invoice> Invoice { get; set; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public Customer()
+        {
+            Invoice = new ObservableCollection<Invoice>();
         }
     }
 }

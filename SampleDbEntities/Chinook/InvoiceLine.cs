@@ -16,6 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
+
 namespace SampleDbEntities.Chinook
 {
     /* representation DB de l'objet InvoiceLine
@@ -27,8 +29,9 @@ namespace SampleDbEntities.Chinook
 	    CONSTRAINT INVOICELINE_PK PRIMARY KEY (InvoiceLineId),
 	    CONSTRAINT INVOICELINE_FK_INVOICE FOREIGN KEY (InvoiceId) REFERENCES Invoice(InvoiceId),
 	    CONSTRAINT INVOICELINE_FK_TRACK FOREIGN KEY (TrackId) REFERENCES Track(TrackId)
-     */ 
-    class InvoiceLine
+     */
+    [Serializable]
+    public class InvoiceLine
     {
         private long _invoiceLineId;
         private long _invoiceId;
@@ -79,6 +82,18 @@ namespace SampleDbEntities.Chinook
         {
             get { return _quantity; }
             set { _quantity = value; }
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public InvoiceLine()
+        {
+            
+        }
+        public InvoiceLine(int invoiceId_)
+        {
+            InvoiceId = invoiceId_;
         }
     }
 }

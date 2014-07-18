@@ -17,6 +17,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Collections.ObjectModel;
 
 namespace SampleDbEntities.Chinook
 {
@@ -33,9 +34,10 @@ namespace SampleDbEntities.Chinook
 	    CONSTRAINT INVOICE_PK PRIMARY KEY (InvoiceId),
 	    CONSTRAINT INVOICE_FK_CUSTOMER FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
      */
-    class Invoice
+
+    [Serializable]
+    public class Invoice
     {
-        private long _invoiceId;
         private long _customerId;
         private DateTime _invoiceDate;
         private string _billingAddress;
@@ -48,11 +50,7 @@ namespace SampleDbEntities.Chinook
         /// <summary>
         /// 
         /// </summary>
-        public long InvoiceId
-        {
-            get { return _invoiceId; }
-            set { _invoiceId = value; }
-        }
+        public long InvoiceId { get; set; }
 
         /// <summary>
         /// 
@@ -124,6 +122,25 @@ namespace SampleDbEntities.Chinook
         {
             get { return _total; }
             set { _total = value; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ObservableCollection<InvoiceLine> InvoiceLine { get; set; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public Invoice ()
+        {
+            InvoiceLine = new ObservableCollection<InvoiceLine>();
+        }
+
+        public Invoice(int customerId_)
+        {
+            CustomerId = customerId_;
+            InvoiceLine = new ObservableCollection<InvoiceLine>();
         }
     }
 }

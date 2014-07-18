@@ -17,6 +17,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Collections.ObjectModel;
 
 namespace SampleDbEntities.Chinook
 {
@@ -40,7 +41,8 @@ namespace SampleDbEntities.Chinook
        CONSTRAINT EMPLOYEE_FK_EMPLOYEE FOREIGN KEY (ReportsTo) REFERENCES Employee(EmployeeId)
      */
 
-    class Employee
+    [Serializable]
+    public class Employee
     {
         private long _employeeId;
         private string _lastName;
@@ -191,6 +193,19 @@ namespace SampleDbEntities.Chinook
         {
             get { return _email; }
             set { _email = value.Trim(); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ObservableCollection<Customer> Customer;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public Employee()
+        {
+            Customer = new ObservableCollection<Customer>();
         }
     }
 }
