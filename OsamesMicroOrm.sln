@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsamesMicroOrm", "OsamesMic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestOsamesMicroOrm", "TestOsamesMicroOrm\TestOsamesMicroOrm.csproj", "{2D7B7F68-010D-44A4-8E08-80F74FD74CB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleEntities", "SampleEntities\SampleEntities.csproj", "{C8D022B3-6CED-432F-ACC6-C56C6BEA017C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleEntities", "SampleDbEntities\SampleDbEntities.csproj", "{C8D022B3-6CED-432F-ACC6-C56C6BEA017C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
