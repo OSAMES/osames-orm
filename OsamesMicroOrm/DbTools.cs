@@ -555,7 +555,17 @@ namespace OsamesMicroOrm
             for (int i = 0; i < lstDbColumnNames_.Count; i++)
             {
                 string columnName = lstDbColumnNames_[i];
-                object dbValue = reader_[columnName];
+                int dataInReaderIndex;
+                try
+                {
+                    dataInReaderIndex = reader_.GetOrdinal(columnName);
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    throw new Exception(string.Format("Column '{0}' does'nt exist in sql data reader", columnName));
+                }
+                // TODO ici on a le choix entre tout passer en string ou lire avec reader_.GetInt32() si on sait que la propriété est de type "int".
+                object dbValue = reader_.GetString(dataInReaderIndex);
 
                 // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
                 if (dbValue.GetType() != typeof(DBNull))
