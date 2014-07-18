@@ -20,27 +20,27 @@ using System;
 
 namespace SampleDbEntities.Chinook
 {
-     /* representation DB de l'objet Customer
-       	EmployeeId INTEGER NOT NULL,
-	    LastName NVARCHAR(20) NOT NULL,
-	    FirstName NVARCHAR(20) NOT NULL,
-	    Title NVARCHAR(30),
-	    ReportsTo INTEGER,
-	    BirthDate DATETIME,
-	    HireDate DATETIME,
-	    Address NVARCHAR(70),
-	    City NVARCHAR(40),
-	    State NVARCHAR(40),
-	    Country NVARCHAR(40),
-	    PostalCode NVARCHAR(10),
-	    Phone NVARCHAR(24),
-	    Fax NVARCHAR(24),
-	    Email NVARCHAR(60),
-	    CONSTRAINT EMPLOYEE_PK PRIMARY KEY (EmployeeId),
-	    CONSTRAINT EMPLOYEE_FK_EMPLOYEE FOREIGN KEY (ReportsTo) REFERENCES Employee(EmployeeId)
-      */
+    /* representation DB de l'objet Employee
+       EmployeeId INTEGER NOT NULL,
+       LastName NVARCHAR(20) NOT NULL,
+       FirstName NVARCHAR(20) NOT NULL,
+       Title NVARCHAR(30),
+       ReportsTo INTEGER,
+       BirthDate DATETIME,
+       HireDate DATETIME,
+       Address NVARCHAR(70),
+       City NVARCHAR(40),
+       State NVARCHAR(40),
+       Country NVARCHAR(40),
+       PostalCode NVARCHAR(10),
+       Phone NVARCHAR(24),
+       Fax NVARCHAR(24),
+       Email NVARCHAR(60),
+       CONSTRAINT EMPLOYEE_PK PRIMARY KEY (EmployeeId),
+       CONSTRAINT EMPLOYEE_FK_EMPLOYEE FOREIGN KEY (ReportsTo) REFERENCES Employee(EmployeeId)
+     */
 
-    class Empoyee
+    class Employee
     {
         private long _employeeId;
         private string _lastName;

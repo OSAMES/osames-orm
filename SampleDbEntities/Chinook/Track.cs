@@ -18,7 +18,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SampleDbEntities.Chinook
 {
-    /* representation DB de l'objet Customer
+    /* representation DB de l'objet Track
         TrackId INTEGER NOT NULL,
 	    Name NVARCHAR(200) NOT NULL,
 	    AlbumId INTEGER,
