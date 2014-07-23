@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
+using SampleDbEntities.Chinook;
 using TestOsamesMicroOrm.TestDbEntities;
+using SampleDbEntities;
 
 namespace TestOsamesMicroOrm
 {
@@ -16,6 +19,12 @@ namespace TestOsamesMicroOrm
     {
         static TestClient _client = new TestClient();
 
+        static Employee _employee = new Employee();
+        static Customer _customer = new Customer();
+        static Invoice _invoice = new Invoice();
+        static InvoiceLine _invoiceLine = new InvoiceLine();
+        static Track _track = new Track();
+
         /// <summary>
         /// Initialization once for all tests.
         /// </summary>
@@ -24,8 +33,6 @@ namespace TestOsamesMicroOrm
         {
 
             var init = ConfigurationLoader.Instance;
-            
-            _client.Adresses = new ObservableCollection<TestAdresse>(new List<TestAdresse>());
 
             _client.IdClient = 1;
             _client.NomSociete = "Test";
@@ -44,7 +51,23 @@ namespace TestOsamesMicroOrm
             _client.Tva = "";
             _client.Adresses.Add(new TestAdresse {IdAdresse = 1, Country = "Belgique", IdClient = 1, IsFacturation = false, NumberStreetName = "45", Town = "Bruxelles", ZipCode = "1000"});
 
-
+            _employee.Customer.Add(new Customer {FirstName = "toto"});
+            foreach (var i in _employee.Customer)
+            {
+                //ici faire un select pour chaque invoice qui est lié à l'id de customer
+                i.Invoice.Add(new Invoice());
+                foreach (var j in i.Invoice)
+                {
+                    //ici faire un select pour chaque invoiceline qui est lié à l'id de invoice
+                    j.InvoiceLine.Add(new InvoiceLine());
+                    foreach (var k in j.InvoiceLine)
+                    {
+                        k.Track.Name = "totot";
+                    }
+                }
+            }
+            
+        
         }
 
         #region test sql formatting

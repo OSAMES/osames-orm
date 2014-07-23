@@ -84,7 +84,7 @@ namespace SampleDbEntities.Chinook
             set { _quantity = value; }
         }
 
-        public Track Track { get; set; }
+        public Track Track;
 
         /// <summary>
         /// Constructor

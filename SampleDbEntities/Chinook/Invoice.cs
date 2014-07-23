@@ -17,6 +17,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace SampleDbEntities.Chinook
@@ -127,14 +128,14 @@ namespace SampleDbEntities.Chinook
         /// <summary>
         /// 
         /// </summary>
-        public ObservableCollection<InvoiceLine> InvoiceLine { get; set; }
+        public ObservableCollection<InvoiceLine> InvoiceLine;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public Invoice ()
         {
-            InvoiceLine = new ObservableCollection<InvoiceLine>();
+            InvoiceLine = new ObservableCollection<InvoiceLine>(new List<InvoiceLine>());
         }
     }
 }

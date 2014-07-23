@@ -37,12 +37,12 @@ namespace OsamesMicroOrm.Utilities
             object[] classAttributes = dataObject_.GetType().GetCustomAttributes(typeof(DatabaseMappingAttribute), false);
             if(classAttributes.Length == 0)
                 throw new Exception(string.Format("Type {0} doesn't define DatabaseMapping attribute (at class level)", dataObject_.GetType().FullName));
-
+            
             if(classAttributes.Length > 1)
                 throw new Exception(string.Format("Type {0} defines more than one DatabaseMapping attribute (at class level)", dataObject_.GetType().FullName));
 
             string dbTableName = ((DatabaseMappingAttribute) classAttributes[0]).DbTableName;
-
+            
             if (string.IsNullOrWhiteSpace(dbTableName))
                 throw new Exception(string.Format("Type {0} defines an empty DatabaseMapping attribute (at class level)", dataObject_.GetType().FullName));
 

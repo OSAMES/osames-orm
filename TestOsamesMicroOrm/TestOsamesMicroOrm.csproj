@@ -122,6 +122,10 @@
       <Project>{20af5fbb-1f88-47f4-8411-f7d8f56721ef}</Project>
       <Name>OsamesMicroOrm</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SampleDbEntities\SampleDbEntities.csproj">
+      <Project>{c8d022b3-6ced-432f-acc6-c56c6bea017c}</Project>
+      <Name>SampleDbEntities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

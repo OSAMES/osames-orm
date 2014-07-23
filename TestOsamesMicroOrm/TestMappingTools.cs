@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Utilities;
+using SampleDbEntities.Chinook;
 using TestOsamesMicroOrm.TestDbEntities;
 
 namespace TestOsamesMicroOrm
@@ -21,8 +22,17 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         public void TestGetDbEntityDictionnaryMappingKeyOk()
         {
-            TestAdresse entity = new TestAdresse();
-            Assert.AreEqual("adresses", MappingTools.GetDbEntityDictionnaryMappingKey(entity));
+            Employee entityEmployee = new Employee();
+            Customer entityCustomer = new Customer();
+            Invoice entityInvoice = new Invoice();
+            InvoiceLine entityInvoiceLineI = new InvoiceLine();
+            Track entityTrack = new Track();
+
+            Assert.AreEqual("Employee", MappingTools.GetDbEntityDictionnaryMappingKey(entityEmployee));
+            Assert.AreEqual("Customer", MappingTools.GetDbEntityDictionnaryMappingKey(entityCustomer));
+            Assert.AreEqual("Invoice", MappingTools.GetDbEntityDictionnaryMappingKey(entityInvoice));
+            Assert.AreEqual("InvoiceLine", MappingTools.GetDbEntityDictionnaryMappingKey(entityInvoiceLineI));
+            Assert.AreEqual("Track", MappingTools.GetDbEntityDictionnaryMappingKey(entityTrack));
         }
 
         /// <summary>
