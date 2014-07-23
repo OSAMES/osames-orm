@@ -86,6 +86,7 @@
     <Compile Include="TestDbManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestDbTools.cs" />
+    <Compile Include="Tools\CommonSqlite.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -100,9 +101,9 @@
       <Project>{20af5fbb-1f88-47f4-8411-f7d8f56721ef}</Project>
       <Name>OsamesMicroOrm</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Socodif\Socodif.csproj">
-      <Project>{acd1a2e1-a226-4b8c-bf67-99c99a9c5e29}</Project>
-      <Name>Socodif</Name>
+    <ProjectReference Include="..\SampleDbEntities\SampleDbEntities.csproj">
+      <Project>{c8d022b3-6ced-432f-acc6-c56c6bea017c}</Project>
+      <Name>SampleDbEntities</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestOsamesMicroOrm\TestOsamesMicroOrm.csproj">
       <Project>{2d7b7f68-010d-44a4-8e08-80f74fd74cb6}</Project>
@@ -113,6 +114,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="TestConfigSqlite\incorrect-mapping.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -144,7 +149,7 @@
     <PreBuildEvent>rem taskkill /F /IM vstest.executionengine.x86.exe /FI "MEMUSAGE gt 1"
 rem taskkill /F /IM vstest.discoveryengine.x86.exe /FI "MEMUSAGE gt 1"
 
-xcopy /Y $(SolutionDir)..\SqLiteDb\SocodifDb.sqlite $(TargetDir)DB\
+xcopy /Y $(SolutionDir)DB\Chinook_Sqlite.sqlite $(TargetDir)DB\
 </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

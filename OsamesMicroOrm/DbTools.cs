@@ -562,10 +562,10 @@ namespace OsamesMicroOrm
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    throw new Exception(string.Format("Column '{0}' does'nt exist in sql data reader", columnName));
+                    throw new Exception(string.Format("Column '{0}' doesn't exist in sql data reader", columnName));
                 }
-                // TODO ici on a le choix entre tout passer en string ou lire avec reader_.GetInt32() si on sait que la propriété est de type "int".
-                object dbValue = reader_.GetString(dataInReaderIndex);
+                // TODO traiter ORM-45 pour cast vers le bon type.
+                object dbValue = reader_[dataInReaderIndex];
 
                 // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
                 if (dbValue.GetType() != typeof(DBNull))

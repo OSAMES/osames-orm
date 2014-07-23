@@ -40,7 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Chinook\Customer.cs" />
-    <Compile Include="Chinook\Empoyee.cs" />
+    <Compile Include="Chinook\Employee.cs" />
     <Compile Include="Chinook\Invoice.cs" />
     <Compile Include="Chinook\InvoiceLine.cs" />
     <Compile Include="Chinook\Track.cs" />

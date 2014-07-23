@@ -109,6 +109,19 @@ namespace OsamesMicroOrm.Configuration
                 }
             }
         }
+
+        /// <summary>
+        /// Clears internal singleton, forcing reload to next call to "Instance".
+        /// Useful for unit tests.
+        /// </summary>
+        public static void Clear()
+        {
+            lock (_oSingletonInit)
+            {
+                _singleton = null;
+            }
+        }
+
         /// <summary>
         /// Initialize active connection string values from configuration and setup DbHelper.
         /// </summary>

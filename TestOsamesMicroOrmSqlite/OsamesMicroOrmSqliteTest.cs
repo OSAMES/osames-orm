@@ -37,7 +37,7 @@ namespace TestOsamesMicroOrmSqlite
     [TestClass]
     public abstract class OsamesMicroOrmSqliteTest : TestOsamesMicroOrm.OsamesMicroOrmTest
     {
-        private static ConfigurationLoader _config;
+        protected static ConfigurationLoader _config;
 
         /// <summary>
         /// Every test uses a transaction.
