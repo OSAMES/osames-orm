@@ -59,8 +59,8 @@ namespace OsamesMicroOrm.Configuration
         
         /// <summary>
         /// Mapping is stored as follows : an external dictionary and an internal dictionary.
-        /// External dictionary : key is "clients" for example, value is a set of column name/column name correspondance.
-        /// column (dictionary key) and column name (dictionary value) are stored in the internal dictionary.
+        /// External dictionary : key is "clients" for example, value is a set of property name/column name correspondance.
+        /// property name (dictionary key) and column name (dictionary value) are stored in the internal dictionary.
         /// </summary>
         internal static readonly Dictionary<string, Dictionary<string, string>> MappingDictionnary = new Dictionary<string, Dictionary<string, string>>();
 
@@ -316,7 +316,7 @@ namespace OsamesMicroOrm.Configuration
                     iter.Current.MoveToFirstChild();
                     do 
                     {
-                        columnColumnDictionary.Add(iter.Current.GetAttribute("column", ""), iter.Current.GetAttribute("column", ""));
+                        columnColumnDictionary.Add(iter.Current.GetAttribute("property", ""), iter.Current.GetAttribute("column", ""));
                     } while(iter.Current.MoveToNext()); // Read next Mapping node
 
                     columnColumnDictionary = new Dictionary<string, string>();
@@ -415,12 +415,12 @@ namespace OsamesMicroOrm.Configuration
         }
 
         /// <summary>
-        /// Asks mapping for a (DB persistent object) column name.
+        /// Asks mapping for a (DB persistent object) property name.
         /// </summary>
         /// <param name="mappingKey_">Mapping key (DB table name)</param>
         /// <param name="dbColumnName_">DB column name, ex "id_xxx"</param>
-        /// <returns>(Db persistent object) column name, ex "IdXXX"</returns>
-        public string GetMappingcolumnName(string mappingKey_, string dbColumnName_)
+        /// <returns>(Db persistent object) property name, ex "IdXXX"</returns>
+        public string GetMappingObjectPropertyName(string mappingKey_, string dbColumnName_)
         {
             Dictionary<string, string> mappingObjectSet;
 
