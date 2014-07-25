@@ -119,6 +119,7 @@ namespace OsamesMicroOrm.Configuration
             lock (_oSingletonInit)
             {
                 _singleton = null;
+
             }
         }
 
