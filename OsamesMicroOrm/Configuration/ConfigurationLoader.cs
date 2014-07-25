@@ -303,6 +303,9 @@ namespace OsamesMicroOrm.Configuration
                     xPathNodeIterator.Current.MoveToFirstChild();
                     do 
                     {
+                        if (xPathNodeIterator.Current.NodeType != XPathNodeType.Element)
+                            continue;
+
                         columnColumnDictionary.Add(xPathNodeIterator.Current.GetAttribute("column", ""), xPathNodeIterator.Current.GetAttribute("column", ""));
                     } while(xPathNodeIterator.Current.MoveToNext()); // Read next Mapping node
 
@@ -371,6 +374,8 @@ namespace OsamesMicroOrm.Configuration
             node_.Current.MoveToFirstChild();
             do
             {
+                if(node_.Current.NodeType != XPathNodeType.Element)
+                    continue;
                 string name = node_.Current.GetAttribute("name", "");
                 if (workDictionary_.ContainsKey(name))
                     throw new Exception(string.Format("A 'name' attribute with value '{0}' has been defined more than one time, XML is invalid", name));

@@ -18,7 +18,9 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */-->
 <!-- effectively used mapping  -->
 <orm:Tables xmlns:orm="http://www.osames.org/osamesorm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osames.org/osamesorm xml_schemas\omo-mapping.xsd">
+  <!-- Customer -->
   <orm:Table name="Customer">
+    <!-- Unique key -->
     <orm:MappingObject property="CustomerId" column="CustomerId"/>
     <orm:MappingObject property="FirstName" column="FirstName"/>
   	<orm:MappingObject property="LastName" column="LastName"/>
