@@ -34,17 +34,17 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
   	<orm:MappingObject property="SupportRepId" column="SupportRepId"/>
   </orm:Table>
   <orm:Table name="Track">
-  	<orm:MappingObject property="" column="TrackId"/>
-  	<orm:MappingObject property="" column="Name"/>
-  	<orm:MappingObject property="" column="AlbumId"/>
-  	<orm:MappingObject property="" column="MediaTypeId"/>
-  	<orm:MappingObject property="" column="GenreId"/>
-  	<orm:MappingObject property="" column="Composer"/>
-  	<orm:MappingObject property="" column="Milliseconds"/>
-    <orm:MappingObject property="" column="Bytes"/>
-    <orm:MappingObject property="" column="UnitPrice"/>
+  	<orm:MappingObject property="TrackId" column="TrackId"/>
+  	<orm:MappingObject property="Name" column="Name"/>
+  	<orm:MappingObject property="AlbumId" column="AlbumId"/>
+  	<orm:MappingObject property="MediaTypeId" column="MediaTypeId"/>
+  	<orm:MappingObject property="GenreId" column="GenreId"/>
+  	<orm:MappingObject property="Composer" column="Composer"/>
+  	<orm:MappingObject property="Milliseconds" column="Milliseconds"/>
+    <orm:MappingObject property="Bytes" column="Bytes"/>
+    <orm:MappingObject property="UnitPrice" column="UnitPrice"/>
   </orm:Table>
-  <orm:Table name="InvoiceLine">
+  <!--<orm:Table name="InvoiceLine">
   	<orm:MappingObject property="" column="InvoiceLineId"/>
   	<orm:MappingObject property="" column="InvoiceId"/>
   	<orm:MappingObject property="" column="TrackId"/>
@@ -78,5 +78,5 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
     <orm:MappingObject property="" column="Phone"/>
     <orm:MappingObject property="" column="Fax"/>
     <orm:MappingObject property="" column="Email"/>
-  </orm:Table>
+  </orm:Table>-->
 </orm:Tables>
