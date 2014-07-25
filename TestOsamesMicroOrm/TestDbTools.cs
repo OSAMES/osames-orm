@@ -249,7 +249,7 @@ namespace TestOsamesMicroOrm
 
             List<string> lstPropertiesNames;
             List<string> lstDbColumnNames;
-            DbTools.DetermineDatabaseColumnsAndPropertiesNames("clients", out lstDbColumnNames, out lstPropertiesNames);
+            DbTools.DetermineDatabaseColumnsAndPropertiesNames("Customer", out lstDbColumnNames, out lstPropertiesNames);
             Assert.IsFalse(lstDbColumnNames.Count == 0);
             Assert.IsFalse(lstPropertiesNames.Count == 0);
             Assert.AreEqual(lstDbColumnNames.Count, lstPropertiesNames.Count);
