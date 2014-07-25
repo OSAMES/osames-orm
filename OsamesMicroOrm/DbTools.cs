@@ -564,6 +564,12 @@ namespace OsamesMicroOrm
                 {
                     throw new Exception(string.Format("Column '{0}' doesn't exist in sql data reader", columnName));
                 }
+
+                if (dataInReaderIndex == -1)
+                {
+                    throw new Exception(string.Format("Column '{0}' doesn't exist in sql data reader", columnName));
+                }
+
                 // TODO traiter ORM-45 pour cast vers le bon type.
                 object dbValue = reader_[dataInReaderIndex];
 
