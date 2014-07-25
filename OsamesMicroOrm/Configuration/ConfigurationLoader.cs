@@ -240,8 +240,8 @@ namespace OsamesMicroOrm.Configuration
         /// <param name="activeDbConnectionName_"></param>
         internal static void LoadProviderString(XPathNavigator xmlNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_, string activeDbConnectionName_)
         {
-            XmlNamespaceManager nsmgr = new XmlNamespaceManager(xmlNavigator_.NameTable);
-            nsmgr.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
+            XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xmlNavigator_.NameTable);
+            xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
 
             if (string.IsNullOrWhiteSpace(activeDbConnectionName_))
             {
@@ -269,10 +269,10 @@ namespace OsamesMicroOrm.Configuration
             }
             // name and provider
             string strXPath = string.Format("/*/{0}:ProviderSpecific/{0}:Select[@name='getlastinsertid' and @provider='{1}']", xmlRootTagPrefix_, provider);
-            XPathNodeIterator iter = xmlNavigator_.Select(strXPath, nsmgr);
-            if (iter.MoveNext())
+            XPathNodeIterator xPathNodeIterator = xmlNavigator_.Select(strXPath, xmlNamespaceManager);
+            if (xPathNodeIterator.MoveNext())
             {
-                DbManager.SelectLastInsertIdCommandText = iter.Current.Value;
+                DbManager.SelectLastInsertIdCommandText = xPathNodeIterator.Current.Value;
             }
             else
             {
@@ -291,20 +291,20 @@ namespace OsamesMicroOrm.Configuration
             MappingDictionnary.Clear();
             try
             {
-                XmlNamespaceManager nsmgr = new XmlNamespaceManager(xmlNavigator_.NameTable);
-                nsmgr.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
+                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xmlNavigator_.NameTable);
+                xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
                 // Table nodes
-                XPathNodeIterator iter = xmlNavigator_.Select(string.Format("/*/{0}:Table", xmlRootTagPrefix_), nsmgr);
+                XPathNodeIterator xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Table", xmlRootTagPrefix_), xmlNamespaceManager);
 
                 var columnColumnDictionary = new Dictionary<string, string>();
-                while (iter.MoveNext()) // Read Table node
+                while (xPathNodeIterator.MoveNext()) // Read Table node
                 {
-                    MappingDictionnary.Add(iter.Current.GetAttribute("name", ""), columnColumnDictionary);
-                    iter.Current.MoveToFirstChild();
+                    MappingDictionnary.Add(xPathNodeIterator.Current.GetAttribute("name", ""), columnColumnDictionary);
+                    xPathNodeIterator.Current.MoveToFirstChild();
                     do 
                     {
-                        columnColumnDictionary.Add(iter.Current.GetAttribute("column", ""), iter.Current.GetAttribute("column", ""));
-                    } while(iter.Current.MoveToNext()); // Read next Mapping node
+                        columnColumnDictionary.Add(xPathNodeIterator.Current.GetAttribute("column", ""), xPathNodeIterator.Current.GetAttribute("column", ""));
+                    } while(xPathNodeIterator.Current.MoveToNext()); // Read next Mapping node
 
                     columnColumnDictionary = new Dictionary<string, string>();
                 }
@@ -331,24 +331,24 @@ namespace OsamesMicroOrm.Configuration
             DicDeleteSql.Clear();
             try
             {
-                XmlNamespaceManager nsmgr = new XmlNamespaceManager(xmlNavigator_.NameTable);
-                nsmgr.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
+                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xmlNavigator_.NameTable);
+                xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
                 // Inserts nodes
-                XPathNodeIterator iter = xmlNavigator_.Select(string.Format("/*/{0}:Inserts", xmlRootTagPrefix_), nsmgr);
-                if(iter.MoveNext())
-                    FillSqlTemplateDictionary(iter, DicInsertSql);
+                XPathNodeIterator xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Inserts", xmlRootTagPrefix_), xmlNamespaceManager);
+                if(xPathNodeIterator.MoveNext())
+                    FillSqlTemplateDictionary(xPathNodeIterator, DicInsertSql);
                 // Selects nodes
-                iter = xmlNavigator_.Select(string.Format("/*/{0}:Selects", xmlRootTagPrefix_), nsmgr);
-                if (iter.MoveNext())
-                    FillSqlTemplateDictionary(iter, DicSelectSql);
+                xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Selects", xmlRootTagPrefix_), xmlNamespaceManager);
+                if (xPathNodeIterator.MoveNext())
+                    FillSqlTemplateDictionary(xPathNodeIterator, DicSelectSql);
                 // Updates nodes
-                iter = xmlNavigator_.Select(string.Format("/*/{0}:Updates", xmlRootTagPrefix_), nsmgr);
-                if (iter.MoveNext())
-                    FillSqlTemplateDictionary(iter, DicUpdateSql);
+                xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Updates", xmlRootTagPrefix_), xmlNamespaceManager);
+                if (xPathNodeIterator.MoveNext())
+                    FillSqlTemplateDictionary(xPathNodeIterator, DicUpdateSql);
                 // Deletes nodes
-                iter = xmlNavigator_.Select(string.Format("/*/{0}:Deletes", xmlRootTagPrefix_), nsmgr);
-                if (iter.MoveNext())
-                    FillSqlTemplateDictionary(iter, DicDeleteSql);
+                xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Deletes", xmlRootTagPrefix_), xmlNamespaceManager);
+                if (xPathNodeIterator.MoveNext())
+                    FillSqlTemplateDictionary(xPathNodeIterator, DicDeleteSql);
    
             }
             catch (Exception ex)
