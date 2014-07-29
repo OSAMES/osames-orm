@@ -39,11 +39,19 @@ namespace TestOsamesMicroOrmSqlite
 
             try
             {
-                DbTools.SelectSingleAllColumns<Customer>("BaseReadAll", "Customer", new List<string> {"City"}, new List<object> {"Paris"});
+                // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
+                Customer customer = DbTools.SelectSingleAllColumns<Customer>("BaseReadAll", "Customer", new List<string> {"City"}, new List<object> {"Paris"});
+                Assert.IsNotNull(customer, "Pas d'enregistrement trouvé, requeête select à corriger");
+                // Si une exception est lancée, la ligne ci-dessous n'est pas exécutée.
+                // Elle a vocation à faire échouer le test si elle s'exécute.
+                Assert.Fail("Erreur, pas d'exception lancée/catchée ci-dessous");
+
             } catch(Exception ex)
             {
                 Console.WriteLine("{0} {1}", ex.Message, ex.StackTrace);
-            }
+                // Vérification de l'exception exacte qui a été lancée
+                Assert.AreEqual("Column 'IdCustomer' doesn't exist in sql data reader", ex.Message);
+            } 
         }
     }
 }
