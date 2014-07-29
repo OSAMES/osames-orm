@@ -56,11 +56,11 @@ namespace OsamesMicroOrm.Configuration
         /// Templates dictionary for delete
         /// </summary>
         public static readonly Dictionary<string, string> DicDeleteSql = new Dictionary<string, string>();
-        
+
         /// <summary>
         /// Mapping is stored as follows : an external dictionary and an internal dictionary.
-        /// External dictionary : key is "clients" for example, value is a set of column name/column name correspondance.
-        /// column (dictionary key) and column name (dictionary value) are stored in the internal dictionary.
+        /// External dictionary : key is "clients" for example, value is a set of property name/column name correspondance.
+        /// Property (dictionary key) and column name (dictionary value) are stored in the internal dictionary.
         /// </summary>
         internal static readonly Dictionary<string, Dictionary<string, string>> MappingDictionnary = new Dictionary<string, Dictionary<string, string>>();
 
@@ -109,6 +109,20 @@ namespace OsamesMicroOrm.Configuration
                 }
             }
         }
+
+        /// <summary>
+        /// Clears internal singleton, forcing reload to next call to "Instance".
+        /// Useful for unit tests.
+        /// </summary>
+        public static void Clear()
+        {
+            lock (_oSingletonInit)
+            {
+                _singleton = null;
+
+            }
+        }
+
         /// <summary>
         /// Initialize active connection string values from configuration and setup DbHelper.
         /// </summary>
@@ -117,8 +131,8 @@ namespace OsamesMicroOrm.Configuration
         {
             string dbPath = string.Format("{0}{1}", Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), ConfigurationManager.AppSettings[@"dbPath"]);
             string dbName = ConfigurationManager.AppSettings["dbName"];
-            if(string.IsNullOrWhiteSpace(dbName))
-            { 
+            if (string.IsNullOrWhiteSpace(dbName))
+            {
                 _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No database name defined in appSettings ('dbName')");
                 return false;
             }
@@ -140,7 +154,7 @@ namespace OsamesMicroOrm.Configuration
             string conn = activeConnection.Name;
             if (string.IsNullOrWhiteSpace(conn))
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, string.Format("No active connection name defined in appSettings for active connection '{0}'", dbConnexion) );
+                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, string.Format("No active connection name defined in appSettings for active connection '{0}'", dbConnexion));
                 return false;
             }
 
@@ -150,11 +164,11 @@ namespace OsamesMicroOrm.Configuration
                 _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, string.Format("No active connection provider defined in appSettings  for active connection '{0}'", dbConnexion));
                 return false;
             }
-            
+
             // Some database connection definition don't need a database path
-            if(!string.IsNullOrWhiteSpace(dbPath))
+            if (!string.IsNullOrWhiteSpace(dbPath))
                 conn = (ConfigurationManager.ConnectionStrings[dbConnexion].ToString().Replace(@"$dbPath", dbPath));
-            
+
             conn = conn.Replace("$dbName", dbName);
 
             _loggerTraceSource.TraceEvent(TraceEventType.Information, 0, string.Format("Using DB connection string: {0}", conn));
@@ -178,7 +192,7 @@ namespace OsamesMicroOrm.Configuration
         private void LoadXmlConfiguration()
         {
             // 1. Load ORM Configuration File
-            
+
             // Format path for loading the xsd schemas file
             string xsdSchemasPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["xmlSchemasFolder"].TrimStart('\\').TrimStart('/'));
 
@@ -187,14 +201,14 @@ namespace OsamesMicroOrm.Configuration
                 _loggerTraceSource.TraceEvent(TraceEventType.Information, 0, "Osames ORM Initializing...");
 
                 // Format path for loading the configuration file
-                    string configBaseDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["configurationFolder"].TrimStart('\\').TrimStart('/'));
-                    
-                    // Concatenate path and xml file name for template
-                    string sqlTemplatesFullPath = Path.Combine(configBaseDirectory, ConfigurationManager.AppSettings["sqlTemplatesFileName"]);
+                string configBaseDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["configurationFolder"].TrimStart('\\').TrimStart('/'));
 
-                    // Concatenate path and xml file name for mapping
-                    string sqlMappingsFullPath = Path.Combine(configBaseDirectory, ConfigurationManager.AppSettings["mappingFileName"]);
-                
+                // Concatenate path and xml file name for template
+                string sqlTemplatesFullPath = Path.Combine(configBaseDirectory, ConfigurationManager.AppSettings["sqlTemplatesFileName"]);
+
+                // Concatenate path and xml file name for mapping
+                string sqlMappingsFullPath = Path.Combine(configBaseDirectory, ConfigurationManager.AppSettings["mappingFileName"]);
+
                 // Get for templates and mapping files their root tag prefix and namespace.
                 string[] xmlPrefix = new string[2];
                 string[] xmlNamespaces = new string[2];
@@ -207,8 +221,8 @@ namespace OsamesMicroOrm.Configuration
                                          Path.Combine(xsdSchemasPath, ConfigurationManager.AppSettings["mappingSchemaFileName"])
                                  });
 
-                 // Validate SQL Templates and Mapping
-                xmlvalidator.ValidateXml(new[] {sqlTemplatesFullPath, sqlMappingsFullPath});
+                // Validate SQL Templates and Mapping
+                xmlvalidator.ValidateXml(new[] { sqlTemplatesFullPath, sqlMappingsFullPath });
 
                 _loggerTraceSource.TraceEvent(TraceEventType.Information, 0, "Osames ORM Initialized.");
 
@@ -222,12 +236,12 @@ namespace OsamesMicroOrm.Configuration
                 // 4. Load mapping definitions
                 FillMappingDictionary(xmlMappingNavigator, xmlPrefix[1], xmlNamespaces[1]);
 
-                
+
             }
             catch (Exception ex)
             {
                 _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader LoadXmlConfiguration, see detailed log");
-                _detailedLoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader : "+ ex);
+                _detailedLoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader : " + ex);
                 throw;
             }
         }
@@ -240,8 +254,8 @@ namespace OsamesMicroOrm.Configuration
         /// <param name="activeDbConnectionName_"></param>
         internal static void LoadProviderString(XPathNavigator xmlNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_, string activeDbConnectionName_)
         {
-            XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xmlNavigator_.NameTable);
-            xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(xmlNavigator_.NameTable);
+            nsmgr.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
 
             if (string.IsNullOrWhiteSpace(activeDbConnectionName_))
             {
@@ -258,7 +272,7 @@ namespace OsamesMicroOrm.Configuration
             string conn = activeConnection.Name;
             if (string.IsNullOrWhiteSpace(conn))
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, string.Format("No active connection name defined in appSettings for active connection '{0}'", activeDbConnectionName_) );
+                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, string.Format("No active connection name defined in appSettings for active connection '{0}'", activeDbConnectionName_));
                 return;
             }
             string provider = activeConnection.ProviderName;
@@ -269,10 +283,10 @@ namespace OsamesMicroOrm.Configuration
             }
             // name and provider
             string strXPath = string.Format("/*/{0}:ProviderSpecific/{0}:Select[@name='getlastinsertid' and @provider='{1}']", xmlRootTagPrefix_, provider);
-            XPathNodeIterator xPathNodeIterator = xmlNavigator_.Select(strXPath, xmlNamespaceManager);
-            if (xPathNodeIterator.MoveNext())
+            XPathNodeIterator iter = xmlNavigator_.Select(strXPath, nsmgr);
+            if (iter.MoveNext())
             {
-                DbManager.SelectLastInsertIdCommandText = xPathNodeIterator.Current.Value;
+                DbManager.SelectLastInsertIdCommandText = iter.Current.Value;
             }
             else
             {
@@ -296,20 +310,20 @@ namespace OsamesMicroOrm.Configuration
                 // Table nodes
                 XPathNodeIterator xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Table", xmlRootTagPrefix_), xmlNamespaceManager);
 
-                var columnColumnDictionary = new Dictionary<string, string>();
+                var propertyColumnDictionary = new Dictionary<string, string>();
                 while (xPathNodeIterator.MoveNext()) // Read Table node
                 {
-                    MappingDictionnary.Add(xPathNodeIterator.Current.GetAttribute("name", ""), columnColumnDictionary);
+                    MappingDictionnary.Add(xPathNodeIterator.Current.GetAttribute("name", ""), propertyColumnDictionary);
                     xPathNodeIterator.Current.MoveToFirstChild();
-                    do 
+                    do
                     {
                         if (xPathNodeIterator.Current.NodeType != XPathNodeType.Element)
                             continue;
 
-                        columnColumnDictionary.Add(xPathNodeIterator.Current.GetAttribute("column", ""), xPathNodeIterator.Current.GetAttribute("column", ""));
-                    } while(xPathNodeIterator.Current.MoveToNext()); // Read next Mapping node
+                        propertyColumnDictionary.Add(xPathNodeIterator.Current.GetAttribute("property", ""), xPathNodeIterator.Current.GetAttribute("column", ""));
+                    } while (xPathNodeIterator.Current.MoveToNext()); // Read next Mapping node
 
-                    columnColumnDictionary = new Dictionary<string, string>();
+                    propertyColumnDictionary = new Dictionary<string, string>();
                 }
             }
             catch (Exception ex)
@@ -338,7 +352,7 @@ namespace OsamesMicroOrm.Configuration
                 xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
                 // Inserts nodes
                 XPathNodeIterator xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Inserts", xmlRootTagPrefix_), xmlNamespaceManager);
-                if(xPathNodeIterator.MoveNext())
+                if (xPathNodeIterator.MoveNext())
                     FillSqlTemplateDictionary(xPathNodeIterator, DicInsertSql);
                 // Selects nodes
                 xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Selects", xmlRootTagPrefix_), xmlNamespaceManager);
@@ -352,7 +366,7 @@ namespace OsamesMicroOrm.Configuration
                 xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Deletes", xmlRootTagPrefix_), xmlNamespaceManager);
                 if (xPathNodeIterator.MoveNext())
                     FillSqlTemplateDictionary(xPathNodeIterator, DicDeleteSql);
-   
+
             }
             catch (Exception ex)
             {
@@ -374,8 +388,9 @@ namespace OsamesMicroOrm.Configuration
             node_.Current.MoveToFirstChild();
             do
             {
-                if(node_.Current.NodeType != XPathNodeType.Element)
+                if (node_.Current.NodeType != XPathNodeType.Element)
                     continue;
+
                 string name = node_.Current.GetAttribute("name", "");
                 if (workDictionary_.ContainsKey(name))
                     throw new Exception(string.Format("A 'name' attribute with value '{0}' has been defined more than one time, XML is invalid", name));
@@ -389,42 +404,42 @@ namespace OsamesMicroOrm.Configuration
         /// Asks mapping for a DB column name.
         /// </summary>
         /// <param name="mappingKey_">Mapping key (DB table name)</param>
-        /// <param name="columnName_">(DB persistent object) peroperty name, ex "IdXXX"</param>
+        /// <param name="propertyName_">(DB persistent object) peroperty name, ex "IdXXX"</param>
         /// <returns>Db column name, ex "id_xxx"</returns>
-        public string GetMappingDbColumnName(string mappingKey_, string columnName_)
+        public string GetMappingDbColumnName(string mappingKey_, string propertyName_)
         {
             Dictionary<string, string> mappingObjectSet;
             string resultColumnName;
 
             MappingDictionnary.TryGetValue(mappingKey_, out mappingObjectSet);
-            if(mappingObjectSet == null)
-                throw new Exception(string.Format("No mapping for key '{0}'", mappingKey_));
-            mappingObjectSet.TryGetValue(columnName_, out resultColumnName);
             if (mappingObjectSet == null)
-                throw new Exception(string.Format("No mapping for key '{0}' and column name '{1}'", mappingKey_, columnName_));
+                throw new Exception(string.Format("No mapping for key '{0}'", mappingKey_));
+            mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
+            if (mappingObjectSet == null)
+                throw new Exception(string.Format("No mapping for key '{0}' and property name '{1}'", mappingKey_, propertyName_));
 
             return resultColumnName;
         }
 
         /// <summary>
-        /// Asks mapping for a (DB persistent object) column name.
+        /// Asks mapping for a (DB persistent object) property name.
         /// </summary>
         /// <param name="mappingKey_">Mapping key (DB table name)</param>
         /// <param name="dbColumnName_">DB column name, ex "id_xxx"</param>
-        /// <returns>(Db persistent object) column name, ex "IdXXX"</returns>
-        public string GetMappingcolumnName(string mappingKey_, string dbColumnName_)
+        /// <returns>(Db persistent object) property name, ex "IdXXX"</returns>
+        public string GetMappingPropertyName(string mappingKey_, string dbColumnName_)
         {
             Dictionary<string, string> mappingObjectSet;
 
             MappingDictionnary.TryGetValue(mappingKey_, out mappingObjectSet);
             if (mappingObjectSet == null)
                 throw new Exception(string.Format("No mapping for key '{0}'", mappingKey_));
-            string resultcolumnName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
+            string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
 
-            if (resultcolumnName == null)
+            if (resultPropertyName == null)
                 throw new Exception(string.Format("No mapping for key '{0}' and DB column name '{1}'", mappingKey_, dbColumnName_));
 
-            return resultcolumnName;
+            return resultPropertyName;
         }
 
         /// <summary>
@@ -435,7 +450,7 @@ namespace OsamesMicroOrm.Configuration
         public Dictionary<string, string> GetMapping(string mappingKey_)
         {
             Dictionary<string, string> mappingObjectSet;
-            
+
             MappingDictionnary.TryGetValue(mappingKey_, out mappingObjectSet);
             if (mappingObjectSet == null)
                 throw new Exception(string.Format("No mapping for key '{0}'", mappingKey_));

@@ -423,41 +423,22 @@ namespace OsamesMicroOrm
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
         /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type "SELECT {0} FROM {1} WHERE ..."</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="strWherecolumnNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
+        /// <param name="strWhereColumnNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
         /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
-        public static T SelectSingle<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWherecolumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
+        public static T SelectSingle<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereColumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             T dataObject = new T();
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
 
-            FormatSqlForSelect(refSqlTemplate_, lstPropertiesNames_, mappingDictionariesContainerKey_, strWherecolumnNames_, oWhereValues_, out sqlCommand, out adoParameters, out lstDbColumnNames);
+            FormatSqlForSelect(refSqlTemplate_, lstPropertiesNames_, mappingDictionariesContainerKey_, strWhereColumnNames_, oWhereValues_, out sqlCommand, out adoParameters, out lstDbColumnNames);
 
             using (IDataReader reader = DbManager.Instance.ExecuteReader(sqlCommand, adoParameters))
             {
                 if (reader.Read())
                 {
-                    // parcourir toutes les colonnes de résultat et affecter la valeur à la propriété correspondante.
-                    for (int i = 0; i < lstDbColumnNames.Count; i++)
-                    {
-                        string columnName = lstDbColumnNames[i];
-                        object dbValue = reader[columnName];
-
-                        // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
-                        if (dbValue.GetType() != typeof(DBNull))
-                        {
-                            try
-                            {
-                                dataObject.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject, dbValue);
-                            }
-                            catch (ArgumentException)
-                            {
-                                // par exemple valeur entière et propriété de type string
-                                dataObject.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject, dbValue.ToString());
-                            }
-                        }
-                    }
+                    FillDataObjectFromDataReader(dataObject, reader, lstDbColumnNames, lstPropertiesNames_);
                 }
             }
             return dataObject;
@@ -470,9 +451,9 @@ namespace OsamesMicroOrm
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type "SELECT * FROM {0} WHERE ..."</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="strWherecolumnNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
+        /// <param name="strWhereColumnNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
         /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
-        public static T SelectSingleAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWherecolumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
+        public static T SelectSingleAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereColumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             T dataObject = new T();
             string sqlCommand;
@@ -482,32 +463,13 @@ namespace OsamesMicroOrm
 
             DetermineDatabaseColumnsAndPropertiesNames(mappingDictionariesContainerKey_, out lstDbColumnNames, out lstPropertiesNames);
 
-            FormatSqlForSelect(refSqlTemplate_, mappingDictionariesContainerKey_, strWherecolumnNames_, oWhereValues_, lstDbColumnNames, out sqlCommand, out adoParameters);
+            FormatSqlForSelect(refSqlTemplate_, mappingDictionariesContainerKey_, strWhereColumnNames_, oWhereValues_, lstDbColumnNames, out sqlCommand, out adoParameters);
 
             using (IDataReader reader = DbManager.Instance.ExecuteReader(sqlCommand, adoParameters))
             {
                 if (reader.Read())
                 {
-                    // parcourir toutes les colonnes de résultat et affecter la valeur à la propriété correspondante.
-                    for (int i = 0; i < lstDbColumnNames.Count; i++)
-                    {
-                        string columnName = lstDbColumnNames[i];
-                        object dbValue = reader[columnName];
-
-                        // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
-                        if (dbValue.GetType() != typeof(DBNull))
-                        {
-                            try
-                            {
-                                dataObject.GetType().GetProperty(lstPropertiesNames[i]).SetValue(dataObject, dbValue);
-                            }
-                            catch (ArgumentException)
-                            {
-                                // par exemple valeur entière et propriété de type string
-                                dataObject.GetType().GetProperty(lstPropertiesNames[i]).SetValue(dataObject, dbValue.ToString());
-                            }
-                        }
-                    }
+                    FillDataObjectFromDataReader(dataObject, reader, lstDbColumnNames, lstPropertiesNames);
                 }
             }
             return dataObject;
@@ -539,26 +501,7 @@ namespace OsamesMicroOrm
                     T dataObject = new T();
                     dataObjects.Add(dataObject);
 
-                    // parcourir toutes les colonnes de résultat et affecter la valeur à la propriété correspondante.
-                    for (int i = 0; i < lstDbColumnNames.Count; i++)
-                    {
-                        string columnName = lstDbColumnNames[i];
-                        object dbValue = reader[columnName];
-
-                        // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
-                        if (dbValue.GetType() != typeof(DBNull))
-                        {
-                            try
-                            {
-                                dataObject.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject, dbValue);
-                            }
-                            catch (ArgumentException)
-                            {
-                                // par exemple valeur entière et propriété de type string
-                                dataObject.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject, dbValue.ToString());
-                            }
-                        }
-                    }
+                    FillDataObjectFromDataReader(dataObject, reader, lstDbColumnNames, lstPropertiesNames_);
                 }
             }
             return dataObjects;
@@ -592,29 +535,58 @@ namespace OsamesMicroOrm
                     T dataObject = new T();
                     dataObjects.Add(dataObject);
 
-                    // parcourir toutes les colonnes de résultat et affecter la valeur à la propriété correspondante.
-                    for (int i = 0; i < lstDbColumnNames.Count; i++)
-                    {
-                        string columnName = lstDbColumnNames[i];
-                        object dbValue = reader[columnName];
-
-                        // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
-                        if (dbValue.GetType() != typeof(DBNull))
-                        {
-                            try
-                            {
-                                dataObject.GetType().GetProperty(lstPropertiesNames[i]).SetValue(dataObject, dbValue);
-                            }
-                            catch (ArgumentException)
-                            {
-                                // par exemple valeur entière et propriété de type string
-                                dataObject.GetType().GetProperty(lstPropertiesNames[i]).SetValue(dataObject, dbValue.ToString());
-                            }
-                        }
-                    }
+                    FillDataObjectFromDataReader(dataObject, reader, lstDbColumnNames, lstPropertiesNames);
                 }
             }
             return dataObjects;
+        }
+
+        /// <summary>
+        /// Lit les champs indiqués en paramètre dans le tableau de données du DataReader et positionne les valeurs sur les propriétés de dataObject_ paramètre.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataObject_"></param>
+        /// <param name="reader_"></param>
+        /// <param name="lstDbColumnNames_"></param>
+        /// <param name="lstPropertiesNames_"></param>
+        private static void FillDataObjectFromDataReader<T>(T dataObject_, IDataReader reader_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_)
+        {
+            // parcourir toutes les colonnes de résultat et affecter la valeur à la propriété correspondante.
+            for (int i = 0; i < lstDbColumnNames_.Count; i++)
+            {
+                string columnName = lstDbColumnNames_[i];
+                int dataInReaderIndex;
+                try
+                {
+                    dataInReaderIndex = reader_.GetOrdinal(columnName);
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    throw new Exception(string.Format("Column '{0}' doesn't exist in sql data reader", columnName));
+                }
+
+                if (dataInReaderIndex == -1)
+                {
+                    throw new Exception(string.Format("Column '{0}' doesn't exist in sql data reader", columnName));
+                }
+
+                // TODO traiter ORM-45 pour cast vers le bon type.
+                object dbValue = reader_[dataInReaderIndex];
+
+                // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
+                if (dbValue.GetType() != typeof(DBNull))
+                {
+                    try
+                    {
+                        dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValue);
+                    }
+                    catch (ArgumentException)
+                    {
+                        // par exemple valeur entière et propriété de type string
+                        dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValue.ToString());
+                    }
+                }
+            }
         }
 
         #endregion
