@@ -55,7 +55,24 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="OsamesMicroOrmMsSqlTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestDbTools.cs" />
+    <Compile Include="Tools\CommonMsSql.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OsamesMicroOrm\OsamesMicroOrm.csproj">
+      <Project>{20af5fbb-1f88-47f4-8411-f7d8f56721ef}</Project>
+      <Name>OsamesMicroOrm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SampleDbEntities\SampleDbEntities.csproj">
+      <Project>{c8d022b3-6ced-432f-acc6-c56c6bea017c}</Project>
+      <Name>SampleDbEntities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestOsamesMicroOrm\TestOsamesMicroOrm.csproj">
+      <Project>{2d7b7f68-010d-44a4-8e08-80f74fd74cb6}</Project>
+      <Name>TestOsamesMicroOrm</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
@@ -77,6 +94,13 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>rem taskkill /F /IM vstest.executionengine.x86.exe /FI "MEMUSAGE gt 1"
+rem taskkill /F /IM vstest.discoveryengine.x86.exe /FI "MEMUSAGE gt 1"
+
+xcopy /Y $(SolutionDir)DB\Chinook.mdf $(TargetDir)DB\
+xcopy /Y $(SolutionDir)DB\Chinook_log.ldf $(TargetDir)DB\</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
