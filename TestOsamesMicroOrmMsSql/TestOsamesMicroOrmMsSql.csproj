@@ -79,7 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="TestConfigSqlite\incorrect-mapping.xml">
+    <None Include="TestConfigMsSql\incorrect-mapping.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
