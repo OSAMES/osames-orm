@@ -64,20 +64,45 @@ namespace TestOsamesMicroOrm
         /// <summary>
         /// Load of correct configuration file.
         /// Assertions on formatted string related to database access that was passed to DbHelper.
+        /// TU for SqLite Databases
         /// </summary>
         [TestMethod]
         [ExcludeFromCodeCoverage]
         [Owner("Benjamin Nolmans")]
         [TestCategory("Configuration")]
-        public void TestConfigurationLoaderAssertOnDatabaseParameters()
+        [TestCategory("SqLite")]
+        public void TestConfigurationLoaderAssertOnSqLiteDatabaseParameters()
+        {
+            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue("activeConnection", "OsamesMicroORM.Sqlite");
+
+            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+
+            Console.WriteLine(DbManager.ConnectionString);
+            Console.WriteLine(DbManager.ProviderName);
+
+            Assert.AreEqual(string.Format("Data Source={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook_Sqlite.sqlite;Version=3;UTF8Encoding=True;"), DbManager.ConnectionString);
+            Assert.AreEqual(@"System.Data.SQLite", DbManager.ProviderName);
+
+        }
+
+        /// <summary>
+        /// Load of correct configuration file.
+        /// Assertions on formatted string related to database access that was passed to DbHelper.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Benjamin Nolmans")]
+        [TestCategory("Configuration")]
+        [TestCategory("MsSql")]
+        public void TestConfigurationLoaderAssertOnMsSqlDatabaseParameters()
         {
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
             Console.WriteLine(DbManager.ConnectionString);
             Console.WriteLine(DbManager.ProviderName);
 
-            Assert.AreEqual(string.Format("Data source={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook_Sqlite.sqlite;Version=3;UTF8Encoding=True;"), DbManager.ConnectionString);
-            Assert.AreEqual(@"System.Data.SQLite", DbManager.ProviderName);
+            Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook.mdf;Integrated Security=True"), DbManager.ConnectionString);
+            Assert.AreEqual(@"System.Data.SqlClient", DbManager.ProviderName);
 
         }
 
