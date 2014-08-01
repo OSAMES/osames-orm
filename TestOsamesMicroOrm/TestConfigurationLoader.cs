@@ -73,12 +73,12 @@ namespace TestOsamesMicroOrm
         [TestCategory("SqLite")]
         public void TestConfigurationLoaderAssertOnSqLiteDatabaseParameters()
         {
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue("activeConnection", "OsamesMicroORM.Sqlite");
+            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue("activeDbConnection", "OsamesMicroORM.Sqlite");
 
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-            Console.WriteLine(DbManager.ConnectionString);
-            Console.WriteLine(DbManager.ProviderName);
+            Console.WriteLine("ConnectionString : "+DbManager.ConnectionString+"\n");
+            Console.WriteLine("ProviderName : " + DbManager.ProviderName + "\n");
 
             Assert.AreEqual(string.Format("Data Source={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook_Sqlite.sqlite;Version=3;UTF8Encoding=True;"), DbManager.ConnectionString);
             Assert.AreEqual(@"System.Data.SQLite", DbManager.ProviderName);
