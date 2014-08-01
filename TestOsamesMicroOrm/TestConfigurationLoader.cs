@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -74,9 +75,14 @@ namespace TestOsamesMicroOrm
         [TestCategory("SqLite")]
         public void TestConfigurationLoaderAssertOnSqLiteDatabaseParameters()
         {
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
-
+            string tweakedKey = Customizer.AppSettingsKeys.activeDbConnection.ToString();
+            Console.WriteLine("clé activeDbConnection dans AppSettings après Setup : " + ConfigurationManager.AppSettings[tweakedKey]);
+            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(tweakedKey, "OsamesMicroORM.Sqlite");
+            Console.WriteLine("clé activeDbConnection dans AppSettings après Tweak : " + ConfigurationManager.AppSettings[tweakedKey]);
+            
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
+
+            Console.WriteLine("clé activeDbConnection dans AppSettings après ConfigurationLoader.Instance : " + ConfigurationManager.AppSettings[tweakedKey]);
 
             Console.WriteLine("ConnectionString : "+DbManager.ConnectionString+"\n");
             Console.WriteLine("ProviderName : " + DbManager.ProviderName + "\n");
