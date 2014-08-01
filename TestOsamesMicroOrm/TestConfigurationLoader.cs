@@ -7,6 +7,7 @@ using System.Xml.XPath;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Configuration.Tweak;
 using TestOsamesMicroOrm.Tools;
 
 namespace TestOsamesMicroOrm
@@ -73,7 +74,7 @@ namespace TestOsamesMicroOrm
         [TestCategory("SqLite")]
         public void TestConfigurationLoaderAssertOnSqLiteDatabaseParameters()
         {
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue("activeDbConnection", "OsamesMicroORM.Sqlite");
+            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
 
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
@@ -119,8 +120,8 @@ namespace TestOsamesMicroOrm
         [TestCategory("FIXME")]
         public void TestConfigurationLoaderIncorrectXmlAssertOnInternalDictionaries()
         {
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue("sqlTemplatesFileName", _templatesTestDuplicateSelect);
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue("mappingFileName", _mappingFileFullPath);
+            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString(), _templatesTestDuplicateSelect);
+            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.mappingFileName.ToString(), _mappingFileFullPath);
             try
             {
                 ConfigurationLoader config = ConfigurationLoader.Instance;

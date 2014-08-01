@@ -20,6 +20,7 @@ using System.Data.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Configuration.Tweak;
 
 namespace TestOsamesMicroOrmMsSql
 {
@@ -46,7 +47,7 @@ namespace TestOsamesMicroOrmMsSql
         [TestInitialize]
         public void Setup()
         {
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue("activeConnection", "OsamesMicroORM.LocalDB");
+            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");
             _config = ConfigurationLoader.Instance;
 
             _connection = DbManager.Instance.CreateConnection();

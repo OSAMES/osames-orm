@@ -29,10 +29,11 @@ namespace TestOsamesMicroOrmMsSql
         [TestCategory("Sql")]
         [TestCategory("MsSql")]
         [TestCategory("ReadSql")]
+        [TestCategory("Configuration")]
         public void TestExecuteReaderIncorrectMapping()
         {
             // Customization
-            Customizer.ConfigurationManagerSetKeyValue("mappingFileName", _incorrectMappingFileFullPath);
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.mappingFileName.ToString(), _incorrectMappingFileFullPath);
             // Reload modified configuration
             ConfigurationLoader.Clear();
             _config = ConfigurationLoader.Instance;

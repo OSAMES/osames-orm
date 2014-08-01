@@ -64,6 +64,30 @@ namespace OsamesMicroOrm.Configuration.Tweak
                 customLogger_.TraceEvent(error_ ? TraceEventType.Error : TraceEventType.Information, 0, message_);
             }
         }
+
+        /// <summary>
+        /// Clés qu'on va souvent modifier dans AppSettings (fichier OsamesOrm.config) via la méthode ConfigurationManagerSetKeyValue de la classe courante.
+        /// Pour les tests unitaires par exemple.
+        /// </summary>
+        public enum AppSettingsKeys
+        {
+            // ReSharper disable InconsistentNaming
+
+            /// <summary>
+            /// Connexion DB active
+            /// </summary>
+            activeDbConnection,
+            /// <summary>
+            /// Fichier XML des templates
+            /// </summary>
+            sqlTemplatesFileName,
+            /// <summary>
+            /// Fichier XML du mapping
+            /// </summary>
+            mappingFileName
+
+            // ReSharper restore InconsistentNaming
+        }
     }
 }
 

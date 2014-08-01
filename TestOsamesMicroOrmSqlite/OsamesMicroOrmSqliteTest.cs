@@ -20,6 +20,7 @@ using System.Data.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Configuration.Tweak;
 
 namespace TestOsamesMicroOrmSqlite
 {
@@ -49,7 +50,7 @@ namespace TestOsamesMicroOrmSqlite
         [TestInitialize]
         public void Setup()
         {
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue("activeConnection", "OsamesMicroORM.Sqlite");
+            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
             _config = ConfigurationLoader.Instance;
 
             _connection = DbManager.Instance.CreateConnection();
