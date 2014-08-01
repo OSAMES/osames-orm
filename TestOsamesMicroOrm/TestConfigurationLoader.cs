@@ -75,14 +75,12 @@ namespace TestOsamesMicroOrm
         [TestCategory("SqLite")]
         public void TestConfigurationLoaderAssertOnSqLiteDatabaseParameters()
         {
-            string tweakedKey = Customizer.AppSettingsKeys.activeDbConnection.ToString();
-            Console.WriteLine("clé activeDbConnection dans AppSettings après Setup : " + ConfigurationManager.AppSettings[tweakedKey]);
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(tweakedKey, "OsamesMicroORM.Sqlite");
-            Console.WriteLine("clé activeDbConnection dans AppSettings après Tweak : " + ConfigurationManager.AppSettings[tweakedKey]);
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
             
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-            Console.WriteLine("clé activeDbConnection dans AppSettings après ConfigurationLoader.Instance : " + ConfigurationManager.AppSettings[tweakedKey]);
+            Console.WriteLine("clé activeDbConnection dans AppSettings après ConfigurationLoader.Instance : " + ConfigurationManager.AppSettings[Customizer.AppSettingsKeys.activeDbConnection.ToString()]);
 
             Console.WriteLine("ConnectionString : "+DbManager.ConnectionString+"\n");
             Console.WriteLine("ProviderName : " + DbManager.ProviderName + "\n");
@@ -103,7 +101,12 @@ namespace TestOsamesMicroOrm
         [TestCategory("MsSql")]
         public void TestConfigurationLoaderAssertOnMsSqlDatabaseParameters()
         {
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook.mdf");
+
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
+
+            Console.WriteLine("clé activeDbConnection dans AppSettings après ConfigurationLoader.Instance : " + ConfigurationManager.AppSettings[Customizer.AppSettingsKeys.activeDbConnection.ToString()]);
 
             Console.WriteLine(DbManager.ConnectionString);
             Console.WriteLine(DbManager.ProviderName);

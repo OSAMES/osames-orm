@@ -47,7 +47,8 @@ namespace TestOsamesMicroOrmMsSql
         [TestInitialize]
         public void Setup()
         {
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");
+
             _config = ConfigurationLoader.Instance;
 
             _connection = DbManager.Instance.CreateConnection();

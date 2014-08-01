@@ -84,8 +84,27 @@ namespace OsamesMicroOrm.Configuration.Tweak
             /// <summary>
             /// Fichier XML du mapping
             /// </summary>
-            mappingFileName
-
+            mappingFileName,
+            /// <summary>
+            /// Nom de la db a utiliser
+            /// </summary>
+            dbName,
+            /// <summary>
+            /// Mot de passe de la db
+            /// </summary>
+            dbPassword,
+            /// <summary>
+            /// Chemin vers la db
+            /// </summary>
+            dbPath,
+            /// <summary>
+            /// Dossier contenant la configuration de l'orm
+            /// </summary>
+            configurationFolder,
+            /// <summary>
+            /// Dossier contenant les schemas xml de l'orm
+            /// </summary>
+            xmlSchemasFolder
             // ReSharper restore InconsistentNaming
         }
     }
