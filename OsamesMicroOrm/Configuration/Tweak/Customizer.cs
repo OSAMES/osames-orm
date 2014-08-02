@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Configuration;
 using System.Diagnostics;
 
@@ -46,6 +47,10 @@ namespace OsamesMicroOrm.Configuration.Tweak
             Log(customLogger_, string.Format("Changing ConfigurationManager.AppSettings key '{0}' from '{1}' to '{2}'", key_, ConfigurationManager.AppSettings[key_], keyValue_), false);
 
             ConfigurationManager.AppSettings[key_] = keyValue_;
+
+            // Force full reload of configuration if key belongs to AppSettingsKeys enum.
+            if (Enum.IsDefined(typeof(AppSettingsKeys), key_))
+                ConfigurationLoader.Clear();
         }
         /// <summary>
         /// 

@@ -104,6 +104,7 @@ namespace TestOsamesMicroOrm
             Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");
             Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook.mdf");
 
+            ConfigurationLoader.Clear();
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
             Console.WriteLine("clé activeDbConnection dans AppSettings après ConfigurationLoader.Instance : " + ConfigurationManager.AppSettings[Customizer.AppSettingsKeys.activeDbConnection.ToString()]);
