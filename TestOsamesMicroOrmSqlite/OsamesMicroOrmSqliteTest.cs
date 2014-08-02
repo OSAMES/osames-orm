@@ -21,6 +21,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
+using TestOsamesMicroOrm.Tools;
+using TestOsamesMicroOrmSqlite.Tools;
 
 namespace TestOsamesMicroOrmSqlite
 {
@@ -33,7 +35,9 @@ namespace TestOsamesMicroOrmSqlite
         DeploymentItem("DB", "DB"),
         DeploymentItem("x64", "x64"),
         DeploymentItem("x86", "x86"),
-        DeploymentItem("System.Data.SQLite.dll")
+        DeploymentItem("System.Data.SQLite.dll"),
+        // Configuration for Sqlite
+        DeploymentItem(CommonSqlite.CST_TEST_CONFIG_SQLITE, Common.CST_CONFIG)
     ]
     [TestClass]
     public abstract class OsamesMicroOrmSqliteTest : TestOsamesMicroOrm.OsamesMicroOrmTest
@@ -47,13 +51,14 @@ namespace TestOsamesMicroOrmSqlite
 
         protected static DbConnection _connection;
 
+        /// <summary>
+        /// Initialisation d'une connexion et sa transaction, pour chaque test de la classe.
+        /// </summary>
         [TestInitialize]
-        public void Setup()
+        public void SetupTest()
         {
-            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
-
+            ConfigurationLoader.Clear();
             _config = ConfigurationLoader.Instance;
-
             _connection = DbManager.Instance.CreateConnection();
             _transaction = DbManager.Instance.OpenTransaction(_connection);
 

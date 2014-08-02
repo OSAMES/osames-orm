@@ -7,7 +7,6 @@ using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
 using SampleDbEntities.Chinook;
-using TestOsamesMicroOrm.Tools;
 using TestOsamesMicroOrmMsSql.Tools;
 
 namespace TestOsamesMicroOrmMsSql
@@ -24,8 +23,6 @@ namespace TestOsamesMicroOrmMsSql
         /// Test ORM-37. Configuration incorrecte du mapping : exception attendue.
         /// </summary>
         [TestMethod]
-        // Copy test mapping file to configuration standard location
-        [DeploymentItem(CommonMsSql.CST_TEST_CONFIG_MSSQL, Common.CST_CONFIG)]
         [TestCategory("Sql")]
         [TestCategory("MsSql")]
         [TestCategory("ReadSql")]

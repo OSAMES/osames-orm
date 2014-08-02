@@ -7,7 +7,6 @@ using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
 using SampleDbEntities.Chinook;
-using TestOsamesMicroOrm.Tools;
 using TestOsamesMicroOrmSqlite.Tools;
 
 namespace TestOsamesMicroOrmSqlite
@@ -24,8 +23,6 @@ namespace TestOsamesMicroOrmSqlite
         /// Test ORM-37. Configuration incorrecte du mapping : exception attendue.
         /// </summary>
         [TestMethod]
-        // Copy test mapping file to configuration standard location
-        [DeploymentItem(CommonSqlite.CST_TEST_CONFIG_SQLITE, Common.CST_CONFIG)]
         [TestCategory("Sql")]
         [TestCategory("SqLite")]
         [TestCategory("ReadSql")]
@@ -33,6 +30,7 @@ namespace TestOsamesMicroOrmSqlite
         public void TestExecuteReaderIncorrectMapping()
         {
             // Customization
+            
             Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.mappingFileName.ToString(), _incorrectMappingFileFullPath);
             // Reload modified configuration
             ConfigurationLoader.Clear();

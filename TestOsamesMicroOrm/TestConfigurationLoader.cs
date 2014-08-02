@@ -75,9 +75,11 @@ namespace TestOsamesMicroOrm
         [TestCategory("SqLite")]
         public void TestConfigurationLoaderAssertOnSqLiteDatabaseParameters()
         {
+            // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
             Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
             Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
-            
+            ConfigurationLoader.Clear();
+
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
             Console.WriteLine("clé activeDbConnection dans AppSettings après ConfigurationLoader.Instance : " + ConfigurationManager.AppSettings[Customizer.AppSettingsKeys.activeDbConnection.ToString()]);
@@ -101,10 +103,11 @@ namespace TestOsamesMicroOrm
         [TestCategory("MsSql")]
         public void TestConfigurationLoaderAssertOnMsSqlDatabaseParameters()
         {
+            // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
             Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");
             Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook.mdf");
-
             ConfigurationLoader.Clear();
+
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
             Console.WriteLine("clé activeDbConnection dans AppSettings après ConfigurationLoader.Instance : " + ConfigurationManager.AppSettings[Customizer.AppSettingsKeys.activeDbConnection.ToString()]);
@@ -134,6 +137,7 @@ namespace TestOsamesMicroOrm
             OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.mappingFileName.ToString(), _mappingFileFullPath);
             try
             {
+                ConfigurationLoader.Clear();
                 ConfigurationLoader config = ConfigurationLoader.Instance;
             } catch(Exception ex)
             {
