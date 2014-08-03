@@ -16,9 +16,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */-->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.osames.org/osamesorm"
-  xmlns:orm="http://www.osames.org/osamesorm" targetNamespace="http://www.osames.org/osamesorm"
-  elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.osames.org/osamesorm" xmlns:orm="http://www.osames.org/osamesorm" targetNamespace="http://www.osames.org/osamesorm" elementFormDefault="qualified">
   <xs:annotation>
     <xs:appinfo>OSAMES ORM Note</xs:appinfo>
     <xs:documentation xml:lang="en">
@@ -27,12 +25,6 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
   </xs:annotation>
   <xs:complexType name="TypeQueryList">
     <xs:sequence>
-      <xs:element maxOccurs="1" minOccurs="0" name="FieldEncloser">
-        <xs:complexType>
-          <xs:attribute name="start" type="xs:string" use="required"/>
-          <xs:attribute name="end" type="xs:string" use="required"/>
-        </xs:complexType>
-      </xs:element>
       <xs:element maxOccurs="1" minOccurs="0" name="Inserts">
         <xs:complexType>
           <xs:sequence>
@@ -112,21 +104,32 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
       <xs:element maxOccurs="1" minOccurs="1" name="ProviderSpecific">
         <xs:complexType>
           <xs:sequence>
-            <xs:element maxOccurs="unbounded" minOccurs="1" name="Select">
+            <xs:element maxOccurs="unbounded" minOccurs="1" name="Provider">
               <xs:complexType>
-                <xs:simpleContent>
-                  <xs:extension base="xs:string">
-                    <xs:attribute name="name" type="xs:string" use="required"/>
-                    <xs:attribute name="provider" type="xs:string" use="required"/>
-                  </xs:extension>
-                </xs:simpleContent>
+                <xs:sequence>
+                  <xs:element maxOccurs="unbounded" minOccurs="0" name="Select">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="name" type="xs:string" use="required"/>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:attribute name="name" type="xs:string" use="required"/>
+                <xs:attribute name="StartFieldEncloser" type="xs:string" use="required"/>
+                <xs:attribute name="EndFieldEncloser" type="xs:string" use="required"/>
               </xs:complexType>
+              <xs:unique name="SelectProviderUnique">
+                <xs:selector xpath="orm:Select"/>
+                <xs:field xpath="@name"/>
+              </xs:unique>
             </xs:element>
           </xs:sequence>
         </xs:complexType>
-        <xs:unique name="SelectProviderUnique">
-          <xs:selector xpath="orm:Select"/>
-          <xs:field xpath="@provider"/>
+        <xs:unique name="ProviderUnique">
+          <xs:selector xpath="orm:Provider"/>
           <xs:field xpath="@name"/>
         </xs:unique>
       </xs:element>
@@ -134,4 +137,3 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
   </xs:complexType>
   <xs:element name="QueryList" type="TypeQueryList"/>
 </xs:schema>
-
