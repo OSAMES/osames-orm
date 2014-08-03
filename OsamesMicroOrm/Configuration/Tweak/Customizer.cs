@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Configuration;
 using System.Diagnostics;
 
@@ -46,6 +47,10 @@ namespace OsamesMicroOrm.Configuration.Tweak
             Log(customLogger_, string.Format("Changing ConfigurationManager.AppSettings key '{0}' from '{1}' to '{2}'", key_, ConfigurationManager.AppSettings[key_], keyValue_), false);
 
             ConfigurationManager.AppSettings[key_] = keyValue_;
+
+            // Force full reload of configuration if key belongs to AppSettingsKeys enum.
+            if (Enum.IsDefined(typeof(AppSettingsKeys), key_))
+                ConfigurationLoader.Clear();
         }
         /// <summary>
         /// 
@@ -63,6 +68,49 @@ namespace OsamesMicroOrm.Configuration.Tweak
             {
                 customLogger_.TraceEvent(error_ ? TraceEventType.Error : TraceEventType.Information, 0, message_);
             }
+        }
+
+        /// <summary>
+        /// Clés qu'on va souvent modifier dans AppSettings (fichier OsamesOrm.config) via la méthode ConfigurationManagerSetKeyValue de la classe courante.
+        /// Pour les tests unitaires par exemple.
+        /// </summary>
+        public enum AppSettingsKeys
+        {
+            // ReSharper disable InconsistentNaming
+
+            /// <summary>
+            /// Connexion DB active
+            /// </summary>
+            activeDbConnection,
+            /// <summary>
+            /// Fichier XML des templates
+            /// </summary>
+            sqlTemplatesFileName,
+            /// <summary>
+            /// Fichier XML du mapping
+            /// </summary>
+            mappingFileName,
+            /// <summary>
+            /// Nom de la db a utiliser
+            /// </summary>
+            dbName,
+            /// <summary>
+            /// Mot de passe de la db
+            /// </summary>
+            dbPassword,
+            /// <summary>
+            /// Chemin vers la db
+            /// </summary>
+            dbPath,
+            /// <summary>
+            /// Dossier contenant la configuration de l'orm
+            /// </summary>
+            configurationFolder,
+            /// <summary>
+            /// Dossier contenant les schemas xml de l'orm
+            /// </summary>
+            xmlSchemasFolder
+            // ReSharper restore InconsistentNaming
         }
     }
 }

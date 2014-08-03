@@ -20,6 +20,9 @@ using System.Data.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Configuration.Tweak;
+using TestOsamesMicroOrm.Tools;
+using TestOsamesMicroOrmMsSql.Tools;
 
 namespace TestOsamesMicroOrmMsSql
 {
@@ -29,7 +32,9 @@ namespace TestOsamesMicroOrmMsSql
     /// Additions to TestOsamesMicroOrm deployment (configuration and logs folders).
     /// </summary>
     [
-        DeploymentItem("DB", "DB")
+        DeploymentItem("DB", "DB"),
+        // Configuration for MsSql
+        DeploymentItem(CommonMsSql.CST_TEST_CONFIG_MSSQL, Common.CST_CONFIG)
     ]
     [TestClass]
     public abstract class OsamesMicroOrmMsSqlTest : TestOsamesMicroOrm.OsamesMicroOrmTest
@@ -43,18 +48,18 @@ namespace TestOsamesMicroOrmMsSql
 
         protected static DbConnection _connection;
 
+        /// <summary>
+        /// Initialisation d'une connexion et sa transaction, pour chaque test de la classe.
+        /// </summary>
         [TestInitialize]
-        public void Setup()
+        public void SetupTest()
         {
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue("activeConnection", "OsamesMicroORM.LocalDB");
+            ConfigurationLoader.Clear();
             _config = ConfigurationLoader.Instance;
-
             _connection = DbManager.Instance.CreateConnection();
             _transaction = DbManager.Instance.OpenTransaction(_connection);
-
         }
-
-
+        
         [TestCleanup]
         public void TestCleanup()
         {

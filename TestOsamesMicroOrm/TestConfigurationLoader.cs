@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Xml.XPath;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Configuration.Tweak;
 using TestOsamesMicroOrm.Tools;
 
 namespace TestOsamesMicroOrm
@@ -73,9 +75,14 @@ namespace TestOsamesMicroOrm
         [TestCategory("SqLite")]
         public void TestConfigurationLoaderAssertOnSqLiteDatabaseParameters()
         {
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue("activeDbConnection", "OsamesMicroORM.Sqlite");
+            // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
+            ConfigurationLoader.Clear();
 
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
+
+            Console.WriteLine("clé activeDbConnection dans AppSettings après ConfigurationLoader.Instance : " + ConfigurationManager.AppSettings[Customizer.AppSettingsKeys.activeDbConnection.ToString()]);
 
             Console.WriteLine("ConnectionString : "+DbManager.ConnectionString+"\n");
             Console.WriteLine("ProviderName : " + DbManager.ProviderName + "\n");
@@ -96,7 +103,14 @@ namespace TestOsamesMicroOrm
         [TestCategory("MsSql")]
         public void TestConfigurationLoaderAssertOnMsSqlDatabaseParameters()
         {
+            // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook.mdf");
+            ConfigurationLoader.Clear();
+
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
+
+            Console.WriteLine("clé activeDbConnection dans AppSettings après ConfigurationLoader.Instance : " + ConfigurationManager.AppSettings[Customizer.AppSettingsKeys.activeDbConnection.ToString()]);
 
             Console.WriteLine(DbManager.ConnectionString);
             Console.WriteLine(DbManager.ProviderName);
@@ -119,10 +133,11 @@ namespace TestOsamesMicroOrm
         [TestCategory("FIXME")]
         public void TestConfigurationLoaderIncorrectXmlAssertOnInternalDictionaries()
         {
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue("sqlTemplatesFileName", _templatesTestDuplicateSelect);
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue("mappingFileName", _mappingFileFullPath);
+            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString(), _templatesTestDuplicateSelect);
+            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.mappingFileName.ToString(), _mappingFileFullPath);
             try
             {
+                ConfigurationLoader.Clear();
                 ConfigurationLoader config = ConfigurationLoader.Instance;
             } catch(Exception ex)
             {
