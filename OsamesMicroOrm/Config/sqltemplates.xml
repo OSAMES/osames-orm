@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version='1.0' encoding='UTF-8' ?> 
 <!--/*
 This file is part of OSAMES Micro ORM.
 Copyright 2014 OSAMES
@@ -16,8 +16,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */-->
-<orm:QueryList xmlns:orm="http://www.osames.org/osamesorm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osames.org/osamesorm xml_schemas\sqlTemplates.xsd" >
-  <orm:FieldEncloser start="[" end="]"/>
+<orm:QueryList xmlns:orm="http://www.osames.org/osamesorm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osames.org/osamesorm xml_schemas\sqlTemplates_dev.xsd" >
   <orm:Inserts>
     <orm:Insert name="BaseInsert">INSERT INTO {0} ({1}) values ({2});</orm:Insert>
     <orm:Insert name="OtherBaseInsert">INSERT INTO {0} ({1}) values ({2});</orm:Insert>
@@ -40,15 +39,26 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
   </orm:Deletes>
   <orm:ProviderSpecific>
     <!-- SQLite -->
-    <orm:Select name="getlastinsertid" provider="System.Data.SQLite">select last_insert_rowid();</orm:Select>
+    <orm:Provider name="System.Data.SQLite">
+        <orm:Select name="getlastinsertid">select last_insert_rowid();</orm:Select>
+        <orm:FieldEncloser start="[" end="]"/>
+    </orm:Provider>
     <!-- MySQL -->
-    <orm:Select name="getlastinsertid" provider="MySql.Data.MySqlClient">select last_insert_id();</orm:Select>
+    <orm:Provider name="MySql.Data.MySqlClient">
+        <orm:Select name="getlastinsertid">select last_insert_id();</orm:Select>
+        <orm:FieldEncloser start="[" end="]"/>
+    </orm:Provider>
     <!-- MS SQL -->
-    <orm:Select name="getlastinsertid" provider="System.Data.SqlClient">select scope_identity()</orm:Select>
+    <orm:Provider name="System.Data.SqlClient">
+        <orm:Select name="getlastinsertid">select scope_identity()</orm:Select>
+        <orm:FieldEncloser start="[" end="]"/>
+    </orm:Provider>
     <!-- Oracle -->
-    <orm:Select name="getlastinsertid" provider="System.Data.OracleClient"></orm:Select>
+    <orm:Provider name="### ORACLE ###">
+    </orm:Provider>
     <!-- SQL Server Compact -->
-    <orm:Select name="getlastinsertid" provider="System.Data.SqlServerCe.4.0"></orm:Select>
+    <orm:Provider name="### SQL Server Compact ###">
+    </orm:Provider>
   </orm:ProviderSpecific>
 </orm:QueryList>
 
