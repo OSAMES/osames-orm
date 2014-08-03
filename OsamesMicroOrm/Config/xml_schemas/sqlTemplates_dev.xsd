@@ -123,13 +123,13 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
                 <xs:attribute name="StartFieldEncloser" type="xs:string" use="required"/>
                 <xs:attribute name="EndFieldEncloser" type="xs:string" use="required"/>
               </xs:complexType>
+              <xs:unique name="SelectProviderUnique">
+                  <xs:selector xpath="orm:Select"/>
+                  <xs:field xpath="@name"/>
+              </xs:unique>
             </xs:element>
           </xs:sequence>
         </xs:complexType>
-        <xs:unique name="SelectProviderUnique">
-          <xs:selector xpath="orm:Select"/>
-          <xs:field xpath="@name"/>
-        </xs:unique>
         <xs:unique name="ProviderUnique">
           <xs:selector xpath="orm:Provider"/>
           <xs:field xpath="@name"/>
