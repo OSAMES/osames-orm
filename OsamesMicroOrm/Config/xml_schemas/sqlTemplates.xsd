@@ -104,6 +104,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
       <xs:element maxOccurs="1" minOccurs="1" name="ProviderSpecific">
         <xs:complexType>
           <xs:sequence>
+            <!-- sequence of abstractProvider complex type, using "Provider" element name -->
             <xs:element maxOccurs="unbounded" minOccurs="1" name="Provider" type="abstractProvider">
                 <xs:unique name="SelectProviderUnique">
                 <xs:selector xpath="orm:Select"/>
@@ -121,7 +122,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
   </xs:complexType>
   <xs:element name="QueryList" type="TypeQueryList"/>
   
-  <!-- abstract type for Provider with name attribute -->
+  <!-- abstract type for "Provider" tag, which defines name attribute  and Select child tags -->
  <xs:complexType name="abstractProvider" abstract="true">
     <xs:sequence>
       <xs:element maxOccurs="unbounded" minOccurs="0" name="Select">
@@ -150,7 +151,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
         </xs:attribute>
     </xs:attributeGroup>
     
-     <!-- FieldEnclosers attribute definition -->
+ <!-- StartFieldEncloser and EndFieldEncloser attributes definition -->
  <xs:attributeGroup name="twoFieldEnclosers">
        <xs:attribute name="StartFieldEncloser" use="required">
          <xs:simpleType>
