@@ -17,156 +17,126 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.osames.org/osamesorm" xmlns:orm="http://www.osames.org/osamesorm" targetNamespace="http://www.osames.org/osamesorm" elementFormDefault="qualified">
-  <xs:annotation>
-    <xs:appinfo>OSAMES ORM Note</xs:appinfo>
-    <xs:documentation xml:lang="en">
-      This Schema defines a OSAMES ORM Sql Template.
-    </xs:documentation>
-  </xs:annotation>
-  <xs:complexType name="TypeQueryList">
-    <xs:sequence>
-      <xs:element maxOccurs="1" minOccurs="0" name="Inserts">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element maxOccurs="unbounded" minOccurs="1" name="Insert">
-              <xs:complexType>
-                <xs:simpleContent>
-                  <xs:extension base="xs:string">
-                    <xs:attribute name="name" type="xs:string" use="required"/>
-                  </xs:extension>
-                </xs:simpleContent>
-              </xs:complexType>
+    <xs:annotation>
+        <xs:appinfo>OSAMES ORM Note</xs:appinfo>
+        <xs:documentation xml:lang="en">
+            This Schema defines a OSAMES ORM Sql Template.
+        </xs:documentation>
+    </xs:annotation>
+    <xs:complexType name="TypeQueryList">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="Inserts">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="1" name="Insert">
+                            <xs:complexType>
+                                <xs:simpleContent>
+                                    <xs:extension base="xs:string">
+                                        <xs:attribute name="name" type="xs:string" use="required"/>
+                                    </xs:extension>
+                                </xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+                <xs:unique name="UniqueInsertName">
+                    <xs:selector xpath="orm:Insert"/>
+                    <xs:field xpath="@name"/>
+                </xs:unique>
             </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-        <xs:unique name="UniqueInsertName">
-          <xs:selector xpath="orm:Insert"/>
-          <xs:field xpath="@name"/>
-        </xs:unique>
-      </xs:element>
-      <xs:element maxOccurs="1" minOccurs="0" name="Updates">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element maxOccurs="unbounded" minOccurs="1" name="Update">
-              <xs:complexType>
-                <xs:simpleContent>
-                  <xs:extension base="xs:string">
-                    <xs:attribute name="name" type="xs:string" use="required"/>
-                  </xs:extension>
-                </xs:simpleContent>
-              </xs:complexType>
+            <xs:element maxOccurs="1" minOccurs="0" name="Updates">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="1" name="Update">
+                            <xs:complexType>
+                                <xs:simpleContent>
+                                    <xs:extension base="xs:string">
+                                        <xs:attribute name="name" type="xs:string" use="required"/>
+                                    </xs:extension>
+                                </xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+                <xs:unique name="UpdateUniqueName">
+                    <xs:selector xpath="orm:Update"/>
+                    <xs:field xpath="@name"/>
+                </xs:unique>
             </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-        <xs:unique name="UpdateUniqueName">
-          <xs:selector xpath="orm:Update"/>
-          <xs:field xpath="@name"/>
-        </xs:unique>
-      </xs:element>
-      <xs:element maxOccurs="1" minOccurs="0" name="Selects">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element maxOccurs="unbounded" minOccurs="1" name="Select">
-              <xs:complexType>
-                <xs:simpleContent>
-                  <xs:extension base="xs:string">
-                    <xs:attribute name="name" type="xs:string" use="required"/>
-                  </xs:extension>
-                </xs:simpleContent>
-              </xs:complexType>
+            <xs:element maxOccurs="1" minOccurs="0" name="Selects">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="1" name="Select">
+                            <xs:complexType>
+                                <xs:simpleContent>
+                                    <xs:extension base="xs:string">
+                                        <xs:attribute name="name" type="xs:string" use="required"/>
+                                    </xs:extension>
+                                </xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+                <xs:unique name="SelectUniqueName">
+                    <xs:selector xpath="orm:Select"/>
+                    <xs:field xpath="@name"/>
+                </xs:unique>
             </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-        <xs:unique name="SelectUniqueName">
-          <xs:selector xpath="orm:Select"/>
-          <xs:field xpath="@name"/>
-        </xs:unique>
-      </xs:element>
-      <xs:element maxOccurs="1" minOccurs="0" name="Deletes">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element maxOccurs="unbounded" minOccurs="1" name="Delete">
-              <xs:complexType>
-                <xs:simpleContent>
-                  <xs:extension base="xs:string">
-                    <xs:attribute name="name" type="xs:string" use="required"/>
-                  </xs:extension>
-                </xs:simpleContent>
-              </xs:complexType>
+            <xs:element maxOccurs="1" minOccurs="0" name="Deletes">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="1" name="Delete">
+                            <xs:complexType>
+                                <xs:simpleContent>
+                                    <xs:extension base="xs:string">
+                                        <xs:attribute name="name" type="xs:string" use="required"/>
+                                    </xs:extension>
+                                </xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+                <xs:unique name="DeleteUniqueName">
+                    <xs:selector xpath="orm:Delete"/>
+                    <xs:field xpath="@name"/>
+                </xs:unique>
             </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-        <xs:unique name="DeleteUniqueName">
-          <xs:selector xpath="orm:Delete"/>
-          <xs:field xpath="@name"/>
-        </xs:unique>
-      </xs:element>
-      <xs:element maxOccurs="1" minOccurs="1" name="ProviderSpecific">
-        <xs:complexType>
-          <xs:sequence>
-            <!-- sequence of abstractProvider complex type, using "Provider" element name -->
-            <xs:element maxOccurs="unbounded" minOccurs="1" name="Provider" type="abstractProvider">
-                <xs:unique name="SelectProviderUnique">
-                <xs:selector xpath="orm:Select"/>
-                <xs:field xpath="@name"/>
-              </xs:unique>
-            </xs:element>        
-          </xs:sequence>
-        </xs:complexType>
-        <xs:unique name="ProviderUnique">
-          <xs:selector xpath="orm:Provider"/>
-          <xs:field xpath="@name"/>
-        </xs:unique>
-      </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="QueryList" type="TypeQueryList"/>
+            <xs:element maxOccurs="1" minOccurs="1" name="ProviderSpecific">
+                <xs:complexType>
+                    <xs:sequence>
+                        <!-- sequence of abstractProvider complex type, using "Provider" element name -->
+                        <xs:element maxOccurs="unbounded" minOccurs="1" name="Provider" type="abstractProvider" />
+                    </xs:sequence>                    
+                </xs:complexType>
+                <xs:unique name="ProviderUnique">
+                    <xs:selector xpath="orm:Provider"/>
+                    <xs:field xpath="@name"/>
+                </xs:unique>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="QueryList" type="TypeQueryList"/>
   
-  <!-- abstract type for "Provider" tag, which defines name attribute  and Select child tags -->
- <xs:complexType name="abstractProvider" abstract="true">
-    <xs:sequence>
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="Select">
-         <xs:complexType>
-          <xs:simpleContent>
-            <xs:extension base="xs:string">
-                <xs:attribute name="name" type="xs:string" use="required"/>
-            </xs:extension>
-          </xs:simpleContent>
-         </xs:complexType>
-      </xs:element>
-    </xs:sequence>
-    <xs:simpleContent>
-        <xs:extension base="xs:string">
-            <xs:attribute name="name" type="xs:string" use="required"/>
-        </xs:extension>
-    </xs:simpleContent>
-  </xs:complexType>
+    <!-- ## ABSTRACT ## -->
+    <!-- abstract type for "Provider" tag, which defines name attribute and Select child tags -->
+    <xs:complexType name="abstractProvider" abstract="true">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="Select">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                            <xs:attribute name="name" type="xs:string" use="required"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
  
- <!-- FieldEncloser attribute definition -->
- <xs:attributeGroup name="singleFieldEncloser">
-       <xs:attribute name="FieldEncloser" use="required">
-         <xs:simpleType>
-                <xs:restriction base="xs:string"/>
-            </xs:simpleType>
-        </xs:attribute>
-    </xs:attributeGroup>
-    
- <!-- StartFieldEncloser and EndFieldEncloser attributes definition -->
- <xs:attributeGroup name="twoFieldEnclosers">
-       <xs:attribute name="StartFieldEncloser" use="required">
-         <xs:simpleType>
-                <xs:restriction base="xs:string"/>
-            </xs:simpleType>
-        </xs:attribute>
-       <xs:attribute name="EndFieldEncloser" use="required">
-         <xs:simpleType>
-                <xs:restriction base="xs:string"/>
-            </xs:simpleType>
-        </xs:attribute>
-    </xs:attributeGroup>
-    
-  <!-- extension of abstractProvider with single field encloser -->
-  <xs:complexType name="providerWithSingleFieldEncloser">
+    <!-- ## EXTENSIONS OF ABSTRACT TYPE ## -->
+    <!-- extension of abstractProvider with single field encloser -->
+    <xs:complexType name="singleFieldEncloserType">
         <xs:complexContent>
             <xs:extension base="abstractProvider">
                 <xs:attributeGroup ref="singleFieldEncloser" />
@@ -175,11 +145,35 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
     </xs:complexType>
     
     <!-- extension of abstractProvider with two field enclosers -->
-  <xs:complexType name="providerWithTwoFieldEncloser">
+    <xs:complexType name="twoFieldEnclosersType">
         <xs:complexContent>
             <xs:extension base="abstractProvider">
                 <xs:attributeGroup ref="twoFieldEnclosers" />
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    
+    <!-- ### ATTRIBUTE GROUPS ## -->
+    <!-- FieldEncloser attribute definition -->
+    <xs:attributeGroup name="singleFieldEncloser">
+        <xs:attribute name="FieldEncloser" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>
+    
+    <!-- StartFieldEncloser and EndFieldEncloser attributes definition -->
+    <xs:attributeGroup name="twoFieldEnclosers">
+        <xs:attribute name="StartFieldEncloser" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="EndFieldEncloser" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>        
 </xs:schema>
