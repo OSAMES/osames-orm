@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--/*
 This file is part of OSAMES Micro ORM.
 Copyright 2014 OSAMES
@@ -104,28 +104,12 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
       <xs:element maxOccurs="1" minOccurs="1" name="ProviderSpecific">
         <xs:complexType>
           <xs:sequence>
-            <xs:element maxOccurs="unbounded" minOccurs="1" name="Provider">
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element maxOccurs="unbounded" minOccurs="0" name="Select">
-                    <xs:complexType>
-                      <xs:simpleContent>
-                        <xs:extension base="xs:string">
-                          <xs:attribute name="name" type="xs:string" use="required"/>
-                        </xs:extension>
-                      </xs:simpleContent>
-                    </xs:complexType>
-                  </xs:element>
-                </xs:sequence>
-                <xs:attribute name="name" type="xs:string" use="required"/>
-                <xs:attribute name="StartFieldEncloser" type="xs:string" use="required"/>
-                <xs:attribute name="EndFieldEncloser" type="xs:string" use="required"/>
-              </xs:complexType>
-              <xs:unique name="SelectProviderUnique">
+            <xs:element maxOccurs="unbounded" minOccurs="1" name="Provider" type="abstractProvider">
+                <xs:unique name="SelectProviderUnique">
                 <xs:selector xpath="orm:Select"/>
                 <xs:field xpath="@name"/>
               </xs:unique>
-            </xs:element>
+            </xs:element>        
           </xs:sequence>
         </xs:complexType>
         <xs:unique name="ProviderUnique">
@@ -136,4 +120,65 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
     </xs:sequence>
   </xs:complexType>
   <xs:element name="QueryList" type="TypeQueryList"/>
+  
+  <!-- abstract type for Provider with name attribute -->
+ <xs:complexType name="abstractProvider" abstract="true">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="Select">
+         <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="name" type="xs:string" use="required"/>
+            </xs:extension>
+          </xs:simpleContent>
+         </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:simpleContent>
+        <xs:extension base="xs:string">
+            <xs:attribute name="name" type="xs:string" use="required"/>
+        </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+ 
+ <!-- FieldEncloser attribute definition -->
+ <xs:attributeGroup name="singleFieldEncloser">
+       <xs:attribute name="FieldEncloser" use="required">
+         <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>
+    
+     <!-- FieldEnclosers attribute definition -->
+ <xs:attributeGroup name="twoFieldEnclosers">
+       <xs:attribute name="StartFieldEncloser" use="required">
+         <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+        </xs:attribute>
+       <xs:attribute name="EndFieldEncloser" use="required">
+         <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>
+    
+  <!-- extension of abstractProvider with single field encloser -->
+  <xs:complexType name="providerWithSingleFieldEncloser">
+        <xs:complexContent>
+            <xs:extension base="abstractProvider">
+                <xs:attributeGroup ref="singleFieldEncloser" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <!-- extension of abstractProvider with two field enclosers -->
+  <xs:complexType name="providerWithTwoFieldEncloser">
+        <xs:complexContent>
+            <xs:extension base="abstractProvider">
+                <xs:attributeGroup ref="twoFieldEnclosers" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 </xs:schema>
