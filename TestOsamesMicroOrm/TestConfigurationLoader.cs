@@ -82,11 +82,6 @@ namespace TestOsamesMicroOrm
 
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-            Console.WriteLine("clé activeDbConnection dans AppSettings après ConfigurationLoader.Instance : " + ConfigurationManager.AppSettings[Customizer.AppSettingsKeys.activeDbConnection.ToString()]);
-
-            Console.WriteLine("ConnectionString : "+DbManager.ConnectionString+"\n");
-            Console.WriteLine("ProviderName : " + DbManager.ProviderName + "\n");
-
             Assert.AreEqual(string.Format("Data Source={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook_Sqlite.sqlite;Version=3;UTF8Encoding=True;"), DbManager.ConnectionString);
             Assert.AreEqual(@"System.Data.SQLite", DbManager.ProviderName);
 
@@ -109,11 +104,6 @@ namespace TestOsamesMicroOrm
             ConfigurationLoader.Clear();
 
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
-
-            Console.WriteLine("clé activeDbConnection dans AppSettings après ConfigurationLoader.Instance : " + ConfigurationManager.AppSettings[Customizer.AppSettingsKeys.activeDbConnection.ToString()]);
-
-            Console.WriteLine(DbManager.ConnectionString);
-            Console.WriteLine(DbManager.ProviderName);
 
             Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook.mdf;Integrated Security=True"), DbManager.ConnectionString);
             Assert.AreEqual(@"System.Data.SqlClient", DbManager.ProviderName);

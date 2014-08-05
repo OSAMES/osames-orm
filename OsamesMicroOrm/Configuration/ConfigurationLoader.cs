@@ -65,6 +65,16 @@ namespace OsamesMicroOrm.Configuration
         internal static readonly Dictionary<string, Dictionary<string, string>> MappingDictionnary = new Dictionary<string, Dictionary<string, string>>();
 
         /// <summary>
+        /// Caractère d'échappement en début de nom de colonne dans le texte d'une requête SQL.
+        /// </summary>
+        internal static string StartFieldEncloser;
+
+        /// <summary>
+        /// Caractère d'échappement en fin de nom de colonne dans le texte d'une requête SQL.
+        /// </summary>
+        internal static string EndFieldEncloser;
+
+        /// <summary>
         /// Generic logging trace source that traces error messages only.
         /// </summary>
         internal static TraceSource _loggerTraceSource = new TraceSource("osamesOrmTraceSource");
@@ -235,6 +245,8 @@ namespace OsamesMicroOrm.Configuration
                 // 4. Load mapping definitions
                 FillMappingDictionary(xmlMappingNavigator, xmlPrefix[1], xmlNamespaces[1]);
 
+                // 5. Load provider-dependent field encloser values
+                // TODO brancher ici la méthode à appeler, ReadFieldEnclosers avec pour dernier paramètre DbManager.ProviderName
 
             }
             catch (Exception ex)
@@ -336,10 +348,10 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Loads XML file which contains templates definitions to internal dictionary.
         /// </summary>
-        /// <param name="xmlNavigator_">Reused XPathNavigator instance</param>
+        /// <param name="xpathNavigator_">Reused XPathNavigator instance</param>
         /// <param name="xmlRootTagPrefix_"> </param>
         /// <param name="xmlRootTagNamespace_"> </param>
-        internal static void FillTemplatesDictionaries(XPathNavigator xmlNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_)
+        internal static void FillTemplatesDictionaries(XPathNavigator xpathNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_)
         {
             DicInsertSql.Clear();
             DicSelectSql.Clear();
@@ -347,22 +359,22 @@ namespace OsamesMicroOrm.Configuration
             DicDeleteSql.Clear();
             try
             {
-                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xmlNavigator_.NameTable);
+                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xpathNavigator_.NameTable);
                 xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
                 // Inserts nodes
-                XPathNodeIterator xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Inserts", xmlRootTagPrefix_), xmlNamespaceManager);
+                XPathNodeIterator xPathNodeIterator = xpathNavigator_.Select(string.Format("/*/{0}:Inserts", xmlRootTagPrefix_), xmlNamespaceManager);
                 if (xPathNodeIterator.MoveNext())
                     FillSqlTemplateDictionary(xPathNodeIterator, DicInsertSql);
                 // Selects nodes
-                xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Selects", xmlRootTagPrefix_), xmlNamespaceManager);
+                xPathNodeIterator = xpathNavigator_.Select(string.Format("/*/{0}:Selects", xmlRootTagPrefix_), xmlNamespaceManager);
                 if (xPathNodeIterator.MoveNext())
                     FillSqlTemplateDictionary(xPathNodeIterator, DicSelectSql);
                 // Updates nodes
-                xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Updates", xmlRootTagPrefix_), xmlNamespaceManager);
+                xPathNodeIterator = xpathNavigator_.Select(string.Format("/*/{0}:Updates", xmlRootTagPrefix_), xmlNamespaceManager);
                 if (xPathNodeIterator.MoveNext())
                     FillSqlTemplateDictionary(xPathNodeIterator, DicUpdateSql);
                 // Deletes nodes
-                xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Deletes", xmlRootTagPrefix_), xmlNamespaceManager);
+                xPathNodeIterator = xpathNavigator_.Select(string.Format("/*/{0}:Deletes", xmlRootTagPrefix_), xmlNamespaceManager);
                 if (xPathNodeIterator.MoveNext())
                     FillSqlTemplateDictionary(xPathNodeIterator, DicDeleteSql);
 
@@ -395,6 +407,42 @@ namespace OsamesMicroOrm.Configuration
                     throw new Exception(string.Format("A 'name' attribute with value '{0}' has been defined more than one time, XML is invalid", name));
                 workDictionary_.Add(name, node_.Current.Value);
             } while (node_.Current.MoveToNext());
+        }
+
+        /// <summary>
+        /// Reads field encloser values to StartFieldEncloser and EndFieldEncloser static member variables.
+        /// </summary>
+        /// <param name="xpathNavigator_">Reused XPathNavigator instance</param>
+        /// <param name="xmlRootTagPrefix_"></param>
+        /// <param name="xmlRootTagNamespace_"></param>
+        /// <param name="providerName_">Nom invariant du provider SQL ADO.NET</param>
+        internal static void ReadFieldEnclosers(XPathNavigator xpathNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_, string providerName_)
+        {
+            try
+            {
+                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xpathNavigator_.NameTable);
+                xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
+                // Provider node with specific "name" attribute value
+                XPathNodeIterator xPathNodeIterator = xpathNavigator_.Select(string.Format("/*/{0}:ProviderSpecific/{0}:Provider[@name={1}]", xmlRootTagPrefix_, providerName_), xmlNamespaceManager);
+                if (!xPathNodeIterator.MoveNext())
+                    throw new Exception(string.Format("Provider with name '{0}' missing in XML", providerName_));
+
+                StartFieldEncloser = xPathNodeIterator.Current.GetAttribute("StartFieldEncloser", "");
+                EndFieldEncloser = xPathNodeIterator.Current.GetAttribute("EndFieldEncloser", "");
+                string singleFieldEncloser = xPathNodeIterator.Current.GetAttribute("FieldEncloser", "");
+                if(!string.IsNullOrEmpty(singleFieldEncloser))
+                {
+                    // Si l'attribut "FieldEncloser" est défini, alors il écrase la valeur des deux autres
+                    StartFieldEncloser = EndFieldEncloser = singleFieldEncloser;
+                }
+            }
+             
+            catch (Exception ex)
+            {
+                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader ReadFieldEnclosers, see detailed log");
+                _detailedLoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader: XML templates definitions analyzis error: " + ex);
+                throw;
+            }
         }
 
         #region mapping dictionary getter helpers
