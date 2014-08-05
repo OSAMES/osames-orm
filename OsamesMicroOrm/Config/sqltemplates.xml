@@ -54,7 +54,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
     <orm:Provider xsi:type="orm:DoubleFE" name="### ORACLE ###" StartFieldEncloser="" EndFieldEncloser="">
     </orm:Provider>
     <!-- SQL Server Compact -->
-    <orm:Provider xsi:type="orm:twoFieldEnclosersType" name="### SQL Server Compact ###" StartFieldEncloser="" EndFieldEncloser="">
+    <orm:Provider xsi:type="orm:DoubleFE" name="### SQL Server Compact ###" StartFieldEncloser="" EndFieldEncloser="">
     </orm:Provider>
   </orm:ProviderSpecific>
 </orm:QueryList>

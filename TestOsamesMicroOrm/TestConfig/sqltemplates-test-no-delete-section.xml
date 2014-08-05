@@ -16,22 +16,22 @@
   </orm:Selects>
   <orm:ProviderSpecific>
     <!-- SQLite -->
-    <orm:Provider name="System.Data.SQLite" StartFieldEncloser="[" EndFieldEncloser="]">
+    <orm:Provider xsi:type="orm:DoubleFE" name="System.Data.SQLite" StartFieldEncloser="[" EndFieldEncloser="]">
       <orm:Select name="getlastinsertid">select last_insert_rowid();</orm:Select>
     </orm:Provider>
     <!-- MySQL -->
-    <orm:Provider name="MySql.Data.MySqlClient" StartFieldEncloser="`" EndFieldEncloser="`">
+    <orm:Provider xsi:type="orm:SingleFE" name="MySql.Data.MySqlClient" FieldEncloser="`">
       <orm:Select name="getlastinsertid">select last_insert_id();</orm:Select>
     </orm:Provider>
     <!-- MS SQL -->
-    <orm:Provider name="System.Data.SqlClient" StartFieldEncloser="[" EndFieldEncloser="]">
+    <orm:Provider xsi:type="orm:DoubleFE" name="System.Data.SqlClient" StartFieldEncloser="[" EndFieldEncloser="]">
       <orm:Select name="getlastinsertid">select scope_identity()</orm:Select>
     </orm:Provider>
     <!-- Oracle -->
-    <orm:Provider name="### ORACLE ###" StartFieldEncloser="" EndFieldEncloser="">
+    <orm:Provider xsi:type="orm:DoubleFE" name="### ORACLE ###" StartFieldEncloser="" EndFieldEncloser="">
     </orm:Provider>
     <!-- SQL Server Compact -->
-    <orm:Provider name="### SQL Server Compact ###" StartFieldEncloser="" EndFieldEncloser="">
+    <orm:Provider xsi:type="orm:DoubleFE" name="### SQL Server Compact ###" StartFieldEncloser="" EndFieldEncloser="">
     </orm:Provider>
   </orm:ProviderSpecific>
 </orm:QueryList>
