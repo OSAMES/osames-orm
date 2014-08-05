@@ -136,7 +136,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
  
     <!-- ## EXTENSIONS OF ABSTRACT TYPE ## -->
     <!-- extension of abstractProvider with single field encloser -->
-    <xs:complexType name="singleFieldEncloserType">
+    <xs:complexType name="SingleFE">
         <xs:complexContent>
             <xs:extension base="abstractProvider">
                 <xs:attributeGroup ref="singleFieldEncloser" />
@@ -145,7 +145,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
     </xs:complexType>
     
     <!-- extension of abstractProvider with two field enclosers -->
-    <xs:complexType name="twoFieldEnclosersType">
+    <xs:complexType name="DoubleFE">
         <xs:complexContent>
             <xs:extension base="abstractProvider">
                 <xs:attributeGroup ref="twoFieldEnclosers" />
