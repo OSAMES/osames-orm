@@ -312,7 +312,7 @@ namespace OsamesMicroOrm.Configuration
             }
 
             // Expression XPath pour sélectionner le noeud enfant "Select" avec la valeur de "name" à 'getlastinsertid'
-            strXPathExpression = string.Format("/{0}:Select[@name='getlastinsertid']", xmlRootTagPrefix_);
+            strXPathExpression = string.Format("{0}:Select[@name='getlastinsertid']", xmlRootTagPrefix_);
 
             XPathNodeIterator xPathNodeIteratorSelectNode = xPathNodeIteratorProviderNode.Current.Select(strXPathExpression, xmlNamespaceManager);
             if (xPathNodeIteratorSelectNode.MoveNext())
