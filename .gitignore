@@ -128,9 +128,6 @@ UpgradeLog*.htm
 
 # SQL Server files
 App_Data/*.mdf
-# every log file
-*.ldf
-
 
 #LightSwitch generated files
 GeneratedArtifacts/
