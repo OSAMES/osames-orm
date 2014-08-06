@@ -33,25 +33,27 @@ namespace OsamesMicroOrm
         #region SQL string formatting
 
         /// <summary>
-        /// Utilitaire de formatage d'une chaîne texte "my_column = @myParam" en l'ajoutant à un StringBuilder.
+        /// Utilitaire de formatage d'une chaîne texte <c>"my_column = @myParam"</c> en l'ajoutant à un <see cref="System.Text.StringBuilder"/>.
         /// </summary>
         /// <param name="dbColumnName_">Nom de la colonne en Db</param>
         /// <param name="adoParameters_">Objets représentatifs des paramètres ADO.NET</param>
         /// <param name="sqlCommand_">StringBuilder à compléter</param>
         /// <param name="optionalSuffix_">Suffixe optionnel, par exemple ","</param>
+        /// <returns>Ne renvoie rien</returns>
         internal static void FormatSqlNameEqualValue(string dbColumnName_, KeyValuePair<string, object> adoParameters_, ref StringBuilder sqlCommand_, string optionalSuffix_ = "")
         {
             sqlCommand_.Append(dbColumnName_).Append(" = ").Append(adoParameters_.Key).Append(optionalSuffix_);
         }
 
         /// <summary>
-        /// Utilitaire de formatage d'une chaîne texte "my_column = @myParam, my_column2 = @myValue2" en l'ajoutant à un StringBuilder.
-        /// Le suffixe est ajouté entre chaque élément de la liste lstDbColumnName_.
+        /// Utilitaire de formatage d'une chaîne texte <c>"my_column = @myParam, my_column2 = @myValue2"</c> en l'ajoutant à un <see cref="System.Text.StringBuilder"/>.
+        /// <para>Le suffixe est ajouté entre chaque élément de la liste lstDbColumnName_.</para>
         /// </summary>
         /// <param name="lstDbColumnName_">Liste de noms de colonne en Db</param>
         /// <param name="adoParameters_">Objets représentatifs des paramètres ADO.NET</param>
         /// <param name="sqlCommand_">StringBuilder à compléter</param>
         /// <param name="optionalSuffix_">Suffixe optionnel, par exemple ",", ajouté entre chaque élément (pas à la fin)</param>
+        /// <returns>Ne renvoie rien.</returns>
         internal static void FormatSqlNameEqualValue(List<string> lstDbColumnName_, List<KeyValuePair<string, object>> adoParameters_, ref StringBuilder sqlCommand_, string optionalSuffix_ = "")
         {
             int iCountMinusOne = lstDbColumnName_.Count - 1;
@@ -63,7 +65,7 @@ namespace OsamesMicroOrm
         }
 
         /// <summary>
-        /// 
+        /// TODO Faire le summary
         /// </summary>
         /// <param name="lstDbColumnName_"></param>
         /// <param name="sqlCommand_"></param>
@@ -80,8 +82,10 @@ namespace OsamesMicroOrm
         }
         /// <summary>
         /// En connaissant un objet et le nom de sa propriété, génération en sortie des informations suivantes :
-        /// - nom de la colonne en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)
-        /// - nom et valeur du paramètre ADO.NET correspondant à la propriété (nom : proche du nom de la propriété, valeur : valeur de la propriété). 
+        /// <list type="bullet">
+        /// <item><description>nom de la colonne en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</description></item>
+        /// <item><description>nom et valeur du paramètre ADO.NET correspondant à la propriété (nom : proche du nom de la propriété, valeur : valeur de la propriété).</description></item>
+        /// </list>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
@@ -89,6 +93,7 @@ namespace OsamesMicroOrm
         /// <param name="dataObjectcolumnName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
         /// <param name="adoParameterNameAndValue_">Sortie : clé/valeur du paramètre ADO.NET</param>
+        /// <returns>Ne renvoie rien</returns>
         internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string dataObjectcolumnName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
         {
             dbColumnName_ = null;
@@ -113,8 +118,10 @@ namespace OsamesMicroOrm
 
         /// <summary>
         /// En connaissant un objet et le nom de ses propriétés, génération en sortie des informations suivantes :
-        /// - noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)
-        /// - nom et valeur des paramètres ADO.NET correspondant aux propriétés (nom : proche du nom de la propriété, valeur : valeur de la propriété). 
+        /// <list type="bullet">
+        /// <item><description>noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</description></item>
+        /// <item><description>nom et valeur des paramètres ADO.NET correspondant aux propriétés (nom : proche du nom de la propriété, valeur : valeur de la propriété). </description></item>
+        /// </list>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
@@ -122,6 +129,7 @@ namespace OsamesMicroOrm
         /// <param name="lstDataObjectcolumnName_">Noms des propriétés de l'objet dataObject_</param>
         /// <param name="lstDbColumnName_">Sortie : noms des colonnes en DB</param>
         /// <param name="adoParameterNameAndValue_">Sortie : clé/valeur des paramètres ADO.NET</param>
+        /// <returns>Ne renvoie rien</returns>
         internal static void DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectcolumnName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_)
         {
             lstDbColumnName_ = new List<string>();
@@ -149,11 +157,12 @@ namespace OsamesMicroOrm
 
         /// <summary>
         /// En connaissant le nom du mapping associé à un objet et le nom de ses propriétés, génération en sortie de l'information suivante :
-        /// noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)
+        /// <para>noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="lstDataObjectcolumnName_">Noms des propriétés d'un objet</param>
         /// <param name="lstDbColumnName_">Sortie : noms des colonnes en DB</param>
+        /// <returns>Ne renvoie rien</returns>
         internal static void DetermineDatabaseColumnNames(string mappingDictionariesContainerKey_, List<string> lstDataObjectcolumnName_, out List<string> lstDbColumnName_)
         {
             lstDbColumnName_ = new List<string>();
@@ -175,11 +184,12 @@ namespace OsamesMicroOrm
 
         /// <summary>
         /// En connaissant le nom du mapping associé à un objet et le nom de sa propriété, génération en sortie de l'information suivante :
-        /// nom de la colonne en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)
+        /// <para>nom de la colonne en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="dataObjectcolumnName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
+        /// <returns>Ne renvoie rien</returns>
         internal static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectcolumnName_, out string dbColumnName_)
         {
             dbColumnName_ = null;
@@ -198,11 +208,12 @@ namespace OsamesMicroOrm
 
         /// <summary>
         /// En connaissant le nom du mapping associé à un objet, génération en sortie de l'information suivante :
-        /// noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping, lister toutes les colonnes)
+        /// <para>noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping, lister toutes les colonnes)</para>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="lstDbColumnName_">Sortie : noms des colonnes en DB</param>
         /// <param name="lstDataObjectPropertiesNames_">Sortie : noms des propriétés de l'objet associé au mapping</param>
+        /// <returns>Ne renvoie rien</returns>
         internal static void DetermineDatabaseColumnsAndPropertiesNames(string mappingDictionariesContainerKey_, out List<string> lstDbColumnName_, out List<string> lstDataObjectPropertiesNames_)
         {
             lstDbColumnName_ = new List<string>();
@@ -228,9 +239,11 @@ namespace OsamesMicroOrm
 
         /// <summary>
         /// Détermine le nom du paramètre ADO.NET selon quelques règles.
-        /// - si chaîne : retourner le nom issu du mapping
-        /// - si null : retourner un nom de paramètre "@pN"
-        /// - si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés.
+        /// <list type="bullet">
+        /// <item><description>si chaîne : retourner le nom issu du mapping</description></item>
+        /// <item><description>si null : retourner un nom de paramètre "@pN"</description></item>
+        /// <item><description>si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés.</description></item>
+        /// </list>
         /// </summary>
         /// <param name="value_"></param>
         /// <param name="mappingDictionariesContainerKey_"></param>
@@ -258,11 +271,13 @@ namespace OsamesMicroOrm
 
         /// <summary>
         /// Crée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET, dans le cas d'un update sur un seul objet.
-        /// Utilise le template "BaseUpdate" : "UPDATE {0} SET {1} WHERE {2}" ainsi que les éléments suivants 
-        /// - clé du dictionnaire de mapping
-        /// - un objet de données dataObject_
-        /// - liste de noms de propriétés de dataObject_ à utiliser pour les champs à mettre à jour
-        /// - nom de la propriété de dataObject_ correspondant au champ clé primaire
+        /// Utilise le template "BaseUpdate" : <c>"UPDATE {0} SET {1} WHERE {2}"</c> ainsi que les éléments suivants :
+        /// <list type="bullet">
+        /// <item><description>clé du dictionnaire de mapping</description></item>
+        /// <item><description>un objet de données dataObject_</description></item>
+        /// <item><description>liste de noms de propriétés de dataObject_ à utiliser pour les champs à mettre à jour</description></item>
+        /// <item><description>nom de la propriété de dataObject_ correspondant au champ clé primaire</description></item>
+        /// </list>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
@@ -271,6 +286,7 @@ namespace OsamesMicroOrm
         /// <param name="primaryKeycolumnName_">Nom de la propriété de dataObject_ correspondant au champ clé primaire</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
+        /// <returns>Ne renvoie rien</returns>
         internal static void FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectcolumnName_, string primaryKeycolumnName_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
         {
             StringBuilder sbSqlSetCommand = new StringBuilder();
@@ -295,11 +311,13 @@ namespace OsamesMicroOrm
         }
 
         /// <summary>
-        /// Crée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET, dans le cas d'un select basé sur un template "SELECT {0} FROM {1}...".
+        /// Crée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET, dans le cas d'un select basé sur un template <c>"SELECT {0} FROM {1}..."</c>.
         /// Utilise :
-        /// - clé du dictionnaire de mapping
-        /// - liste de noms de propriétés de dataObject_ à utiliser pour les champs à mettre à jour
-        /// - liste de noms de propriétés de dataObject_ ou paramètres dynamiques pour les paramètres dans la partie WHERE.
+        /// <list type="bullet">
+        /// <item><description>clé du dictionnaire de mapping</description></item>
+        /// <item><description>liste de noms de propriétés de dataObject_ à utiliser pour les champs à mettre à jour</description></item>
+        /// <item><description>liste de noms de propriétés de dataObject_ ou paramètres dynamiques pour les paramètres dans la partie WHERE.</description></item>
+        /// </list>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {1} dans le template sql</param>
         /// <param name="sqlTemplate_">Template SQL</param>
@@ -310,6 +328,7 @@ namespace OsamesMicroOrm
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB. Sera utilisé pour le data reader</param>
+        /// <returns>Ne renvoie rien</returns>
         internal static void FormatSqlForSelect(string sqlTemplate_, List<string> lstDataObjectcolumnName_, string mappingDictionariesContainerKey_, List<string> strWherecolumnNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_, out List<string> lstDbColumnNames_)
         {
             StringBuilder sbSqlSelectFieldsCommand;   //{0} dans le template sql
@@ -346,10 +365,13 @@ namespace OsamesMicroOrm
 
         /// <summary>
         /// Crée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET, dans le cas d'un select basé sur un template "SELECT * FROM {0}...".
-        /// Utilise :
-        /// - clé du dictionnaire de mapping
-        /// - liste de noms de propriétés de dataObject_ à utiliser pour les champs à mettre à jour
-        /// - liste de noms de propriétés de dataObject_ ou paramètres dynamiques pour les paramètres dans la partie WHERE.
+        /// <para>Utilise :
+        /// <list type="bullet">
+        /// <item><description>clé du dictionnaire de mapping</description></item>
+        /// <item><description>liste de noms de propriétés de dataObject_ à utiliser pour les champs à mettre à jour</description></item>
+        /// <item><description>liste de noms de propriétés de dataObject_ ou paramètres dynamiques pour les paramètres dans la partie WHERE.</description></item>
+        /// </list>
+        /// </para>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {0} dans le template sql</param>
         /// <param name="sqlTemplate_">Template SQL</param>
@@ -390,17 +412,19 @@ namespace OsamesMicroOrm
         #region SQL execution
 
         /// <summary>
-        /// Exécution d'une mise à jour d'un objet de données vers la base de données :
-        /// - formatage des éléments nécessaires par appel à FormatSqlForUpdate<T>()
-        /// - appel de bas niveau ADO.NET
-        /// - sortie : nombre de lignes mises à jour
+        /// Exécution d'une mise à jour d'un objet de données vers la base de données
+        /// <list type="bullet">
+        /// <item><description>formatage des éléments nécessaires par appel à <c>FormatSqlForUpdate &lt;T&gt;()</c></description></item>
+        /// <item><description>appel de bas niveau ADO.NET</description></item>
+        /// <item><description>sortie : nombre de lignes mises à jour</description></item>
+        /// </list>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="propertiesNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
         /// <param name="primaryKeycolumnName_">Nom de la propriété de dataObject_ correspondant au champ clé primaire</param>
-        /// <returns></returns>
+        /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         public static int Update<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> propertiesNames_, string primaryKeycolumnName_)
         {
             string sqlCommand;
@@ -417,14 +441,15 @@ namespace OsamesMicroOrm
 
         /// <summary>
         /// Retourne un objet du type T avec les données rendues par une requete SELECT dont on ne s'intéresse qu'au premier résultat retourné.
-        /// Le template sera du type "SELECT {0} FROM {1} WHERE ..."
+        /// <para>Le template sera du type <c>"SELECT {0} FROM {1} WHERE ..."</c></para>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
-        /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type "SELECT {0} FROM {1} WHERE ..."</param>
+        /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT {0} FROM {1} WHERE ..."</c></param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="strWhereColumnNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
         /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
+        /// <returns>Retourne un objet de type T rempli par les donnnées du DataReader.</returns>
         public static T SelectSingle<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereColumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             T dataObject = new T();
@@ -446,13 +471,14 @@ namespace OsamesMicroOrm
 
         /// <summary>
         /// Retourne un objet du type T avec les données rendues par une requete SELECT dont on ne s'intéresse qu'au premier résultat retourné.
-        /// Le template sera du type "SELECT * FROM {0} WHERE ..."
+        /// <para>Le template sera du type <c>"SELECT * FROM {0} WHERE ..."</c></para>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
-        /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type "SELECT * FROM {0} WHERE ..."</param>
+        /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT * FROM {0} WHERE ..."</c></param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="strWhereColumnNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
         /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
+        /// <returns>Retourne un objet de type T</returns>
         public static T SelectSingleAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereColumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             T dataObject = new T();
@@ -477,14 +503,15 @@ namespace OsamesMicroOrm
 
         /// <summary>
         /// Retourne une liste d'objets du type T avec les données rendues par une requete SELECT.
-        /// Le template sera du type "SELECT {0} FROM {1} WHERE ..."
+        /// <para>Le template sera du type <c>"SELECT {0} FROM {1} WHERE ..."</c></para>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
-        /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type "SELECT {0} FROM {1} WHERE ..."</param>
+        /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT {0} FROM {1} WHERE ..."</c></param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="strWherecolumnNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE". Peut être null</param>
         /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
+        /// <returns>Retourne une liste composée d'objets de type T</returns>
         public static List<T> Select<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWherecolumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             List<T> dataObjects = new List<T>();
@@ -509,13 +536,14 @@ namespace OsamesMicroOrm
 
         /// <summary>
         /// Retourne une liste d'objets du type T avec les données rendues par une requete SELECT.
-        /// Le template sera du type "SELECT * FROM {0} WHERE ..."
+        /// <para>Le template sera du type <c>"SELECT * FROM {0} WHERE ..."</c></para>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
-        /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type "SELECT * FROM {0} WHERE ..."</param>
+        /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT * FROM {0} WHERE ..."</c></param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="strWherecolumnNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE". Peut être null</param>
         /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
+        /// <returns>Retourne une liste composée d'objets de type T</returns>
         public static List<T> SelectAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWherecolumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             List<T> dataObjects = new List<T>();
@@ -544,11 +572,12 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Lit les champs indiqués en paramètre dans le tableau de données du DataReader et positionne les valeurs sur les propriétés de dataObject_ paramètre.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_"></param>
         /// <param name="reader_"></param>
         /// <param name="lstDbColumnNames_"></param>
-        /// <param name="lstPropertiesNames_"></param>
+        /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
+        /// <returns>Ne retourne rien</returns>
         private static void FillDataObjectFromDataReader<T>(T dataObject_, IDataReader reader_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_)
         {
             // parcourir toutes les colonnes de résultat et affecter la valeur à la propriété correspondante.
@@ -593,12 +622,13 @@ namespace OsamesMicroOrm
 
         #region utilities
         /// <summary>
-        /// String.Format avec gestion d'exception : renvoie faux si mismatch nombre de placeholders et de paramètres.
+        /// <c>String.Format</c> avec gestion d'exception.
+        /// <para>Renvoie faux si le nombre de placeholders ou de paramètres ne sont pas égale.</para>
         /// </summary>
         /// <param name="format_">Chaîne texte avec des placeholders</param>
-        /// <param name="result_">vrai/faux</param>
-        /// <param name="args_">Valeurs pour remplacer les placeholders</param>
-        /// <returns></returns>
+        /// <param name="result_">vrai/faux de type retour de valeur</param>
+        /// <param name="args_">Valeurs à mettre dans les placeholders</param>
+        /// <returns>Renvoie vrai si réussi, sinon retourne faux.</returns>
         public static bool TryFormat(string format_, out string result_, params Object[] args_)
         {
             try
