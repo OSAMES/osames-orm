@@ -92,9 +92,7 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="TestConfigSqlite\OsamesOrmSqLite.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="TestConfigSqlite\OsamesOrmSqLite.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DB\" />

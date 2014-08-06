@@ -271,5 +271,30 @@ namespace TestOsamesMicroOrm
             Assert.AreEqual("SELECT {0} FROM {1} WHERE {2} = {3};", ConfigurationLoader.DicSelectSql["BaseReadWhere"]);
 
         }
+
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("SqLite")]
+        public void TestLoadProviderSpecificInformation()
+        {
+            // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
+       
+            ConfigurationLoader.Clear();
+
+            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+
+            Assert.AreEqual("System.Data.SQLite", DbManager.ProviderName, "Nom du provider incorrect après détermination depuis le fichier des AppSettings et celui des connection strings");
+            Assert.AreEqual("[", ConfigurationLoader.StartFieldEncloser, "Start field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+            Assert.AreEqual("]", ConfigurationLoader.EndFieldEncloser, "End field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+
+            Assert.AreEqual("select last_insert_rowid();", DbManager.SelectLastInsertIdCommandText, "Texte pour 'select last insert id' incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+
+
+        }
     }
 }
