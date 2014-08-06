@@ -294,7 +294,7 @@ namespace OsamesMicroOrm.Configuration
                 return;
             }
             // Expression XPath pour se positionner sur le noeud Provider avec l'attribut "name" à la valeur désirée
-            string strXPathExpression = string.Format("/*/{0}:ProviderSpecific/{0}:Provider[@name={1}]", xmlRootTagPrefix_, providerInvariantName);
+            string strXPathExpression = string.Format("/*/{0}:ProviderSpecific/{0}:Provider[@name='{1}']", xmlRootTagPrefix_, providerInvariantName);
 
             XPathNodeIterator xPathNodeIteratorProviderNode = xPathNavigator_.Select(strXPathExpression, xmlNamespaceManager);
             if (!xPathNodeIteratorProviderNode.MoveNext())
