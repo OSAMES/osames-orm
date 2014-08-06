@@ -235,9 +235,9 @@ namespace OsamesMicroOrm.Configuration
 
                 _loggerTraceSource.TraceEvent(TraceEventType.Information, 0, "Osames ORM Initialized.");
 
-                // 2. Load provider specific string
+                // 2. Load provider specific information
                 string dbConnexionName = ConfigurationManager.AppSettings["activeDbConnection"];
-                LoadProviderString(xmlTemplatesNavigator, xmlPrefix[0], xmlNamespaces[0], dbConnexionName);
+                LoadProviderSpecificInformation(xmlTemplatesNavigator, xmlPrefix[0], xmlNamespaces[0], dbConnexionName);
 
                 // 3. Load SQL Templates
                 FillTemplatesDictionaries(xmlTemplatesNavigator, xmlPrefix[0], xmlNamespaces[0]);
@@ -245,8 +245,6 @@ namespace OsamesMicroOrm.Configuration
                 // 4. Load mapping definitions
                 FillMappingDictionary(xmlMappingNavigator, xmlPrefix[1], xmlNamespaces[1]);
 
-                // 5. Load provider-dependent field encloser values
-                // TODO brancher ici la méthode à appeler, ReadFieldEnclosers avec pour dernier paramètre DbManager.ProviderName
 
             }
             catch (Exception ex)
@@ -257,16 +255,19 @@ namespace OsamesMicroOrm.Configuration
             }
         }
         /// <summary>
-        /// Assigns a value to DbManager.SelectLastInsertIdCommandText according to active DB connection string.
+        /// Recherche du noeud Provider désiré (déterminé à partir du nom de la connexion active) puis :
+        /// - lecture de ses attributs pour les fields enclosers -> mise à jour de variables de classe StartFieldEncloser et EndFieldEncloser.
+        /// - lecture de ses enfants 
+        /// (Select, pour le moment celui qui définit le texte SQL pour "last insert ID" -> assigne une valeur à DbManager.SelectLastInsertIdCommandText).
         /// </summary>
-        /// <param name="xmlNavigator_"></param>
-        /// <param name="xmlRootTagPrefix_"></param>
-        /// <param name="xmlRootTagNamespace_"></param>
-        /// <param name="activeDbConnectionName_"></param>
-        internal static void LoadProviderString(XPathNavigator xmlNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_, string activeDbConnectionName_)
+        /// <param name="xPathNavigator_">Navigateur XPath du fichier des templates</param>
+        /// <param name="xmlRootTagPrefix_">Préfixe de tag</param>
+        /// <param name="xmlRootTagNamespace_">Namespace racine</param>
+        /// <param name="activeDbConnectionName_">Nom de la connexion DB active (AppSettings)</param>
+        internal static void LoadProviderSpecificInformation(XPathNavigator xPathNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_, string activeDbConnectionName_)
         {
-            XmlNamespaceManager nsmgr = new XmlNamespaceManager(xmlNavigator_.NameTable);
-            nsmgr.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
+            XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xPathNavigator_.NameTable);
+            xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
 
             if (string.IsNullOrWhiteSpace(activeDbConnectionName_))
             {
@@ -286,22 +287,41 @@ namespace OsamesMicroOrm.Configuration
                 _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, string.Format("No active connection name defined in appSettings for active connection '{0}'", activeDbConnectionName_));
                 return;
             }
-            string provider = activeConnection.ProviderName;
-            if (string.IsNullOrWhiteSpace(provider))
+            string providerInvariantName = activeConnection.ProviderName;
+            if (string.IsNullOrWhiteSpace(providerInvariantName))
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, string.Format("No active connection provider defined in appSettings  for active connection '{0}'", activeDbConnectionName_));
+                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, string.Format("No active connection provider invariant name defined in appSettings  for active connection '{0}'", activeDbConnectionName_));
                 return;
             }
-            // name and provider
-            string strXPath = string.Format("/*/{0}:ProviderSpecific/{0}:Select[@name='getlastinsertid' and @provider='{1}']", xmlRootTagPrefix_, provider);
-            XPathNodeIterator iter = xmlNavigator_.Select(strXPath, nsmgr);
-            if (iter.MoveNext())
+            // Expression XPath pour se positionner sur le noeud Provider avec l'attribut "name" à la valeur désirée
+            string strXPathExpression = string.Format("/*/{0}:ProviderSpecific/{0}:Provider[@name={1}]", xmlRootTagPrefix_, providerInvariantName);
+
+            XPathNodeIterator xPathNodeIteratorProviderNode = xPathNavigator_.Select(strXPathExpression, xmlNamespaceManager);
+            if (!xPathNodeIteratorProviderNode.MoveNext())
+                throw new Exception(string.Format("Provider with name '{0}' missing in XML", providerInvariantName));
+
+            // Sur ce noeud, attributs pour définir les field enclosers
+            // Assignation aux variables de classe StartFieldEncloser et EndFieldEncloser
+            StartFieldEncloser = xPathNodeIteratorProviderNode.Current.GetAttribute("StartFieldEncloser", "");
+            EndFieldEncloser = xPathNodeIteratorProviderNode.Current.GetAttribute("EndFieldEncloser", "");
+            string singleFieldEncloser = xPathNodeIteratorProviderNode.Current.GetAttribute("FieldEncloser", "");
+            if (!string.IsNullOrEmpty(singleFieldEncloser))
             {
-                DbManager.SelectLastInsertIdCommandText = iter.Current.Value;
+                // Si l'attribut "FieldEncloser" est défini, alors il écrase la valeur des deux autres
+                StartFieldEncloser = EndFieldEncloser = singleFieldEncloser;
+            }
+
+            // Expression XPath pour sélectionner le noeud enfant "Select" avec la valeur de "name" à 'getlastinsertid'
+            strXPathExpression = string.Format("/{0}:Select[@name='getlastinsertid']", xmlRootTagPrefix_);
+
+            XPathNodeIterator xPathNodeIteratorSelectNode = xPathNodeIteratorProviderNode.Current.Select(strXPathExpression, xmlNamespaceManager);
+            if (xPathNodeIteratorSelectNode.MoveNext())
+            {
+                DbManager.SelectLastInsertIdCommandText = xPathNodeIteratorSelectNode.Current.Value;
             }
             else
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader LoadProviderString, no value matching XPath " + strXPath);
+                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, string.Format("ConfigurationLoader LoadProviderSpecificInformation, no value matching XPath '{0}' for the provider '{1}'", strXPathExpression, providerInvariantName));
             }
         }
 
@@ -407,42 +427,6 @@ namespace OsamesMicroOrm.Configuration
                     throw new Exception(string.Format("A 'name' attribute with value '{0}' has been defined more than one time, XML is invalid", name));
                 workDictionary_.Add(name, node_.Current.Value);
             } while (node_.Current.MoveToNext());
-        }
-
-        /// <summary>
-        /// Reads field encloser values to StartFieldEncloser and EndFieldEncloser static member variables.
-        /// </summary>
-        /// <param name="xpathNavigator_">Reused XPathNavigator instance</param>
-        /// <param name="xmlRootTagPrefix_"></param>
-        /// <param name="xmlRootTagNamespace_"></param>
-        /// <param name="providerName_">Nom invariant du provider SQL ADO.NET</param>
-        internal static void ReadFieldEnclosers(XPathNavigator xpathNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_, string providerName_)
-        {
-            try
-            {
-                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xpathNavigator_.NameTable);
-                xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
-                // Provider node with specific "name" attribute value
-                XPathNodeIterator xPathNodeIterator = xpathNavigator_.Select(string.Format("/*/{0}:ProviderSpecific/{0}:Provider[@name={1}]", xmlRootTagPrefix_, providerName_), xmlNamespaceManager);
-                if (!xPathNodeIterator.MoveNext())
-                    throw new Exception(string.Format("Provider with name '{0}' missing in XML", providerName_));
-
-                StartFieldEncloser = xPathNodeIterator.Current.GetAttribute("StartFieldEncloser", "");
-                EndFieldEncloser = xPathNodeIterator.Current.GetAttribute("EndFieldEncloser", "");
-                string singleFieldEncloser = xPathNodeIterator.Current.GetAttribute("FieldEncloser", "");
-                if(!string.IsNullOrEmpty(singleFieldEncloser))
-                {
-                    // Si l'attribut "FieldEncloser" est défini, alors il écrase la valeur des deux autres
-                    StartFieldEncloser = EndFieldEncloser = singleFieldEncloser;
-                }
-            }
-             
-            catch (Exception ex)
-            {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader ReadFieldEnclosers, see detailed log");
-                _detailedLoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader: XML templates definitions analyzis error: " + ex);
-                throw;
-            }
         }
 
         #region mapping dictionary getter helpers
