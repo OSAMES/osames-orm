@@ -65,10 +65,11 @@ namespace OsamesMicroOrm
         }
 
         /// <summary>
-        /// TODO Faire le summary
+        /// Formatage d'une chaîne de texte sérialisant la liste des noms de colonnes DB paramètre et mettant une virgule entre chaque élément.
         /// </summary>
-        /// <param name="lstDbColumnName_"></param>
-        /// <param name="sqlCommand_"></param>
+        /// <param name="lstDbColumnName_">Liste de noms de colonnes DB</param>
+        /// <param name="sqlCommand_">StringBuilder à compléter</param>
+        /// <returns>Ne renvoie rien</returns>
         internal static void FormatSqlFields(List<string> lstDbColumnName_, out StringBuilder sqlCommand_)
         {
             sqlCommand_ = new StringBuilder();
@@ -245,11 +246,11 @@ namespace OsamesMicroOrm
         /// <item><description>si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés.</description></item>
         /// </list>
         /// </summary>
-        /// <param name="value_"></param>
-        /// <param name="mappingDictionariesContainerKey_"></param>
+        /// <param name="value_">Chaîne à traiter selon les règles énoncées ci-dessus</param>
+        /// <param name="mappingDictionariesContainerKey_">Clé dans le dictionnaire de mapping</param>
         /// <param name="index_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
         /// Sert aussi pour le nom du paramètre dynamique si on avait passé null.</param>
-        /// <returns></returns>
+        /// <returns>Nom de colonne DB</returns>
         internal static string DetermineAdoParameterName(string value_, string mappingDictionariesContainerKey_, ref int index_)
         {
             if (value_ == null)
