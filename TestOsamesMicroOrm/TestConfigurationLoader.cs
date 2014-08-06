@@ -82,11 +82,6 @@ namespace TestOsamesMicroOrm
 
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-            Console.WriteLine("clé activeDbConnection dans AppSettings après ConfigurationLoader.Instance : " + ConfigurationManager.AppSettings[Customizer.AppSettingsKeys.activeDbConnection.ToString()]);
-
-            Console.WriteLine("ConnectionString : "+DbManager.ConnectionString+"\n");
-            Console.WriteLine("ProviderName : " + DbManager.ProviderName + "\n");
-
             Assert.AreEqual(string.Format("Data Source={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook_Sqlite.sqlite;Version=3;UTF8Encoding=True;"), DbManager.ConnectionString);
             Assert.AreEqual(@"System.Data.SQLite", DbManager.ProviderName);
 
@@ -109,11 +104,6 @@ namespace TestOsamesMicroOrm
             ConfigurationLoader.Clear();
 
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
-
-            Console.WriteLine("clé activeDbConnection dans AppSettings après ConfigurationLoader.Instance : " + ConfigurationManager.AppSettings[Customizer.AppSettingsKeys.activeDbConnection.ToString()]);
-
-            Console.WriteLine(DbManager.ConnectionString);
-            Console.WriteLine(DbManager.ProviderName);
 
             Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook.mdf;Integrated Security=True"), DbManager.ConnectionString);
             Assert.AreEqual(@"System.Data.SqlClient", DbManager.ProviderName);
@@ -279,6 +269,31 @@ namespace TestOsamesMicroOrm
             // Inspect detail for a specific case
             Assert.IsTrue(ConfigurationLoader.DicSelectSql.ContainsKey("BaseReadWhere"), "'BaseReadWhere' key not in select dictionary");
             Assert.AreEqual("SELECT {0} FROM {1} WHERE {2} = {3};", ConfigurationLoader.DicSelectSql["BaseReadWhere"]);
+
+        }
+
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("SqLite")]
+        public void TestLoadProviderSpecificInformation()
+        {
+            // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
+       
+            ConfigurationLoader.Clear();
+
+            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+
+            Assert.AreEqual("System.Data.SQLite", DbManager.ProviderName, "Nom du provider incorrect après détermination depuis le fichier des AppSettings et celui des connection strings");
+            Assert.AreEqual("[", ConfigurationLoader.StartFieldEncloser, "Start field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+            Assert.AreEqual("]", ConfigurationLoader.EndFieldEncloser, "End field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+
+            Assert.AreEqual("select last_insert_rowid();", DbManager.SelectLastInsertIdCommandText, "Texte pour 'select last insert id' incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+
 
         }
     }

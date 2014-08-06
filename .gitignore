@@ -128,9 +128,6 @@ UpgradeLog*.htm
 
 # SQL Server files
 App_Data/*.mdf
-# every log file
-*.ldf
-
 
 #LightSwitch generated files
 GeneratedArtifacts/
@@ -166,3 +163,6 @@ SqLiteDb/SqLiteDb/socodif/SocodifDb_copy.sqlite
 Application/*.vsmdi
 /Application/RunTest.runsettings
 /Application/XmlValidatorTestPlaylist.playlist
+
+# Ignore everything in this directory
+!/bin/debug/Logs

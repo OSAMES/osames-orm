@@ -65,6 +65,16 @@ namespace OsamesMicroOrm.Configuration
         internal static readonly Dictionary<string, Dictionary<string, string>> MappingDictionnary = new Dictionary<string, Dictionary<string, string>>();
 
         /// <summary>
+        /// Caractère d'échappement en début de nom de colonne dans le texte d'une requête SQL.
+        /// </summary>
+        internal static string StartFieldEncloser;
+
+        /// <summary>
+        /// Caractère d'échappement en fin de nom de colonne dans le texte d'une requête SQL.
+        /// </summary>
+        internal static string EndFieldEncloser;
+
+        /// <summary>
         /// Generic logging trace source that traces error messages only.
         /// </summary>
         internal static TraceSource _loggerTraceSource = new TraceSource("osamesOrmTraceSource");
@@ -225,9 +235,9 @@ namespace OsamesMicroOrm.Configuration
 
                 _loggerTraceSource.TraceEvent(TraceEventType.Information, 0, "Osames ORM Initialized.");
 
-                // 2. Load provider specific string
+                // 2. Load provider specific information
                 string dbConnexionName = ConfigurationManager.AppSettings["activeDbConnection"];
-                LoadProviderString(xmlTemplatesNavigator, xmlPrefix[0], xmlNamespaces[0], dbConnexionName);
+                LoadProviderSpecificInformation(xmlTemplatesNavigator, xmlPrefix[0], xmlNamespaces[0], dbConnexionName);
 
                 // 3. Load SQL Templates
                 FillTemplatesDictionaries(xmlTemplatesNavigator, xmlPrefix[0], xmlNamespaces[0]);
@@ -245,16 +255,19 @@ namespace OsamesMicroOrm.Configuration
             }
         }
         /// <summary>
-        /// Assigns a value to DbManager.SelectLastInsertIdCommandText according to active DB connection string.
+        /// Recherche du noeud Provider désiré (déterminé à partir du nom de la connexion active) puis :
+        /// - lecture de ses attributs pour les fields enclosers -> mise à jour de variables de classe StartFieldEncloser et EndFieldEncloser.
+        /// - lecture de ses enfants 
+        /// (Select, pour le moment celui qui définit le texte SQL pour "last insert ID" -> assigne une valeur à DbManager.SelectLastInsertIdCommandText).
         /// </summary>
-        /// <param name="xmlNavigator_"></param>
-        /// <param name="xmlRootTagPrefix_"></param>
-        /// <param name="xmlRootTagNamespace_"></param>
-        /// <param name="activeDbConnectionName_"></param>
-        internal static void LoadProviderString(XPathNavigator xmlNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_, string activeDbConnectionName_)
+        /// <param name="xPathNavigator_">Navigateur XPath du fichier des templates</param>
+        /// <param name="xmlRootTagPrefix_">Préfixe de tag</param>
+        /// <param name="xmlRootTagNamespace_">Namespace racine</param>
+        /// <param name="activeDbConnectionName_">Nom de la connexion DB active (AppSettings)</param>
+        internal static void LoadProviderSpecificInformation(XPathNavigator xPathNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_, string activeDbConnectionName_)
         {
-            XmlNamespaceManager nsmgr = new XmlNamespaceManager(xmlNavigator_.NameTable);
-            nsmgr.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
+            XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xPathNavigator_.NameTable);
+            xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
 
             if (string.IsNullOrWhiteSpace(activeDbConnectionName_))
             {
@@ -274,22 +287,41 @@ namespace OsamesMicroOrm.Configuration
                 _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, string.Format("No active connection name defined in appSettings for active connection '{0}'", activeDbConnectionName_));
                 return;
             }
-            string provider = activeConnection.ProviderName;
-            if (string.IsNullOrWhiteSpace(provider))
+            string providerInvariantName = activeConnection.ProviderName;
+            if (string.IsNullOrWhiteSpace(providerInvariantName))
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, string.Format("No active connection provider defined in appSettings  for active connection '{0}'", activeDbConnectionName_));
+                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, string.Format("No active connection provider invariant name defined in appSettings  for active connection '{0}'", activeDbConnectionName_));
                 return;
             }
-            // name and provider
-            string strXPath = string.Format("/*/{0}:ProviderSpecific/{0}:Select[@name='getlastinsertid' and @provider='{1}']", xmlRootTagPrefix_, provider);
-            XPathNodeIterator iter = xmlNavigator_.Select(strXPath, nsmgr);
-            if (iter.MoveNext())
+            // Expression XPath pour se positionner sur le noeud Provider avec l'attribut "name" à la valeur désirée
+            string strXPathExpression = string.Format("/*/{0}:ProviderSpecific/{0}:Provider[@name='{1}']", xmlRootTagPrefix_, providerInvariantName);
+
+            XPathNodeIterator xPathNodeIteratorProviderNode = xPathNavigator_.Select(strXPathExpression, xmlNamespaceManager);
+            if (!xPathNodeIteratorProviderNode.MoveNext())
+                throw new Exception(string.Format("Provider with name '{0}' missing in XML", providerInvariantName));
+
+            // Sur ce noeud, attributs pour définir les field enclosers
+            // Assignation aux variables de classe StartFieldEncloser et EndFieldEncloser
+            StartFieldEncloser = xPathNodeIteratorProviderNode.Current.GetAttribute("StartFieldEncloser", "");
+            EndFieldEncloser = xPathNodeIteratorProviderNode.Current.GetAttribute("EndFieldEncloser", "");
+            string singleFieldEncloser = xPathNodeIteratorProviderNode.Current.GetAttribute("FieldEncloser", "");
+            if (!string.IsNullOrEmpty(singleFieldEncloser))
             {
-                DbManager.SelectLastInsertIdCommandText = iter.Current.Value;
+                // Si l'attribut "FieldEncloser" est défini, alors il écrase la valeur des deux autres
+                StartFieldEncloser = EndFieldEncloser = singleFieldEncloser;
+            }
+
+            // Expression XPath pour sélectionner le noeud enfant "Select" avec la valeur de "name" à 'getlastinsertid'
+            strXPathExpression = string.Format("{0}:Select[@name='getlastinsertid']", xmlRootTagPrefix_);
+
+            XPathNodeIterator xPathNodeIteratorSelectNode = xPathNodeIteratorProviderNode.Current.Select(strXPathExpression, xmlNamespaceManager);
+            if (xPathNodeIteratorSelectNode.MoveNext())
+            {
+                DbManager.SelectLastInsertIdCommandText = xPathNodeIteratorSelectNode.Current.Value;
             }
             else
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader LoadProviderString, no value matching XPath " + strXPath);
+                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, string.Format("ConfigurationLoader LoadProviderSpecificInformation, no value matching XPath '{0}' for the provider '{1}'", strXPathExpression, providerInvariantName));
             }
         }
 
@@ -336,10 +368,10 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Loads XML file which contains templates definitions to internal dictionary.
         /// </summary>
-        /// <param name="xmlNavigator_">Reused XPathNavigator instance</param>
+        /// <param name="xpathNavigator_">Reused XPathNavigator instance</param>
         /// <param name="xmlRootTagPrefix_"> </param>
         /// <param name="xmlRootTagNamespace_"> </param>
-        internal static void FillTemplatesDictionaries(XPathNavigator xmlNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_)
+        internal static void FillTemplatesDictionaries(XPathNavigator xpathNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_)
         {
             DicInsertSql.Clear();
             DicSelectSql.Clear();
@@ -347,22 +379,22 @@ namespace OsamesMicroOrm.Configuration
             DicDeleteSql.Clear();
             try
             {
-                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xmlNavigator_.NameTable);
+                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xpathNavigator_.NameTable);
                 xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
                 // Inserts nodes
-                XPathNodeIterator xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Inserts", xmlRootTagPrefix_), xmlNamespaceManager);
+                XPathNodeIterator xPathNodeIterator = xpathNavigator_.Select(string.Format("/*/{0}:Inserts", xmlRootTagPrefix_), xmlNamespaceManager);
                 if (xPathNodeIterator.MoveNext())
                     FillSqlTemplateDictionary(xPathNodeIterator, DicInsertSql);
                 // Selects nodes
-                xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Selects", xmlRootTagPrefix_), xmlNamespaceManager);
+                xPathNodeIterator = xpathNavigator_.Select(string.Format("/*/{0}:Selects", xmlRootTagPrefix_), xmlNamespaceManager);
                 if (xPathNodeIterator.MoveNext())
                     FillSqlTemplateDictionary(xPathNodeIterator, DicSelectSql);
                 // Updates nodes
-                xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Updates", xmlRootTagPrefix_), xmlNamespaceManager);
+                xPathNodeIterator = xpathNavigator_.Select(string.Format("/*/{0}:Updates", xmlRootTagPrefix_), xmlNamespaceManager);
                 if (xPathNodeIterator.MoveNext())
                     FillSqlTemplateDictionary(xPathNodeIterator, DicUpdateSql);
                 // Deletes nodes
-                xPathNodeIterator = xmlNavigator_.Select(string.Format("/*/{0}:Deletes", xmlRootTagPrefix_), xmlNamespaceManager);
+                xPathNodeIterator = xpathNavigator_.Select(string.Format("/*/{0}:Deletes", xmlRootTagPrefix_), xmlNamespaceManager);
                 if (xPathNodeIterator.MoveNext())
                     FillSqlTemplateDictionary(xPathNodeIterator, DicDeleteSql);
 
