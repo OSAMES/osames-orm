@@ -83,7 +83,7 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="TestConfigMsSql\OsamesOrm.config">
+    <None Include="TestConfigMsSql\OsamesOrmMsSql.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -112,8 +112,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>xcopy /Y "$(SolutionDir)DB\Chinook.mdf" $(TargetDir)DB\
-rem ne pas copier le fichier de log
-rem xcopy /Y "$(SolutionDir)DB\Chinook_log.ldf" $(TargetDir)DB\
+xcopy /Y "$(SolutionDir)DB\Chinook_log.ldf" $(TargetDir)DB\
 </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
