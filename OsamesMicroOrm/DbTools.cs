@@ -26,7 +26,7 @@ using OsamesMicroOrm.Utilities;
 namespace OsamesMicroOrm
 {
     /// <summary>
-    /// 
+    /// DbTools Class
     /// </summary>
     public static class DbTools
     {

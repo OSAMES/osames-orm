@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<HelpTOC>
+
+  <HelpTOCNode Id="22af27a2-5ecf-4cec-9a24-bf60f86118b9" Title="OsamesMicroOrm Namespace" Url="html/80e4e811-5a0d-2969-3b2d-4c63881dc0ab.htm">
+    <HelpTOCNode Id="7da5163d-9a5e-4108-93d9-2f378a54b9fb" Title="DatabaseMappingAttribute Class" Url="html/a204bf1a-89c7-f17b-5703-fd3829705b13.htm">
+      <HelpTOCNode Title="DatabaseMappingAttribute Constructor " Url="html/c0ff7d0f-a712-4b08-bd0b-a908409997bd.htm" />
+      <HelpTOCNode Title="DatabaseMappingAttribute Methods" Url="html/c3f47fd0-950f-0c91-daf2-17ff54825883.htm" />
+      <HelpTOCNode Id="578f7ec9-5290-4136-95ef-e730c9fd8ffc" Title="DatabaseMappingAttribute Properties" Url="html/b42c062e-e8b4-5390-e40d-735d3e960ccf.htm">
+        <HelpTOCNode Title="DbTableName Property " Url="html/418929bf-75ad-b786-956d-a95614c75223.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Id="8072ce00-f32b-4b89-b6e4-0b8be5b26bab" Title="DbManager Class" Url="html/308006b5-ab57-babb-8fae-c4337a40dfe8.htm">
+      <HelpTOCNode Id="7324494b-fec2-460c-ac36-3adfcacdad5f" Title="DbManager Methods" Url="html/4d115b6c-d884-2c8c-60a6-e09739a4d0a0.htm">
+        <HelpTOCNode Title="CommitTransaction Method " Url="html/8dd914c4-675e-d534-7dcf-996db60c5db1.htm" />
+        <HelpTOCNode Title="CreateConnection Method " Url="html/f7c7dda4-160f-ed1c-b57b-b9410aa9adc6.htm" />
+        <HelpTOCNode Id="f41644ad-1ff0-4068-ab17-3c4081eeae0f" Title="DataAdapter Method " Url="html/10d6cd39-e59c-b56d-eb91-f0bba22f0a68.htm">
+          <HelpTOCNode Title="DataAdapter Method (String, CommandType)" Url="html/ea8662da-ad44-8f45-3036-3ed041c5c049.htm" />
+          <HelpTOCNode Title="DataAdapter Method (String, DbManager.Parameter[], CommandType)" Url="html/72aa6dbc-fe49-bcbe-630c-95e6146effd0.htm" />
+          <HelpTOCNode Title="DataAdapter Method (String, Object[,], CommandType)" Url="html/32244e92-a1f8-0d68-ed8d-355996bb7371.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Id="0dcbc67f-a39a-403e-b0cf-a6af92fc50e1" Title="ExecuteNonQuery Method " Url="html/66809d80-0a3d-a1b9-3f27-8e77ab383801.htm">
+          <HelpTOCNode Title="ExecuteNonQuery Method (String, CommandType, DbTransaction)" Url="html/9ee50354-e79f-f523-26cf-0f0f063278a7.htm" />
+          <HelpTOCNode Title="ExecuteNonQuery Method (String, DbManager.Parameter[], CommandType, DbTransaction)" Url="html/f0c7fd2f-8b26-6767-6093-344d7b86d9a9.htm" />
+          <HelpTOCNode Title="ExecuteNonQuery Method (String, List(KeyValuePair(String, Object)), CommandType, DbTransaction)" Url="html/7edd992d-5747-089b-8a82-95b5411d826e.htm" />
+          <HelpTOCNode Title="ExecuteNonQuery Method (String, Object[,], CommandType, DbTransaction)" Url="html/0b9a78ba-a67f-7ea6-3db7-2b3452f7db77.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Id="d0972fce-06bd-46b5-a7d7-245b4df41132" Title="ExecuteReader Method " Url="html/41372563-0738-a3e1-10f8-eac51328c72a.htm">
+          <HelpTOCNode Title="ExecuteReader Method (String, CommandType)" Url="html/a79498c5-1ea9-ada7-b148-da582b54c055.htm" />
+          <HelpTOCNode Title="ExecuteReader Method (String, DbManager.Parameter[], CommandType)" Url="html/5c73c11a-316d-2b91-9fa8-9bf5172540ca.htm" />
+          <HelpTOCNode Title="ExecuteReader Method (String, List(KeyValuePair(String, Object)), CommandType)" Url="html/3f90d3c0-fe45-5156-303c-b366e0a3dae2.htm" />
+          <HelpTOCNode Title="ExecuteReader Method (String, Object[,], CommandType)" Url="html/1f8ff195-bdc6-3d8c-1d00-687a465562af.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Id="64194edd-8180-47af-91ff-852dc5b1eccf" Title="ExecuteScalar Method " Url="html/aa1250f8-a6c0-5e73-fbe7-725777ec6002.htm">
+          <HelpTOCNode Title="ExecuteScalar Method (String, CommandType)" Url="html/f6978538-eb8c-204a-13ea-678b7a471fad.htm" />
+          <HelpTOCNode Title="ExecuteScalar Method (String, DbManager.Parameter[], CommandType)" Url="html/f5f95825-bfdf-661f-58e3-c8dfda173982.htm" />
+          <HelpTOCNode Title="ExecuteScalar Method (String, Object[,], CommandType)" Url="html/e8c93c24-2011-07b6-f118-bd963e5b28db.htm" />
+          <HelpTOCNode Title="ExecuteScalar Method (Boolean, String, DbManager.Parameter[], CommandType)" Url="html/d42d27b6-81e8-4c81-faf7-cb42504318f6.htm" />
+          <HelpTOCNode Title="ExecuteScalar Method (Boolean, String, Object[,], CommandType)" Url="html/0fc0ca99-e9e0-8ce0-5f16-1255551013a8.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Title="Finalize Method " Url="html/35f75914-b468-d26c-f9ea-e4bfd55c0a9d.htm" />
+        <HelpTOCNode Title="GetLastInsertId Method " Url="html/9c53cafb-0e3d-3b53-35c3-540518564430.htm" />
+        <HelpTOCNode Title="OpenTransaction Method " Url="html/f46fd594-ede0-6aa9-ca42-ec76ba2167f3.htm" />
+        <HelpTOCNode Title="RollbackTransaction Method " Url="html/7c909257-517e-4d26-9401-63c17e6ae5e0.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="67b75e7e-7589-479e-9f48-182a958271cc" Title="DbManager Properties" Url="html/2cc45cd3-0f70-5aa0-e43a-1bd1516c7334.htm">
+        <HelpTOCNode Title="ConnectionString Property " Url="html/906c3d88-6d35-882b-f563-03e2a2f9bb89.htm" />
+        <HelpTOCNode Title="Instance Property " Url="html/ae076de9-34d5-625f-afa9-31eb1c40f1c9.htm" />
+        <HelpTOCNode Title="ProviderName Property " Url="html/67cb2ac9-e6a2-a196-03ab-3b066082cd04.htm" />
+        <HelpTOCNode Title="SelectLastInsertIdCommandText Property " Url="html/1d98ec15-3cda-b8fd-efd0-fdfb7b3dace0.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Id="221d7150-a294-4e83-b9a3-d159e8721e4c" Title="DbManager.Parameter Structure" Url="html/d9b5d62e-f75a-d8f6-a4e7-0bcb54365d8a.htm">
+      <HelpTOCNode Id="4dc319ca-947f-4c87-8794-23a9cc5ffc6f" Title="DbManager.Parameter Constructor " Url="html/7fac8eba-e34a-b42e-c82f-75858e01c42b.htm">
+        <HelpTOCNode Title="DbManager.Parameter Constructor (String, Object)" Url="html/bb9f119e-98e0-daaf-2e33-e7711488f15f.htm" />
+        <HelpTOCNode Title="DbManager.Parameter Constructor (String, Object, ParameterDirection)" Url="html/85059516-588c-c15e-f3fb-ccd3276a9bbe.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="f65e8c4e-4525-4f25-b8cb-95a07d412991" Title="DbManager.Parameter Fields" Url="html/ff71ea37-69ef-2f0a-39b8-e22702794a33.htm">
+        <HelpTOCNode Title="ParamDirection Field" Url="html/1320232b-5f76-2061-8c33-8ed9e2ca0e3f.htm" />
+        <HelpTOCNode Title="ParamName Field" Url="html/a58fbf68-f842-68b3-145d-63139db7bc06.htm" />
+        <HelpTOCNode Title="ParamValue Field" Url="html/fa3eb344-8f36-8449-6946-70fb91f397fd.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Title="DbManager.Parameter Methods" Url="html/e12f74e4-ebf3-4236-163a-b53571876fb9.htm" />
+    </HelpTOCNode>
+    <HelpTOCNode Id="56678693-12b9-4a51-82c6-1df007c39dce" Title="DbTools Class" Url="html/c7923287-e039-5068-496d-3931868d45c2.htm">
+      <HelpTOCNode Id="29abf8fa-56c6-4d89-8e84-642c3825b1eb" Title="DbTools Methods" Url="html/fe3a942b-3e1a-1f29-5d11-1f03b3e55e05.htm">
+        <HelpTOCNode Title="DetermineAdoParameterName Method " Url="html/e51b898f-1766-0283-11b1-673fac268e43.htm" />
+        <HelpTOCNode Title="DetermineDatabaseColumnName Method " Url="html/d1fc74b3-f754-004d-62f7-51fbf23c533b.htm" />
+        <HelpTOCNode Title="DetermineDatabaseColumnNameAndAdoParameter(T) Method " Url="html/791a68fb-c19d-4a96-a579-ed38c62393ed.htm" />
+        <HelpTOCNode Title="DetermineDatabaseColumnNames Method " Url="html/634a28f4-9765-df3b-8090-3d9321b3708e.htm" />
+        <HelpTOCNode Title="DetermineDatabaseColumnNamesAndAdoParameters(T) Method " Url="html/d1d34757-639f-8ce2-6961-cc758e79467f.htm" />
+        <HelpTOCNode Title="DetermineDatabaseColumnsAndPropertiesNames Method " Url="html/1f4d5c03-d48e-f0a7-7eb7-5144deda5874.htm" />
+        <HelpTOCNode Title="FormatSqlFields Method " Url="html/811fb936-3c93-99cf-e454-2dbd26e23816.htm" />
+        <HelpTOCNode Id="cacdec48-bb80-4df8-9f04-06ddc25c5b45" Title="FormatSqlForSelect Method " Url="html/28294a39-7f55-8114-7ce9-a867b0932da8.htm">
+          <HelpTOCNode Title="FormatSqlForSelect Method (String, String, List(String), List(Object), List(String), String, List(KeyValuePair(String, Object)))" Url="html/bc507648-b402-0956-8241-0585019d9099.htm" />
+          <HelpTOCNode Title="FormatSqlForSelect Method (String, List(String), String, List(String), List(Object), String, List(KeyValuePair(String, Object)), List(String))" Url="html/0aadd938-b1a6-0cc3-8169-861cba6507dc.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Title="FormatSqlForUpdate(T) Method " Url="html/61294abc-0e8a-c5f1-f271-d47d1a0f13f9.htm" />
+        <HelpTOCNode Id="e2ecbff8-0459-45be-91b2-22a20af3b020" Title="FormatSqlNameEqualValue Method " Url="html/1b64fcc1-f88d-aff9-5c65-a9e8f6dbee38.htm">
+          <HelpTOCNode Title="FormatSqlNameEqualValue Method (List(String), List(KeyValuePair(String, Object)), StringBuilder, String)" Url="html/9ddc54b3-7a1f-15d2-81eb-e8db51b7ab54.htm" />
+          <HelpTOCNode Title="FormatSqlNameEqualValue Method (String, KeyValuePair(String, Object), StringBuilder, String)" Url="html/20074c35-aa3f-15c5-7d4e-b6b91a062f60.htm" />
+        </HelpTOCNode>
+        <HelpTOCNode Title="Select(T) Method " Url="html/35ae3c50-dba8-19bb-2410-2863a230cdc3.htm" />
+        <HelpTOCNode Title="SelectAllColumns(T) Method " Url="html/0ef95646-0f10-37aa-38cd-fa8a1c876cd0.htm" />
+        <HelpTOCNode Title="SelectSingle(T) Method " Url="html/dabed96c-cf1b-eefb-6089-fadacad71d2a.htm" />
+        <HelpTOCNode Title="SelectSingleAllColumns(T) Method " Url="html/8eeb231e-b84f-32cd-b903-8057942b8eb4.htm" />
+        <HelpTOCNode Title="TryFormat Method " Url="html/a936690e-20fb-4979-6edc-58e11975d486.htm" />
+        <HelpTOCNode Title="Update(T) Method " Url="html/20ccb05c-e4ca-2bf9-89d4-3379a0cdd24c.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+  </HelpTOCNode>
+  <HelpTOCNode Id="654d20eb-c5af-44a6-98ed-d5a1cf6063d3" Title="OsamesMicroOrm.Configuration Namespace" Url="html/f3e60d24-3504-efdb-2d4e-cd36f283e14f.htm">
+    <HelpTOCNode Id="1f46139a-3990-4166-872c-4e3d9d949b98" Title="ConfigurationLoader Class" Url="html/e2a26145-d205-66b6-c90e-4d2a762fe4c8.htm">
+      <HelpTOCNode Id="2a85345b-236c-450f-b56e-f0667f07b5a9" Title="ConfigurationLoader Fields" Url="html/844bf413-e8d6-7d90-1d4e-39f018e5e583.htm">
+        <HelpTOCNode Title="_detailedLoggerTraceSource Field" Url="html/40988bf4-4a0c-5712-6442-0e832e29cc25.htm" />
+        <HelpTOCNode Title="_loggerTraceSource Field" Url="html/232c1713-4935-898f-d85c-6d3cc9411a8f.htm" />
+        <HelpTOCNode Title="DicDeleteSql Field" Url="html/d3caf4d3-144a-f466-53e0-e1d58eee3ae3.htm" />
+        <HelpTOCNode Title="DicInsertSql Field" Url="html/e8c9a081-4526-2214-b5eb-06eeecfb5e5d.htm" />
+        <HelpTOCNode Title="DicSelectSql Field" Url="html/f4c121cf-6d33-2d24-065a-fb50861cd460.htm" />
+        <HelpTOCNode Title="DicUpdateSql Field" Url="html/b3cd1348-a568-5f40-0025-2b6429402a1f.htm" />
+        <HelpTOCNode Title="EndFieldEncloser Field" Url="html/915259d3-98f5-ceed-ee73-301eca244d39.htm" />
+        <HelpTOCNode Title="MappingDictionnary Field" Url="html/8b3df4d8-7c7b-f4f6-7116-73f0e7553c64.htm" />
+        <HelpTOCNode Title="StartFieldEncloser Field" Url="html/ce5c9811-d157-028a-2407-540ac9f114c8.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="696f8e4a-8b55-48cb-8614-7d722dc74333" Title="ConfigurationLoader Methods" Url="html/a40da850-5021-5aee-78c9-54794624444a.htm">
+        <HelpTOCNode Title="Clear Method " Url="html/15ce9b72-0656-46cc-e5bc-58e5a0e5967a.htm" />
+        <HelpTOCNode Title="FillMappingDictionary Method " Url="html/d85c080a-a65c-05d0-3caa-abea1cd92cf5.htm" />
+        <HelpTOCNode Title="FillSqlTemplateDictionary Method " Url="html/367811da-3e58-1d1c-202f-936912661e67.htm" />
+        <HelpTOCNode Title="FillTemplatesDictionaries Method " Url="html/522bcae9-7311-9edb-6533-b145fc1184dd.htm" />
+        <HelpTOCNode Title="GetMapping Method " Url="html/4226ce2f-202a-d712-d083-b6cfca6bf71a.htm" />
+        <HelpTOCNode Title="GetMappingDbColumnName Method " Url="html/226b3e66-963d-36b3-ffd4-5705a58e288d.htm" />
+        <HelpTOCNode Title="GetMappingPropertyName Method " Url="html/91572113-2c9d-0181-1744-fa687c95876f.htm" />
+        <HelpTOCNode Title="InitializeDatabaseConnection Method " Url="html/b1c82d12-66d3-df6f-db6b-1f41944137e8.htm" />
+        <HelpTOCNode Title="LoadProviderString Method " Url="html/426669e9-93f2-64a4-ecd8-b59b11e754f2.htm" />
+        <HelpTOCNode Title="ReadFieldEnclosers Method " Url="html/a7ac26ca-cd1c-03fb-f4ed-07a217ea47b8.htm" />
+      </HelpTOCNode>
+      <HelpTOCNode Id="6bd5ccc3-29e3-4ce5-8f54-9d306cae59fd" Title="ConfigurationLoader Properties" Url="html/b9040db4-6d97-ea81-4e5d-35b899e078f4.htm">
+        <HelpTOCNode Title="Instance Property " Url="html/9d0cf51a-7f5b-d210-db2c-eff837318f44.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+  </HelpTOCNode>
+  <HelpTOCNode Id="f17303b2-34c7-4877-8a55-b235c50e85b8" Title="OsamesMicroOrm.Configuration.Tweak Namespace" Url="html/5fba9084-cee9-e02f-8ae1-f08ce03c0571.htm">
+    <HelpTOCNode Id="b75a95ad-d2f3-4307-8867-fe8b82855ed7" Title="Customizer Class" Url="html/ac5ccd60-3577-ca79-4380-b570e9689774.htm">
+      <HelpTOCNode Id="9afd41ec-6b78-4e0a-86e3-03156bc1ecc0" Title="Customizer Methods" Url="html/47cc74d7-4981-d236-3b33-6bba0f01102c.htm">
+        <HelpTOCNode Title="ConfigurationManagerSetKeyValue Method " Url="html/539b3a67-2040-2e70-c0a6-dbdafd9c0c03.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Title="Customizer.AppSettingsKeys Enumeration" Url="html/4fafc317-c0d6-bb4c-e2f0-4d17540d54ef.htm" />
+  </HelpTOCNode>
+  <HelpTOCNode Id="23c24cba-911e-4073-9085-000a6961caef" Title="OsamesMicroOrm.Utilities Namespace" Url="html/0f9c335b-c4ce-2aad-fd12-657a823e6e5f.htm">
+    <HelpTOCNode Id="cb66e41b-948e-4bc9-9f2c-396d41413f1b" Title="Common Class" Url="html/d486985d-d81e-000d-8b17-3d336836c499.htm">
+      <HelpTOCNode Id="48804627-abbb-48d4-b8af-0363b6baba18" Title="Common Methods" Url="html/44f63600-42da-76d4-20dc-a122746227c0.htm">
+        <HelpTOCNode Title="CheckFile Method " Url="html/40043be1-2603-ff64-534e-1be10e014c29.htm" />
+        <HelpTOCNode Title="CheckPlaceholdersAndParametersNumbers Method " Url="html/ec779c92-8ea1-151f-499b-f5a02e068383.htm" />
+        <HelpTOCNode Title="CountPlaceholders Method " Url="html/744bda51-5a0c-c267-abd1-e04069207a3c.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Id="01464356-a01b-407b-a137-08a9be60bf9c" Title="MappingTools Class" Url="html/78f28643-ced0-1e43-161f-50b8312d218a.htm">
+      <HelpTOCNode Id="2369126a-b6a3-4fb9-a377-49bfebb50e0c" Title="MappingTools Methods" Url="html/6a676a03-f8c6-7656-efc4-17e01aff4d45.htm">
+        <HelpTOCNode Title="GetDbEntityDictionnaryMappingKey(T) Method " Url="html/aab93994-fba1-4764-d730-a257a0c593d2.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Id="9d8ed911-27c6-4ba2-92ef-ded484e0ce89" Title="XmlTools Class" Url="html/54016a20-1f45-6657-9d97-cf1ab112cb55.htm">
+      <HelpTOCNode Id="810dd37a-834d-482c-a26b-c08c1eb057df" Title="XmlTools Methods" Url="html/8923864a-8e6d-53b1-5485-fd815b094176.htm">
+        <HelpTOCNode Title="GetRootTagInfos Method " Url="html/794599d8-38cf-cf64-0c2e-e94e7e8d2e09.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+    <HelpTOCNode Id="eb4b717b-b5c1-4908-8023-70d677eb356c" Title="XmlValidator Class" Url="html/73e0f982-d790-2eae-25f8-7f3de0c56d3e.htm">
+      <HelpTOCNode Title="XmlValidator Constructor " Url="html/b51457a0-9993-c751-b35c-c8d9870b66dd.htm" />
+      <HelpTOCNode Id="fd037af5-6157-45d9-baa4-4da908417fd7" Title="XmlValidator Methods" Url="html/bc5b77be-2436-13f1-4b79-875e5e2b130a.htm">
+        <HelpTOCNode Id="3bc1eadb-b5d0-4700-9568-1e3055e1a2a6" Title="ValidateXml Method " Url="html/3a4d3d7f-a480-4931-0d1f-395eaf59c332.htm">
+          <HelpTOCNode Title="ValidateXml Method (String)" Url="html/d69ea82d-a4d7-923b-4501-bf4c1340adfc.htm" />
+          <HelpTOCNode Title="ValidateXml Method (String[])" Url="html/b42bba70-a50e-446a-c8d1-e5744523b1dd.htm" />
+        </HelpTOCNode>
+      </HelpTOCNode>
+      <HelpTOCNode Id="f42092ff-2f18-4b5c-8180-df6d59728e1f" Title="XmlValidator Properties" Url="html/6acef448-42fe-5213-067f-d303452ff098.htm">
+        <HelpTOCNode Title="Errors Property " Url="html/8dafc3d8-5001-91b4-b421-7e206700ea39.htm" />
+        <HelpTOCNode Title="Warnings Property " Url="html/c7b8b29a-d393-73c1-b94b-52cad1fafbc6.htm" />
+      </HelpTOCNode>
+    </HelpTOCNode>
+  </HelpTOCNode>
+</HelpTOC>
