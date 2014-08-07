@@ -188,13 +188,15 @@ namespace TestOsamesMicroOrm
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbTools.FormatSqlForSelect("BaseReadWhere", new List<string> { "NomSociete", "Telephone", "IdConditionReglementRef" }, "clients", new List<string> {"NumeroClient", null}, new List<object>{1235}, out sqlCommand, out adoParams, out lstDbColumnNames);
+            DbTools.FormatSqlForSelect("BaseReadWhere", new List<string> { "CustomerId", "FirstName", "LastName", "Company" }, "Customer", new List<string> {"CustomerId", null}, new List<object>{1}, out sqlCommand, out adoParams, out lstDbColumnNames);
 
-            Assert.AreEqual("SELECT nom_societe, telephone, if_condition_reglement_ref FROM clients WHERE numero_client = @p0;", sqlCommand);
+            string expectedSql = string.Format("SELECT {0}CustomerId{1}, {0}FirstName{1}, {0}LastName{1}, {0}Company{1} FROM {0}Customer{1} WHERE {0}CustomerId{1} = @p0", ConfigurationLoader.StartFieldEncloser, ConfigurationLoader.EndFieldEncloser);
+
+            Assert.AreEqual(expectedSql, sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
             Assert.AreEqual("@p0", adoParams[0].Key);
-            Assert.AreEqual(1235, adoParams[0].Value);
-            Assert.AreEqual(3, lstDbColumnNames.Count);
+            Assert.AreEqual(1, adoParams[0].Value);
+            Assert.AreEqual(4, lstDbColumnNames.Count);
 
         }
 
