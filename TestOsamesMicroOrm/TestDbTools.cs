@@ -73,40 +73,58 @@ namespace TestOsamesMicroOrm
         #region test sql formatting
 
         /// <summary>
-        /// Test of FormatSqlNameEqualValue with a single value.
+        /// Test of FormatSqlNameEqualValueString with a single value.
         /// </summary>
         [TestMethod]
-        [TestCategory("Mapping")]
-        [TestCategory("GetPropertyValue")]
-        public void TestFormatSqlNameEqualValue()
+        [TestCategory("Sql formatting")]
+        public void TestFormatSqlNameEqualValueStringParam()
         {
-            KeyValuePair<string, object> adoParams = new KeyValuePair<string, object>("@nomsociete", "Société X");
+            KeyValuePair<string, object> adoParams = new KeyValuePair<string, object>("@firstname", "Barbara");
             StringBuilder sb = new StringBuilder();
-            DbTools.FormatSqlNameEqualValue("nom_societe", adoParams, ref sb);
+            DbTools.FormatSqlNameEqualValueString("FirstName", adoParams, ref sb);
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(sb.ToString()), "string builder empty");
-            Assert.AreEqual("nom_societe = @nomsociete", sb.ToString());
+            Assert.AreEqual(string.Format("{0}FirstName{1} = @firstname", ConfigurationLoader.StartFieldEncloser, ConfigurationLoader.EndFieldEncloser), sb.ToString());
         }
 
         /// <summary>
-        /// Test of FormatSqlNameEqualValue with 2 values.
+        /// Test of FormatSqlNameEqualValueString with 2 values.
         /// </summary>
         [TestMethod]
-        [TestCategory("Mapping")]
-        [TestCategory("GetPropertyValue")]
-        public void TestFormatSqlNameEqualValueMulti()
+        [TestCategory("Sql formatting")]
+        public void TestFormatSqlNameEqualValueListParam()
         {
             List<KeyValuePair<string, object>> adoParams = new List<KeyValuePair<string, object>>
                 {
-                    new KeyValuePair<string, object>("@nomsociete", "Société X"),
-                    new KeyValuePair<string, object>("@clientdate", DateTime.Today)
+                    new KeyValuePair<string, object>("@firstname", "Barbara"),
+                    new KeyValuePair<string, object>("@lastname", "Post")
                 };
             StringBuilder sb = new StringBuilder();
-            DbTools.FormatSqlNameEqualValue(new List<string> { "nom_societe", "client_date" }, adoParams, ref sb, ", ");
+            DbTools.FormatSqlNameEqualValueString(new List<string> { "FirstName", "LastName" }, adoParams, ref sb, ", ");
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(sb.ToString()), "string builder empty");
-            Assert.AreEqual("nom_societe = @nomsociete, client_date = @clientdate", sb.ToString());
+            Assert.AreEqual(string.Format("{0}FirstName{1} = @firstname, {0}LastName{1} = @lastname", ConfigurationLoader.StartFieldEncloser, ConfigurationLoader.EndFieldEncloser), sb.ToString());
         }
+
+        /// <summary>
+        /// Test of FormatSqlFieldsListAsString with 2 values in list
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Sql formatting")]
+        public void TestFormatSqlFieldsListAsString()
+        {
+            List<KeyValuePair<string, object>> adoParams = new List<KeyValuePair<string, object>>
+                {
+                    new KeyValuePair<string, object>("@firstname", "Barbara"),
+                    new KeyValuePair<string, object>("@lastname", "Post")
+                };
+            StringBuilder sb;
+            DbTools.FormatSqlFieldsListAsString(new List<string> { "FirstName", "LastName" }, out sb);
+
+            Assert.IsFalse(string.IsNullOrWhiteSpace(sb.ToString()), "string builder empty");
+            Assert.AreEqual(string.Format("{0}FirstName{1}, {0}LastName{1}", ConfigurationLoader.StartFieldEncloser, ConfigurationLoader.EndFieldEncloser), sb.ToString());
+        }
+        
         /// <summary>
         /// Test of DetermineDatabaseColumnNamesAndAdoParameters<T> with a single property.
         /// </summary>
