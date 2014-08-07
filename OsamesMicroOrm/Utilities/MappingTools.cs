@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
+using System.Text;
 
 namespace OsamesMicroOrm.Utilities
 {
@@ -52,7 +53,7 @@ namespace OsamesMicroOrm.Utilities
             if(!Configuration.ConfigurationLoader.MappingDictionnary.ContainsKey(dbTableName))
                 throw new Exception(string.Format("Key '{0}' not found in mapping configuration", dbTableName));
 
-            return dbTableName;
+            return new StringBuilder(Configuration.ConfigurationLoader.StartFieldEncloser).Append(dbTableName).Append(Configuration.ConfigurationLoader.EndFieldEncloser).ToString();
 
         }
     }
