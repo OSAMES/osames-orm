@@ -151,14 +151,13 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         [TestCategory("Mapping")]
         [TestCategory("GetPropertyValue")]
-        [TestCategory("FIXME")]
         public void TestExtractFromPropertyMulti()
         {
             // DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
 
             List<string> lstDbColumnNames;
             List<KeyValuePair<string, object>> adoParams;
-            DbTools.DetermineDatabaseColumnNamesAndAdoParameters<TestClient>(ref _client, "Employee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
+            DbTools.DetermineDatabaseColumnNamesAndAdoParameters(ref _client, "Employee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
 
             Assert.AreEqual("LastName", lstDbColumnNames[0]);
             Assert.AreEqual("FirstName", lstDbColumnNames[1]);
@@ -175,18 +174,19 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         [TestCategory("Mapping")]
         [TestCategory("Sql formatting")]
-        [Ignore]
         [TestCategory("FIXME")]
         public void TestFormatSqlForUpdate()
         {
             // FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
             //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
+            // TODO FIXME : échec du test sur une liste à 1 élément et l'autre à 0 dans DbTools > FormatSqlNameEqualValueString
+
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             DbTools.FormatSqlForUpdate(ref _client, "Employee", new List<string> { "LastName", "FirstName" }, "EmployeeId", out sqlCommand, out adoParams);
 
-            Assert.AreEqual("UPDATE [Employee] SET [LastName] = @nomsociete, [FirstName] = @clientdate WHERE [EmployeeId] = @idclient;", sqlCommand);
+            Assert.AreEqual("UPDATE [Employee] SET [LastName] = @nomsociete, [FirstName] = @firstname WHERE [EmployeeId] = @employeeid;", sqlCommand);
             Assert.AreEqual(2, adoParams.Count, "no parameters generated");
             Assert.AreEqual("@lastname", adoParams[0].Key);
             Assert.AreEqual(_client.NomSociete, adoParams[0].Value);
@@ -211,14 +211,14 @@ namespace TestOsamesMicroOrm
             Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @p0;", sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
             Assert.AreEqual("@p0", adoParams[0].Key);
-            Assert.AreEqual(1235, adoParams[0].Value);
+            Assert.AreEqual(5, adoParams[0].Value);
             Assert.AreEqual(3, lstDbColumnNames.Count);
 
         }
 
         /// <summary>
         /// Select avec clause where retournant un enregistrement.
-        /// Ici le paramètre dynamique est représenté par "@IdClient".
+        /// Ici le paramètre dynamique est représenté par "@employeeId".
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping")]
@@ -230,10 +230,10 @@ namespace TestOsamesMicroOrm
             List<string> lstDbColumnNames;
             DbTools.FormatSqlForSelect("BaseReadWhere", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", "@employeeId" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
 
-            Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @employeeId;", sqlCommand);
+            Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @employeeid;", sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
-            Assert.AreEqual("@employeeId", adoParams[0].Key);
-            Assert.AreEqual(1235, adoParams[0].Value);
+            Assert.AreEqual("@employeeid", adoParams[0].Key);
+            Assert.AreEqual(5, adoParams[0].Value);
             Assert.AreEqual(3, lstDbColumnNames.Count);
 
         }
