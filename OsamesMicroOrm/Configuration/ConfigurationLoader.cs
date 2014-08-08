@@ -484,7 +484,7 @@ namespace OsamesMicroOrm.Configuration
 
             MappingDictionnary.TryGetValue(mappingKey_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception(string.Format("No mapping for key '{0}'", mappingKey_));
+                throw new Exception("No mapping for key '" + mappingKey_ + "'");
             return mappingObjectSet;
         }
 
