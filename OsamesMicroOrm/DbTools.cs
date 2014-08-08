@@ -40,9 +40,9 @@ namespace OsamesMicroOrm
         /// <param name="sqlCommand_">StringBuilder à compléter</param>
         /// <param name="optionalSuffix_">Suffixe optionnel, par exemple ","</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void FormatSqlNameEqualValue(string dbColumnName_, KeyValuePair<string, object> adoParameters_, ref StringBuilder sqlCommand_, string optionalSuffix_ = "")
+        internal static void FormatSqlNameEqualValueString(string dbColumnName_, KeyValuePair<string, object> adoParameters_, ref StringBuilder sqlCommand_, string optionalSuffix_ = "")
         {
-            sqlCommand_.Append(dbColumnName_).Append(" = ").Append(adoParameters_.Key).Append(optionalSuffix_);
+            sqlCommand_.Append(ConfigurationLoader.StartFieldEncloser).Append(dbColumnName_).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(adoParameters_.Key).Append(optionalSuffix_);
         }
 
         /// <summary>
@@ -54,14 +54,14 @@ namespace OsamesMicroOrm
         /// <param name="sqlCommand_">StringBuilder à compléter</param>
         /// <param name="optionalSuffix_">Suffixe optionnel, par exemple ",", ajouté entre chaque élément (pas à la fin)</param>
         /// <returns>Ne renvoie rien.</returns>
-        internal static void FormatSqlNameEqualValue(List<string> lstDbColumnName_, List<KeyValuePair<string, object>> adoParameters_, ref StringBuilder sqlCommand_, string optionalSuffix_ = "")
+        internal static void FormatSqlNameEqualValueString(List<string> lstDbColumnName_, List<KeyValuePair<string, object>> adoParameters_, ref StringBuilder sqlCommand_, string optionalSuffix_ = "")
         {
             int iCountMinusOne = lstDbColumnName_.Count - 1;
             for (int i = 0; i < iCountMinusOne; i++)
             {
-                sqlCommand_.Append(lstDbColumnName_[i]).Append(" = ").Append(adoParameters_[i].Key).Append(optionalSuffix_);
+                sqlCommand_.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnName_[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(adoParameters_[i].Key).Append(optionalSuffix_);
             }
-            sqlCommand_.Append(lstDbColumnName_[iCountMinusOne]).Append(" = ").Append(adoParameters_[iCountMinusOne].Key);
+            sqlCommand_.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnName_[iCountMinusOne]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(adoParameters_[iCountMinusOne].Key);
         }
 
         /// <summary>
@@ -70,14 +70,14 @@ namespace OsamesMicroOrm
         /// <param name="lstDbColumnName_">Liste de noms de colonnes DB</param>
         /// <param name="sqlCommand_">StringBuilder à compléter</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void FormatSqlFields(List<string> lstDbColumnName_, out StringBuilder sqlCommand_)
+        internal static void FormatSqlFieldsListAsString(List<string> lstDbColumnName_, out StringBuilder sqlCommand_)
         {
             sqlCommand_ = new StringBuilder();
 
             int iCount = lstDbColumnName_.Count;
             for (int i = 0; i < iCount; i++)
             {
-                sqlCommand_.Append(lstDbColumnName_[i]).Append(", ");
+                sqlCommand_.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnName_[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(", ");
             }
             sqlCommand_.Remove(sqlCommand_.Length - 2, 2);
         }
@@ -299,16 +299,16 @@ namespace OsamesMicroOrm
 
             // 1. properties
             DetermineDatabaseColumnNamesAndAdoParameters(ref dataObject_, mappingDictionariesContainerKey_, lstDataObjectcolumnName_, out lstDbColumnNames, out adoParameters_);
-            FormatSqlNameEqualValue(lstDbColumnNames, adoParameters_, ref sbSqlSetCommand, ", ");
+            FormatSqlNameEqualValueString(lstDbColumnNames, adoParameters_, ref sbSqlSetCommand, ", ");
 
             // 2. primary key
             DetermineDatabaseColumnNameAndAdoParameter(ref dataObject_, mappingDictionariesContainerKey_, primaryKeycolumnName_, out primaryKeyDbColumnName, out adoParamForPrimaryKey);
-            FormatSqlNameEqualValue(primaryKeyDbColumnName, adoParamForPrimaryKey, ref sbSqlWhereCommand);
+            FormatSqlNameEqualValueString(primaryKeyDbColumnName, adoParamForPrimaryKey, ref sbSqlWhereCommand);
 
             // TODO ici rendre comme pour le select, indépendant du template
 
             // 3. Final formatting "UPDATE {0} SET {1} WHERE {2};"
-            TryFormat(ConfigurationLoader.DicUpdateSql["BaseUpdate"], out sqlCommand_, new object[] { mappingDictionariesContainerKey_, sbSqlSetCommand, sbSqlWhereCommand });
+            TryFormat(ConfigurationLoader.DicUpdateSql["BaseUpdate"], out sqlCommand_, new object[] { string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbSqlSetCommand, sbSqlWhereCommand });
         }
 
         /// <summary>
@@ -333,16 +333,16 @@ namespace OsamesMicroOrm
         internal static void FormatSqlForSelect(string sqlTemplate_, List<string> lstDataObjectcolumnName_, string mappingDictionariesContainerKey_, List<string> strWherecolumnNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_, out List<string> lstDbColumnNames_)
         {
             StringBuilder sbSqlSelectFieldsCommand;   //{0} dans le template sql
-
+            
             adoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
 
             // 1. Détermine les colonnes pour les champs à sélectionner.
             // lstDbColumnNames_ sert de fournisseur pour remplir sbSqlSelectFieldsCommand
             DetermineDatabaseColumnNames(mappingDictionariesContainerKey_, lstDataObjectcolumnName_, out lstDbColumnNames_);
-            FormatSqlFields(lstDbColumnNames_, out sbSqlSelectFieldsCommand);
+            FormatSqlFieldsListAsString(lstDbColumnNames_, out sbSqlSelectFieldsCommand);
 
             // 2. Positionne les deux premiers placeholders
-            List<string> sqlPlaceholders = new List<string> { sbSqlSelectFieldsCommand.ToString(), mappingDictionariesContainerKey_ };
+            List<string> sqlPlaceholders = new List<string> { sbSqlSelectFieldsCommand.ToString(), string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 3. Détermine les noms des paramètres pour le where
             if (strWherecolumnNames_ != null)
@@ -352,11 +352,16 @@ namespace OsamesMicroOrm
                 for (int i = 0; i < iCount; i++)
                 {
                     string paramName = DetermineAdoParameterName(strWherecolumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
-                    // Ajout pour les placeholders
-                    sqlPlaceholders.Add(paramName);
-                    // Ajout d'un paramètre ADO.NET dans la liste
+                    
+                    // Si paramètre dynamique, ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ.
                     if (paramName.StartsWith("@"))
                         adoParameters_.Add(new KeyValuePair<string, object>(paramName, oWhereValues_[dynamicParameterIndex]));
+                    else
+                        paramName = string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
+
+                    // Ajout pour les placeholders
+                    sqlPlaceholders.Add(paramName);
+
                 }
             }
 
@@ -387,7 +392,7 @@ namespace OsamesMicroOrm
             adoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
 
             // 1. Positionne le premier placeholder
-            List<string> sqlPlaceholders = new List<string> { mappingDictionariesContainerKey_ };
+            List<string> sqlPlaceholders = new List<string> { string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 2. Détermine les noms des paramètres pour le where
             if (strWherecolumnNames_ != null)
@@ -397,11 +402,15 @@ namespace OsamesMicroOrm
                 for (int i = 0; i < iCount; i++)
                 {
                     string paramName = DetermineAdoParameterName(strWherecolumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
-                    // Ajout pour les placeholders
-                    sqlPlaceholders.Add(paramName);
-                    // Ajout d'un paramètre ADO.NET dans la liste
+
+                    // Si paramètre dynamique, ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ.
                     if (paramName.StartsWith("@"))
                         adoParameters_.Add(new KeyValuePair<string, object>(paramName, oWhereValues_[dynamicParameterIndex]));
+                    else
+                        paramName = string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
+
+                    // Ajout pour les placeholders
+                    sqlPlaceholders.Add(paramName);
                 }
             }
 
