@@ -717,7 +717,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: "+command.Parameters.Count));
+                    ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                     throw;
                 }
         }
