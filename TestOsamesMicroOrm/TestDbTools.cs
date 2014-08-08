@@ -137,11 +137,11 @@ namespace TestOsamesMicroOrm
 
             string dbColumnName;
             KeyValuePair<string, object> adoParams;
-            DbTools.DetermineDatabaseColumnNameAndAdoParameter(ref _client, "clients", "NomSociete", out dbColumnName, out adoParams);
-            
-            Assert.AreEqual("nom_societe", dbColumnName);
+            DbTools.DetermineDatabaseColumnNameAndAdoParameter(ref _client, "Employee", "LastName", out dbColumnName, out adoParams);
 
-            Assert.AreEqual("@nomsociete", adoParams.Key);
+            Assert.AreEqual("LastName", dbColumnName);
+
+            Assert.AreEqual("@lastname", adoParams.Key);
             Assert.AreEqual(_client.NomSociete, adoParams.Value);
         }
 
@@ -158,14 +158,14 @@ namespace TestOsamesMicroOrm
 
             List<string> lstDbColumnNames;
             List<KeyValuePair<string, object>> adoParams;
-            DbTools.DetermineDatabaseColumnNamesAndAdoParameters<TestClient>(ref _client, "clients", new List<string>{ "NomSociete", "ClientDate"}, out lstDbColumnNames, out adoParams);
+            DbTools.DetermineDatabaseColumnNamesAndAdoParameters<TestClient>(ref _client, "Employee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
 
-            Assert.AreEqual("nom_societe", lstDbColumnNames[0]);
-            Assert.AreEqual("client_date", lstDbColumnNames[1]);
+            Assert.AreEqual("LastName", lstDbColumnNames[0]);
+            Assert.AreEqual("FirstName", lstDbColumnNames[1]);
             Assert.AreEqual(2, adoParams.Count, "no parameters generated");
-            Assert.AreEqual("@nomsociete", adoParams[0].Key);
+            Assert.AreEqual("@lastname", adoParams[0].Key);
             Assert.AreEqual(_client.NomSociete, adoParams[0].Value);
-            Assert.AreEqual("@clientdate", adoParams[1].Key);
+            Assert.AreEqual("@firstname", adoParams[1].Key);
             Assert.AreEqual(_client.ClientDate, adoParams[1].Value);
         }
 
@@ -184,13 +184,13 @@ namespace TestOsamesMicroOrm
 
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
-            DbTools.FormatSqlForUpdate(ref _client, "clients", new List<string> {"NomSociete", "ClientDate"}, "IdClient", out sqlCommand, out adoParams);
+            DbTools.FormatSqlForUpdate(ref _client, "Employee", new List<string> { "LastName", "FirstName" }, "EmployeeId", out sqlCommand, out adoParams);
 
-            Assert.AreEqual("UPDATE clients SET nom_societe = @nomsociete, client_date = @clientdate WHERE id_client = @idclient;", sqlCommand);
+            Assert.AreEqual("UPDATE [Employee] SET [LastName] = @nomsociete, [FirstName] = @clientdate WHERE [EmployeeId] = @idclient;", sqlCommand);
             Assert.AreEqual(2, adoParams.Count, "no parameters generated");
-            Assert.AreEqual("@nomsociete", adoParams[0].Key);
+            Assert.AreEqual("@lastname", adoParams[0].Key);
             Assert.AreEqual(_client.NomSociete, adoParams[0].Value);
-            Assert.AreEqual("@clientdate", adoParams[1].Key);
+            Assert.AreEqual("@firstname", adoParams[1].Key);
             Assert.AreEqual(_client.ClientDate, adoParams[1].Value);
         }
 
@@ -206,9 +206,9 @@ namespace TestOsamesMicroOrm
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbTools.FormatSqlForSelect("BaseReadWhere", new List<string> { "NomSociete", "Telephone", "IdConditionReglementRef" }, "clients", new List<string> {"NumeroClient", null}, new List<object>{1235}, out sqlCommand, out adoParams, out lstDbColumnNames);
+            DbTools.FormatSqlForSelect("BaseReadWhere", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", null }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
 
-            Assert.AreEqual("SELECT nom_societe, telephone, if_condition_reglement_ref FROM clients WHERE numero_client = @p0;", sqlCommand);
+            Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @p0;", sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
             Assert.AreEqual("@p0", adoParams[0].Key);
             Assert.AreEqual(1235, adoParams[0].Value);
@@ -228,11 +228,11 @@ namespace TestOsamesMicroOrm
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbTools.FormatSqlForSelect("BaseReadWhere", new List<string> { "NomSociete", "Telephone", "IdConditionReglementRef" }, "clients", new List<string> { "NumeroClient", "@IdClient" }, new List<object> { 1235 }, out sqlCommand, out adoParams, out lstDbColumnNames);
+            DbTools.FormatSqlForSelect("BaseReadWhere", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", "@employeeId" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
 
-            Assert.AreEqual("SELECT nom_societe, telephone, if_condition_reglement_ref FROM clients WHERE numero_client = @idclient;", sqlCommand);
+            Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @employeeId;", sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
-            Assert.AreEqual("@idclient", adoParams[0].Key);
+            Assert.AreEqual("@employeeId", adoParams[0].Key);
             Assert.AreEqual(1235, adoParams[0].Value);
             Assert.AreEqual(3, lstDbColumnNames.Count);
 
@@ -249,9 +249,9 @@ namespace TestOsamesMicroOrm
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbTools.FormatSqlForSelect("BaseRead", new List<string> { "NomSociete", "Telephone", "IdConditionReglementRef" }, "clients", null, null, out sqlCommand, out adoParams, out lstDbColumnNames);
+            DbTools.FormatSqlForSelect("BaseRead", new List<string> { "LastName", "FirstName", "Address" }, "Employee", null, null, out sqlCommand, out adoParams, out lstDbColumnNames);
 
-            Assert.AreEqual("SELECT nom_societe, telephone, if_condition_reglement_ref FROM clients;", sqlCommand);
+            Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee];", sqlCommand);
             Assert.AreEqual(0, adoParams.Count);
             Assert.AreEqual(3, lstDbColumnNames.Count);
 

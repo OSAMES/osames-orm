@@ -53,7 +53,7 @@ namespace OsamesMicroOrm.Utilities
             if(!Configuration.ConfigurationLoader.MappingDictionnary.ContainsKey(dbTableName))
                 throw new Exception(string.Format("Key '{0}' not found in mapping configuration", dbTableName));
 
-            return new StringBuilder(Configuration.ConfigurationLoader.StartFieldEncloser).Append(dbTableName).Append(Configuration.ConfigurationLoader.EndFieldEncloser).ToString();
+            return dbTableName;
 
         }
     }
