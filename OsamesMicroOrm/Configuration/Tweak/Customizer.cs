@@ -41,10 +41,10 @@ namespace OsamesMicroOrm.Configuration.Tweak
         {
             if (string.IsNullOrEmpty(ConfigurationManager.AppSettings[key_]))
             {
-                Log(customLogger_, string.Format("Cannot set value for ConfigurationManager.AppSettings key '{0}', it's not defined, nothing to override", key_), true);
+                Log(customLogger_, "Cannot set value for ConfigurationManager.AppSettings key '" + key_ + "', it's not defined, nothing to override", true);
                 return;
             }
-            Log(customLogger_, string.Format("Changing ConfigurationManager.AppSettings key '{0}' from '{1}' to '{2}'", key_, ConfigurationManager.AppSettings[key_], keyValue_), false);
+            Log(customLogger_, "Changing ConfigurationManager.AppSettings key '" + key_ + "' from '" + ConfigurationManager.AppSettings[key_] + "' to '" + keyValue_ + "'", false);
 
             ConfigurationManager.AppSettings[key_] = keyValue_;
 
