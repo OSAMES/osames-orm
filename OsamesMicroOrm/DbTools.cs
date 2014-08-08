@@ -105,7 +105,7 @@ namespace OsamesMicroOrm
                 dbColumnName_ = ConfigurationLoader.Instance.GetMappingDbColumnName(mappingDictionariesContainerKey_, dataObjectcolumnName_);
 
                 adoParameterNameAndValue_ = new KeyValuePair<string, object>(
-                                        string.Format("@{0}", dataObjectcolumnName_.ToLowerInvariant()),
+                                        "@" + dataObjectcolumnName_.ToLowerInvariant(),
                                         dataObject_.GetType().GetProperty(dataObjectcolumnName_).GetValue(dataObject_)
                                         );
             }
@@ -143,7 +143,7 @@ namespace OsamesMicroOrm
                     lstDbColumnName_.Add(ConfigurationLoader.Instance.GetMappingDbColumnName(mappingDictionariesContainerKey_, columnName));
 
                     adoParameterNameAndValue_.Add(new KeyValuePair<string, object>(
-                                                    string.Format("@{0}", columnName.ToLowerInvariant()),
+                                                    "@" + columnName.ToLowerInvariant(),
                                                     dataObject_.GetType().GetProperty(columnName).GetValue(dataObject_)
                                                 ));
                 }
@@ -256,7 +256,7 @@ namespace OsamesMicroOrm
             if (value_ == null)
             {
                 index_++;
-                return string.Format("@p{0}", index_);
+                return "@p"+ index_;
             }
 
             if (value_.StartsWith("@"))
@@ -308,7 +308,7 @@ namespace OsamesMicroOrm
             // TODO ici rendre comme pour le select, indépendant du template
 
             // 3. Final formatting "UPDATE {0} SET {1} WHERE {2};"
-            TryFormat(ConfigurationLoader.DicUpdateSql["BaseUpdate"], out sqlCommand_, new object[] { string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbSqlSetCommand, sbSqlWhereCommand });
+            TryFormat(ConfigurationLoader.DicUpdateSql["BaseUpdate"], out sqlCommand_, new object[] { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbSqlSetCommand, sbSqlWhereCommand });
         }
 
         /// <summary>
@@ -342,7 +342,7 @@ namespace OsamesMicroOrm
             FormatSqlFieldsListAsString(lstDbColumnNames_, out sbSqlSelectFieldsCommand);
 
             // 2. Positionne les deux premiers placeholders
-            List<string> sqlPlaceholders = new List<string> { sbSqlSelectFieldsCommand.ToString(), string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
+            List<string> sqlPlaceholders = new List<string> { sbSqlSelectFieldsCommand.ToString(), string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 3. Détermine les noms des paramètres pour le where
             if (strWherecolumnNames_ != null)
@@ -357,7 +357,7 @@ namespace OsamesMicroOrm
                     if (paramName.StartsWith("@"))
                         adoParameters_.Add(new KeyValuePair<string, object>(paramName, oWhereValues_[dynamicParameterIndex]));
                     else
-                        paramName = string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
+                        paramName = string.Concat(ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
 
                     // Ajout pour les placeholders
                     sqlPlaceholders.Add(paramName);
@@ -392,7 +392,7 @@ namespace OsamesMicroOrm
             adoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
 
             // 1. Positionne le premier placeholder
-            List<string> sqlPlaceholders = new List<string> { string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
+            List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 2. Détermine les noms des paramètres pour le where
             if (strWherecolumnNames_ != null)
@@ -407,7 +407,7 @@ namespace OsamesMicroOrm
                     if (paramName.StartsWith("@"))
                         adoParameters_.Add(new KeyValuePair<string, object>(paramName, oWhereValues_[dynamicParameterIndex]));
                     else
-                        paramName = string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
+                        paramName = string.Concat(ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
 
                     // Ajout pour les placeholders
                     sqlPlaceholders.Add(paramName);
@@ -601,12 +601,12 @@ namespace OsamesMicroOrm
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    throw new Exception(string.Format("Column '{0}' doesn't exist in sql data reader", columnName));
+                    throw new Exception("Column '" + columnName + "' doesn't exist in sql data reader");
                 }
 
                 if (dataInReaderIndex == -1)
                 {
-                    throw new Exception(string.Format("Column '{0}' doesn't exist in sql data reader", columnName));
+                    throw new Exception("Column '" + columnName + " doesn't exist in sql data reader");
                 }
 
                 // TODO traiter ORM-45 pour cast vers le bon type.
@@ -650,7 +650,7 @@ namespace OsamesMicroOrm
             {
                 int nbOfPlaceholders = Common.CountPlaceholders(format_);
                 ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 0,
-                    string.Format("Error, not same number of placeholders : {0} and parameters : {1}, exception: {2}", nbOfPlaceholders, args_.Length, ex.Message));
+                    "Error, not same number of placeholders : " + nbOfPlaceholders + " and parameters : " + args_.Length + ", exception: " + ex.Message);
                 result_ = null;
                 return false;
             }
