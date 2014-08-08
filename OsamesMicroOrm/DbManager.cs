@@ -637,7 +637,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, string.Format("{0} Command was: {1}", ex, cmdText_));
+                    ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_);
                     throw;
                 }
         }
@@ -665,7 +665,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, string.Format("{0} Command was: {1}, params count: {2}", ex, cmdText_, command.Parameters.Count));
+                    ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                     throw;
                 }
         }
@@ -693,7 +693,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, string.Format("{0} Command was: {1}, params count: {2}", ex, cmdText_, command.Parameters.Count));
+                    ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                     throw;
                 }
             }
@@ -717,7 +717,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, string.Format("{0} Command was: {1}, params count: {2}", ex, cmdText_, command.Parameters.Count));
+                    ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: "+command.Parameters.Count));
                     throw;
                 }
         }
@@ -768,7 +768,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, string.Format("{0} Command was: {1}", ex, cmdText_));
+                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_);
                         throw;
                     }
 
@@ -808,7 +808,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, string.Format("{0} Command was: {1}, params count: {2}", ex, cmdText_, command.Parameters.Count));
+                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                         throw;
                     }
             }
@@ -847,7 +847,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, string.Format("{0} Command was: {1}, params count: {2}", ex, cmdText_, command.Parameters.Count));
+                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                         throw;
                     }
             }
@@ -879,7 +879,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, string.Format("{0} Command was: {1}", ex, cmdText_));
+                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex+ " Command was: " + cmdText_);
                         throw;
                     }
             }
@@ -909,7 +909,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, string.Format("{0} Command was: {1}, params count: {2}", ex, cmdText_, command.Parameters.Count));
+                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                         throw;
                     }
             }
@@ -936,7 +936,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, string.Format("{0} Command was: {1}, params count: {2}", ex, cmdText_, command.Parameters.Count));
+                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                         throw;
                     }
             }
@@ -967,7 +967,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, string.Format("{0} Command was: {1}, params count: {2}", ex, cmdText_, command.Parameters.Count));
+                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                         throw;
                     }
             }
@@ -994,7 +994,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, string.Format("{0} Command was: {1}, params count: {2}", ex, cmdText_, command.Parameters.Count));
+                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                         throw;
                     }
             }
