@@ -21,10 +21,8 @@ using System.Configuration;
 using System.Diagnostics;
 
 namespace OsamesMicroOrm.Configuration.Tweak
-
-#if DEBUG
-
 {
+#if DEBUG
     /// <summary>
     /// To tweak configuration.
     /// Only available in debug mode
@@ -113,6 +111,5 @@ namespace OsamesMicroOrm.Configuration.Tweak
             // ReSharper restore InconsistentNaming
         }
     }
-}
-
 #endif
+}
