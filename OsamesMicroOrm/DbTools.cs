@@ -351,12 +351,12 @@ namespace OsamesMicroOrm
                 int dynamicParameterIndex = -1;
                 for (int i = 0; i < iCount; i++)
                 {
-                    string paramName = DetermineAdoParameterName(strWherecolumnNames_[i], ConfigurationLoader.StartFieldEncloser + mappingDictionariesContainerKey_ + ConfigurationLoader.EndFieldEncloser, ref dynamicParameterIndex);
+                    string paramName = DetermineAdoParameterName(strWherecolumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
                     // Ajout pour les placeholders
                     sqlPlaceholders.Add(paramName);
                     // Ajout d'un paramètre ADO.NET dans la liste
                     if (paramName.StartsWith("@"))
-                        adoParameters_.Add(new KeyValuePair<string, object>(paramName, oWhereValues_[dynamicParameterIndex]));
+                        adoParameters_.Add(new KeyValuePair<string, object>(paramName, oWhereValues_[dynamicParameterIndex]));                      
                 }
             }
 
@@ -396,7 +396,7 @@ namespace OsamesMicroOrm
                 int dynamicParameterIndex = -1;
                 for (int i = 0; i < iCount; i++)
                 {
-                    string paramName = DetermineAdoParameterName(strWherecolumnNames_[i], ConfigurationLoader.StartFieldEncloser + mappingDictionariesContainerKey_ + ConfigurationLoader.EndFieldEncloser, ref dynamicParameterIndex);
+                    string paramName = DetermineAdoParameterName(strWherecolumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
                     // Ajout pour les placeholders
                     sqlPlaceholders.Add(paramName);
                     // Ajout d'un paramètre ADO.NET dans la liste
