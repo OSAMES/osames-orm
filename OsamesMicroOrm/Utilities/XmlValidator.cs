@@ -97,7 +97,7 @@ namespace OsamesMicroOrm.Utilities
             foreach (string err in Warnings)
                 sb.Append(err).Append(Environment.NewLine);
                 
-            throw new Exception(string.Format("XML validation errors: {0}", sb));
+            throw new Exception("XML validation errors: " + sb);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace OsamesMicroOrm.Utilities
             foreach (string err in Warnings)
                 sb.Append(err).Append(Environment.NewLine);
 
-            throw new Exception(string.Format("XML validation errors: {0}", sb));
+            throw new Exception("XML validation errors: " + sb);
         }
 
         /// <summary>
