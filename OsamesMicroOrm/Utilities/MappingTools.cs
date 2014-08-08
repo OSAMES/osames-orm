@@ -37,21 +37,21 @@ namespace OsamesMicroOrm.Utilities
             // Get value
             object[] classAttributes = dataObject_.GetType().GetCustomAttributes(typeof(DatabaseMappingAttribute), false);
             if(classAttributes.Length == 0)
-                throw new Exception(string.Format("Type {0} doesn't define DatabaseMapping attribute (at class level)", dataObject_.GetType().FullName));
+                throw new Exception("Type " + dataObject_.GetType().FullName + " doesn't define DatabaseMapping attribute (at class level)");
             
             if(classAttributes.Length > 1)
-                throw new Exception(string.Format("Type {0} defines more than one DatabaseMapping attribute (at class level)", dataObject_.GetType().FullName));
+                throw new Exception("Type " + dataObject_.GetType().FullName + " defines more than one DatabaseMapping attribute (at class level)");
 
             string dbTableName = ((DatabaseMappingAttribute) classAttributes[0]).DbTableName;
             
             if (string.IsNullOrWhiteSpace(dbTableName))
-                throw new Exception(string.Format("Type {0} defines an empty DatabaseMapping attribute (at class level)", dataObject_.GetType().FullName));
+                throw new Exception("Type " + dataObject_.GetType().FullName + " defines an empty DatabaseMapping attribute (at class level)");
 
             dbTableName = dbTableName.ToLowerInvariant();
 
             // Check that value exists in mapping
             if(!Configuration.ConfigurationLoader.MappingDictionnary.ContainsKey(dbTableName))
-                throw new Exception(string.Format("Key '{0}' not found in mapping configuration", dbTableName));
+                throw new Exception("Key '" + dbTableName + "' not found in mapping configuration");
 
             return dbTableName;
 
