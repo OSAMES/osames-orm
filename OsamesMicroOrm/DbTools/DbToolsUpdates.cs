@@ -22,7 +22,7 @@ using OsamesMicroOrm.Configuration;
 
 namespace OsamesMicroOrm.DbTools
 {
-    class Updates
+    public class DbToolsUpdates
     {
         /// <summary>
         /// Exécution d'une mise à jour d'un objet de données vers la base de données

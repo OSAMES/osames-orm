@@ -24,7 +24,7 @@ using OsamesMicroOrm.Configuration;
 
 namespace OsamesMicroOrm.DbTools
 {
-    class Selects
+    public class DbToolsSelects
     {
         /// <summary>
         /// Crée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET, dans le cas d'un select basé sur un template <c>"SELECT {0} FROM {1}..."</c>.

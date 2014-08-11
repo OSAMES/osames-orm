@@ -10,6 +10,7 @@ using OsamesMicroOrm.Configuration;
 using SampleDbEntities.Chinook;
 using TestOsamesMicroOrm.TestDbEntities;
 using SampleDbEntities;
+using OsamesMicroOrm.DbTools;
 
 namespace TestOsamesMicroOrm
 {
@@ -81,7 +82,7 @@ namespace TestOsamesMicroOrm
         {
             KeyValuePair<string, object> adoParams = new KeyValuePair<string, object>("@firstname", "Barbara");
             StringBuilder sb = new StringBuilder();
-            DbTools.FormatSqlNameEqualValueString("FirstName", adoParams, ref sb);
+            DbToolsCommon.FormatSqlNameEqualValueString("FirstName", adoParams, ref sb);
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(sb.ToString()), "string builder empty");
             Assert.AreEqual(string.Format("{0}FirstName{1} = @firstname", ConfigurationLoader.StartFieldEncloser, ConfigurationLoader.EndFieldEncloser), sb.ToString());
@@ -100,7 +101,7 @@ namespace TestOsamesMicroOrm
                     new KeyValuePair<string, object>("@lastname", "Post")
                 };
             StringBuilder sb = new StringBuilder();
-            DbTools.FormatSqlNameEqualValueString(new List<string> { "FirstName", "LastName" }, adoParams, ref sb, ", ");
+            DbToolsCommon.FormatSqlNameEqualValueString(new List<string> { "FirstName", "LastName" }, adoParams, ref sb, ", ");
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(sb.ToString()), "string builder empty");
             Assert.AreEqual(string.Format("{0}FirstName{1} = @firstname, {0}LastName{1} = @lastname", ConfigurationLoader.StartFieldEncloser, ConfigurationLoader.EndFieldEncloser), sb.ToString());
@@ -119,7 +120,7 @@ namespace TestOsamesMicroOrm
                     new KeyValuePair<string, object>("@lastname", "Post")
                 };
             StringBuilder sb;
-            DbTools.FormatSqlFieldsListAsString(new List<string> { "FirstName", "LastName" }, out sb);
+            DbToolsCommon.FormatSqlFieldsListAsString(new List<string> { "FirstName", "LastName" }, out sb);
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(sb.ToString()), "string builder empty");
             Assert.AreEqual(string.Format("{0}FirstName{1}, {0}LastName{1}", ConfigurationLoader.StartFieldEncloser, ConfigurationLoader.EndFieldEncloser), sb.ToString());
@@ -137,7 +138,7 @@ namespace TestOsamesMicroOrm
 
             string dbColumnName;
             KeyValuePair<string, object> adoParams;
-            DbTools.DetermineDatabaseColumnNameAndAdoParameter(ref _client, "Employee", "LastName", out dbColumnName, out adoParams);
+            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(ref _client, "Employee", "LastName", out dbColumnName, out adoParams);
 
             Assert.AreEqual("LastName", dbColumnName);
 
@@ -157,7 +158,7 @@ namespace TestOsamesMicroOrm
 
             List<string> lstDbColumnNames;
             List<KeyValuePair<string, object>> adoParams;
-            DbTools.DetermineDatabaseColumnNamesAndAdoParameters(ref _client, "Employee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref _client, "Employee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
 
             Assert.AreEqual("LastName", lstDbColumnNames[0]);
             Assert.AreEqual("FirstName", lstDbColumnNames[1]);
@@ -184,7 +185,7 @@ namespace TestOsamesMicroOrm
 
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
-            DbTools.FormatSqlForUpdate(ref _client, "Employee", new List<string> { "LastName", "FirstName" }, "EmployeeId", out sqlCommand, out adoParams);
+            DbToolsCommon.FormatSqlForUpdate(ref _client, "Employee", new List<string> { "LastName", "FirstName" }, "EmployeeId", out sqlCommand, out adoParams);
 
             Assert.AreEqual("UPDATE [Employee] SET [LastName] = @nomsociete, [FirstName] = @firstname WHERE [EmployeeId] = @employeeid;", sqlCommand);
             Assert.AreEqual(2, adoParams.Count, "no parameters generated");
@@ -206,7 +207,7 @@ namespace TestOsamesMicroOrm
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbTools.FormatSqlForSelect("BaseReadWhere", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", null }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
+            DbToolsSelects.FormatSqlForSelect("BaseReadWhere", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", null }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
 
             Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @p0;", sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
@@ -228,7 +229,7 @@ namespace TestOsamesMicroOrm
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbTools.FormatSqlForSelect("BaseReadWhere", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", "@employeeId" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
+            DbToolsSelects.FormatSqlForSelect("BaseReadWhere", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", "@employeeId" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
 
             Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @employeeid;", sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
@@ -249,7 +250,7 @@ namespace TestOsamesMicroOrm
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbTools.FormatSqlForSelect("BaseRead", new List<string> { "LastName", "FirstName", "Address" }, "Employee", null, null, out sqlCommand, out adoParams, out lstDbColumnNames);
+            DbToolsSelects.FormatSqlForSelect("BaseRead", new List<string> { "LastName", "FirstName", "Address" }, "Employee", null, null, out sqlCommand, out adoParams, out lstDbColumnNames);
 
             Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee];", sqlCommand);
             Assert.AreEqual(0, adoParams.Count);
@@ -267,7 +268,7 @@ namespace TestOsamesMicroOrm
 
             List<string> lstPropertiesNames;
             List<string> lstDbColumnNames;
-            DbTools.DetermineDatabaseColumnsAndPropertiesNames("Customer", out lstDbColumnNames, out lstPropertiesNames);
+            DbToolsCommon.DetermineDatabaseColumnsAndPropertiesNames("Customer", out lstDbColumnNames, out lstPropertiesNames);
             Assert.IsFalse(lstDbColumnNames.Count == 0);
             Assert.IsFalse(lstPropertiesNames.Count == 0);
             Assert.AreEqual(lstDbColumnNames.Count, lstPropertiesNames.Count);
