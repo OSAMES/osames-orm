@@ -105,7 +105,7 @@ namespace OsamesMicroOrm
                 dbColumnName_ = ConfigurationLoader.Instance.GetMappingDbColumnName(mappingDictionariesContainerKey_, dataObjectcolumnName_);
 
                 adoParameterNameAndValue_ = new KeyValuePair<string, object>(
-                                        string.Format("@{0}", dataObjectcolumnName_.ToLowerInvariant()),
+                                        "@" + dataObjectcolumnName_.ToLowerInvariant(),
                                         dataObject_.GetType().GetProperty(dataObjectcolumnName_).GetValue(dataObject_)
                                         );
             }
@@ -143,7 +143,7 @@ namespace OsamesMicroOrm
                     lstDbColumnName_.Add(ConfigurationLoader.Instance.GetMappingDbColumnName(mappingDictionariesContainerKey_, columnName));
 
                     adoParameterNameAndValue_.Add(new KeyValuePair<string, object>(
-                                                    string.Format("@{0}", columnName.ToLowerInvariant()),
+                                                    "@" + columnName.ToLowerInvariant(),
                                                     dataObject_.GetType().GetProperty(columnName).GetValue(dataObject_)
                                                 ));
                 }
@@ -256,7 +256,7 @@ namespace OsamesMicroOrm
             if (value_ == null)
             {
                 index_++;
-                return string.Format("@p{0}", index_);
+                return "@p"+ index_;
             }
 
             if (value_.StartsWith("@"))
@@ -265,6 +265,7 @@ namespace OsamesMicroOrm
                 return value_.ToLowerInvariant().Replace(" ", "_");
             }
 
+            // Dans ce dernier cas c'est une colonne et non pas un paramètre, index_ n'est donc pas modifié.
             string columnName;
             DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName);
             return columnName;
@@ -308,7 +309,7 @@ namespace OsamesMicroOrm
             // TODO ici rendre comme pour le select, indépendant du template
 
             // 3. Final formatting "UPDATE {0} SET {1} WHERE {2};"
-            TryFormat(ConfigurationLoader.DicUpdateSql["BaseUpdate"], out sqlCommand_, new object[] { string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbSqlSetCommand, sbSqlWhereCommand });
+            TryFormat(ConfigurationLoader.DicUpdateSql["BaseUpdate"], out sqlCommand_, new object[] { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbSqlSetCommand, sbSqlWhereCommand });
         }
 
         /// <summary>
@@ -322,15 +323,15 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {1} dans le template sql</param>
         /// <param name="sqlTemplate_">Template SQL</param>
-        /// <param name="lstDataObjectcolumnName_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à sélectionner. Permet de formater {0} dans le template SQL</param>
-        /// <param name="strWherecolumnNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
+        /// <param name="lstDataObjectColumnName_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à sélectionner. Permet de formater {0} dans le template SQL</param>
+        /// <param name="strWhereColumnNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB. Sera utilisé pour le data reader</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void FormatSqlForSelect(string sqlTemplate_, List<string> lstDataObjectcolumnName_, string mappingDictionariesContainerKey_, List<string> strWherecolumnNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_, out List<string> lstDbColumnNames_)
+        internal static void FormatSqlForSelect(string sqlTemplate_, List<string> lstDataObjectColumnName_, string mappingDictionariesContainerKey_, List<string> strWhereColumnNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_, out List<string> lstDbColumnNames_)
         {
             StringBuilder sbSqlSelectFieldsCommand;   //{0} dans le template sql
             
@@ -338,26 +339,26 @@ namespace OsamesMicroOrm
 
             // 1. Détermine les colonnes pour les champs à sélectionner.
             // lstDbColumnNames_ sert de fournisseur pour remplir sbSqlSelectFieldsCommand
-            DetermineDatabaseColumnNames(mappingDictionariesContainerKey_, lstDataObjectcolumnName_, out lstDbColumnNames_);
+            DetermineDatabaseColumnNames(mappingDictionariesContainerKey_, lstDataObjectColumnName_, out lstDbColumnNames_);
             FormatSqlFieldsListAsString(lstDbColumnNames_, out sbSqlSelectFieldsCommand);
 
             // 2. Positionne les deux premiers placeholders
-            List<string> sqlPlaceholders = new List<string> { sbSqlSelectFieldsCommand.ToString(), string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
+            List<string> sqlPlaceholders = new List<string> { sbSqlSelectFieldsCommand.ToString(), string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 3. Détermine les noms des paramètres pour le where
-            if (strWherecolumnNames_ != null)
+            if (strWhereColumnNames_ != null)
             {
-                int iCount = strWherecolumnNames_.Count;
+                int iCount = strWhereColumnNames_.Count;
                 int dynamicParameterIndex = -1;
                 for (int i = 0; i < iCount; i++)
                 {
-                    string paramName = DetermineAdoParameterName(strWherecolumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
+                    string paramName = DetermineAdoParameterName(strWhereColumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
                     
                     // Si paramètre dynamique, ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ.
                     if (paramName.StartsWith("@"))
                         adoParameters_.Add(new KeyValuePair<string, object>(paramName, oWhereValues_[dynamicParameterIndex]));
                     else
-                        paramName = string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
+                        paramName = string.Concat(ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
 
                     // Ajout pour les placeholders
                     sqlPlaceholders.Add(paramName);
@@ -381,33 +382,33 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {0} dans le template sql</param>
         /// <param name="sqlTemplate_">Template SQL</param>
-        /// <param name="strWherecolumnNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
+        /// <param name="strWhereColumnNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
         /// Pour formater à partir de {1} dans le template SQL. Peut être null</param>
         /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB. Sera utilisé pour le data reader</param>
-        internal static void FormatSqlForSelect(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWherecolumnNames_, List<object> oWhereValues_, List<string> lstDbColumnNames_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+        internal static void FormatSqlForSelect(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereColumnNames_, List<object> oWhereValues_, List<string> lstDbColumnNames_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
         {
             adoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
 
             // 1. Positionne le premier placeholder
-            List<string> sqlPlaceholders = new List<string> { string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
+            List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 2. Détermine les noms des paramètres pour le where
-            if (strWherecolumnNames_ != null)
+            if (strWhereColumnNames_ != null)
             {
-                int iCount = strWherecolumnNames_.Count;
+                int iCount = strWhereColumnNames_.Count;
                 int dynamicParameterIndex = -1;
                 for (int i = 0; i < iCount; i++)
                 {
-                    string paramName = DetermineAdoParameterName(strWherecolumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
+                    string paramName = DetermineAdoParameterName(strWhereColumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
 
                     // Si paramètre dynamique, ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ.
                     if (paramName.StartsWith("@"))
                         adoParameters_.Add(new KeyValuePair<string, object>(paramName, oWhereValues_[dynamicParameterIndex]));
                     else
-                        paramName = string.Format("{0}{1}{2}", ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
+                        paramName = string.Concat(ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
 
                     // Ajout pour les placeholders
                     sqlPlaceholders.Add(paramName);
@@ -601,12 +602,12 @@ namespace OsamesMicroOrm
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    throw new Exception(string.Format("Column '{0}' doesn't exist in sql data reader", columnName));
+                    throw new Exception("Column '" + columnName + "' doesn't exist in sql data reader");
                 }
 
                 if (dataInReaderIndex == -1)
                 {
-                    throw new Exception(string.Format("Column '{0}' doesn't exist in sql data reader", columnName));
+                    throw new Exception("Column '" + columnName + " doesn't exist in sql data reader");
                 }
 
                 // TODO traiter ORM-45 pour cast vers le bon type.
@@ -650,7 +651,7 @@ namespace OsamesMicroOrm
             {
                 int nbOfPlaceholders = Common.CountPlaceholders(format_);
                 ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 0,
-                    string.Format("Error, not same number of placeholders : {0} and parameters : {1}, exception: {2}", nbOfPlaceholders, args_.Length, ex.Message));
+                    "Error, not same number of placeholders : " + nbOfPlaceholders + " and parameters : " + args_.Length + ", exception: " + ex.Message);
                 result_ = null;
                 return false;
             }

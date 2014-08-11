@@ -17,7 +17,6 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
@@ -97,7 +96,7 @@ namespace OsamesMicroOrm.Utilities
             foreach (string err in Warnings)
                 sb.Append(err).Append(Environment.NewLine);
                 
-            throw new Exception(string.Format("XML validation errors: {0}", sb));
+            throw new Exception("XML validation errors: " + sb);
         }
 
         /// <summary>
@@ -124,7 +123,7 @@ namespace OsamesMicroOrm.Utilities
             foreach (string err in Warnings)
                 sb.Append(err).Append(Environment.NewLine);
 
-            throw new Exception(string.Format("XML validation errors: {0}", sb));
+            throw new Exception("XML validation errors: " + sb);
         }
 
         /// <summary>
