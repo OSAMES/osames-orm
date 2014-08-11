@@ -46,7 +46,11 @@
     <Compile Include="DatabaseMappingAttribute.cs" />
     <Compile Include="Configuration\Tweak\Customizer.cs" />
     <Compile Include="DbManager.cs" />
-    <Compile Include="DbTools.cs" />
+    <Compile Include="DbTools\DbToolsCommon.cs" />
+    <Compile Include="DbTools\Deletes.cs" />
+    <Compile Include="DbTools\Inserts.cs" />
+    <Compile Include="DbTools\Selects.cs" />
+    <Compile Include="DbTools\Updates.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\Common.cs" />
     <Compile Include="Utilities\MappingTools.cs" />
