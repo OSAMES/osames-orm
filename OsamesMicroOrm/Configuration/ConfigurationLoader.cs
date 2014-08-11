@@ -295,10 +295,10 @@ namespace OsamesMicroOrm.Configuration
                 return;
             }
             // Expression XPath pour se positionner sur le noeud Provider avec l'attribut "name" à la valeur désirée
-            StringBuilder sbXpath = new StringBuilder("/*/");
-            sbXpath.Append(xmlRootTagPrefix_).Append(":ProviderSpecific/").Append(xmlRootTagPrefix_).Append(":Provider[@name='").Append(providerInvariantName).Append("']");
-            
-            XPathNodeIterator xPathNodeIteratorProviderNode = xPathNavigator_.Select(sbXpath.ToString(), xmlNamespaceManager);
+            string strXPathExpression = "/*/" + xmlRootTagPrefix_ + ":ProviderSpecific/" + xmlRootTagPrefix_ + ":Provider[@name='" + providerInvariantName + "']";
+
+
+            XPathNodeIterator xPathNodeIteratorProviderNode = xPathNavigator_.Select(strXPathExpression, xmlNamespaceManager);
             if (!xPathNodeIteratorProviderNode.MoveNext())
                 throw new Exception("Provider with name '" + providerInvariantName + "' missing in XML");
 
@@ -314,7 +314,7 @@ namespace OsamesMicroOrm.Configuration
             }
 
             // Expression XPath pour sélectionner le noeud enfant "Select" avec la valeur de "name" à 'getlastinsertid'
-            string strXPathExpression = xmlRootTagPrefix_ + ":Select[@name='getlastinsertid']";
+            strXPathExpression = xmlRootTagPrefix_ + ":Select[@name='getlastinsertid']";
 
             XPathNodeIterator xPathNodeIteratorSelectNode = xPathNodeIteratorProviderNode.Current.Select(strXPathExpression, xmlNamespaceManager);
             if (xPathNodeIteratorSelectNode.MoveNext())
