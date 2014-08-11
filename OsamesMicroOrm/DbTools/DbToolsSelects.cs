@@ -290,7 +290,7 @@ namespace OsamesMicroOrm.DbTools
 
                 if (dataInReaderIndex == -1)
                 {
-                    throw new Exception("Column '" + columnName + " doesn't exist in sql data reader");
+                    throw new Exception("Column '" + columnName + "' doesn't exist in sql data reader");
                 }
 
                 // TODO traiter ORM-45 pour cast vers le bon type.

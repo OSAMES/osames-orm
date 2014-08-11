@@ -119,8 +119,6 @@ namespace TestOsamesMicroOrm
         [TestCategory("XML")]
         [TestCategory("Configuration")]
         [ExpectedException(typeof(Exception))]
-        [Ignore]
-        [TestCategory("FIXME")]
         public void TestConfigurationLoaderIncorrectXmlAssertOnInternalDictionaries()
         {
             OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString(), _templatesTestDuplicateSelect);
