@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
+using OsamesMicroOrm.DbTools;
 using SampleDbEntities.Chinook;
 using TestOsamesMicroOrmMsSql.Tools;
 
@@ -38,7 +39,7 @@ namespace TestOsamesMicroOrmMsSql
             try
             {
                 // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
-                Customer customer = DbTools.SelectSingleAllColumns<Customer>("BaseReadAll", "Customer", new List<string> {"City"}, new List<object> {"Paris"});
+                Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAll", "Customer", new List<string> {"City"}, new List<object> {"Paris"});
                 Assert.IsNotNull(customer, "Pas d'enregistrement trouvé, requeête select à corriger");
                 // Si une exception est lancée, la ligne ci-dessous n'est pas exécutée.
                 // Elle a vocation à faire échouer le test si elle s'exécute.
