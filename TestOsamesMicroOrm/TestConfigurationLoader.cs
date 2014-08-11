@@ -127,12 +127,19 @@ namespace TestOsamesMicroOrm
             {
                 ConfigurationLoader.Clear();
                 ConfigurationLoader config = ConfigurationLoader.Instance;
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 throw;
             }
-
+            finally
+            {
+                ConfigurationLoader.Clear();
+                OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString(), Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"Config\sqltemplates.xml"));
+                ConfigurationLoader config = ConfigurationLoader.Instance;
+            }
+            
         }
 
         /// <summary>
