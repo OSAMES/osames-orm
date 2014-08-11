@@ -18,9 +18,10 @@ namespace TestOsamesMicroOrm
     [ExcludeFromCodeCoverage]
     public class TestDbTools : OsamesMicroOrmTest
     {
+        [Obsolete]
         static TestClient _client = new TestClient();
 
-        static Employee _employee = new Employee();
+        static Employee _employee = new Employee {LastName = "Doe", FirstName = "John"};
         static Customer _customer = new Customer();
         static Invoice _invoice = new Invoice();
         static InvoiceLine _invoiceLine = new InvoiceLine();
@@ -138,12 +139,12 @@ namespace TestOsamesMicroOrm
 
             string dbColumnName;
             KeyValuePair<string, object> adoParams;
-            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(ref _client, "Employee", "LastName", out dbColumnName, out adoParams);
+            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(ref _employee, "Employee", "LastName", out dbColumnName, out adoParams);
 
             Assert.AreEqual("LastName", dbColumnName);
 
             Assert.AreEqual("@lastname", adoParams.Key);
-            Assert.AreEqual(_client.NomSociete, adoParams.Value);
+            Assert.AreEqual(_employee.LastName, adoParams.Value);
         }
 
         /// <summary>
@@ -158,15 +159,15 @@ namespace TestOsamesMicroOrm
 
             List<string> lstDbColumnNames;
             List<KeyValuePair<string, object>> adoParams;
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref _client, "Employee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref _employee, "Employee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
 
             Assert.AreEqual("LastName", lstDbColumnNames[0]);
             Assert.AreEqual("FirstName", lstDbColumnNames[1]);
             Assert.AreEqual(2, adoParams.Count, "no parameters generated");
             Assert.AreEqual("@lastname", adoParams[0].Key);
-            Assert.AreEqual(_client.NomSociete, adoParams[0].Value);
+            Assert.AreEqual(_employee.LastName, adoParams[0].Value);
             Assert.AreEqual("@firstname", adoParams[1].Key);
-            Assert.AreEqual(_client.ClientDate, adoParams[1].Value);
+            Assert.AreEqual(_employee.FirstName, adoParams[1].Value);
         }
 
         /// <summary>
@@ -185,14 +186,14 @@ namespace TestOsamesMicroOrm
 
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
-            DbToolsUpdates.FormatSqlForUpdate(ref _client, "Employee", new List<string> { "LastName", "FirstName" }, "EmployeeId", out sqlCommand, out adoParams);
+            DbToolsUpdates.FormatSqlForUpdate(ref _employee, "Employee", new List<string> { "LastName", "FirstName" }, "EmployeeId", out sqlCommand, out adoParams);
 
             Assert.AreEqual("UPDATE [Employee] SET [LastName] = @nomsociete, [FirstName] = @firstname WHERE [EmployeeId] = @employeeid;", sqlCommand);
             Assert.AreEqual(2, adoParams.Count, "no parameters generated");
             Assert.AreEqual("@lastname", adoParams[0].Key);
-            Assert.AreEqual(_client.NomSociete, adoParams[0].Value);
+            Assert.AreEqual(_employee.LastName, adoParams[0].Value);
             Assert.AreEqual("@firstname", adoParams[1].Key);
-            Assert.AreEqual(_client.ClientDate, adoParams[1].Value);
+            Assert.AreEqual(_employee.FirstName, adoParams[1].Value);
         }
 
         /// <summary>

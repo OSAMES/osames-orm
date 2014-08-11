@@ -79,9 +79,7 @@ namespace OsamesMicroOrm.DbTools
 
                 }
             }
-
             DbToolsCommon.TryFormat(ConfigurationLoader.DicSelectSql[sqlTemplate_], out sqlCommand_, sqlPlaceholders.ToArray());
-
         }
 
         /// <summary>
@@ -102,7 +100,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB. Sera utilisé pour le data reader</param>
-        internal static void FormatSqlForSelect(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereColumnNames_, List<object> oWhereValues_, List<string> lstDbColumnNames_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+        private static void FormatSqlForSelect(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereColumnNames_, List<object> oWhereValues_, List<string> lstDbColumnNames_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
         {
             adoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
 

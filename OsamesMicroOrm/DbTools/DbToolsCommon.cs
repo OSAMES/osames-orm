@@ -190,7 +190,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="dataObjectcolumnName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectcolumnName_, out string dbColumnName_)
+        private static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectcolumnName_, out string dbColumnName_)
         {
             dbColumnName_ = null;
 
@@ -282,7 +282,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="result_">vrai/faux de type retour de valeur</param>
         /// <param name="args_">Valeurs à mettre dans les placeholders</param>
         /// <returns>Renvoie vrai si réussi, sinon retourne faux.</returns>
-        public static bool TryFormat(string format_, out string result_, params Object[] args_)
+        internal static bool TryFormat(string format_, out string result_, params Object[] args_)
         {
             try
             {
