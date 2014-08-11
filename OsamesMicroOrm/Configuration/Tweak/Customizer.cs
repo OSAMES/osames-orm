@@ -17,6 +17,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 
@@ -29,8 +30,11 @@ namespace OsamesMicroOrm.Configuration.Tweak
     /// </summary>
     public static class Customizer
     {
+        private static Dictionary<string, string> appSettingsOriginalValue = new Dictionary<string, string>();
+
         /// <summary>
-        /// 
+        /// Permet de modifier une clé dans ConfigurationManager.AppSettings.
+        /// <para>Si la clé modifiée ne fait pas partie de l'énum de la classe Customizer alors aucun n'appel de ConfigurationLoader.Clear() n'est fait</para>
         /// </summary>
         /// <param name="key_">Key for ConfigurationManager.AppSettings</param>
         /// <param name="keyValue_">Value for ConfigurationManager.AppSettings</param>
@@ -42,14 +46,56 @@ namespace OsamesMicroOrm.Configuration.Tweak
                 Log(customLogger_, "Cannot set value for ConfigurationManager.AppSettings key '" + key_ + "', it's not defined, nothing to override", true);
                 return;
             }
-            Log(customLogger_, "Changing ConfigurationManager.AppSettings key '" + key_ + "' from '" + ConfigurationManager.AppSettings[key_] + "' to '" + keyValue_ + "'", false);
 
-            ConfigurationManager.AppSettings[key_] = keyValue_;
+            if (!appSettingsOriginalValue.ContainsKey(key_))
+            {
+                appSettingsOriginalValue.Add(key_,ConfigurationManager.AppSettings[key_]);
+                ConfigurationManager.AppSettings[key_] = keyValue_;
+                Log(customLogger_, "Changing ConfigurationManager.AppSettings key '" + key_ + "' from '" + ConfigurationManager.AppSettings[key_] + "' to '" + keyValue_ + "'", false);
 
-            // Force full reload of configuration if key belongs to AppSettingsKeys enum.
-            if (Enum.IsDefined(typeof(AppSettingsKeys), key_))
-                ConfigurationLoader.Clear();
+                // Force full reload of configuration if key belongs to AppSettingsKeys enum.
+                if (Enum.IsDefined(typeof(AppSettingsKeys), key_))
+                    ConfigurationLoader.Clear();
+            }
+            else
+            {
+                Log(customLogger_, "Key [" + key_ + "] already changed. Current value : " + ConfigurationManager.AppSettings[key_], false);
+            }
         }
+
+        /// <summary>
+        /// Restore une clé précise dans ConfigurationManager.AppSettings
+        /// </summary>
+        /// <param name="key_">Nom de la clé à restorer</param>
+        /// <param name="customLogger_">if not null, used instead of default orm logger</param>
+        public static void ConfigurationManagerRestoreKey(string key_, TraceSource customLogger_ = null)
+        {
+            if (appSettingsOriginalValue.ContainsKey(key_))
+            {
+                ConfigurationManager.AppSettings[key_] = appSettingsOriginalValue[key_];
+                ConfigurationLoader.Clear();
+                appSettingsOriginalValue.Remove(key_);
+                Log(customLogger_, "Key [" + key_ + "] as restored to original value", false);
+
+            }
+            else
+            {
+                Log(customLogger_, "Key [" + key_ + "] as no original value. Can't change it", false);
+            }
+        }
+
+        /// <summary>
+        /// Restore toute les clés changées dans ConfigurationManager.AppSettings
+        /// </summary>
+        public static void ConfigurationManagerRestoreAllKeys()
+        {
+            foreach (var key in appSettingsOriginalValue.Keys)
+            {
+                ConfigurationManager.AppSettings[key] = appSettingsOriginalValue[key];
+            }
+            appSettingsOriginalValue.Clear();
+        }
+
         /// <summary>
         /// 
         /// </summary>

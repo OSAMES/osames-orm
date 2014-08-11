@@ -121,11 +121,10 @@ namespace TestOsamesMicroOrm
         [ExpectedException(typeof(Exception))]
         public void TestConfigurationLoaderIncorrectXmlAssertOnInternalDictionaries()
         {
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString(), _templatesTestDuplicateSelect);
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.mappingFileName.ToString(), _mappingFileFullPath);
             try
             {
-                ConfigurationLoader.Clear();
+                OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString(), _templatesTestDuplicateSelect);
+                OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.mappingFileName.ToString(), _mappingFileFullPath);
                 ConfigurationLoader config = ConfigurationLoader.Instance;
             }
             catch (Exception ex)
@@ -135,9 +134,8 @@ namespace TestOsamesMicroOrm
             }
             finally
             {
-                ConfigurationLoader.Clear();
-                OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString(), Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"Config\sqltemplates.xml"));
-                ConfigurationLoader config = ConfigurationLoader.Instance;
+                OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString());
+                OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.mappingFileName.ToString());
             }
             
         }
