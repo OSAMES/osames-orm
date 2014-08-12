@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,6 +14,10 @@ namespace TestOsamesMicroOrm
     [ExcludeFromCodeCoverage]
     public class TestMappingTools : OsamesMicroOrmTest
     {
+        public void Setup()
+        {
+            
+        }
         /// <summary>
         /// Case OK.
         /// </summary>
@@ -22,17 +27,19 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         public void TestGetDbEntityDictionnaryMappingKeyOk()
         {
+            var init = ConfigurationLoader.Instance;
+
             Employee entityEmployee = new Employee();
             Customer entityCustomer = new Customer();
             Invoice entityInvoice = new Invoice();
             InvoiceLine entityInvoiceLineI = new InvoiceLine();
             Track entityTrack = new Track();
 
-            Assert.AreEqual("Employee", MappingTools.GetDbEntityDictionnaryMappingKey(entityEmployee));
-            Assert.AreEqual("Customer", MappingTools.GetDbEntityDictionnaryMappingKey(entityCustomer));
-            Assert.AreEqual("Invoice", MappingTools.GetDbEntityDictionnaryMappingKey(entityInvoice));
-            Assert.AreEqual("InvoiceLine", MappingTools.GetDbEntityDictionnaryMappingKey(entityInvoiceLineI));
-            Assert.AreEqual("Track", MappingTools.GetDbEntityDictionnaryMappingKey(entityTrack));
+            Assert.AreEqual("employee", MappingTools.GetDbEntityDictionnaryMappingKey(entityEmployee));
+            Assert.AreEqual("customer", MappingTools.GetDbEntityDictionnaryMappingKey(entityCustomer));
+            Assert.AreEqual("invoice", MappingTools.GetDbEntityDictionnaryMappingKey(entityInvoice));
+            Assert.AreEqual("invoiceline", MappingTools.GetDbEntityDictionnaryMappingKey(entityInvoiceLineI));
+            Assert.AreEqual("track", MappingTools.GetDbEntityDictionnaryMappingKey(entityTrack));
         }
 
         /// <summary>
@@ -45,6 +52,8 @@ namespace TestOsamesMicroOrm
         [ExpectedException(typeof(Exception))]
         public void TestGetDbEntityDictionnaryMappingKeyNOkMissingAttribute()
         {
+            var init = ConfigurationLoader.Instance;
+
             TestUnmappedEntity entity = new TestUnmappedEntity();
             try
             {
@@ -69,6 +78,8 @@ namespace TestOsamesMicroOrm
         [ExpectedException(typeof(Exception))]
         public void TestGetDbEntityDictionnaryMappingKeyNOkEmptyAttribute()
         {
+            var init = ConfigurationLoader.Instance;
+
             TestEmptyMappingEntity entity = new TestEmptyMappingEntity();
             try
             {
@@ -93,6 +104,8 @@ namespace TestOsamesMicroOrm
         [ExpectedException(typeof(Exception))]
         public void TestGetDbEntityDictionnaryMappingKeyWrongValueMappingAttribute()
         {
+            var init = ConfigurationLoader.Instance;
+
             TestWrongMappingEntity entity = new TestWrongMappingEntity();
             try
             {

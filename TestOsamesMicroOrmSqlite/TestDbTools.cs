@@ -39,7 +39,7 @@ namespace TestOsamesMicroOrmSqlite
                 ConfigurationLoader.Clear();
                 _config = ConfigurationLoader.Instance;
                 // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
-                Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAll", "Customer",
+                Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAll", "customer",
                     new List<string> {"City"}, new List<object> {"Paris"});
                 Assert.IsNotNull(customer, "Pas d'enregistrement trouvé, requeête select à corriger");
                 // Si une exception est lancée, la ligne ci-dessous n'est pas exécutée.

@@ -17,6 +17,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using OsamesMicroOrm;
 
 namespace SampleDbEntities.Chinook
 {
@@ -36,6 +37,7 @@ namespace SampleDbEntities.Chinook
 	    CONSTRAINT TRACK_FK_MEDIATYPE FOREIGN KEY (MediaTypeId) REFERENCES MediaType(MediaTypeId)
      */
     [Serializable]
+    [DatabaseMapping("Track")]
     public class Track
     {
         private long _trackId;

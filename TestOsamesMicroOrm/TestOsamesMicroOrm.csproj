@@ -56,8 +56,6 @@
   <ItemGroup>
     <Compile Include="OsamesMicroOrmTest.cs" />
     <Compile Include="TestConfigurationLoader.cs" />
-    <Compile Include="TestDbEntities\TestAdresse.cs" />
-    <Compile Include="TestDbEntities\TestClient.cs" />
     <Compile Include="TestDbEntities\TestUnmappedEntity.cs" />
     <Compile Include="TestDbEntities\TestEmptyMappingEntity.cs" />
     <Compile Include="TestDbEntities\TestWrongMappingEntity.cs" />
@@ -77,26 +75,31 @@
   <ItemGroup>
     <None Include="TestConfig\sqltemplates-test-no-delete-section.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="TestConfig\sqltemplates-test-other-sections-order.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="TestConfig\sqltemplates-test-duplicate-select.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="TestConfig\sqltemplates-test-same-select-insert.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="TestConfig\sqltemplates-test-node-case.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -107,15 +110,19 @@
   <ItemGroup>
     <None Include="TestConfig\sqltemplates-test-duplicate-select-online-schema.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="TestConfig\sqltemplates-test-other-sections-order-online-schema.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="TestConfig\sqltemplates-test-wrong-uri-online-schema.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="TestConfig\sqltemplates-online-schema.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
