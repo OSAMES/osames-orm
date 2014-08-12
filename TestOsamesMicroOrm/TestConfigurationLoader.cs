@@ -24,9 +24,7 @@ namespace TestOsamesMicroOrm
     {
         private readonly string _mappingFileFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_MAPPING_XML);
         private readonly string _templatesFileFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_TEMPLATES_XML);
-
         private readonly string _templatesTestNodeCase = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_TEMPLATES_XML_TEST_NODE_CASE);
-
         private readonly string _templatesTestDuplicateSelect = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_TEMPLATES_XML_TEST_DUPLICATE_SELECT);
 
         /// <summary>
@@ -43,7 +41,6 @@ namespace TestOsamesMicroOrm
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
             Assert.IsTrue(ConfigurationLoader.MappingDictionnary.Keys.Count > 0, "Expected keys in dictionary after initialize");
-
             Assert.IsTrue(ConfigurationLoader.DicInsertSql.Keys.Count > 0, "Expected keys in INSERT dictionary after initialize");
             Assert.IsTrue(ConfigurationLoader.DicSelectSql.Keys.Count > 0, "Expected keys in SELECT dictionary after initialize");
             Assert.IsTrue(ConfigurationLoader.DicUpdateSql.Keys.Count > 0, "Expected keys in UPDATE dictionary after initialize");
@@ -75,16 +72,22 @@ namespace TestOsamesMicroOrm
         [TestCategory("SqLite")]
         public void TestConfigurationLoaderAssertOnSqLiteDatabaseParameters()
         {
-            // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
-            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
-            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
-            ConfigurationLoader.Clear();
+            try
+            {
+                // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
 
-            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+                ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-            Assert.AreEqual(string.Format("Data Source={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook_Sqlite.sqlite;Version=3;UTF8Encoding=True;"), DbManager.ConnectionString);
-            Assert.AreEqual(@"System.Data.SQLite", DbManager.ProviderName);
-
+                Assert.AreEqual(string.Format("Data Source={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook_Sqlite.sqlite;Version=3;UTF8Encoding=True;"), DbManager.ConnectionString);
+                Assert.AreEqual(@"System.Data.SQLite", DbManager.ProviderName);
+            }
+            finally
+            {
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.activeDbConnection.ToString());
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.dbName.ToString());
+            }
         }
 
         /// <summary>
@@ -98,16 +101,21 @@ namespace TestOsamesMicroOrm
         [TestCategory("MsSql")]
         public void TestConfigurationLoaderAssertOnMsSqlDatabaseParameters()
         {
-            // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
-            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");
-            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook.mdf");
-            ConfigurationLoader.Clear();
+            try
+            {
+                // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook.mdf");
 
-            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+                ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-            Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook.mdf;Integrated Security=True"), DbManager.ConnectionString);
-            Assert.AreEqual(@"System.Data.SqlClient", DbManager.ProviderName);
-
+                Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook.mdf;Integrated Security=True"), DbManager.ConnectionString);
+                Assert.AreEqual(@"System.Data.SqlClient", DbManager.ProviderName);
+            } finally
+            {
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.activeDbConnection.ToString());
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.dbName.ToString());
+            }
         }
 
         /// <summary>
@@ -121,11 +129,10 @@ namespace TestOsamesMicroOrm
         [ExpectedException(typeof(Exception))]
         public void TestConfigurationLoaderIncorrectXmlAssertOnInternalDictionaries()
         {
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString(), _templatesTestDuplicateSelect);
-            OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.mappingFileName.ToString(), _mappingFileFullPath);
             try
             {
-                ConfigurationLoader.Clear();
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString(), _templatesTestDuplicateSelect);
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.mappingFileName.ToString(), _mappingFileFullPath);
                 ConfigurationLoader config = ConfigurationLoader.Instance;
             }
             catch (Exception ex)
@@ -135,9 +142,8 @@ namespace TestOsamesMicroOrm
             }
             finally
             {
-                ConfigurationLoader.Clear();
-                OsamesMicroOrm.Configuration.Tweak.Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString(), Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"Config\sqltemplates.xml"));
-                ConfigurationLoader config = ConfigurationLoader.Instance;
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString());
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.mappingFileName.ToString());
             }
             
         }
@@ -174,6 +180,7 @@ namespace TestOsamesMicroOrm
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
             Assert.AreEqual(5, ConfigurationLoader.MappingDictionnary.Keys.Count, "Expected 5 keys in tables dictionary after initialize");
             Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("Customer"), "Expected to find 'Customer' key");
+
             // Inspect detail for a specific case
             Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["Customer"];
             Assert.AreEqual(13, mappings.Keys.Count, "Expected 13 keys in dictionary for Customer mappings after initialize");
@@ -195,11 +202,11 @@ namespace TestOsamesMicroOrm
         {
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
             Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("Customer"), "Expected to find 'Customer' key");
+
             // Inspect detail for a specific case
             Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["Customer"];
             Assert.IsTrue(mappings.ContainsKey("Email"), "Expected to find 'Email' key");
             Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
-
             Assert.AreEqual("Email", ConfigurationLoader.Instance.GetMappingDbColumnName("Customer", "Email"));
 
         }
@@ -285,21 +292,25 @@ namespace TestOsamesMicroOrm
         [TestCategory("SqLite")]
         public void TestLoadProviderSpecificInformation()
         {
-            // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
-            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
-            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
-       
-            ConfigurationLoader.Clear();
+            try
+            {
+                // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
 
-            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+                ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-            Assert.AreEqual("System.Data.SQLite", DbManager.ProviderName, "Nom du provider incorrect après détermination depuis le fichier des AppSettings et celui des connection strings");
-            Assert.AreEqual("[", ConfigurationLoader.StartFieldEncloser, "Start field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
-            Assert.AreEqual("]", ConfigurationLoader.EndFieldEncloser, "End field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+                Assert.AreEqual("System.Data.SQLite", DbManager.ProviderName, "Nom du provider incorrect après détermination depuis le fichier des AppSettings et celui des connection strings");
+                Assert.AreEqual("[", ConfigurationLoader.StartFieldEncloser, "Start field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+                Assert.AreEqual("]", ConfigurationLoader.EndFieldEncloser, "End field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
 
-            Assert.AreEqual("select last_insert_rowid();", DbManager.SelectLastInsertIdCommandText, "Texte pour 'select last insert id' incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
-
-
+                Assert.AreEqual("select last_insert_rowid();", DbManager.SelectLastInsertIdCommandText, "Texte pour 'select last insert id' incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+            }
+            finally
+            {
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.activeDbConnection.ToString());
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.dbName.ToString());
+            }
         }
     }
 }
