@@ -458,21 +458,32 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Executes an SQL statement which returns number of affected rows("non query command").
         /// </summary>
+        /// <param name="lastInsertedRowId_">Last inserted row ID (long number)</param>
         /// <param name="cmdType_">Command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="transaction_">When not null, transaction to use</param>
         /// <returns>Number of affected rows</returns>
-        public int ExecuteNonQuery(string cmdText_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
+        public int ExecuteNonQuery(string cmdText_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
         {
             DbConnection dbConnection = null;
             try
             {
                 // Utiliser la connexion de la transaction ou une nouvelle connexion
                 dbConnection = transaction_ != null ? transaction_.Connection : CreateConnection();
+
+                int iNbAffectedRows;
                 using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdType_))
                 {
-                    return command.ExecuteNonQuery();
+                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
+                using (DbCommand command = PrepareCommand(dbConnection, transaction_, SelectLastInsertIdCommandText))
+                {
+                        
+                    object oValue = command.ExecuteScalar();
+                    if(!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                }
+                return iNbAffectedRows;
             }
             catch (Exception ex)
             {
@@ -500,12 +511,13 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Executes an SQL statement which returns number of  affected rows("non query command").
         /// </summary>
+        /// <param name="lastInsertedRowId_">Last inserted row ID (long number)</param>
         /// <param name="cmdType_">Command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParms_">ADO.NET parameters (name and value) in multiple array format</param>
         /// <param name="transaction_">When not null, transaction to use</param>
         /// <returns>Number of affected rows</returns>
-        public int ExecuteNonQuery(string cmdText_, object[,] cmdParms_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
+        public int ExecuteNonQuery(string cmdText_, object[,] cmdParms_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
         {
             DbConnection dbConnection = null;
             try
@@ -513,11 +525,19 @@ namespace OsamesMicroOrm
                 // Utiliser la connexion de la transaction ou une nouvelle connexion
                 dbConnection = transaction_ != null ? transaction_.Connection : CreateConnection();
 
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdParms_, cmdType_))
+                int iNbAffectedRows;
+                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
+                using (DbCommand command = PrepareCommand(dbConnection, transaction_, SelectLastInsertIdCommandText))
                 {
 
-                    return command.ExecuteNonQuery();
+                    object oValue = command.ExecuteScalar();
+                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                 }
+                return iNbAffectedRows;
             }
             catch (Exception ex)
             {
@@ -545,21 +565,33 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Executes an SQL statement which returns number of  affected rows("non query command").
         /// </summary>
+        /// <param name="lastInsertedRowId_">Last inserted row ID (long number)</param>
         /// <param name="cmdType_">Command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParms_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <param name="transaction_">When not null, transaction to use</param>
         /// <returns>Number of affected rows</returns>
-        public int ExecuteNonQuery(string cmdText_, Parameter[] cmdParms_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
+        public int ExecuteNonQuery(string cmdText_, Parameter[] cmdParms_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
         {
             DbConnection dbConnection = null;
             try
             {
                 // Utiliser la connexion de la transaction ou une nouvelle connexion
                 dbConnection = transaction_ != null ? transaction_.Connection : CreateConnection();
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdParms_, cmdType_))
 
-                { return command.ExecuteNonQuery(); }
+                int iNbAffectedRows;
+                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
+                using (DbCommand command = PrepareCommand(dbConnection, transaction_, SelectLastInsertIdCommandText))
+                {
+
+                    object oValue = command.ExecuteScalar();
+                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                }
+                return iNbAffectedRows;
             }
             catch (Exception ex)
             {
@@ -585,28 +617,29 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Executes an SQL statement which returns number of  affected rows("non query command").
         /// </summary>
+        /// <param name="lastInsertedRowId_">Last inserted row ID (long number)</param>
         /// <param name="cmdType_">Command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParms_">ADO.NET parameters (name and value) in list of key/value pair format</param>
         /// <param name="transaction_">When not null, transaction to use</param>
         /// <returns>Number of affected rows</returns>
-        public int ExecuteNonQuery(string cmdText_, List<KeyValuePair<string, object>> cmdParms_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
+        public int ExecuteNonQuery(string cmdText_, List<KeyValuePair<string, object>> cmdParms_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
         {
             using (DbConnection dbConnection = CreateConnection())
             {
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdParms_, cmdType_))
+                int iNbAffectedRows;
+                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdType_))
                 {
-                    try
-                    {
-                        return command.ExecuteNonQuery();
-
-                    }
-                    catch (Exception ex)
-                    {
-                        ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex.ToString());
-                        throw;
-                    }
+                    iNbAffectedRows = command.ExecuteNonQuery();
                 }
+                using (DbCommand command = PrepareCommand(dbConnection, transaction_, SelectLastInsertIdCommandText))
+                {
+
+                    object oValue = command.ExecuteScalar();
+                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                }
+                return iNbAffectedRows;
             }
         }
 
@@ -723,15 +756,6 @@ namespace OsamesMicroOrm
         }
 
         #endregion
-
-        /// <summary>
-        /// Obtention de l'ID du dernier INSERT.
-        /// </summary>
-        /// <returns></returns>
-        public string GetLastInsertId()
-        {
-            return ExecuteScalar(SelectLastInsertIdCommandText, new Parameter[0]).ToString();
-        }
 
         #endregion
 
