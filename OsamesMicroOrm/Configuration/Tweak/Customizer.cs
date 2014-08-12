@@ -30,7 +30,7 @@ namespace OsamesMicroOrm.Configuration.Tweak
     /// </summary>
     public static class Customizer
     {
-        private static readonly Dictionary<string, string> appSettingsOriginalValue = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> _appSettingsOriginalValue = new Dictionary<string, string>();
 
         /// <summary>
         /// Permet de modifier une clé dans ConfigurationManager.AppSettings.
@@ -47,9 +47,9 @@ namespace OsamesMicroOrm.Configuration.Tweak
                 return;
             }
 
-            if (!appSettingsOriginalValue.ContainsKey(key_))
+            if (!_appSettingsOriginalValue.ContainsKey(key_))
             {
-                appSettingsOriginalValue.Add(key_,ConfigurationManager.AppSettings[key_]);
+                _appSettingsOriginalValue.Add(key_,ConfigurationManager.AppSettings[key_]);
                 Log(customLogger_, "Changing ConfigurationManager.AppSettings key '" + key_ + "' from '" + ConfigurationManager.AppSettings[key_] + "' to '" + keyValue_ + "'", false);
                 ConfigurationManager.AppSettings[key_] = keyValue_;
 
@@ -69,14 +69,14 @@ namespace OsamesMicroOrm.Configuration.Tweak
         /// <param name="customLogger_">if not null, used instead of default orm logger</param>
         public static void ConfigurationManagerRestoreKey(string key_, TraceSource customLogger_ = null)
         {
-            if (appSettingsOriginalValue.ContainsKey(key_))
+            if (_appSettingsOriginalValue.ContainsKey(key_))
             {
-                ConfigurationManager.AppSettings[key_] = appSettingsOriginalValue[key_];
+                ConfigurationManager.AppSettings[key_] = _appSettingsOriginalValue[key_];
 
                 // Rechargement de la configuration
                 ConfigurationLoader.Clear();
 
-                appSettingsOriginalValue.Remove(key_);
+                _appSettingsOriginalValue.Remove(key_);
                 Log(customLogger_, "Key [" + key_ + "] was restored to original value", false);
             }
             else
@@ -90,11 +90,11 @@ namespace OsamesMicroOrm.Configuration.Tweak
         /// </summary>
         public static void ConfigurationManagerRestoreAllKeys()
         {
-            foreach (var key in appSettingsOriginalValue.Keys)
+            foreach (var key in _appSettingsOriginalValue.Keys)
             {
-                ConfigurationManager.AppSettings[key] = appSettingsOriginalValue[key];
+                ConfigurationManager.AppSettings[key] = _appSettingsOriginalValue[key];
             }
-            appSettingsOriginalValue.Clear();
+            _appSettingsOriginalValue.Clear();
 
             // Rechargement de la configuration
             ConfigurationLoader.Clear();
