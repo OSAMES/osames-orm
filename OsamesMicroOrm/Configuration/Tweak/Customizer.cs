@@ -30,7 +30,7 @@ namespace OsamesMicroOrm.Configuration.Tweak
     /// </summary>
     public static class Customizer
     {
-        private static Dictionary<string, string> appSettingsOriginalValue = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> appSettingsOriginalValue = new Dictionary<string, string>();
 
         /// <summary>
         /// Permet de modifier une clé dans ConfigurationManager.AppSettings.
@@ -50,12 +50,11 @@ namespace OsamesMicroOrm.Configuration.Tweak
             if (!appSettingsOriginalValue.ContainsKey(key_))
             {
                 appSettingsOriginalValue.Add(key_,ConfigurationManager.AppSettings[key_]);
-                ConfigurationManager.AppSettings[key_] = keyValue_;
                 Log(customLogger_, "Changing ConfigurationManager.AppSettings key '" + key_ + "' from '" + ConfigurationManager.AppSettings[key_] + "' to '" + keyValue_ + "'", false);
+                ConfigurationManager.AppSettings[key_] = keyValue_;
 
-                // Force full reload of configuration if key belongs to AppSettingsKeys enum.
-                if (Enum.IsDefined(typeof(AppSettingsKeys), key_))
-                    ConfigurationLoader.Clear();
+                // Rechargement de la configuration
+                ConfigurationLoader.Clear();
             }
             else
             {
@@ -73,14 +72,16 @@ namespace OsamesMicroOrm.Configuration.Tweak
             if (appSettingsOriginalValue.ContainsKey(key_))
             {
                 ConfigurationManager.AppSettings[key_] = appSettingsOriginalValue[key_];
-                ConfigurationLoader.Clear();
-                appSettingsOriginalValue.Remove(key_);
-                Log(customLogger_, "Key [" + key_ + "] as restored to original value", false);
 
+                // Rechargement de la configuration
+                ConfigurationLoader.Clear();
+
+                appSettingsOriginalValue.Remove(key_);
+                Log(customLogger_, "Key [" + key_ + "] was restored to original value", false);
             }
             else
             {
-                Log(customLogger_, "Key [" + key_ + "] as no original value. Can't change it", false);
+                Log(customLogger_, "Key [" + key_ + "] has no original value. Can't change it back", false);
             }
         }
 
@@ -94,6 +95,9 @@ namespace OsamesMicroOrm.Configuration.Tweak
                 ConfigurationManager.AppSettings[key] = appSettingsOriginalValue[key];
             }
             appSettingsOriginalValue.Clear();
+
+            // Rechargement de la configuration
+            ConfigurationLoader.Clear();
         }
 
         /// <summary>
