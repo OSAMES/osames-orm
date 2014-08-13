@@ -526,7 +526,7 @@ namespace OsamesMicroOrm
                 dbConnection = transaction_ != null ? transaction_.Connection : CreateConnection();
 
                 int iNbAffectedRows;
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdType_))
+                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdParms_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
@@ -580,7 +580,7 @@ namespace OsamesMicroOrm
                 dbConnection = transaction_ != null ? transaction_.Connection : CreateConnection();
 
                 int iNbAffectedRows;
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdType_))
+                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdParms_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
@@ -628,7 +628,7 @@ namespace OsamesMicroOrm
             using (DbConnection dbConnection = CreateConnection())
             {
                 int iNbAffectedRows;
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdType_))
+                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdParms_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }

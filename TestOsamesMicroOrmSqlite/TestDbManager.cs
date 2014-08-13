@@ -72,12 +72,17 @@ namespace TestOsamesMicroOrmSqlite
         [TestCategory("Sql execution")]
         public void TestInsertUsingSqlite()
         {
-            List<DbManager.Parameter> parameters = new List<DbManager.Parameter> { new DbManager.Parameter("@lastname", "test customer") };
+            List<DbManager.Parameter> parameters = new List<DbManager.Parameter>
+                {
+                    new DbManager.Parameter("@lastname", "Grey"),
+                    new DbManager.Parameter("@firstname", "Paul"),
+                    new DbManager.Parameter("@email", "Paul@Grey.com")
+                };
 
             try
             {
                 long lastInsertedRowId;
-                int affectedRecordsCount = DbManager.Instance.ExecuteNonQuery("INSERT INTO Customer (LastName) VALUES (@lastname)", parameters.ToArray(), out lastInsertedRowId, CommandType.Text, _transaction);
+                int affectedRecordsCount = DbManager.Instance.ExecuteNonQuery("INSERT INTO Customer (LastName, FirstName, Email) VALUES (@lastname, @firstname, @email)", parameters.ToArray(), out lastInsertedRowId, CommandType.Text, _transaction);
 
                 Assert.AreEqual(1, affectedRecordsCount, "Expected 1 record affected by INSERT operation");
                 Console.WriteLine("New record ID: {0}, expected number > 1", lastInsertedRowId);
