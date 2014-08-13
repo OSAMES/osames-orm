@@ -14,7 +14,7 @@ namespace TestOsamesMicroOrm
     [ExcludeFromCodeCoverage]
     public class TestMappingTools : OsamesMicroOrmTest
     {
-        public void Setup()
+        public override void Setup()
         {
             
         }

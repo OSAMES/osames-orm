@@ -42,14 +42,14 @@ namespace TestOsamesMicroOrmSqlite
     [TestClass]
     public abstract class OsamesMicroOrmSqliteTest : TestOsamesMicroOrm.OsamesMicroOrmTest
     {
-        protected static ConfigurationLoader _config;
+        //protected static ConfigurationLoader _config;
 
         /// <summary>
         /// Every test uses a transaction.
         /// </summary>
-        protected static DbTransaction _transaction;
+        //protected static DbTransaction _transaction;
 
-        protected static DbConnection _connection;
+        //protected static DbConnection _connection;
 
         /// <summary>
         /// Initialisation d'une connexion et sa transaction, pour chaque test de la classe.
@@ -57,10 +57,10 @@ namespace TestOsamesMicroOrmSqlite
         [TestInitialize]
         public void SetupTest()
         {
-            ConfigurationLoader.Clear();
-            _config = ConfigurationLoader.Instance;
-            _connection = DbManager.Instance.CreateConnection();
-            _transaction = DbManager.Instance.OpenTransaction(_connection);
+            //ConfigurationLoader.Clear();
+            //_config = ConfigurationLoader.Instance;
+            //_connection = DbManager.Instance.CreateConnection();
+            //_transaction = DbManager.Instance.OpenTransaction(_connection);
 
         }
 
@@ -68,9 +68,9 @@ namespace TestOsamesMicroOrmSqlite
         [TestCleanup]
         public void TestCleanup()
         {
-            DbManager.Instance.RollbackTransaction(_transaction);
-            _connection.Close();
-            _connection.Dispose();
+            //DbManager.Instance.RollbackTransaction(_transaction);
+            //_connection.Close();
+            //_connection.Dispose();
 
         }
     }
