@@ -17,8 +17,10 @@ namespace TestOsamesMicroOrm
         [TestInitialize]
         public override void Setup()
         {
+            var tempo = ConfigurationLoader.Instance;
             InitializeDbConnexion();
         }
+
         /// <summary>
         /// Case OK.
         /// </summary>
@@ -28,8 +30,6 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         public void TestGetDbEntityDictionnaryMappingKeyOk()
         {
-            var init = ConfigurationLoader.Instance;
-
             Employee entityEmployee = new Employee();
             Customer entityCustomer = new Customer();
             Invoice entityInvoice = new Invoice();
@@ -53,8 +53,6 @@ namespace TestOsamesMicroOrm
         [ExpectedException(typeof(Exception))]
         public void TestGetDbEntityDictionnaryMappingKeyNOkMissingAttribute()
         {
-            var init = ConfigurationLoader.Instance;
-
             TestUnmappedEntity entity = new TestUnmappedEntity();
             try
             {
@@ -79,8 +77,6 @@ namespace TestOsamesMicroOrm
         [ExpectedException(typeof(Exception))]
         public void TestGetDbEntityDictionnaryMappingKeyNOkEmptyAttribute()
         {
-            var init = ConfigurationLoader.Instance;
-
             TestEmptyMappingEntity entity = new TestEmptyMappingEntity();
             try
             {
@@ -105,8 +101,6 @@ namespace TestOsamesMicroOrm
         [ExpectedException(typeof(Exception))]
         public void TestGetDbEntityDictionnaryMappingKeyWrongValueMappingAttribute()
         {
-            var init = ConfigurationLoader.Instance;
-
             TestWrongMappingEntity entity = new TestWrongMappingEntity();
             try
             {

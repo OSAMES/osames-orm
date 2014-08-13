@@ -27,6 +27,12 @@ namespace TestOsamesMicroOrm
         private readonly string _templatesTestNodeCase = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_TEMPLATES_XML_TEST_NODE_CASE);
         private readonly string _templatesTestDuplicateSelect = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_TEMPLATES_XML_TEST_DUPLICATE_SELECT);
 
+        [TestInitialize]
+        public override void Setup()
+        {
+            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+        }
+
         /// <summary>
         /// Load of correct configuration file.
         /// Assertions on internal data dictionaries fed by xml reading.
@@ -38,8 +44,6 @@ namespace TestOsamesMicroOrm
         [TestCategory("Configuration")]
         public void TestConfigurationLoaderAssertOnInternalDictionaries()
         {
-            ConfigurationLoader tempo = ConfigurationLoader.Instance;
-
             Assert.IsTrue(ConfigurationLoader.MappingDictionnary.Keys.Count > 0, "Expected keys in dictionary after initialize");
             Assert.IsTrue(ConfigurationLoader.DicInsertSql.Keys.Count > 0, "Expected keys in INSERT dictionary after initialize");
             Assert.IsTrue(ConfigurationLoader.DicSelectSql.Keys.Count > 0, "Expected keys in SELECT dictionary after initialize");
@@ -56,8 +60,7 @@ namespace TestOsamesMicroOrm
             Console.WriteLine("== DELETES ==");
             ConfigurationLoader.DicDeleteSql.ToList().ForEach(x => Console.WriteLine(x.Key));
 
-            // See TestFillTemplatesDictionaries and TestFillMappingDictionaries for detailed asserts
- 
+            // See TestFillTemplatesDictionaries and TestFillMappingDictionaries for detailed asserts 
         }
 
         /// <summary>
@@ -144,8 +147,7 @@ namespace TestOsamesMicroOrm
             {
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString());
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.mappingFileName.ToString());
-            }
-            
+            }            
         }
 
         /// <summary>
@@ -185,8 +187,7 @@ namespace TestOsamesMicroOrm
             Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["customer"];
             Assert.AreEqual(13, mappings.Keys.Count, "Expected 13 keys in dictionary for Customer mappings after initialize");
             Assert.IsTrue(mappings.ContainsKey("Email"), "Expected to find 'Email' key");
-            Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
-           
+            Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");          
         }
 
         /// <summary>
@@ -208,7 +209,6 @@ namespace TestOsamesMicroOrm
             Assert.IsTrue(mappings.ContainsKey("Email"), "Expected to find 'Email' key");
             Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
             Assert.AreEqual("Email", ConfigurationLoader.Instance.GetMappingDbColumnName("customer", "Email"));
-
         }
 
         /// <summary>
@@ -227,7 +227,6 @@ namespace TestOsamesMicroOrm
             Assert.IsFalse(ConfigurationLoader.MappingDictionnary.ContainsKey("foobar"), "Expected not to find 'foobar' key");
 
             ConfigurationLoader.Instance.GetMappingDbColumnName("foobar", "Email");
-
         }
 
  
@@ -246,11 +245,9 @@ namespace TestOsamesMicroOrm
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
           // TODO manque l'assert que la clé n'existe pas dans le dico interne
             ConfigurationLoader.Instance.GetMappingDbColumnName("foobar", "Email");
-
         }
 
         // TODO les TU dans l'autre sens, GetMappingPropertyName, les 3 cas (OK, pas de match sur clé de mapping, pas de match sur nom de colonne)
-
 
         /// <summary>
         /// After test run, ConfigurationLoader internal dictionary should be populated.
@@ -281,7 +278,6 @@ namespace TestOsamesMicroOrm
             // Inspect detail for a specific case
             Assert.IsTrue(ConfigurationLoader.DicSelectSql.ContainsKey("BaseReadWhere"), "'BaseReadWhere' key not in select dictionary");
             Assert.AreEqual("SELECT {0} FROM {1} WHERE {2} = {3};", ConfigurationLoader.DicSelectSql["BaseReadWhere"]);
-
         }
 
         [TestMethod]

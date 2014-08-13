@@ -39,7 +39,7 @@ namespace TestOsamesMicroOrm
         }
 
         [TestCleanup]
-        public void TestCleanup()
+        public virtual void TestCleanup()
         {
             if (_connection == null) return;
 

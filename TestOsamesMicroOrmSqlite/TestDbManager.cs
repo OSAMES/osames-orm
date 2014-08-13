@@ -15,7 +15,6 @@ namespace TestOsamesMicroOrmSqlite
     [ExcludeFromCodeCoverage]
     public class SqliteTestDbManager : OsamesMicroOrmSqliteTest
     {
- 
         [TestMethod]
         [ExcludeFromCodeCoverage]
         [Owner("Barbara Post")]

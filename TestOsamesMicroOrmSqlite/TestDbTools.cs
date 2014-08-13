@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
 using OsamesMicroOrm.DbTools;
@@ -30,7 +29,6 @@ namespace TestOsamesMicroOrmSqlite
         [TestCategory("Configuration")]
         public void TestExecuteReaderIncorrectMapping()
         {
-
             try
             {
                 // Customization
@@ -45,7 +43,6 @@ namespace TestOsamesMicroOrmSqlite
                 // Si une exception est lancée, la ligne ci-dessous n'est pas exécutée.
                 // Elle a vocation à faire échouer le test si elle s'exécute.
                 Assert.Fail("Erreur, pas d'exception lancée/catchée ci-dessous");
-
             }
             catch (Exception ex)
             {

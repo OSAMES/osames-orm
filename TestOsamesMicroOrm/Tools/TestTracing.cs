@@ -25,7 +25,6 @@ namespace TestOsamesMicroOrm.Tools
             errorTraceSource.TraceEvent(TraceEventType.Error, 0, "Erreur de test pour error trace source - doit être logguée");
             errorTraceSource.TraceEvent(TraceEventType.Verbose, 1, "Verbose de test pour error trace source - ne doit pas être logguée");
             errorTraceSource.TraceEvent(TraceEventType.Error, 2, "test exception riche pour error trace source, doit tracer la stack " + new Exception("test outer exception", new Exception("test inner exception")));
-
         }
     }
 }

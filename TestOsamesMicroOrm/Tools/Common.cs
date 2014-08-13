@@ -32,6 +32,5 @@
         public const string CST_SQL_TEMPLATES_XML_TEST_OTHER_SECTIONS_ORDER_ONLINE_SCHEMA = @"TestConfig\sqltemplates-test-other-sections-order-online-schema.xml";
 
         #endregion
-
     }
 }

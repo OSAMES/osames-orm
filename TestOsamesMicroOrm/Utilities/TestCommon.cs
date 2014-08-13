@@ -37,8 +37,6 @@ namespace TestOsamesMicroOrm.Utilities
 
             // Cas de chaîne bizarre : 3 placeholders mais mal numérotés, le string.Format échouera. Le nombre est correct cependant.
             Assert.AreEqual(3, Common.CountPlaceholders(" {0} Chaîne {1} chaîne {3}"));
-
-
         }
 
         [ExcludeFromCodeCoverage]
@@ -68,8 +66,6 @@ namespace TestOsamesMicroOrm.Utilities
 
             // Cas de chaîne bizarre : 3 placeholders mais mal numérotés, le string.Format échouera. Le nombre est correct cependant.
             Assert.IsTrue(Common.CheckPlaceholdersAndParametersNumbers(" {0} Chaîne {1} chaîne {3}", new List<string> { "a", "b", "c" }));
-
-
         }
     }
 }

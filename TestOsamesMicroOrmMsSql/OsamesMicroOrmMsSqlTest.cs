@@ -16,11 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System.Data.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OsamesMicroOrm;
-using OsamesMicroOrm.Configuration;
-using OsamesMicroOrm.Configuration.Tweak;
 using TestOsamesMicroOrm.Tools;
 using TestOsamesMicroOrmMsSql.Tools;
 
@@ -39,34 +35,18 @@ namespace TestOsamesMicroOrmMsSql
     [TestClass]
     public abstract class OsamesMicroOrmMsSqlTest : TestOsamesMicroOrm.OsamesMicroOrmTest
     {
-        //protected static ConfigurationLoader _config;
-
-        /// <summary>
-        /// Every test uses a transaction.
-        /// </summary>
-        //protected static DbTransaction _transaction;
-
-        //protected static DbConnection _connection;
-
         /// <summary>
         /// Initialisation d'une connexion et sa transaction, pour chaque test de la classe.
         /// </summary>
         [TestInitialize]
         public void SetupTest()
         {
-            //ConfigurationLoader.Clear();
-            //_config = ConfigurationLoader.Instance;
-            //_connection = DbManager.Instance.CreateConnection();
-            //_transaction = DbManager.Instance.OpenTransaction(_connection);
-            
+
         }
         
         [TestCleanup]
-        public void TestCleanup()
+        public override void TestCleanup()
         {
-            //DbManager.Instance.RollbackTransaction(_transaction);
-            //_connection.Close();
-            //_connection.Dispose();
 
         }
     }
