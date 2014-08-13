@@ -14,9 +14,10 @@ namespace TestOsamesMicroOrm
     [ExcludeFromCodeCoverage]
     public class TestMappingTools : OsamesMicroOrmTest
     {
+        [TestInitialize]
         public override void Setup()
         {
-            
+            InitializeDbConnexion();
         }
         /// <summary>
         /// Case OK.

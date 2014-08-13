@@ -48,8 +48,9 @@ namespace TestOsamesMicroOrm
         [TestInitialize]
         [Owner("Benjamin Nolmans")]
         [ExcludeFromCodeCoverage]
-        public void Setup()
+        public override void Setup()
         {
+            InitializeDbConnexion();
             // On passe tous les namespaces et fichiers de schémas locaux à utiliser
             _xmlValidatorWithSchemasAndNamespaces = new XmlValidator(new[] { "http://www.osames.org/osamesorm", "http://www.osames.org/osamesorm" }, new[] { _mappingXsdFullPath, _templatesXsdFullPath });
 

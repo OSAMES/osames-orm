@@ -27,11 +27,13 @@ namespace TestOsamesMicroOrm
         /// <summary>
         /// Initialization once for all tests.
         /// </summary>
-        [ClassInitialize]
-        public static void Setup(TestContext context_)
+        [TestInitialize]
+        public override void Setup()
         {
             var init = ConfigurationLoader.Instance;
-            
+
+            InitializeDbConnexion();
+
             _employee.Customer.Add(new Customer {FirstName = "toto"});
             foreach (var i in _employee.Customer)
             {

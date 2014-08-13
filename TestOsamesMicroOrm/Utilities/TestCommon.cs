@@ -1,12 +1,22 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm.Utilities;
 
 namespace TestOsamesMicroOrm.Utilities
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class TestCommon : OsamesMicroOrmTest
     {
+        [ExcludeFromCodeCoverage]
+        [TestInitialize]
+        public override void Setup()
+        {
+ 	        InitializeDbConnexion();
+        }
+
+        [ExcludeFromCodeCoverage]
         [TestMethod]
         public void TestCountPlaceholders()
         {
@@ -31,6 +41,7 @@ namespace TestOsamesMicroOrm.Utilities
 
         }
 
+        [ExcludeFromCodeCoverage]
         [TestMethod]
         public void TestCheckPlaceholdersAndParametersNumbers()
         {

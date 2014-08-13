@@ -41,10 +41,11 @@ namespace TestOsamesMicroOrm
         [TestCleanup]
         public void TestCleanup()
         {
+            if (_connection == null) return;
+
             DbManager.Instance.RollbackTransaction(_transaction);
             _connection.Close();
             _connection.Dispose();
-
         }
 
         /// <summary>
