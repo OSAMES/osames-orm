@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Configuration.Tweak;
 using SampleDbEntities.Chinook;
-using TestOsamesMicroOrm.TestDbEntities;
-using SampleDbEntities;
 using OsamesMicroOrm.DbTools;
 
 namespace TestOsamesMicroOrm
@@ -158,21 +153,32 @@ namespace TestOsamesMicroOrm
         [TestCategory("FIXME")]
         public void TestFormatSqlForUpdate()
         {
-            // FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
-            //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+            try
+            {
 
-            // TODO FIXME : échec du test sur une liste à 1 élément et l'autre à 0 dans DbTools > FormatSqlNameEqualValueString
+                // Utiliser la DB Sqlite
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
 
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParams;
-            DbToolsUpdates.FormatSqlForUpdate(ref _employee, "employee", new List<string> { "LastName", "FirstName" }, "EmployeeId", out sqlCommand, out adoParams);
+                // FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
+                //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
-            Assert.AreEqual("UPDATE [Employee] SET [LastName] = @nomsociete, [FirstName] = @firstname WHERE [EmployeeId] = @employeeid;", sqlCommand);
-            Assert.AreEqual(2, adoParams.Count, "no parameters generated");
-            Assert.AreEqual("@lastname", adoParams[0].Key);
-            Assert.AreEqual(_employee.LastName, adoParams[0].Value);
-            Assert.AreEqual("@firstname", adoParams[1].Key);
-            Assert.AreEqual(_employee.FirstName, adoParams[1].Value);
+                // TODO FIXME : échec du test sur une liste à 1 élément et l'autre à 0 dans DbTools > FormatSqlNameEqualValueString
+
+                string sqlCommand;
+                List<KeyValuePair<string, object>> adoParams;
+                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "employee", new List<string> {"LastName", "FirstName"}, "EmployeeId", out sqlCommand, out adoParams);
+
+                Assert.AreEqual("UPDATE [Employee] SET [LastName] = @nomsociete, [FirstName] = @firstname WHERE [EmployeeId] = @employeeid;", sqlCommand);
+                Assert.AreEqual(2, adoParams.Count, "no parameters generated");
+                Assert.AreEqual("@lastname", adoParams[0].Key);
+                Assert.AreEqual(_employee.LastName, adoParams[0].Value);
+                Assert.AreEqual("@firstname", adoParams[1].Key);
+                Assert.AreEqual(_employee.FirstName, adoParams[1].Value);
+            } finally
+            {
+                Customizer.ConfigurationManagerRestoreAllKeys();
+            }
         }
 
         /// <summary>

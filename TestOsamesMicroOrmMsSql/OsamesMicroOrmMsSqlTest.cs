@@ -28,7 +28,6 @@ namespace TestOsamesMicroOrmMsSql
     /// Additions to TestOsamesMicroOrm deployment (configuration and logs folders).
     /// </summary>
     [
-        DeploymentItem("DB", "DB"),
         // Configuration for MsSql
         DeploymentItem(CommonMsSql.CST_TEST_CONFIG_MSSQL, Common.CST_CONFIG)
     ]

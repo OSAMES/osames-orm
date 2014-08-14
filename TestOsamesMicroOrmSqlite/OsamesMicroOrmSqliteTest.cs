@@ -28,7 +28,6 @@ namespace TestOsamesMicroOrmSqlite
     /// Additions to TestOsamesMicroOrm deployment (configuration and logs folders).
     /// </summary>
     [
-        DeploymentItem("DB", "DB"),
         DeploymentItem("x64", "x64"),
         DeploymentItem("x86", "x86"),
         DeploymentItem("System.Data.SQLite.dll"),

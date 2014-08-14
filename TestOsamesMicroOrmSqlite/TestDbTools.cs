@@ -23,10 +23,10 @@ namespace TestOsamesMicroOrmSqlite
         /// Test ORM-37. Configuration incorrecte du mapping : exception attendue.
         /// </summary>
         [TestMethod]
-        [TestCategory("Sql")]
         [TestCategory("SqLite")]
-        [TestCategory("ReadSql")]
+        [TestCategory("Sql Select")]
         [TestCategory("Configuration")]
+        [TestCategory("Sql execution")]
         public void TestExecuteReaderIncorrectMapping()
         {
             try

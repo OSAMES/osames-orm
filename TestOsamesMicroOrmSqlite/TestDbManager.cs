@@ -21,7 +21,6 @@ namespace TestOsamesMicroOrmSqlite
         [TestMethod]
         [ExcludeFromCodeCoverage]
         [Owner("Barbara Post")]
-        [TestCategory("Sql")]
         [TestCategory("SqLite")]
         public void TestGetProvider()
         {
@@ -35,7 +34,6 @@ namespace TestOsamesMicroOrmSqlite
         [TestMethod]
         [ExcludeFromCodeCoverage]
         [Owner("Barbara Post")]
-        [TestCategory("Sql")]
         [TestCategory("SqLite")]
         [TestCategory("Sql Select")]
         [TestCategory("Sql execution")]
@@ -65,7 +63,6 @@ namespace TestOsamesMicroOrmSqlite
         [TestMethod]
         [ExcludeFromCodeCoverage]
         [Owner("Benjamin Nolmans")]
-        [TestCategory("Sql")]
         [TestCategory("SqLite")]
         [TestCategory("Sql Insert")]
         [TestCategory("Sql execution")]

@@ -15,6 +15,8 @@ namespace TestOsamesMicroOrm
         // répertoire copié depuis le projet testé
         DeploymentItem(Common.CST_CONFIG, Common.CST_CONFIG),
         DeploymentItem("Logs", "Logs"),
+        // Copier la DB car l'ORM cherche à valider une connexion DB au démarrage
+        DeploymentItem("DB", "DB")
      ]
     public abstract class OsamesMicroOrmTest
     {
