@@ -38,7 +38,6 @@ namespace OsamesMicroOrm.Utilities
             XPathNavigator navigator = doc.CreateNavigator();
 
             XPathNodeIterator nodes = navigator.Select("./*");
-            Console.WriteLine(nodes.Count);
             nodes.MoveNext();
             rootTagPrefix_ = nodes.Current.Prefix;
             rootTagNamespace_ = nodes.Current.NamespaceURI;
