@@ -151,8 +151,8 @@
   <PropertyGroup>
     <PreBuildEvent>rem taskkill /F /IM vstest.executionengine.x86.exe /FI "MEMUSAGE gt 1"
 rem taskkill /F /IM vstest.discoveryengine.x86.exe /FI "MEMUSAGE gt 1"
-
-xcopy /Y $(SolutionDir)DB\Chinook_Sqlite.sqlite $(TargetDir)DB\
+xcopy /Y "$(SolutionDir)DB\Chinook_Sqlite.sqlite" "$(TargetDir)DB\"
+xcopy /Y "$(ProjectDir)TestConfigSqlite\*.*" "$(TargetDir)Config\"
 </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

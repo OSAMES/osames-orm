@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Utilities;
 
 namespace TestOsamesMicroOrm.Utilities
@@ -13,6 +14,7 @@ namespace TestOsamesMicroOrm.Utilities
         [TestInitialize]
         public override void Setup()
         {
+            var tempo = ConfigurationLoader.Instance;
  	        InitializeDbConnexion();
         }
 

@@ -45,9 +45,12 @@ namespace TestOsamesMicroOrm
         {
             if (_connection == null) return;
 
-            DbManager.Instance.RollbackTransaction(_transaction);
+            if (_transaction != null)
+                DbManager.Instance.RollbackTransaction(_transaction);
+
             _connection.Close();
             _connection.Dispose();
+            _connection = null;
         }
 
         /// <summary>

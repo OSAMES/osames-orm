@@ -30,7 +30,8 @@ namespace TestOsamesMicroOrm
         [TestInitialize]
         public override void Setup()
         {
-            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+            // Obligatoire car Resharper ne comprend pas qu'il faut initilaliser la classe mère.
+            var tempo = ConfigurationLoader.Instance;
         }
 
         /// <summary>

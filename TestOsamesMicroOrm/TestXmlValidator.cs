@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Utilities;
 using Common = TestOsamesMicroOrm.Tools.Common;
 
@@ -50,6 +51,8 @@ namespace TestOsamesMicroOrm
         [ExcludeFromCodeCoverage]
         public override void Setup()
         {
+            // Obligatoire car Resharper ne comprend pas qu'il faut initilaliser la classe mère.
+            var tempo = ConfigurationLoader.Instance;
             InitializeDbConnexion();
             // On passe tous les namespaces et fichiers de schémas locaux à utiliser
             _xmlValidatorWithSchemasAndNamespaces = new XmlValidator(new[] { "http://www.osames.org/osamesorm", "http://www.osames.org/osamesorm" }, new[] { _mappingXsdFullPath, _templatesXsdFullPath });

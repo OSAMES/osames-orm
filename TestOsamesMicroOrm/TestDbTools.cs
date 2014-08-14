@@ -25,6 +25,7 @@ namespace TestOsamesMicroOrm
         [TestInitialize]
         public override void Setup()
         {
+            // Obligatoire car ne prend pas en compte celui de la classe mère.
             var init = ConfigurationLoader.Instance;
 
             InitializeDbConnexion();
@@ -167,7 +168,7 @@ namespace TestOsamesMicroOrm
 
                 string sqlCommand;
                 List<KeyValuePair<string, object>> adoParams;
-                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "employee", new List<string> {"LastName", "FirstName"}, "EmployeeId", out sqlCommand, out adoParams);
+                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "employee", new List<string> { "LastName", "FirstName" }, "EmployeeId", out sqlCommand, out adoParams);
 
                 Assert.AreEqual("UPDATE [Employee] SET [LastName] = @nomsociete, [FirstName] = @firstname WHERE [EmployeeId] = @employeeid;", sqlCommand);
                 Assert.AreEqual(2, adoParams.Count, "no parameters generated");
@@ -259,168 +260,6 @@ namespace TestOsamesMicroOrm
             Assert.IsFalse(lstPropertiesNames.Count == 0);
             Assert.AreEqual(lstDbColumnNames.Count, lstPropertiesNames.Count);
         }
-
- /*       /// <summary>
-        /// Tested template : "update {0} set {1} where {2} = {3}"
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Barbara Post")]
-        public void TestDbToolsFormatUpdateSimpleWhere()
-        {
-
-            List<KeyValuePair<string, object>> testingkvp = new List<KeyValuePair<string, object>>();
-
-            testingkvp.Add(new KeyValuePair<string, object>("colA", "valueA"));
-            testingkvp.Add(new KeyValuePair<string, object>("colB", "valueB"));
-            testingkvp.Add(new KeyValuePair<string, object>("colC", "valueC"));
-
-            Query query = DbTools.FormatUpdate("testtable", "update {0} set {1} where {2} = {3}",
-                   testingkvp, new List<string> { "id_testtable", null }, new List<object> { 33 });
-            Assert.IsNotNull(query, "Expected no incoherence, query object not null");
-
-            Assert.AreEqual("update testtable set colA = @p0, colB = @p1, colC = @p2 where id_testtable = @p3", query.SqlString);
-            Assert.AreEqual(4, query.SqlValues.Count, "Attendu 4 valeurs de paramètres");
-            Assert.AreEqual("valueA", query.SqlValues[0]);
-            Assert.AreEqual("valueB", query.SqlValues[1]);
-            Assert.AreEqual("valueC", query.SqlValues[2]);
-            Assert.AreEqual(33, query.SqlValues[3]);
-        }
-
-        /// <summary>
-        /// Tested template : "update {0} set {1}"
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Barbara Post")]
-        public void TestDbToolsFormatUpdateWithoutWhere()
-        {
-
-            List<KeyValuePair<string, object>> testingkvp = new List<KeyValuePair<string, object>>();
-
-            testingkvp.Add(new KeyValuePair<string, object>("colA", "valueA"));
-            testingkvp.Add(new KeyValuePair<string, object>("colB", "valueB"));
-            testingkvp.Add(new KeyValuePair<string, object>("colC", "valueC"));
-
-            Query query = DbTools.FormatUpdate("testtable", "update {0} set {1}",
-                   testingkvp, null, null);
-            Assert.IsNotNull(query, "Expected no incoherence, query object not null");
-
-            Assert.AreEqual("update testtable set colA = @p0, colB = @p1, colC = @p2", query.SqlString);
-            Assert.AreEqual(3, query.SqlValues.Count, "Attendu 3 valeurs de paramètres");
-            Assert.AreEqual("valueA", query.SqlValues[0]);
-            Assert.AreEqual("valueB", query.SqlValues[1]);
-            Assert.AreEqual("valueC", query.SqlValues[2]);
-        }
-
-        /// <summary>
-        /// Tested template : "update {0} set {1} where {2} = {3} and {4} = {5}"
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Barbara Post")]
-        public void TestDbToolsFormatUpdateDoubleWhere()
-        {
-            List<KeyValuePair<string, object>> testingkvp = new List<KeyValuePair<string, object>>();
-
-            testingkvp.Add(new KeyValuePair<string, object>("colA", "valueA"));
-            testingkvp.Add(new KeyValuePair<string, object>("colB", "valueB"));
-            testingkvp.Add(new KeyValuePair<string, object>("colC", "valueC"));
-
-            Query query = DbTools.FormatUpdate("testtable", "update {0} set {1} where {2} = {3} and {4} = {5}",
-                   testingkvp, new List<string> { "id_testtable", null, "testCol", null }, new List<object> { 33, "test" });
-            Assert.IsNotNull(query, "Expected no incoherence, query object not null");
-
-            Assert.AreEqual("update testtable set colA = @p0, colB = @p1, colC = @p2 where id_testtable = @p3 and testCol = @p4", query.SqlString);
-            Assert.AreEqual(5, query.SqlValues.Count, "Attendu 5 valeurs de paramètres");
-            Assert.AreEqual("valueA", query.SqlValues[0]);
-            Assert.AreEqual("valueB", query.SqlValues[1]);
-            Assert.AreEqual("valueC", query.SqlValues[2]);
-            Assert.AreEqual(33, query.SqlValues[3]);
-            Assert.AreEqual("test", query.SqlValues[4]);
-        }
-
-        /// <summary>
-        /// Tested template : "update {0} set {1} where {2} is null"
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Barbara Post")]
-        public void TestDbToolsFormatUpdateWhereIsNull()
-        {
-
-            List<KeyValuePair<string, object>> testingkvp = new List<KeyValuePair<string, object>>();
-
-            testingkvp.Add(new KeyValuePair<string, object>("colA", "valueA"));
-            testingkvp.Add(new KeyValuePair<string, object>("colB", "valueB"));
-            testingkvp.Add(new KeyValuePair<string, object>("colC", "valueC"));
-
-            Query query = DbTools.FormatUpdate("testtable", "update {0} set {1} where {2} is null",
-                   testingkvp, new List<string> { "testCol" }, null);
-            Assert.IsNotNull(query, "Expected no incoherence, query object not null");
-
-            Assert.AreEqual("update testtable set colA = @p0, colB = @p1, colC = @p2 where testCol is null", query.SqlString);
-            Assert.AreEqual(3, query.SqlValues.Count, "Attendu 3 valeurs de paramètres");
-            Assert.AreEqual("valueA", query.SqlValues[0]);
-            Assert.AreEqual("valueB", query.SqlValues[1]);
-            Assert.AreEqual("valueC", query.SqlValues[2]);
-        }
-
-        /// <summary>
-        /// Tested template : "update {0} set {1} where {2} > {3}"
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Barbara Post")]
-        public void TestDbToolsFormatUpdateWhereCompareTwoColumns()
-        {
-
-            List<KeyValuePair<string, object>> testingkvp = new List<KeyValuePair<string, object>>();
-
-            testingkvp.Add(new KeyValuePair<string, object>("colA", "valueA"));
-            testingkvp.Add(new KeyValuePair<string, object>("colB", "valueB"));
-            testingkvp.Add(new KeyValuePair<string, object>("colC", "valueC"));
-
-            Query query = DbTools.FormatUpdate("testtable", "update {0} set {1} where {2} > {3}",
-                   testingkvp, new List<string> { "testCol", "testCol2" }, null);
-            Assert.IsNotNull(query, "Expected no incoherence, query object not null");
-
-            Assert.AreEqual("update testtable set colA = @p0, colB = @p1, colC = @p2 where testCol > testCol2", query.SqlString);
-            Assert.AreEqual(3, query.SqlValues.Count, "Attendu 3 valeurs de paramètres");
-            Assert.AreEqual("valueA", query.SqlValues[0]);
-            Assert.AreEqual("valueB", query.SqlValues[1]);
-            Assert.AreEqual("valueC", query.SqlValues[2]);
-        }
-
-        /// <summary>
-        /// Tested template : "update {0} set {1} where {2} = {3}"
-        /// 2 parameters values instead of 1 are passed to tested method.
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Barbara Post")]
-        [Ignore] // à corriger #OSAMESORM-81
-        public void TestDbToolsFormatUpdateSimpleWhereWithError()
-        {
-
-            List<KeyValuePair<string, object>> testingkvp = new List<KeyValuePair<string, object>>();
-
-            testingkvp.Add(new KeyValuePair<string, object>("colA", "valueA"));
-            testingkvp.Add(new KeyValuePair<string, object>("colB", "valueB"));
-            testingkvp.Add(new KeyValuePair<string, object>("colC", "valueC"));
-            // Pass 2 values instead of one
-            Query query = DbTools.FormatUpdate("testtable", "update {0} set {1} where {2} = {3}",
-                   testingkvp, new List<string> { "id_testtable", null }, new List<object> { 33, 34 });
-            Assert.IsNull(query, "Expected incoherence, query object should be null");
-
-            Assert.AreEqual("update testtable set colA = @p0, colB = @p1, colC = @p2 where id_testtable = @p3", query.SqlString);
-            Assert.AreEqual(4, query.SqlValues.Count, "Attendu 4 valeurs de paramètres");
-            Assert.AreEqual("valueA", query.SqlValues[0]);
-            Assert.AreEqual("valueB", query.SqlValues[1]);
-            Assert.AreEqual("valueC", query.SqlValues[2]);
-            Assert.AreEqual(33, query.SqlValues[3]);
-        }
-  * */
 
         #endregion
 
