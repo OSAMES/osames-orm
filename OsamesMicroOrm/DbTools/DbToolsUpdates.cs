@@ -23,6 +23,9 @@ using OsamesMicroOrm.Configuration;
 
 namespace OsamesMicroOrm.DbTools
 {
+    /// <summary>
+    /// Classe servant à formater et exécuter des requêtes SQL de type UPDATE, en proposant une abstraction au dessus de ADO.NET.
+    /// </summary>
     public class DbToolsUpdates
     {
         /// <summary>
@@ -85,9 +88,10 @@ namespace OsamesMicroOrm.DbTools
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
 
-            DbToolsUpdates.FormatSqlForUpdate(ref dataObject_, mappingDictionariesContainerKey_, propertiesNames_, primaryKeycolumnName_, out sqlCommand, out adoParameters);
+            FormatSqlForUpdate(ref dataObject_, mappingDictionariesContainerKey_, propertiesNames_, primaryKeycolumnName_, out sqlCommand, out adoParameters);
 
-            int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(sqlCommand, adoParameters);
+            long lastInsertedRowId;
+            int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(sqlCommand, adoParameters, out lastInsertedRowId);
             if (nbRowsAffected == 0)
                 ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Warning, 0, "Query didn't update any row: " + sqlCommand);
 
