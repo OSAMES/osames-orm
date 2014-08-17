@@ -293,8 +293,8 @@ namespace OsamesMicroOrm.DbTools
             {
                 int nbOfPlaceholders = Utilities.Common.CountPlaceholders(format_);
                 ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 0,
-                    "Error, not same number of placeholders : " + nbOfPlaceholders + " and parameters : " + args_.Length + ", exception: " + ex.Message);
-                result_ = null;
+                    "Error, not same number of placeholders. Excpected : " + nbOfPlaceholders + ", given parameters : " + args_.Length + ", exception: " + ex.Message);
+                result_ = "Error, not same number of placeholders. See log file for more details.";
                 return false;
             }
         }
