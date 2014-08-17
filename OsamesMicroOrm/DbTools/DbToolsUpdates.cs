@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -66,7 +67,14 @@ namespace OsamesMicroOrm.DbTools
             // TODO ici rendre comme pour le select, indépendant du template
 
             // 3. Final formatting "UPDATE {0} SET {1} WHERE {2};"
-            DbToolsCommon.TryFormat(ConfigurationLoader.DicUpdateSql["BaseUpdate"], out sqlCommand_, new object[] { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbSqlSetCommand, sbSqlWhereCommand });
+            try{
+                DbToolsCommon.TryFormat(ConfigurationLoader.DicUpdateSql["BaseUpdateOne"], out sqlCommand_, new object[] { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbSqlSetCommand, sbSqlWhereCommand });
+            }
+            catch (Exception ex)
+            {
+                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Error, 0, "Query didn't update any row. Exception error: " + ex.Message);
+                throw;
+            }
         }
 
         /// <summary>

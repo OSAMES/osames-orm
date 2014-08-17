@@ -18,6 +18,9 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace OsamesMicroOrm.DbTools
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class DbToolsDeletes
     {
     }

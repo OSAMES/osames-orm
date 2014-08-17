@@ -24,6 +24,9 @@ using OsamesMicroOrm.Configuration;
 
 namespace OsamesMicroOrm.DbTools
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class DbToolsSelects
     {
         /// <summary>

@@ -170,7 +170,7 @@ namespace TestOsamesMicroOrm
                 List<KeyValuePair<string, object>> adoParams;
                 DbToolsUpdates.FormatSqlForUpdate(ref _employee, "employee", new List<string> { "LastName", "FirstName" }, "EmployeeId", out sqlCommand, out adoParams);
 
-                Assert.AreEqual("UPDATE [Employee] SET [LastName] = @nomsociete, [FirstName] = @firstname WHERE [EmployeeId] = @employeeid;", sqlCommand);
+                Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @employeeid;", sqlCommand);
                 Assert.AreEqual(2, adoParams.Count, "no parameters generated");
                 Assert.AreEqual("@lastname", adoParams[0].Key);
                 Assert.AreEqual(_employee.LastName, adoParams[0].Value);
