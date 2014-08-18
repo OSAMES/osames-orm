@@ -42,12 +42,13 @@ namespace OsamesMicroOrm.DbTools
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="sqlTemplate_">Contient le nom du template sql update à utiliser</param>
         /// <param name="lstDataObjectcolumnName_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
         /// <param name="primaryKeycolumnName_">Nom de la propriété de dataObject_ correspondant au champ clé primaire</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectcolumnName_, string primaryKeycolumnName_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+        internal static void FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string sqlTemplate_, List<string> lstDataObjectcolumnName_, string primaryKeycolumnName_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
         {
             StringBuilder sbSqlSetCommand = new StringBuilder();
             StringBuilder sbSqlWhereCommand = new StringBuilder();
@@ -68,7 +69,7 @@ namespace OsamesMicroOrm.DbTools
 
             // 3. Final formatting "UPDATE {0} SET {1} WHERE {2};"
             try{
-                DbToolsCommon.TryFormat(ConfigurationLoader.DicUpdateSql["BaseUpdateOne"], out sqlCommand_, new object[] { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbSqlSetCommand, sbSqlWhereCommand });
+                DbToolsCommon.TryFormat(ConfigurationLoader.DicUpdateSql[sqlTemplate_], out sqlCommand_, new object[] { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbSqlSetCommand, sbSqlWhereCommand });
             }
             catch (Exception ex)
             {
@@ -91,12 +92,12 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="propertiesNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
         /// <param name="primaryKeycolumnName_">Nom de la propriété de dataObject_ correspondant au champ clé primaire</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
-        public static int Update<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> propertiesNames_, string primaryKeycolumnName_)
+        public static int Update<T>(T dataObject_, string mappingDictionariesContainerKey_, string sqlTemplate_, List<string> propertiesNames_, string primaryKeycolumnName_)
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
 
-            FormatSqlForUpdate(ref dataObject_, mappingDictionariesContainerKey_, propertiesNames_, primaryKeycolumnName_, out sqlCommand, out adoParameters);
+            FormatSqlForUpdate(ref dataObject_, mappingDictionariesContainerKey_, sqlTemplate_, propertiesNames_, primaryKeycolumnName_, out sqlCommand, out adoParameters);
 
             long lastInsertedRowId;
             int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(sqlCommand, adoParameters, out lastInsertedRowId);

@@ -22,7 +22,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
     <orm:Insert name="OtherBaseInsert">INSERT INTO {0} ({1}) values ({2});</orm:Insert>
   </orm:Inserts>
   <orm:Updates>
-    <!--<orm:Update name="BaseUpdate">UPDATE {0} SET {1} WHERE {2};</orm:Update>-->
+    <orm:Update name="BaseUpdate">UPDATE {0} SET {1} WHERE {2};</orm:Update>
     <orm:Update name="BaseUpdateOne">UPDATE {0} SET {1} WHERE {2} = {3};</orm:Update>
   </orm:Updates>
   <orm:Selects>
