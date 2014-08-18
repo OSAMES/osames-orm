@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics.CodeAnalysis;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using TestOsamesMicroOrm.Tools;
@@ -18,6 +19,7 @@ namespace TestOsamesMicroOrm
         // Copier la DB car l'ORM cherche à valider une connexion DB au démarrage
         DeploymentItem("DB", "DB")
      ]
+    [ExcludeFromCodeCoverage]
     public abstract class OsamesMicroOrmTest
     {
         protected static ConfigurationLoader _config;
