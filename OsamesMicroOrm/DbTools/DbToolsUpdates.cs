@@ -53,13 +53,13 @@ namespace OsamesMicroOrm.DbTools
             StringBuilder sbSqlSetCommand = new StringBuilder();
             StringBuilder sbSqlWhereCommand = new StringBuilder();
 
-            List<string> lstDbColumnNames;
+            List<string> lstDbColumnNames_;
             string primaryKeyDbColumnName;
             KeyValuePair<string, object> adoParamForPrimaryKey;
 
             // 1. properties
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref dataObject_, mappingDictionariesContainerKey_, lstDataObjectcolumnName_, out lstDbColumnNames, out adoParameters_);
-            DbToolsCommon.FormatSqlNameEqualValueString(lstDbColumnNames, adoParameters_, ref sbSqlSetCommand, ", ");
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref dataObject_, mappingDictionariesContainerKey_, lstDataObjectcolumnName_, out lstDbColumnNames_, out adoParameters_);
+            DbToolsCommon.FormatSqlNameEqualValueString(lstDbColumnNames_, adoParameters_, ref sbSqlSetCommand, ", ");
 
             // 2. primary key
             DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(ref dataObject_, mappingDictionariesContainerKey_, primaryKeycolumnName_, out primaryKeyDbColumnName, out adoParamForPrimaryKey);

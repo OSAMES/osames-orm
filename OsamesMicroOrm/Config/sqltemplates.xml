@@ -24,6 +24,8 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
   <orm:Updates>
     <orm:Update name="BaseUpdate">UPDATE {0} SET {1} WHERE {2};</orm:Update>
     <orm:Update name="BaseUpdateOne">UPDATE {0} SET {1} WHERE {2} = {3};</orm:Update>
+    <orm:Update name="ComplexUpdate">UPDATE {0} SET {1} WHERE {2} = {3} AND {4} = {5} AND {6} = {7}</orm:Update>
+    <orm:Update name="UltraComplexUpdate">UPDATE {0} SET {1} FROM {2} AS {3} INNER JOIN {4} AS {5} ON {6} = {7} WHERE {8} = {9};</orm:Update>
   </orm:Updates>
   <orm:Selects>
     <orm:Select name="BaseRead">SELECT {0} FROM {1};</orm:Select>
@@ -32,7 +34,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
     <orm:Select name="BaseReadAllWhere">SELECT * FROM {0} WHERE {1} = {2};</orm:Select>
     <orm:Select name="BaseReadWhereAndWhere">SELECT {0} FROM {1} WHERE {2} = {3} AND {4} = {5};</orm:Select>
     <!-- custom select, read customer with 2 joins -->
-    <orm:Select name="ReadSingleCustomer">SELECT {0} FROM {1} LEFT JOIN {2} ON {3} = {4} LEFT JOIN {5} ON {6} = {7} WHERE {8}={9};</orm:Select>
+    <orm:Select name="ReadSingleCustomer">SELECT {0} FROM {1} LEFT JOIN {2} ON {3} = {4} LEFT JOIN {5} ON {6} = {7} WHERE {8} = {9};</orm:Select>
   </orm:Selects>
   <orm:Deletes>
     <orm:Delete name="BaseDeleteWhere">DELETE FROM {0} WHERE {1} = {2};</orm:Delete>
