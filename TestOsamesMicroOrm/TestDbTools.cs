@@ -164,8 +164,6 @@ namespace TestOsamesMicroOrm
                 // FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
                 //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
-                // TODO FIXME : échec du test sur une liste à 1 élément et l'autre à 0 dans DbTools > FormatSqlNameEqualValueString
-
                 string sqlCommand;
                 List<KeyValuePair<string, object>> adoParams;
                 DbToolsUpdates.FormatSqlForUpdate(ref _employee, "employee", "BaseUpdate", new List<string> { "LastName", "FirstName" }, "EmployeeId", out sqlCommand, out adoParams);
