@@ -45,14 +45,10 @@ namespace TestOsamesMicroOrm
         [TestCleanup]
         public virtual void TestCleanup()
         {
-            if (_connection == null) return;
-
             if (_transaction != null)
                 DbManager.Instance.RollbackTransaction(_transaction);
 
-            _connection.Close();
-            _connection.Dispose();
-            _connection = null;
+            DbManager.Instance.DisposeConnection(ref _connection);
         }
 
         /// <summary>

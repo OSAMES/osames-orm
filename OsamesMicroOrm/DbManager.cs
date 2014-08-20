@@ -221,6 +221,19 @@ namespace OsamesMicroOrm
             dbConnection.Open();
             return dbConnection;
         }
+        /// <summary>
+        /// Fermeture d'une connexion et dispose/mise à null de l'objet.
+        /// </summary>
+        /// <param name="connexion_">connexion</param>
+        /// <returns>Ne renvoie rien</returns>
+        public void DisposeConnection(ref DbConnection connexion_)
+        {
+            if(connexion_ == null) return;
+
+            connexion_.Close();
+            connexion_.Dispose();
+            connexion_ = null;
+        }
 
         #endregion
 
