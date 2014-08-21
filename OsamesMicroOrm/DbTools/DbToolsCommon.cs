@@ -276,10 +276,10 @@ namespace OsamesMicroOrm.DbTools
         #region utilities
         /// <summary>
         /// <c>String.Format</c> avec gestion d'exception.
-        /// <para>Renvoie faux si le nombre de placeholders ou de paramètres ne sont pas égale.</para>
+        /// <para>Renvoie faux si le nombre de placeholders et de paramètres ne sont pas égaux.</para>
         /// </summary>
         /// <param name="format_">Chaîne texte avec des placeholders</param>
-        /// <param name="result_">vrai/faux de type retour de valeur</param>
+        /// <param name="result_">Chaine avec les placeholders remplacés si succès, message d'erreur pour l'utilisateur si échec du remplacement (cas d'erreur)</param>
         /// <param name="args_">Valeurs à mettre dans les placeholders</param>
         /// <returns>Renvoie vrai si réussi, sinon retourne faux.</returns>
         internal static bool TryFormat(string format_, out string result_, params Object[] args_)
