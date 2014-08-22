@@ -32,12 +32,14 @@ namespace TestOsamesMicroOrmSqlite
             Assert.IsNotNull(provider);
         }
 
+        /// <summary>
+        /// Test de bas niveau du Select.
+        /// </summary>
         [TestMethod]
         [ExcludeFromCodeCoverage]
         [Owner("Barbara Post")]
         [TestCategory("SqLite")]
-        [TestCategory("Sql Select")]
-        [TestCategory("Sql execution")]
+        [TestCategory("ADO.NET Select")]
         public void TestSelectUsingSqlite()
         {
             // select * from clients where id_client = @p0
@@ -61,12 +63,14 @@ namespace TestOsamesMicroOrmSqlite
             Assert.AreEqual("Tremblay", lastName.ToString());
         }
 
+        /// <summary>
+        /// Test de bas niveau du Insert.
+        /// </summary>
         [TestMethod]
         [ExcludeFromCodeCoverage]
         [Owner("Benjamin Nolmans")]
         [TestCategory("SqLite")]
-        [TestCategory("Sql Insert")]
-        [TestCategory("Sql execution")]
+        [TestCategory("ADO.NET Insert")]
         public void TestInsertUsingSqlite()
         {
             List<DbManager.Parameter> parameters = new List<DbManager.Parameter>

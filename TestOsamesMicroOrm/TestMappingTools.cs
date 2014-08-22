@@ -47,7 +47,7 @@ namespace TestOsamesMicroOrm
         /// Case NOK, no mapping attribute on this class.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        [TestCategory("Mapping")]
+        [TestCategory("Mapping NOK")]
         [Owner("Barbara Post")]
         [TestMethod]
         [ExpectedException(typeof(Exception))]
@@ -71,7 +71,7 @@ namespace TestOsamesMicroOrm
         /// Case NOK, empty mapping attribute on this class.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        [TestCategory("Mapping")]
+        [TestCategory("Mapping NOK")]
         [Owner("Barbara Post")]
         [TestMethod]
         [ExpectedException(typeof(Exception))]
@@ -95,7 +95,7 @@ namespace TestOsamesMicroOrm
         /// Case NOK, mapping attribute on this class value doesn't match a key in mapping dictionary.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        [TestCategory("Mapping")]
+        [TestCategory("Mapping NOK")]
         [Owner("Barbara Post")]
         [TestMethod]
         [ExpectedException(typeof(Exception))]

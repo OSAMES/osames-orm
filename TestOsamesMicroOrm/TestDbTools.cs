@@ -9,6 +9,10 @@ using OsamesMicroOrm.DbTools;
 
 namespace TestOsamesMicroOrm
 {
+    /// <summary>
+    /// Tests unitaires de haut niveau des méthodes de formatage SQL, pas d'exécution.
+    /// But : tester le mapping.
+    /// </summary>
     [TestClass]
     [ExcludeFromCodeCoverage]
     public class TestDbTools : OsamesMicroOrmTest
@@ -106,8 +110,7 @@ namespace TestOsamesMicroOrm
         /// Test of DetermineDatabaseColumnNamesAndAdoParameters<T> with a single property.
         /// </summary>
         [TestMethod]
-        [TestCategory("Mapping")]
-        [TestCategory("GetPropertyValue")]
+        [TestCategory("Mapping GetPropertyValue")]
         public void TestExtractFromProperty()
         {
             // DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
@@ -126,8 +129,7 @@ namespace TestOsamesMicroOrm
         /// Test of DetermineDatabaseColumnNamesAndAdoParameters<T> with a 2 properties.
         /// </summary>
         [TestMethod]
-        [TestCategory("Mapping")]
-        [TestCategory("GetPropertyValue")]
+        [TestCategory("Mapping GetPropertyValue")]
         public void TestExtractFromPropertyMulti()
         {
             // DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
@@ -150,7 +152,7 @@ namespace TestOsamesMicroOrm
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping")]
-        [TestCategory("Sql formatting")]
+        [TestCategory("Sql formatting for Update")]
         [TestCategory("FIXME")]
         public void TestFormatSqlForUpdate()
         {
@@ -186,7 +188,7 @@ namespace TestOsamesMicroOrm
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping")]
-        [TestCategory("Sql formatting")]
+        [TestCategory("Sql formatting for Select")]
         public void TestFormatSqlForSelect()
         {
             string sqlCommand;
@@ -208,7 +210,7 @@ namespace TestOsamesMicroOrm
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping")]
-        [TestCategory("Sql formatting")]
+        [TestCategory("Sql formatting for Select")]
         public void TestFormatSqlForSelect2()
         {
             string sqlCommand;
@@ -229,7 +231,7 @@ namespace TestOsamesMicroOrm
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping")]
-        [TestCategory("Sql formatting")]
+        [TestCategory("Sql formatting for Select")]
         public void TestFormatSqlForSelectMultipleRecordsWithoutWhere()
         {
             string sqlCommand;

@@ -21,13 +21,13 @@ namespace TestOsamesMicroOrmMsSql
        // TODO les différents tests seront à réintégrer ici.
 
         /// <summary>
+        /// Test de haut niveau du select.
         /// Test ORM-37. Configuration incorrecte du mapping : exception attendue.
         /// </summary>
         [TestMethod]
         [TestCategory("MsSql")]
-        [TestCategory("Sql Select")]
-        [TestCategory("Configuration")]
-        [TestCategory("Sql execution")]
+        [TestCategory("Select")]
+        [TestCategory("Configuration NOK")]
         public void TestExecuteReaderIncorrectMapping()
         {
             try
