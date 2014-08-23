@@ -57,7 +57,7 @@ namespace OsamesMicroOrm.DbTools
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="dataObjectcolumnName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
         /// <param name="adoParameterNameAndValue_">Sortie : clé/valeur du paramètre ADO.NET</param>
@@ -93,7 +93,7 @@ namespace OsamesMicroOrm.DbTools
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="lstDataObjectcolumnName_">Noms des propriétés de l'objet dataObject_</param>
         /// <param name="lstDbColumnName_">Sortie : noms des colonnes en DB</param>
         /// <param name="adoParameterNameAndValue_">Sortie : clé/valeur des paramètres ADO.NET</param>
@@ -127,7 +127,7 @@ namespace OsamesMicroOrm.DbTools
         /// En connaissant le nom du mapping associé à un objet et le nom de ses propriétés, génération en sortie de l'information suivante :
         /// <para>noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
         /// </summary>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="lstDataObjectcolumnName_">Noms des propriétés d'un objet</param>
         /// <param name="lstDbColumnName_">Sortie : noms des colonnes en DB</param>
         /// <returns>Ne renvoie rien</returns>
@@ -154,7 +154,7 @@ namespace OsamesMicroOrm.DbTools
         /// En connaissant le nom du mapping associé à un objet et le nom de sa propriété, génération en sortie de l'information suivante :
         /// <para>nom de la colonne en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
         /// </summary>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="dataObjectcolumnName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
         /// <returns>Ne renvoie rien</returns>
@@ -178,7 +178,7 @@ namespace OsamesMicroOrm.DbTools
         /// En connaissant le nom du mapping associé à un objet, génération en sortie de l'information suivante :
         /// <para>noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping, lister toutes les colonnes)</para>
         /// </summary>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="lstDbColumnName_">Sortie : noms des colonnes en DB</param>
         /// <param name="lstDataObjectPropertiesNames_">Sortie : noms des propriétés de l'objet associé au mapping</param>
         /// <returns>Ne renvoie rien</returns>
@@ -206,19 +206,19 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Détermine le nom du paramètre ADO.NET selon quelques règles.
+        /// Détermine de quel type sera le placeholder en cours :
         /// <list type="bullet">
-        /// <item><description>si chaîne : retourner le nom issu du mapping</description></item>
-        /// <item><description>si null : retourner un nom de paramètre "@pN"</description></item>
-        /// <item><description>si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés.</description></item>
+        /// <item><description>si null : retourner un nom de paramètre. Ex.: "@pN"</description></item>
+        /// <item><description>si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés. Ex: "@last_name"</description></item>
+        /// <item><description>si chaîne : retourner le nom issu du mapping. Ex. "TrackID"</description></item>
         /// </list>
         /// </summary>
         /// <param name="value_">Chaîne à traiter selon les règles énoncées ci-dessus</param>
-        /// <param name="mappingDictionariesContainerKey_">Clé dans le dictionnaire de mapping</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom de dictionnaire de mapping à utiliser</param>
         /// <param name="index_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
         /// Sert aussi pour le nom du paramètre dynamique si on avait passé null.</param>
         /// <returns>Nom de colonne DB</returns>
-        internal static string DetermineAdoParameterName(string value_, string mappingDictionariesContainerKey_, ref int index_)
+        internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int index_)
         {
             if (value_ == null)
             {
@@ -245,11 +245,11 @@ namespace OsamesMicroOrm.DbTools
         /// <item><description>adoParameters_ avec pour chaque paramètre ADO.NET son nom et sa valeur. Usage ultérieur : valeur passée à DbManager</description></item>
         /// </list>
         /// </summary>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="strColumnNames_">Liste de chaînes : indication d'une propriété de dataObject_/un paramètre dynamique/un littéral.</param>
-        /// <param name="sqlPlaceholders_">Liste à compléter pour recevoir les noms des paramètres ADO.NET</param>
-        /// <param name="adoParameters_">Liste de couples à compléter pour recevoir les noms et valeurs des paramètres ADO.NET</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
+        /// <param name="strColumnNames_">Liste de chaînes contenant le nom des colonnes d'une table.</param>
         /// <param name="oValues_">Valeurs pour les paramètres ADO.NET</param>
+        /// <param name="sqlPlaceholders_">Liste de string existante, destinée à ajouter les noms des paramètres ADO.NET. (Ex.: @ado_param) à la suite des éléments existant</param>
+        /// <param name="adoParameters_">Liste de clés/valeurs existante, destinée à ajouter les noms et valeurs des paramètres ADO.NET. (Ex. </param>
         /// <returns>Ne renvoie rien</returns>
         internal static void FillPlaceHoldersAndAdoParametersNamesAndValues(string mappingDictionariesContainerKey_, List<string> strColumnNames_, List<object> oValues_, List<string> sqlPlaceholders_, List<KeyValuePair<string, object>> adoParameters_)
         {
@@ -259,9 +259,10 @@ namespace OsamesMicroOrm.DbTools
             int dynamicParameterIndex = -1;
             for (int i = 0; i < iCount; i++)
             {
-                string paramName = DetermineAdoParameterName(strColumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
+                //Analyse la chaine courante de strColumnNames_ et retoure soit un @pN ou alors @nomcolonne
+                string paramName = DeterminePlaceholderType(strColumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
 
-                // Si paramètre dynamique, ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ.
+                // Ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ.
                 if (paramName.StartsWith("@"))
                     adoParameters_.Add(new KeyValuePair<string, object>(paramName, oValues_[dynamicParameterIndex]));
                 else
