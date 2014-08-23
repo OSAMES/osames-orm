@@ -43,39 +43,38 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="sqlTemplate_">Contient le nom du template sql update à utiliser</param>
-        /// <param name="lstDataObjectcolumnName_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
-        /// <param name="primaryKeycolumnName_">Nom de la propriété de dataObject_ correspondant au champ clé primaire</param>
+        /// <param name="lstDataObjectColumnName_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
+        /// <param name="lstWhereColumnNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
+        /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
+        /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string sqlTemplate_, List<string> lstDataObjectcolumnName_, string primaryKeycolumnName_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+        internal static void FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string sqlTemplate_, List<string> lstDataObjectColumnName_, List<string> lstWhereColumnNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
         {
-            StringBuilder sbSqlSetCommand = new StringBuilder();
-            StringBuilder sbSqlWhereCommand = new StringBuilder();
+            StringBuilder sbFieldsToUpdate = new StringBuilder();
 
-            List<string> lstDbColumnNames_;
-            string primaryKeyDbColumnName;
-            KeyValuePair<string, object> adoParamForPrimaryKey;
 
-            // 1. properties
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref dataObject_, mappingDictionariesContainerKey_, lstDataObjectcolumnName_, out lstDbColumnNames_, out adoParameters_);
-            DbToolsCommon.FormatSqlNameEqualValueString(lstDbColumnNames_, adoParameters_, ref sbSqlSetCommand, ", ");
+            List<string> lstDbColumnNames;
+            adoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
 
-            // 2. primary key
-            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(ref dataObject_, mappingDictionariesContainerKey_, primaryKeycolumnName_, out primaryKeyDbColumnName, out adoParamForPrimaryKey);
-            DbToolsCommon.FormatSqlNameEqualValueString(primaryKeyDbColumnName, adoParamForPrimaryKey, ref sbSqlWhereCommand);
+            // 1. détermine les champs à mettre à jour et remplit la stringbuilder sbFieldsToUpdate
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref dataObject_, mappingDictionariesContainerKey_, lstDataObjectColumnName_, out lstDbColumnNames, out adoParameters_);
 
-            // TODO ici rendre comme pour le select, indépendant du template
-
-            // 3. Final formatting "UPDATE {0} SET {1} WHERE {2};"
-            try{
-                DbToolsCommon.TryFormat(ConfigurationLoader.DicUpdateSql[sqlTemplate_], out sqlCommand_, new object[] { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbSqlSetCommand, sbSqlWhereCommand });
-            }
-            catch (Exception ex)
+            int iCountMinusOne = lstDbColumnNames.Count - 1;
+            for (int i = 0; i < iCountMinusOne; i++)
             {
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Error, 0, "Query didn't update any row. Exception error: " + ex.Message);
-                throw;
+                sbFieldsToUpdate.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(adoParameters_[i].Key).Append(", ");
             }
+            sbFieldsToUpdate.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames[iCountMinusOne]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(adoParameters_[iCountMinusOne].Key);
+
+            // 2. Positionne les deux premiers placeholders
+            List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbFieldsToUpdate.ToString() };
+
+            // 3. Détermine les noms des paramètres pour le where
+            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereColumnNames_, oWhereValues_, sqlPlaceholders, adoParameters_);
+
+            DbToolsCommon.TryFormat(ConfigurationLoader.DicUpdateSql[sqlTemplate_], out sqlCommand_, sqlPlaceholders.ToArray());
         }
 
         /// <summary>
@@ -91,14 +90,16 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="sqlTemplate_">Contient le nom du template sql update à utiliser</param>
         /// <param name="propertiesNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
-        /// <param name="primaryKeycolumnName_">Nom de la propriété de dataObject_ correspondant au champ clé primaire</param>
+        /// <param name="strWhereColumnNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
+        /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
+        /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
-        public static int Update<T>(T dataObject_, string mappingDictionariesContainerKey_, string sqlTemplate_, List<string> propertiesNames_, string primaryKeycolumnName_)
+        public static int Update<T>(T dataObject_, string mappingDictionariesContainerKey_, string sqlTemplate_, List<string> propertiesNames_, List<string> strWhereColumnNames_, List<object> oWhereValues_)
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
 
-            FormatSqlForUpdate(ref dataObject_, mappingDictionariesContainerKey_, sqlTemplate_, propertiesNames_, primaryKeycolumnName_, out sqlCommand, out adoParameters);
+            FormatSqlForUpdate(ref dataObject_, mappingDictionariesContainerKey_, sqlTemplate_, propertiesNames_, strWhereColumnNames_, oWhereValues_, out sqlCommand, out adoParameters);
 
             long lastInsertedRowId;
             int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(sqlCommand, adoParameters, out lastInsertedRowId);

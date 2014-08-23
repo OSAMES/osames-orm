@@ -54,40 +54,6 @@ namespace TestOsamesMicroOrm
         #region test sql formatting
 
         /// <summary>
-        /// Test of FormatSqlNameEqualValueString with a single value.
-        /// </summary>
-        [TestMethod]
-        [TestCategory("Sql formatting")]
-        public void TestFormatSqlNameEqualValueStringParam()
-        {
-            KeyValuePair<string, object> adoParams = new KeyValuePair<string, object>("@firstname", "Barbara");
-            StringBuilder sb = new StringBuilder();
-            DbToolsCommon.FormatSqlNameEqualValueString("FirstName", adoParams, ref sb);
-
-            Assert.IsFalse(string.IsNullOrWhiteSpace(sb.ToString()), "string builder empty");
-            Assert.AreEqual(string.Format("{0}FirstName{1} = @firstname", ConfigurationLoader.StartFieldEncloser, ConfigurationLoader.EndFieldEncloser), sb.ToString());
-        }
-
-        /// <summary>
-        /// Test of FormatSqlNameEqualValueString with 2 values.
-        /// </summary>
-        [TestMethod]
-        [TestCategory("Sql formatting")]
-        public void TestFormatSqlNameEqualValueListParam()
-        {
-            List<KeyValuePair<string, object>> adoParams = new List<KeyValuePair<string, object>>
-                {
-                    new KeyValuePair<string, object>("@firstname", "Barbara"),
-                    new KeyValuePair<string, object>("@lastname", "Post")
-                };
-            StringBuilder sb = new StringBuilder();
-            DbToolsCommon.FormatSqlNameEqualValueString(new List<string> { "FirstName", "LastName" }, adoParams, ref sb, ", ");
-
-            Assert.IsFalse(string.IsNullOrWhiteSpace(sb.ToString()), "string builder empty");
-            Assert.AreEqual(string.Format("{0}FirstName{1} = @firstname, {0}LastName{1} = @lastname", ConfigurationLoader.StartFieldEncloser, ConfigurationLoader.EndFieldEncloser), sb.ToString());
-        }
-
-        /// <summary>
         /// Test of FormatSqlFieldsListAsString with 2 values in list
         /// </summary>
         [TestMethod]
@@ -168,14 +134,16 @@ namespace TestOsamesMicroOrm
 
                 string sqlCommand;
                 List<KeyValuePair<string, object>> adoParams;
-                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "employee", "BaseUpdate", new List<string> { "LastName", "FirstName" }, "EmployeeId", out sqlCommand, out adoParams);
+                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "employee", "BaseUpdateOne", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", null}, new List<object>{ 2 }, out sqlCommand, out adoParams);
 
-                Assert.AreEqual("UPDATE [employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @employeeid;", sqlCommand);
-                Assert.AreEqual(2, adoParams.Count, "no parameters generated");
+                Assert.AreEqual("UPDATE [employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", sqlCommand);
+                Assert.AreEqual(3, adoParams.Count, "no parameters generated");
                 Assert.AreEqual("@lastname", adoParams[0].Key);
                 Assert.AreEqual(_employee.LastName, adoParams[0].Value);
                 Assert.AreEqual("@firstname", adoParams[1].Key);
                 Assert.AreEqual(_employee.FirstName, adoParams[1].Value);
+                Assert.AreEqual("@p0", adoParams[2].Key);
+                Assert.AreEqual(2, adoParams[2].Value);
             } finally
             {
                 Customizer.ConfigurationManagerRestoreAllKeys();

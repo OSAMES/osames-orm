@@ -29,38 +29,6 @@ namespace OsamesMicroOrm.DbTools
         #region SQL string formatting
 
         /// <summary>
-        /// Utilitaire de formatage d'une chaîne texte <c>"my_column = @myParam"</c> en l'ajoutant à un <see cref="System.Text.StringBuilder"/>.
-        /// </summary>
-        /// <param name="dbColumnName_">Nom de la colonne en Db</param>
-        /// <param name="adoParameters_">Objets représentatifs des paramètres ADO.NET</param>
-        /// <param name="sqlCommand_">StringBuilder à compléter</param>
-        /// <param name="optionalSuffix_">Suffixe optionnel, par exemple ","</param>
-        /// <returns>Ne renvoie rien</returns>
-        internal static void FormatSqlNameEqualValueString(string dbColumnName_, KeyValuePair<string, object> adoParameters_, ref StringBuilder sqlCommand_, string optionalSuffix_ = "")
-        {
-            sqlCommand_.Append(ConfigurationLoader.StartFieldEncloser).Append(dbColumnName_).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(adoParameters_.Key).Append(optionalSuffix_);
-        }
-
-        /// <summary>
-        /// Utilitaire de formatage d'une chaîne texte <c>"my_column = @myParam, my_column2 = @myValue2"</c> en l'ajoutant à un <see cref="System.Text.StringBuilder"/>.
-        /// <para>Le suffixe est ajouté entre chaque élément de la liste lstDbColumnName_.</para>
-        /// </summary>
-        /// <param name="lstDbColumnName_">Liste de noms de colonne en Db</param>
-        /// <param name="adoParameters_">Objets représentatifs des paramètres ADO.NET</param>
-        /// <param name="sqlCommand_">StringBuilder à compléter</param>
-        /// <param name="optionalSuffix_">Suffixe optionnel, par exemple ",", ajouté entre chaque élément (pas à la fin)</param>
-        /// <returns>Ne renvoie rien.</returns>
-        internal static void FormatSqlNameEqualValueString(List<string> lstDbColumnName_, List<KeyValuePair<string, object>> adoParameters_, ref StringBuilder sqlCommand_, string optionalSuffix_ = "")
-        {
-            int iCountMinusOne = lstDbColumnName_.Count - 1;
-            for (int i = 0; i < iCountMinusOne; i++)
-            {
-                sqlCommand_.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnName_[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(adoParameters_[i].Key).Append(optionalSuffix_);
-            }
-            sqlCommand_.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnName_[iCountMinusOne]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(adoParameters_[iCountMinusOne].Key);
-        }
-
-        /// <summary>
         /// Formatage d'une chaîne de texte sérialisant la liste des noms de colonnes DB paramètre et mettant une virgule entre chaque élément.
         /// </summary>
         /// <param name="lstDbColumnName_">Liste de noms de colonnes DB</param>
@@ -268,6 +236,41 @@ namespace OsamesMicroOrm.DbTools
             string columnName;
             DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName);
             return columnName;
+        }
+
+        /// <summary>
+        /// Complète les paramètres :
+        /// <list type="bullet">
+        /// <item><description>sqlPlaceholders_ avec les noms des paramètres ADO.NET. Usage ultérieur : complétion de la chaîne de commande SQL</description></item>
+        /// <item><description>adoParameters_ avec pour chaque paramètre ADO.NET son nom et sa valeur. Usage ultérieur : valeur passée à DbManager</description></item>
+        /// </list>
+        /// </summary>
+        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="strColumnNames_">Liste de chaînes : indication d'une propriété de dataObject_/un paramètre dynamique/un littéral.</param>
+        /// <param name="sqlPlaceholders_">Liste à compléter pour recevoir les noms des paramètres ADO.NET</param>
+        /// <param name="adoParameters_">Liste de couples à compléter pour recevoir les noms et valeurs des paramètres ADO.NET</param>
+        /// <param name="oValues_">Valeurs pour les paramètres ADO.NET</param>
+        /// <returns>Ne renvoie rien</returns>
+        internal static void FillPlaceHoldersAndAdoParametersNamesAndValues(string mappingDictionariesContainerKey_, List<string> strColumnNames_, List<object> oValues_, List<string> sqlPlaceholders_, List<KeyValuePair<string, object>> adoParameters_)
+        {
+            if (strColumnNames_ == null) return;
+
+            int iCount = strColumnNames_.Count;
+            int dynamicParameterIndex = -1;
+            for (int i = 0; i < iCount; i++)
+            {
+                string paramName = DetermineAdoParameterName(strColumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
+
+                // Si paramètre dynamique, ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ.
+                if (paramName.StartsWith("@"))
+                    adoParameters_.Add(new KeyValuePair<string, object>(paramName, oValues_[dynamicParameterIndex]));
+                else
+                    paramName = string.Concat(ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
+
+                // Ajout pour les placeholders
+                sqlPlaceholders_.Add(paramName);
+
+            }
         }
 
         #endregion
