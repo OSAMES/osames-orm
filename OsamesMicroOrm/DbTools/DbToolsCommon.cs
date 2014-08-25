@@ -83,6 +83,7 @@ namespace OsamesMicroOrm.DbTools
         }
         
         #endregion
+
         #region Determine
         /// <summary>
         /// En connaissant un objet et le nom de sa propriété, génération en sortie des informations suivantes :
@@ -93,7 +94,7 @@ namespace OsamesMicroOrm.DbTools
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="dataObjectcolumnName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
         /// <param name="adoParameterNameAndValue_">Sortie : clé/valeur du paramètre ADO.NET</param>
@@ -129,7 +130,7 @@ namespace OsamesMicroOrm.DbTools
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="lstDataObjectcolumnName_">Noms des propriétés de l'objet dataObject_</param>
         /// <param name="lstDbColumnName_">Sortie : noms des colonnes en DB</param>
         /// <param name="adoParameterNameAndValue_">Sortie : clé/valeur des paramètres ADO.NET</param>
@@ -163,7 +164,7 @@ namespace OsamesMicroOrm.DbTools
         /// En connaissant le nom du mapping associé à un objet et le nom de ses propriétés, génération en sortie de l'information suivante :
         /// <para>noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
         /// </summary>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="lstDataObjectcolumnName_">Noms des propriétés d'un objet</param>
         /// <param name="lstDbColumnName_">Sortie : noms des colonnes en DB</param>
         /// <returns>Ne renvoie rien</returns>
@@ -190,7 +191,7 @@ namespace OsamesMicroOrm.DbTools
         /// En connaissant le nom du mapping associé à un objet et le nom de sa propriété, génération en sortie de l'information suivante :
         /// <para>nom de la colonne en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
         /// </summary>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="dataObjectcolumnName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
         /// <returns>Ne renvoie rien</returns>
@@ -214,7 +215,7 @@ namespace OsamesMicroOrm.DbTools
         /// En connaissant le nom du mapping associé à un objet, génération en sortie de l'information suivante :
         /// <para>noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping, lister toutes les colonnes)</para>
         /// </summary>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="lstDbColumnName_">Sortie : noms des colonnes en DB</param>
         /// <param name="lstDataObjectPropertiesNames_">Sortie : noms des propriétés de l'objet associé au mapping</param>
         /// <returns>Ne renvoie rien</returns>
@@ -275,7 +276,6 @@ namespace OsamesMicroOrm.DbTools
         }
 
         #endregion
-
 
         #region utilities
         /// <summary>
