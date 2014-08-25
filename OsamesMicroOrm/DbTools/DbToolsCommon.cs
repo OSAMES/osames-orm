@@ -101,7 +101,7 @@ namespace OsamesMicroOrm.DbTools
 
             try
             {
-                dbColumnName_ = ConfigurationLoader.Instance.GetMappingDbColumnName(mappingDictionariesContainerKey_, dataObjectcolumnName_);
+                dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectcolumnName_);
 
                 adoParameterNameAndValue_ = new KeyValuePair<string, object>(
                                         "@" + dataObjectcolumnName_.ToLowerInvariant(),
@@ -139,7 +139,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 foreach (string columnName in lstDataObjectcolumnName_)
                 {
-                    lstDbColumnName_.Add(ConfigurationLoader.Instance.GetMappingDbColumnName(mappingDictionariesContainerKey_, columnName));
+                    lstDbColumnName_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
 
                     adoParameterNameAndValue_.Add(new KeyValuePair<string, object>(
                                                     "@" + columnName.ToLowerInvariant(),
@@ -171,7 +171,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 foreach (string columnName in lstDataObjectcolumnName_)
                 {
-                    lstDbColumnName_.Add(ConfigurationLoader.Instance.GetMappingDbColumnName(mappingDictionariesContainerKey_, columnName));
+                    lstDbColumnName_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
                 }
             }
             catch (Exception e)
@@ -196,7 +196,7 @@ namespace OsamesMicroOrm.DbTools
 
             try
             {
-                dbColumnName_ = ConfigurationLoader.Instance.GetMappingDbColumnName(mappingDictionariesContainerKey_, dataObjectcolumnName_);
+                dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectcolumnName_);
             }
             catch (Exception e)
             {
@@ -222,7 +222,7 @@ namespace OsamesMicroOrm.DbTools
             try
             {
                 // Ce dictionnaire contient clé/valeur : propriété/nom de colonne
-                Dictionary<string, string> mappingObjectSet = ConfigurationLoader.Instance.GetMapping(mappingDictionariesContainerKey_);
+                Dictionary<string, string> mappingObjectSet = ConfigurationLoader.Instance.GetMappingDefinitionsForTable(mappingDictionariesContainerKey_);
                 foreach (string key in mappingObjectSet.Keys)
                 {
                     lstDataObjectPropertiesNames_.Add(key);

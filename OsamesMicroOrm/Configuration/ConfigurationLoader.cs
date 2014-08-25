@@ -60,8 +60,8 @@ namespace OsamesMicroOrm.Configuration
 
         /// <summary>
         /// Mapping is stored as follows : an external dictionary and an internal dictionary.
-        /// External dictionary : key is "clients" for example, value is a set of property name/column name correspondance.
-        /// Property (dictionary key) and column name (dictionary value) are stored in the internal dictionary.
+        /// External dictionary : key is a database table name, value is dictionary.
+        /// Internal dictionary : key is a C# object property name, value is a database column name.
         /// </summary>
         internal static readonly Dictionary<string, Dictionary<string, string>> MappingDictionnary = new Dictionary<string, Dictionary<string, string>>();
 
@@ -93,7 +93,9 @@ namespace OsamesMicroOrm.Configuration
         }
 
         /// <summary>
-        /// Loads configuration
+        /// Loads configuration.
+        /// <para>Parses XML configuration to internal dictionaries</para>
+        /// <para>Initializes database connection</para></pa>
         /// </summary>
         private void LoadConfiguration()
         {
@@ -255,6 +257,7 @@ namespace OsamesMicroOrm.Configuration
                 throw;
             }
         }
+
         /// <summary>
         /// Recherche du noeud Provider désiré (déterminé à partir du nom de la connexion active) puis :
         /// - lecture de ses attributs pour les fields enclosers -> mise à jour de variables de classe StartFieldEncloser et EndFieldEncloser.
@@ -435,59 +438,59 @@ namespace OsamesMicroOrm.Configuration
         #region mapping dictionary getter helpers
 
         /// <summary>
-        /// Asks mapping for a DB column name.
+        /// Asks mapping dictionary for a DB column name, given a Db entity property name.
         /// </summary>
-        /// <param name="mappingKey_">Mapping key (DB table name)</param>
-        /// <param name="propertyName_">(DB persistent object) peroperty name, ex "IdXXX"</param>
-        /// <returns>Db column name, ex "id_xxx"</returns>
-        public string GetMappingDbColumnName(string mappingKey_, string propertyName_)
+        /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
+        /// <param name="propertyName_">DB entity C# object property name. Ex: "CustomerId"</param>
+        /// <returns>DB column name. Ex: "id_customer"</returns>
+        public string GetDbColumnNameFromMappingDictionary(string mappingDictionaryName_, string propertyName_)
         {
             Dictionary<string, string> mappingObjectSet;
             string resultColumnName;
 
-            MappingDictionnary.TryGetValue(mappingKey_, out mappingObjectSet);
+            MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingKey_ + "'");
+                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
             mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
             if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingKey_ + "' and property name '" + propertyName_ + "'");
+                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "' and property name '" + propertyName_ + "'");
 
             return resultColumnName;
         }
 
         /// <summary>
-        /// Asks mapping for a (DB persistent object) property name.
+        /// Asks mapping dictionary for a Db entity object property name, given a DB column name.
         /// </summary>
-        /// <param name="mappingKey_">Mapping key (DB table name)</param>
-        /// <param name="dbColumnName_">DB column name, ex "id_xxx"</param>
-        /// <returns>(Db persistent object) property name, ex "IdXXX"</returns>
-        public string GetMappingPropertyName(string mappingKey_, string dbColumnName_)
+        /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
+        /// <param name="dbColumnName_">DB column name. Ex: "id_customer"</param>
+        /// <returns>DB entity C# object property name. Ex: "CustomerId"</returns>
+        public string GetDbEntityPropertyNameFromMappingDictionary(string mappingDictionaryName_, string dbColumnName_)
         {
             Dictionary<string, string> mappingObjectSet;
 
-            MappingDictionnary.TryGetValue(mappingKey_, out mappingObjectSet);
+            MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingKey_ + "'");
+                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
             string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
 
             if (resultPropertyName == null)
-                throw new Exception("No mapping for key '" + mappingKey_ + "' and DB column name '" + dbColumnName_ + "'");
+                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "' and DB column name '" + dbColumnName_ + "'");
 
             return resultPropertyName;
         }
 
         /// <summary>
-        /// Asks for mapping set.
+        /// Asks mapping dictionary for all mapping defined for a given table.
         /// </summary>
-        /// <param name="mappingKey_">Mapping key (DB table name)</param>
+        /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
         /// <returns>Mapping dictionary</returns>
-        public Dictionary<string, string> GetMapping(string mappingKey_)
+        public Dictionary<string, string> GetMappingDefinitionsForTable(string mappingDictionaryName_)
         {
             Dictionary<string, string> mappingObjectSet;
 
-            MappingDictionnary.TryGetValue(mappingKey_, out mappingObjectSet);
+            MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingKey_ + "'");
+                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
             return mappingObjectSet;
         }
 

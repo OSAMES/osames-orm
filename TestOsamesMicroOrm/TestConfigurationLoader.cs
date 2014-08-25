@@ -192,7 +192,7 @@ namespace TestOsamesMicroOrm
         }
 
         /// <summary>
-        /// ConfigurationLoader internal dictionary is populated. Test of GetMappingDbColumnName : case where mapping is found.
+        /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is found.
         /// </summary>
         [TestMethod]
         [ExcludeFromCodeCoverage]
@@ -209,11 +209,11 @@ namespace TestOsamesMicroOrm
             Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["customer"];
             Assert.IsTrue(mappings.ContainsKey("Email"), "Expected to find 'Email' key");
             Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
-            Assert.AreEqual("Email", ConfigurationLoader.Instance.GetMappingDbColumnName("customer", "Email"));
+            Assert.AreEqual("Email", ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("customer", "Email"));
         }
 
         /// <summary>
-        /// ConfigurationLoader internal dictionary is populated. Test of GetMappingDbColumnName : case where mapping is not found (key).
+        /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is not found (key).
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(Exception))]
@@ -227,12 +227,12 @@ namespace TestOsamesMicroOrm
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
             Assert.IsFalse(ConfigurationLoader.MappingDictionnary.ContainsKey("foobar"), "Expected not to find 'foobar' key");
 
-            ConfigurationLoader.Instance.GetMappingDbColumnName("foobar", "Email");
+            ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("foobar", "Email");
         }
 
  
         /// <summary>
-        /// ConfigurationLoader internal dictionary is populated. Test of GetMappingDbColumnName : case where mapping is not found (property name).
+        /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is not found (property name).
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(Exception))]
@@ -245,10 +245,10 @@ namespace TestOsamesMicroOrm
         {
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
           // TODO manque l'assert que la clé n'existe pas dans le dico interne
-            ConfigurationLoader.Instance.GetMappingDbColumnName("foobar", "Email");
+            ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("foobar", "Email");
         }
 
-        // TODO les TU dans l'autre sens, GetMappingPropertyName, les 3 cas (OK, pas de match sur clé de mapping, pas de match sur nom de colonne)
+        // TODO les TU dans l'autre sens, GetDbEntityPropertyNameFromMappingDictionary, les 3 cas (OK, pas de match sur clé de mapping, pas de match sur nom de colonne)
 
         /// <summary>
         /// After test run, ConfigurationLoader internal dictionary should be populated.
