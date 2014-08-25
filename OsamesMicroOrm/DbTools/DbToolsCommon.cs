@@ -24,6 +24,9 @@ using OsamesMicroOrm.Configuration;
 
 namespace OsamesMicroOrm.DbTools
 {
+    /// <summary>
+    /// Classe dédiée à la transformation des templates vers des chaînes SQL prêtes à l'exécution, en déterminant en parallèle le tableau des paramètres ADO.NET.
+    /// </summary>
     class DbToolsCommon
     {
         #region SQL string formatting
@@ -61,21 +64,22 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Formatage d'une chaîne de texte sérialisant la liste des noms de colonnes DB paramètre et mettant une virgule entre chaque élément.
+        /// Création d'une chaîne de texte en prenant chaque élément de la liste paramètre et mettant une virgule entre chaque élément.
+        /// <para>Chaque élément est considéré comme étant un nom de colonne DB, il est protégé par des caractères spéciaux.</para>
         /// </summary>
-        /// <param name="lstDbColumnName_">Liste de noms de colonnes DB</param>
-        /// <param name="sqlCommand_">StringBuilder à compléter</param>
-        /// <returns>Ne renvoie rien</returns>
-        internal static void FormatSqlFieldsListAsString(List<string> lstDbColumnName_, out StringBuilder sqlCommand_)
+        /// <param name="lstDbColumnName_">Liste de noms de colonnes DB, ex : "FirstName", "LastName"...</param>
+        /// <returns>Chaîne de texte. Ex: "[FirstName], [LastName]..."</returns>
+        internal static string ListToCommaSeparatedEnclosedValues(List<string> lstDbColumnName_)
         {
-            sqlCommand_ = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
 
             int iCount = lstDbColumnName_.Count;
             for (int i = 0; i < iCount; i++)
             {
-                sqlCommand_.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnName_[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(", ");
+                sb.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnName_[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(", ");
             }
-            sqlCommand_.Remove(sqlCommand_.Length - 2, 2);
+            sb.Remove(sb.Length - 2, 2);
+            return sb.ToString();
         }
         
         #endregion

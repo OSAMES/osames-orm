@@ -50,17 +50,15 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Ne renvoie rien</returns>
         internal static void FormatSqlForSelect(string sqlTemplate_, List<string> lstDataObjectColumnName_, string mappingDictionariesContainerKey_, List<string> strWhereColumnNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_, out List<string> lstDbColumnNames_)
         {
-            StringBuilder sbSqlSelectFieldsCommand;   //{0} dans le template sql
-
             adoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
 
             // 1. Détermine les colonnes pour les champs à sélectionner.
             // lstDbColumnNames_ sert de fournisseur pour remplir sbSqlSelectFieldsCommand
             DbToolsCommon.DetermineDatabaseColumnNames(mappingDictionariesContainerKey_, lstDataObjectColumnName_, out lstDbColumnNames_);
-            DbToolsCommon.FormatSqlFieldsListAsString(lstDbColumnNames_, out sbSqlSelectFieldsCommand);
+            string sbSqlSelectFieldsCommand = DbToolsCommon.ListToCommaSeparatedEnclosedValues(lstDbColumnNames_); //{0} dans le template sql
 
             // 2. Positionne les deux premiers placeholders
-            List<string> sqlPlaceholders = new List<string> { sbSqlSelectFieldsCommand.ToString(), string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
+            List<string> sqlPlaceholders = new List<string> { sbSqlSelectFieldsCommand, string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 3. Détermine les noms des paramètres pour le where
             if (strWhereColumnNames_ != null)
