@@ -38,7 +38,7 @@ namespace OsamesMicroOrm.Configuration.Tweak
         /// </summary>
         /// <param name="key_">Key for ConfigurationManager.AppSettings</param>
         /// <param name="keyValue_">Value for ConfigurationManager.AppSettings</param>
-        /// <param name="customLogger_">if not null, used instead of default orm logger</param>
+        /// <param name="customLogger_">if not null, TraceSource logger to use instead of default ORM TraceSource logger</param>
         public static void ConfigurationManagerSetKeyValue(string key_, string keyValue_, TraceSource customLogger_ = null)
         {
             if (string.IsNullOrEmpty(ConfigurationManager.AppSettings[key_]))
@@ -66,7 +66,7 @@ namespace OsamesMicroOrm.Configuration.Tweak
         /// Restore une clé précise dans ConfigurationManager.AppSettings
         /// </summary>
         /// <param name="key_">Nom de la clé à restorer</param>
-        /// <param name="customLogger_">if not null, used instead of default orm logger</param>
+        /// <param name="customLogger_">if not null, TraceSource logger to use instead of default ORM TraceSource logger</param>
         public static void ConfigurationManagerRestoreKey(string key_, TraceSource customLogger_ = null)
         {
             if (_appSettingsOriginalValue.ContainsKey(key_))
@@ -103,7 +103,7 @@ namespace OsamesMicroOrm.Configuration.Tweak
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="customLogger_">Can be null</param>
+        /// <param name="customLogger_">if not null, TraceSource logger to use instead of default ORM TraceSource logger</param>
         /// <param name="message_">Message</param>
         /// <param name="error_">True for error, false for info</param>
         private static void Log(TraceSource customLogger_, string message_, bool error_)
