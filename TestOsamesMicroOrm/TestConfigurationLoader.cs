@@ -309,5 +309,21 @@ namespace TestOsamesMicroOrm
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.dbName.ToString());
             }
         }
+
+        /// <summary>
+        /// Pour ce projet de TU il n'y a pas de providers définis dans App.Config.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("Configuration")]
+        [TestCategory("Sql provider search")]
+        public void TestFindInProviderFactoryClasses()
+        {
+            Assert.IsFalse(ConfigurationLoader.FindInProviderFactoryClasses("some.provider"));
+            Assert.IsFalse(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SQLite"));
+            Assert.IsFalse(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SqlClient"));
+
+        }
     }
 }

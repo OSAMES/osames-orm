@@ -170,7 +170,7 @@ namespace OsamesMicroOrm.Configuration
             }
 
             // 4. ce provider doit exister sur le système
-            if (!GetProviderFactoryClasses(provider))
+            if (!FindInProviderFactoryClasses(provider))
             {
                 _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Provider with name '" + provider +"' is not installed '");
                 return false;
@@ -513,11 +513,12 @@ namespace OsamesMicroOrm.Configuration
         #endregion
 
         /// <summary>
-        /// Recherche dans le tableau des providers disponnibles, un provider donné.
+        /// Recherche dans le tableau des providers disponibles, un provider donné.
+        /// Méthode static car ne dépend pas de la lecture de la configuration
         /// </summary>
-        /// <param name="providerFactoryToCheck_">Chaine qui est le nom du provider.</param>
+        /// <param name="providerFactoryToCheck_">Chaine qui est le nom invariant du provider.</param>
         /// <returns>Retourne vrai ou faux</returns>
-        internal bool GetProviderFactoryClasses(string providerFactoryToCheck_)
+        public static bool FindInProviderFactoryClasses(string providerFactoryToCheck_)
         {
             // Retrieve the installed providers and factories.
             DataTable table = DbProviderFactories.GetFactoryClasses();
