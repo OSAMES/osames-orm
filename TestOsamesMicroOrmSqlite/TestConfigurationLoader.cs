@@ -36,9 +36,11 @@ namespace TestOsamesMicroOrmSqlite
         [TestCategory("Sql provider search")]
         public void TestFindInProviderFactoryClasses()
         {
+            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+
             Assert.IsFalse(ConfigurationLoader.FindInProviderFactoryClasses("some.provider"));
             Assert.IsTrue(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SQLite"));
-            Assert.IsFalse(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SqlClient"));
+            Assert.IsTrue(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SqlClient"));
 
         }
     }
