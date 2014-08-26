@@ -25,6 +25,8 @@ using System.Configuration;
 using System.IO;
 using System.Xml;
 using OsamesMicroOrm.Utilities;
+using System.Data;
+using System.Data.Common;
 
 namespace OsamesMicroOrm.Configuration
 {
@@ -175,6 +177,12 @@ namespace OsamesMicroOrm.Configuration
                 return false;
             }
 
+            if (!GetProviderFactoryClasses(provider))
+            {
+                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No provider defined in appSettings is installed '" + dbConnexion + "'");
+                return false;
+            }
+
             // Some database connection definition don't need a database path
             if (!string.IsNullOrWhiteSpace(dbPath))
                 conn = (ConfigurationManager.ConnectionStrings[dbConnexion].ToString().Replace(@"$dbPath", dbPath));
@@ -194,7 +202,6 @@ namespace OsamesMicroOrm.Configuration
             return true;
 
         }
-
 
         /// <summary>
         /// Reads configuration from appSettings then load specific configuration files to internal dictionaries.
@@ -493,5 +500,23 @@ namespace OsamesMicroOrm.Configuration
 
         #endregion
 
+        /// <summary>
+        /// Recherche dans le tableau des providers disponnibles, un provider donné.
+        /// </summary>
+        /// <param name="providerFactoryToCheck_">Chaine qui est le nom du provider.</param>
+        /// <returns>Retourne vrai ou faux</returns>
+        internal bool GetProviderFactoryClasses(string providerFactoryToCheck_)
+        {
+            // Retrieve the installed providers and factories.
+            DataTable table = DbProviderFactories.GetFactoryClasses();
+
+            // Display each row and column value.
+            foreach (DataRow row in table.Rows)
+            {
+                if (row[2].ToString().Contains(providerFactoryToCheck_))
+                    return true;
+            }
+            return false;
+        }
     }
 }
