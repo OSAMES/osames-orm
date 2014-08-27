@@ -95,6 +95,7 @@ namespace TestOsamesMicroOrmSqlite
       
         /// <summary>
          /// From http://msdn.microsoft.com/en-us/library/system.data.datatable(v=vs.110).aspx
+         /// Méthode qui liste dans le output du TU (et non dans le output de VS) tout les providers disponibles.
         /// </summary>
         /// <param name="table_"></param>
          private static void ShowTable(DataTable table_)
