@@ -180,7 +180,7 @@ namespace OsamesMicroOrm.DbTools
             List<string> lstDbColumnNames;
             List<string> lstPropertiesNames;
 
-            DbToolsCommon.DetermineDatabaseColumnsAndPropertiesNames(mappingDictionariesContainerKey_, out lstDbColumnNames, out lstPropertiesNames);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndDataObjectPropertyNames(mappingDictionariesContainerKey_, out lstDbColumnNames, out lstPropertiesNames);
 
             FormatSqlForSelect(refSqlTemplate_, mappingDictionariesContainerKey_, strWhereColumnNames_, oWhereValues_, lstDbColumnNames, out sqlCommand, out adoParameters);
 
@@ -245,7 +245,7 @@ namespace OsamesMicroOrm.DbTools
             List<string> lstDbColumnNames;
             List<string> lstPropertiesNames;
 
-            DbToolsCommon.DetermineDatabaseColumnsAndPropertiesNames(mappingDictionariesContainerKey_, out lstDbColumnNames, out lstPropertiesNames);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndDataObjectPropertyNames(mappingDictionariesContainerKey_, out lstDbColumnNames, out lstPropertiesNames);
 
             FormatSqlForSelect(refSqlTemplate_, mappingDictionariesContainerKey_, strWherecolumnNames_, oWhereValues_, lstDbColumnNames, out sqlCommand, out adoParameters);
 

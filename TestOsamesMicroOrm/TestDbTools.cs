@@ -245,7 +245,7 @@ namespace TestOsamesMicroOrm
         }
 
         /// <summary>
-        /// Test of DetermineDatabaseColumnsAndPropertiesNames for a given mapping.
+        /// Test of DetermineDatabaseColumnNamesAndDataObjectPropertyNames for a given mapping.
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping")]
@@ -254,7 +254,7 @@ namespace TestOsamesMicroOrm
 
             List<string> lstPropertiesNames;
             List<string> lstDbColumnNames;
-            DbToolsCommon.DetermineDatabaseColumnsAndPropertiesNames("customer", out lstDbColumnNames, out lstPropertiesNames);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndDataObjectPropertyNames("customer", out lstDbColumnNames, out lstPropertiesNames);
             Assert.IsFalse(lstDbColumnNames.Count == 0);
             Assert.IsFalse(lstPropertiesNames.Count == 0);
             Assert.AreEqual(lstDbColumnNames.Count, lstPropertiesNames.Count);

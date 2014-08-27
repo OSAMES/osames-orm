@@ -46,7 +46,7 @@ namespace OsamesMicroOrm.DbTools
 
         /// <summary>
         /// Utilitaire de formatage d'une chaîne texte <c>"my_column = @myParam, my_column2 = @myValue2"</c> en l'ajoutant à un <see cref="System.Text.StringBuilder"/>.
-        /// <para>Le suffixe est ajouté entre chaque élément de la liste lstDbColumnName_.</para>
+        /// <para>Le suffixe est ajouté entre chaque élément de la liste lstDbColumnNames_.</para>
         /// </summary>
         /// <param name="lstDbColumnName_">Liste de noms de colonne en Db</param>
         /// <param name="adoParameters_">Objets représentatifs des paramètres ADO.NET</param>
@@ -67,9 +67,9 @@ namespace OsamesMicroOrm.DbTools
         /// Création d'une chaîne de texte en prenant chaque élément de la liste paramètre et mettant une virgule entre chaque élément.
         /// <para>Chaque élément est considéré comme étant un nom de colonne DB, il est protégé par des caractères spéciaux.</para>
         /// </summary>
-        /// <param name="lstDbColumnName_">Liste de noms de colonnes DB, ex : "FirstName", "LastName"...</param>
+        /// <param name="lstDbColumnName_">Liste de chaînes, ex : "FirstName", "LastName"...</param>
         /// <returns>Chaîne de texte. Ex: "[FirstName], [LastName]..."</returns>
-        internal static string ListToCommaSeparatedEnclosedValues(List<string> lstDbColumnName_)
+        internal static string GenerateCommaSeparatedDbFieldsString(List<string> lstDbColumnName_)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -89,28 +89,29 @@ namespace OsamesMicroOrm.DbTools
         /// En connaissant un objet et le nom de sa propriété, génération en sortie des informations suivantes :
         /// <list type="bullet">
         /// <item><description>nom de la colonne en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</description></item>
-        /// <item><description>nom et valeur du paramètre ADO.NET correspondant à la propriété (nom : proche du nom de la propriété, valeur : valeur de la propriété).</description></item>
+        /// <item><description>nom et valeur du paramètre ADO.NET correspondant.</description></item>
         /// </list>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="dataObjectcolumnName_">Nom d'une propriété de l'objet dataObject_</param>
+        /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
-        /// <param name="adoParameterNameAndValue_">Sortie : clé/valeur du paramètre ADO.NET</param>
+        /// <param name="adoParameterNameAndValue_">Sortie : nom/valeur du paramètre ADO.NET</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string dataObjectcolumnName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
+        internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
         {
             dbColumnName_ = null;
             adoParameterNameAndValue_ = new KeyValuePair<string, object>();
 
             try
             {
-                dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectcolumnName_);
+                dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
 
+                // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
                 adoParameterNameAndValue_ = new KeyValuePair<string, object>(
-                                        "@" + dataObjectcolumnName_.ToLowerInvariant(),
-                                        dataObject_.GetType().GetProperty(dataObjectcolumnName_).GetValue(dataObject_)
+                                        "@" + dataObjectPropertyName_.ToLowerInvariant(),
+                                        dataObject_.GetType().GetProperty(dataObjectPropertyName_).GetValue(dataObject_)
                                         );
             }
             catch (Exception e)
@@ -125,28 +126,29 @@ namespace OsamesMicroOrm.DbTools
         /// En connaissant un objet et le nom de ses propriétés, génération en sortie des informations suivantes :
         /// <list type="bullet">
         /// <item><description>noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</description></item>
-        /// <item><description>nom et valeur des paramètres ADO.NET correspondant aux propriétés (nom : proche du nom de la propriété, valeur : valeur de la propriété). </description></item>
+        /// <item><description>nom et valeur des paramètres ADO.NET correspondant aux propriétés</description></item>
         /// </list>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="lstDataObjectcolumnName_">Noms des propriétés de l'objet dataObject_</param>
-        /// <param name="lstDbColumnName_">Sortie : noms des colonnes en DB</param>
-        /// <param name="adoParameterNameAndValue_">Sortie : clé/valeur des paramètres ADO.NET</param>
+        /// <param name="lstDataObjectPropertyName_">Liste de noms des propriétés de l'objet dataObject_</param>
+        /// <param name="lstDbColumnName_">Sortie : liste de noms des colonnes en DB</param>
+        /// <param name="lstAdoParameterNameAndValue_">Sortie : liste de nom/valeur des paramètres ADO.NET</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectcolumnName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_)
+        internal static void DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> lstAdoParameterNameAndValue_)
         {
             lstDbColumnName_ = new List<string>();
 
-            adoParameterNameAndValue_ = new List<KeyValuePair<string, object>>();
+            lstAdoParameterNameAndValue_ = new List<KeyValuePair<string, object>>();
             try
             {
-                foreach (string columnName in lstDataObjectcolumnName_)
+                foreach (string columnName in lstDataObjectPropertyName_)
                 {
                     lstDbColumnName_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
 
-                    adoParameterNameAndValue_.Add(new KeyValuePair<string, object>(
+                    // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
+                    lstAdoParameterNameAndValue_.Add(new KeyValuePair<string, object>(
                                                     "@" + columnName.ToLowerInvariant(),
                                                     dataObject_.GetType().GetProperty(columnName).GetValue(dataObject_)
                                                 ));
@@ -165,16 +167,16 @@ namespace OsamesMicroOrm.DbTools
         /// <para>noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="lstDataObjectcolumnName_">Noms des propriétés d'un objet</param>
-        /// <param name="lstDbColumnName_">Sortie : noms des colonnes en DB</param>
+        /// <param name="lstDataObjectPropertyName_">Liste de noms des propriétés d'un objet</param>
+        /// <param name="lstDbColumnName_">Sortie : liste des noms des colonnes en DB</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void DetermineDatabaseColumnNames(string mappingDictionariesContainerKey_, List<string> lstDataObjectcolumnName_, out List<string> lstDbColumnName_)
+        internal static void DetermineDatabaseColumnNames(string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_)
         {
             lstDbColumnName_ = new List<string>();
 
             try
             {
-                foreach (string columnName in lstDataObjectcolumnName_)
+                foreach (string columnName in lstDataObjectPropertyName_)
                 {
                     lstDbColumnName_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
                 }
@@ -192,16 +194,16 @@ namespace OsamesMicroOrm.DbTools
         /// <para>nom de la colonne en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="dataObjectcolumnName_">Nom d'une propriété de l'objet dataObject_</param>
+        /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
         /// <returns>Ne renvoie rien</returns>
-        private static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectcolumnName_, out string dbColumnName_)
+        private static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_)
         {
             dbColumnName_ = null;
 
             try
             {
-                dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectcolumnName_);
+                dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
             }
             catch (Exception e)
             {
@@ -216,13 +218,13 @@ namespace OsamesMicroOrm.DbTools
         /// <para>noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping, lister toutes les colonnes)</para>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="lstDbColumnName_">Sortie : noms des colonnes en DB</param>
-        /// <param name="lstDataObjectPropertiesNames_">Sortie : noms des propriétés de l'objet associé au mapping</param>
+        /// <param name="lstDbColumnNames_">Sortie : liste de noms des colonnes en DB</param>
+        /// <param name="lstDataObjectPropertyNames_">Sortie : liste de noms des propriétés de l'objet associé au mapping</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void DetermineDatabaseColumnsAndPropertiesNames(string mappingDictionariesContainerKey_, out List<string> lstDbColumnName_, out List<string> lstDataObjectPropertiesNames_)
+        internal static void DetermineDatabaseColumnNamesAndDataObjectPropertyNames(string mappingDictionariesContainerKey_, out List<string> lstDbColumnNames_, out List<string> lstDataObjectPropertyNames_)
         {
-            lstDbColumnName_ = new List<string>();
-            lstDataObjectPropertiesNames_ = new List<string>();
+            lstDbColumnNames_ = new List<string>();
+            lstDataObjectPropertyNames_ = new List<string>();
 
             try
             {
@@ -230,8 +232,8 @@ namespace OsamesMicroOrm.DbTools
                 Dictionary<string, string> mappingObjectSet = ConfigurationLoader.Instance.GetMappingDefinitionsForTable(mappingDictionariesContainerKey_);
                 foreach (string key in mappingObjectSet.Keys)
                 {
-                    lstDataObjectPropertiesNames_.Add(key);
-                    lstDbColumnName_.Add(mappingObjectSet[key]);
+                    lstDataObjectPropertyNames_.Add(key);
+                    lstDbColumnNames_.Add(mappingObjectSet[key]);
                 }
             }
             catch (Exception e)
@@ -251,7 +253,7 @@ namespace OsamesMicroOrm.DbTools
         /// </list>
         /// </summary>
         /// <param name="value_">Chaîne à traiter selon les règles énoncées ci-dessus</param>
-        /// <param name="mappingDictionariesContainerKey_">Clé dans le dictionnaire de mapping</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping</param>
         /// <param name="index_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
         /// Sert aussi pour le nom du paramètre dynamique si on avait passé null.</param>
         /// <returns>Nom de colonne DB</returns>
@@ -283,7 +285,7 @@ namespace OsamesMicroOrm.DbTools
         /// <para>Renvoie faux si le nombre de placeholders et de paramètres ne sont pas égaux.</para>
         /// </summary>
         /// <param name="format_">Chaîne texte avec des placeholders</param>
-        /// <param name="result_">Chaine avec les placeholders remplacés si succès, message d'erreur pour l'utilisateur si échec du remplacement (cas d'erreur)</param>
+        /// <param name="result_">Chaine avec les placeholders remplacés si succès ou bien message d'erreur pour l'utilisateur si échec du remplacement (cas d'erreur)</param>
         /// <param name="args_">Valeurs à mettre dans les placeholders</param>
         /// <returns>Renvoie vrai si réussi, sinon retourne faux.</returns>
         internal static bool TryFormat(string format_, out string result_, params Object[] args_)
