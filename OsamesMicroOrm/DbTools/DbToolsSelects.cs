@@ -55,7 +55,7 @@ namespace OsamesMicroOrm.DbTools
             // 1. Détermine les colonnes pour les champs à sélectionner.
             // lstDbColumnNames_ sert de fournisseur pour remplir sbSqlSelectFieldsCommand
             DbToolsCommon.DetermineDatabaseColumnNames(mappingDictionariesContainerKey_, lstDataObjectColumnName_, out lstDbColumnNames_);
-            string sbSqlSelectFieldsCommand = DbToolsCommon.ListToCommaSeparatedEnclosedValues(lstDbColumnNames_); //{0} dans le template sql
+            string sbSqlSelectFieldsCommand = DbToolsCommon.GenerateCommaSeparatedDbFieldsString(lstDbColumnNames_); //{0} dans le template sql
 
             // 2. Positionne les deux premiers placeholders
             List<string> sqlPlaceholders = new List<string> { sbSqlSelectFieldsCommand, string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };

@@ -88,7 +88,7 @@ namespace TestOsamesMicroOrm
         }
 
         /// <summary>
-        /// Test of ListToCommaSeparatedEnclosedValues with 2 values in list
+        /// Test of GenerateCommaSeparatedDbFieldsString with 2 values in list
         /// </summary>
         [TestMethod]
         [TestCategory("Sql formatting")]
@@ -99,7 +99,7 @@ namespace TestOsamesMicroOrm
                     new KeyValuePair<string, object>("@firstname", "Barbara"),
                     new KeyValuePair<string, object>("@lastname", "Post")
                 };
-            string str = DbToolsCommon.ListToCommaSeparatedEnclosedValues(new List<string> { "FirstName", "LastName" });
+            string str = DbToolsCommon.GenerateCommaSeparatedDbFieldsString(new List<string> { "FirstName", "LastName" });
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(str), "string builder empty");
             Assert.AreEqual(string.Format("{0}FirstName{1}, {0}LastName{1}", ConfigurationLoader.StartFieldEncloser, ConfigurationLoader.EndFieldEncloser), str.ToString());
