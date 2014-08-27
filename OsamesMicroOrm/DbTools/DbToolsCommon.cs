@@ -245,11 +245,11 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Détermine le nom du paramètre ADO.NET selon quelques règles.
+        /// Détermine de quel type sera le placeholder en cours :
         /// <list type="bullet">
-        /// <item><description>si chaîne : retourner le nom issu du mapping</description></item>
-        /// <item><description>si null : retourner un nom de paramètre "@pN"</description></item>
-        /// <item><description>si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés.</description></item>
+        /// <item><description>si null : retourner un nom de paramètre. Ex.: "@pN"</description></item>
+        /// <item><description>si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés. Ex: "@last_name"</description></item>
+        /// <item><description>si chaîne : retourner le nom issu du mapping. Ex. "TrackID"</description></item>
         /// </list>
         /// </summary>
         /// <param name="value_">Chaîne à traiter selon les règles énoncées ci-dessus</param>
@@ -257,7 +257,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="index_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
         /// Sert aussi pour le nom du paramètre dynamique si on avait passé null.</param>
         /// <returns>Nom de colonne DB</returns>
-        internal static string DetermineAdoParameterName(string value_, string mappingDictionariesContainerKey_, ref int index_)
+        internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int index_)
         {
             if (value_ == null)
             {
@@ -275,6 +275,42 @@ namespace OsamesMicroOrm.DbTools
             string columnName;
             DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName);
             return columnName;
+        }
+
+        /// <summary>
+        /// Complète les paramètres :
+        /// <list type="bullet">
+        /// <item><description>sqlPlaceholders_ avec les noms des paramètres ADO.NET. Usage ultérieur : complétion de la chaîne de commande SQL</description></item>
+        /// <item><description>adoParameters_ avec pour chaque paramètre ADO.NET son nom et sa valeur. Usage ultérieur : valeur passée à DbManager</description></item>
+        /// </list>
+        /// </summary>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
+        /// <param name="strColumnNames_">Liste de chaînes contenant le nom des colonnes d'une table.</param>
+        /// <param name="oValues_">Valeurs pour les paramètres ADO.NET</param>
+        /// <param name="sqlPlaceholders_">Liste de string existante, destinée à ajouter les noms des paramètres ADO.NET. (Ex.: @ado_param) à la suite des éléments existant</param>
+        /// <param name="adoParameters_">Liste de clés/valeurs existante, destinée à ajouter les noms et valeurs des paramètres ADO.NET. (Ex. </param>
+        /// <returns>Ne renvoie rien</returns>
+        internal static void FillPlaceHoldersAndAdoParametersNamesAndValues(string mappingDictionariesContainerKey_, List<string> strColumnNames_, List<object> oValues_, List<string> sqlPlaceholders_, List<KeyValuePair<string, object>> adoParameters_)
+        {
+            if (strColumnNames_ == null) return;
+
+            int iCount = strColumnNames_.Count;
+            int dynamicParameterIndex = -1;
+            for (int i = 0; i < iCount; i++)
+            {
+                //Analyse la chaine courante de strColumnNames_ et retoure soit un @pN ou alors @nomcolonne
+                string paramName = DeterminePlaceholderType(strColumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
+
+                // Ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ.
+                if (paramName.StartsWith("@"))
+                    adoParameters_.Add(new KeyValuePair<string, object>(paramName, oValues_[dynamicParameterIndex]));
+                else
+                    paramName = string.Concat(ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
+
+                // Ajout pour les placeholders
+                sqlPlaceholders_.Add(paramName);
+
+            }
         }
 
         #endregion
