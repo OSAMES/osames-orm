@@ -67,36 +67,6 @@ namespace TestOsamesMicroOrm
         /// <summary>
         /// Load of correct configuration file.
         /// Assertions on formatted string related to database access that was passed to DbHelper.
-        /// TU for SqLite Databases
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Benjamin Nolmans")]
-        [TestCategory("Configuration")]
-        [TestCategory("SqLite")]
-        public void TestConfigurationLoaderAssertOnSqLiteDatabaseParameters()
-        {
-            try
-            {
-                // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
-
-                ConfigurationLoader tempo = ConfigurationLoader.Instance;
-
-                Assert.AreEqual(string.Format("Data Source={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook_Sqlite.sqlite;Version=3;UTF8Encoding=True;"), DbManager.ConnectionString);
-                Assert.AreEqual(@"System.Data.SQLite", DbManager.ProviderName);
-            }
-            finally
-            {
-                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.activeDbConnection.ToString());
-                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.dbName.ToString());
-            }
-        }
-
-        /// <summary>
-        /// Load of correct configuration file.
-        /// Assertions on formatted string related to database access that was passed to DbHelper.
         /// </summary>
         [TestMethod]
         [ExcludeFromCodeCoverage]
@@ -281,33 +251,24 @@ namespace TestOsamesMicroOrm
             Assert.AreEqual("SELECT {0} FROM {1} WHERE {2} = {3};", ConfigurationLoader.DicSelectSql["BaseReadWhere"]);
         }
 
+        
+
+        /// <summary>
+        /// Pour ce projet de TU il n'y a pas de providers définis dans App.Config.
+        /// </summary>
         [TestMethod]
         [ExcludeFromCodeCoverage]
         [Owner("Barbara Post")]
-        [TestCategory("XML")]
         [TestCategory("Configuration")]
-        [TestCategory("SqLite")]
-        public void TestLoadProviderSpecificInformation()
+        [TestCategory("Sql provider search")]
+        public void TestFindInProviderFactoryClasses()
         {
-            try
-            {
-                // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
+            ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-                ConfigurationLoader tempo = ConfigurationLoader.Instance;
+            Assert.IsFalse(ConfigurationLoader.FindInProviderFactoryClasses("some.provider"));
+            Assert.IsFalse(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SQLite"));
+            Assert.IsTrue(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SqlClient"));
 
-                Assert.AreEqual("System.Data.SQLite", DbManager.ProviderName, "Nom du provider incorrect après détermination depuis le fichier des AppSettings et celui des connection strings");
-                Assert.AreEqual("[", ConfigurationLoader.StartFieldEncloser, "Start field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
-                Assert.AreEqual("]", ConfigurationLoader.EndFieldEncloser, "End field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
-
-                Assert.AreEqual("select last_insert_rowid();", DbManager.SelectLastInsertIdCommandText, "Texte pour 'select last insert id' incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
-            }
-            finally
-            {
-                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.activeDbConnection.ToString());
-                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.dbName.ToString());
-            }
         }
     }
 }

@@ -35,3 +35,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly : InternalsVisibleTo("TestOsamesMicroOrm")]
+[assembly: InternalsVisibleTo("TestOsamesMicroOrmSqlite")]
+[assembly: InternalsVisibleTo("TestOsamesMicroOrmMsSql")]

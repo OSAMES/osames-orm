@@ -25,6 +25,8 @@ using System.Configuration;
 using System.IO;
 using System.Xml;
 using OsamesMicroOrm.Utilities;
+using System.Data;
+using System.Data.Common;
 
 namespace OsamesMicroOrm.Configuration
 {
@@ -142,14 +144,8 @@ namespace OsamesMicroOrm.Configuration
         internal bool InitializeDatabaseConnection()
         {
             string dbPath = string.Concat(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), ConfigurationManager.AppSettings[@"dbPath"]);
-            string dbName = ConfigurationManager.AppSettings["dbName"];
-            if (string.IsNullOrWhiteSpace(dbName))
-            {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No database name defined in appSettings ('dbName')");
-                return false;
-            }
-
-            string dbPassword = ConfigurationManager.AppSettings["dbPassword"];
+           
+            // 1. AppSettings : doit définir une connexion DB active
 
             string dbConnexion = ConfigurationManager.AppSettings["activeDbConnection"];
             if (string.IsNullOrWhiteSpace(dbConnexion))
@@ -157,38 +153,62 @@ namespace OsamesMicroOrm.Configuration
                 _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No active connection name defined in appSettings ('activeDbConnection')");
                 return false;
             }
+
+            // 2. Cette connexion DB doit être trouvée dans les ConnectionStrings définies dans la configuration (attribute "Name")
+
             var activeConnection = ConfigurationManager.ConnectionStrings[dbConnexion];
             if (activeConnection == null)
             {
                 _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Active connection not found in available connection strings (key : '" + dbConnexion + "'");
                 return false;
             }
-            string conn = activeConnection.Name;
-            if (string.IsNullOrWhiteSpace(conn))
-            {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No active connection name defined in appSettings for active connection '" + dbConnexion + "'");
-                return false;
-            }
-
+          
+            // 3. Un provider doit être défini (attribut "ProviderName")
             string provider = activeConnection.ProviderName;
             if (string.IsNullOrWhiteSpace(provider))
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No active connection provider defined in appSettings  for active connection '" + dbConnexion + "'");
+                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No provider name defined in connection strings configuration for connection with name '" + dbConnexion + "'");
+                return false;
+            }
+
+            // 4. ce provider doit exister sur le système
+            if (!FindInProviderFactoryClasses(provider))
+            {
+                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Provider with name '" + provider +"' is not installed '");
+                return false;
+            }
+            // 5. Une chaîne de connexion doit être définie (attribut "ConnectionString")
+            string conn = activeConnection.ConnectionString;
+            if (string.IsNullOrWhiteSpace(conn))
+            {
+                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No connection string value defined in connection strings configuration for connection with name '" + dbConnexion + "'");
                 return false;
             }
 
             // Some database connection definition don't need a database path
             if (!string.IsNullOrWhiteSpace(dbPath))
-                conn = (ConfigurationManager.ConnectionStrings[dbConnexion].ToString().Replace(@"$dbPath", dbPath));
+                conn = (activeConnection.ConnectionString.Replace(@"$dbPath", dbPath));
 
+            // 6. Nom de la base de données
+
+            string dbName = ConfigurationManager.AppSettings["dbName"];
+            if (string.IsNullOrWhiteSpace(dbName))
+            {
+                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No database name defined in appSettings ('dbName')");
+                return false;
+            }
+            
             conn = conn.Replace("$dbName", dbName);
 
-            _loggerTraceSource.TraceEvent(TraceEventType.Information, 0, "Using DB connection string: " + conn);
+            // 7. Mot de passe optionnel de la base de données
 
+            string dbPassword = ConfigurationManager.AppSettings["dbPassword"];
             // Some database connection definition don't need a database password
             if (!string.IsNullOrWhiteSpace(dbPassword))
                 conn = conn.Replace("$dbPassword", dbPassword);
-
+            
+            _loggerTraceSource.TraceEvent(TraceEventType.Information, 0, "Using DB connection string: " + conn);
+            
             // Now pass information to DbHelper
             DbManager.ConnectionString = conn;
             DbManager.ProviderName = provider;
@@ -196,7 +216,6 @@ namespace OsamesMicroOrm.Configuration
             return true;
 
         }
-
 
         /// <summary>
         /// Reads configuration from appSettings then load specific configuration files to internal dictionaries.
@@ -496,5 +515,24 @@ namespace OsamesMicroOrm.Configuration
 
         #endregion
 
+        /// <summary>
+        /// Recherche dans le tableau des providers disponibles, un provider donné.
+        /// Méthode static car ne dépend pas de la lecture de la configuration
+        /// </summary>
+        /// <param name="providerFactoryToCheck_">Chaine qui est le nom invariant du provider.</param>
+        /// <returns>Retourne vrai ou faux</returns>
+        internal static bool FindInProviderFactoryClasses(string providerFactoryToCheck_)
+        {
+            // Retrieve the installed providers and factories.
+            DataTable table = DbProviderFactories.GetFactoryClasses();
+
+            // Display each row and column value.
+            foreach (DataRow row in table.Rows)
+            {
+                if (row[2].ToString().Contains(providerFactoryToCheck_))
+                    return true;
+            }
+            return false;
+        }
     }
 }
