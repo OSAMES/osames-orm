@@ -16,9 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Configuration.Tweak;
 
 namespace TestOsamesMicroOrmSqlite
 {
@@ -42,6 +45,41 @@ namespace TestOsamesMicroOrmSqlite
             Assert.IsTrue(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SQLite"));
             Assert.IsTrue(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SqlClient"));
 
+        }
+
+        /// <summary>
+        /// Load of correct configuration file.
+        /// Assertions on formatted string related to database access that was passed to DbHelper.
+        /// TU for SqLite Databases
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Benjamin Nolmans")]
+        [TestCategory("Configuration")]
+        [TestCategory("SqLite")]
+        public void TestConfigurationLoaderAssertOnSqLiteDatabaseParameters()
+        {
+                ConfigurationLoader tempo = ConfigurationLoader.Instance;
+
+                Assert.AreEqual(string.Format("Data Source={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook_Sqlite.sqlite;Version=3;UTF8Encoding=True;"), DbManager.ConnectionString);
+                Assert.AreEqual(@"System.Data.SQLite", DbManager.ProviderName);
+        }
+
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("SqLite")]
+        public void TestLoadProviderSpecificInformation()
+        {
+                ConfigurationLoader tempo = ConfigurationLoader.Instance;
+
+                Assert.AreEqual("System.Data.SQLite", DbManager.ProviderName, "Nom du provider incorrect après détermination depuis le fichier des AppSettings et celui des connection strings");
+                Assert.AreEqual("[", ConfigurationLoader.StartFieldEncloser, "Start field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+                Assert.AreEqual("]", ConfigurationLoader.EndFieldEncloser, "End field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+
+                Assert.AreEqual("select last_insert_rowid();", DbManager.SelectLastInsertIdCommandText, "Texte pour 'select last insert id' incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
         }
     }
 }

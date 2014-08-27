@@ -518,7 +518,7 @@ namespace OsamesMicroOrm.Configuration
         /// </summary>
         /// <param name="providerFactoryToCheck_">Chaine qui est le nom invariant du provider.</param>
         /// <returns>Retourne vrai ou faux</returns>
-        public static bool FindInProviderFactoryClasses(string providerFactoryToCheck_)
+        internal static bool FindInProviderFactoryClasses(string providerFactoryToCheck_)
         {
             // Retrieve the installed providers and factories.
             DataTable table = DbProviderFactories.GetFactoryClasses();
