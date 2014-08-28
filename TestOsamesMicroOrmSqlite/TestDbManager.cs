@@ -26,6 +26,7 @@ namespace TestOsamesMicroOrmSqlite
         public void TestGetProvider()
         {
             DataTable providers = DbProviderFactories.GetFactoryClasses();
+            Assert.AreNotEqual(0, providers.Rows.Count, "Aucun provider trouvé");
             ShowTable(providers);
 
             DbProviderFactory provider = DbProviderFactories.GetFactory("System.Data.SQLite");
