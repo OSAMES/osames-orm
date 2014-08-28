@@ -55,5 +55,35 @@ namespace TestOsamesMicroOrmSqlite
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.mappingFileName.ToString());
             }
         }
+
+        /// <summary>
+        /// Test de DeterminePlaceholderType qui détermine une chaîne et gère des compteurs incrémentaux.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Meta name")]
+        [Owner("Barbara Post")]
+        public void TestDeterminePlaceholderType()
+        {
+            int parameterIndex = -1;
+            int parameterAutomaticNameIndex = -1;
+
+            List<string> lstMetaNamesToProcess = new List<string> { "CustomerId", null, "@customValue", null };
+            List<string> lstResult = new List<string>();
+
+            foreach (string metaName in lstMetaNamesToProcess)
+            {
+                lstResult.Add(DbToolsCommon.DeterminePlaceholderType(metaName, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex));
+            }
+
+            Assert.AreEqual(lstMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments");
+
+            List<string> lstExpected = new List<string> {"@customerid", "@p0", "@customValue", "@p1"};
+
+            for (int i = 0; i < lstExpected.Count; i++)
+            {
+                Assert.AreEqual(lstExpected[i], lstResult[i]);
+            }
+        }
+
     }
 }
