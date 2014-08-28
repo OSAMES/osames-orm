@@ -254,24 +254,26 @@ namespace OsamesMicroOrm.DbTools
         /// </summary>
         /// <param name="value_">Chaîne à traiter selon les règles énoncées ci-dessus</param>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping</param>
-        /// <param name="index_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
+        /// <param name="parameterAutomaticNameIndex_">Index incrémenté à chaque fois qu'on génère un nom de paramètre "@p..."</param>
+        /// <param name="parameterIndex_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
         /// Sert aussi pour le nom du paramètre dynamique si on avait passé null.</param>
         /// <returns>Nom de colonne DB</returns>
-        internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int index_)
+        internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_)
         {
             if (value_ == null)
             {
-                index_++;
-                return "@p" + index_;
+                parameterIndex_++;
+                parameterAutomaticNameIndex_++;
+                return "@p" + parameterAutomaticNameIndex_;
             }
 
             if (value_.StartsWith("@"))
             {
-                index_++;
+                parameterIndex_++;
                 return value_.ToLowerInvariant().Replace(" ", "_");
             }
 
-            // Dans ce dernier cas c'est une colonne et non pas un paramètre, index_ n'est donc pas modifié.
+            // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
             string columnName;
             DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName);
             return columnName;
@@ -295,15 +297,16 @@ namespace OsamesMicroOrm.DbTools
             if (strColumnNames_ == null) return;
 
             int iCount = strColumnNames_.Count;
-            int dynamicParameterIndex = -1;
+            int parameterIndex = -1;
+            int parameterAutomaticNameIndex = -1;
             for (int i = 0; i < iCount; i++)
             {
                 //Analyse la chaine courante de strColumnNames_ et retoure soit un @pN ou alors @nomcolonne
-                string paramName = DeterminePlaceholderType(strColumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
+                string paramName = DeterminePlaceholderType(strColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex);
 
                 // Ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ.
                 if (paramName.StartsWith("@"))
-                    adoParameters_.Add(new KeyValuePair<string, object>(paramName, oValues_[dynamicParameterIndex]));
+                    adoParameters_.Add(new KeyValuePair<string, object>(paramName, oValues_[parameterIndex]));
                 else
                     paramName = string.Concat(ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
 
