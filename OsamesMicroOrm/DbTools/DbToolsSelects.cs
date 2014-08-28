@@ -99,6 +99,55 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
+        /// Lit les champs indiqués en paramètre dans le tableau de données du DataReader et positionne les valeurs sur les propriétés de dataObject_ paramètre.
+        /// </summary>
+        /// <typeparam name="T">Type C#</typeparam>
+        /// <param name="dataObject_"></param>
+        /// <param name="reader_"></param>
+        /// <param name="lstDbColumnNames_"></param>
+        /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
+        /// <returns>Ne retourne rien</returns>
+        private static void FillDataObjectFromDataReader<T>(T dataObject_, IDataReader reader_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_)
+        {
+            // parcourir toutes les colonnes de résultat et affecter la valeur à la propriété correspondante.
+            for (int i = 0; i < lstDbColumnNames_.Count; i++)
+            {
+                string columnName = lstDbColumnNames_[i];
+                int dataInReaderIndex;
+                try
+                {
+                    dataInReaderIndex = reader_.GetOrdinal(columnName);
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    throw new Exception("Column '" + columnName + "' doesn't exist in sql data reader");
+                }
+
+                if (dataInReaderIndex == -1)
+                {
+                    throw new Exception("Column '" + columnName + "' doesn't exist in sql data reader");
+                }
+
+                // TODO traiter ORM-45 pour cast vers le bon type.
+                object dbValue = reader_[dataInReaderIndex];
+
+                // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
+                if (dbValue.GetType() != typeof(DBNull))
+                {
+                    try
+                    {
+                        dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValue);
+                    }
+                    catch (ArgumentException)
+                    {
+                        // par exemple valeur entière et propriété de type string
+                        dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValue.ToString());
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Retourne un objet du type T avec les données rendues par une requete SELECT dont on ne s'intéresse qu'au premier résultat retourné.
         /// <para>Le template sera du type <c>"SELECT {0} FROM {1} WHERE ..."</c></para>
         /// </summary>
@@ -226,56 +275,7 @@ namespace OsamesMicroOrm.DbTools
                 }
             }
             return dataObjects;
-        }
-
-        /// <summary>
-        /// Lit les champs indiqués en paramètre dans le tableau de données du DataReader et positionne les valeurs sur les propriétés de dataObject_ paramètre.
-        /// </summary>
-        /// <typeparam name="T">Type C#</typeparam>
-        /// <param name="dataObject_"></param>
-        /// <param name="reader_"></param>
-        /// <param name="lstDbColumnNames_"></param>
-        /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
-        /// <returns>Ne retourne rien</returns>
-        private static void FillDataObjectFromDataReader<T>(T dataObject_, IDataReader reader_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_)
-        {
-            // parcourir toutes les colonnes de résultat et affecter la valeur à la propriété correspondante.
-            for (int i = 0; i < lstDbColumnNames_.Count; i++)
-            {
-                string columnName = lstDbColumnNames_[i];
-                int dataInReaderIndex;
-                try
-                {
-                    dataInReaderIndex = reader_.GetOrdinal(columnName);
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    throw new Exception("Column '" + columnName + "' doesn't exist in sql data reader");
-                }
-
-                if (dataInReaderIndex == -1)
-                {
-                    throw new Exception("Column '" + columnName + "' doesn't exist in sql data reader");
-                }
-
-                // TODO traiter ORM-45 pour cast vers le bon type.
-                object dbValue = reader_[dataInReaderIndex];
-
-                // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
-                if (dbValue.GetType() != typeof(DBNull))
-                {
-                    try
-                    {
-                        dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValue);
-                    }
-                    catch (ArgumentException)
-                    {
-                        // par exemple valeur entière et propriété de type string
-                        dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValue.ToString());
-                    }
-                }
-            }
-        }
+        }        
 
     }
 }

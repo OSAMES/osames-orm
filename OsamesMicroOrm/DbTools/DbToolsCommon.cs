@@ -187,31 +187,7 @@ namespace OsamesMicroOrm.DbTools
                 ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
             }
 
-        }
-
-        /// <summary>
-        /// En connaissant le nom du mapping associé à un objet et le nom de sa propriété, génération en sortie de l'information suivante :
-        /// <para>nom de la colonne en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
-        /// </summary>
-        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet dataObject_</param>
-        /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
-        /// <returns>Ne renvoie rien</returns>
-        private static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_)
-        {
-            dbColumnName_ = null;
-
-            try
-            {
-                dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
-            }
-            catch (Exception e)
-            {
-                // TODO remonter une exception ?
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
-            }
-
-        }
+        }        
 
         /// <summary>
         /// En connaissant le nom du mapping associé à un objet, génération en sortie de l'information suivante :
@@ -314,6 +290,30 @@ namespace OsamesMicroOrm.DbTools
                 sqlPlaceholders_.Add(paramName);
 
             }
+        }
+
+        /// <summary>
+        /// En connaissant le nom du mapping associé à un objet et le nom de sa propriété, génération en sortie de l'information suivante :
+        /// <para>nom de la colonne en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
+        /// </summary>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
+        /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet dataObject_</param>
+        /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
+        /// <returns>Ne renvoie rien</returns>
+        private static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_)
+        {
+            dbColumnName_ = null;
+
+            try
+            {
+                dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
+            }
+            catch (Exception e)
+            {
+                // TODO remonter une exception ?
+                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+            }
+
         }
 
         #endregion
