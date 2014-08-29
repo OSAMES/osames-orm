@@ -242,6 +242,8 @@ namespace OsamesMicroOrm.DbTools
         internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_)
         {
             string returnValue = null;
+            char[] valueAsCharArray;
+
             if (value_ == null)
             {
                 // C'est un nom automatique de paramètre ADO.NET
@@ -257,14 +259,14 @@ namespace OsamesMicroOrm.DbTools
 
                 parameterIndex_++;
 
-                char[] valueAsCharArray = value_.Where(c_ => (char.IsLetterOrDigit(c_) ||
-                                                             char.IsWhiteSpace(c_) ||
+
+                valueAsCharArray = value_.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                              c_ == '_' ||
                                                              c_ == '-')).ToArray();
 
                 returnValue = new string(valueAsCharArray);
 
-                return "@" + returnValue.ToLowerInvariant().Replace(' ', '_');
+                return "@" + returnValue;
             }
 
             if (value_.StartsWith("%"))
@@ -273,7 +275,8 @@ namespace OsamesMicroOrm.DbTools
                 
                 parameterIndex_++;
 
-                char[] valueAsCharArray = value_.Where(c_ => (char.IsLetterOrDigit(c_) ||
+                //Dans un literal on permet les espaces.
+                valueAsCharArray = value_.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                              char.IsWhiteSpace(c_) ||
                                                              c_ == '_' ||
                                                              c_ == '-')).ToArray();
@@ -281,11 +284,14 @@ namespace OsamesMicroOrm.DbTools
                 returnValue = new string(valueAsCharArray);
 
                 return returnValue.ToLowerInvariant().Replace(' ', '_'); 
-        }
+            }
 
-        // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
+            // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
             string columnName;
             DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName);
+            valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
+                                                             char.IsWhiteSpace(c_) ||
+                                                             c_ == '_')).ToArray();
             return columnName;
         }
 
