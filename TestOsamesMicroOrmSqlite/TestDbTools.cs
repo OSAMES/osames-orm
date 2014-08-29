@@ -67,17 +67,18 @@ namespace TestOsamesMicroOrmSqlite
             int parameterIndex = -1;
             int parameterAutomaticNameIndex = -1;
 
-            List<string> lstMetaNamesToProcess = new List<string> { "CustomerId", null, "@customValue", null };
+            List<string> lstMetaNamesToProcess = new List<string> { "CustomerId", null, "@customValue", null, "%chaine", "%chaine#{" };
             List<string> lstResult = new List<string>();
 
             foreach (string metaName in lstMetaNamesToProcess)
             {
-                lstResult.Add(DbToolsCommon.DeterminePlaceholderType(metaName, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex));
+                lstResult.Add(DbToolsCommon.DeterminePlaceholderType(metaName, "customer", ref parameterIndex, ref parameterAutomaticNameIndex));
             }
 
             Assert.AreEqual(lstMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments");
 
-            List<string> lstExpected = new List<string> {"@customerid", "@p0", "@customValue", "@p1"};
+            //Column name, dynamic, paramname, dynamic
+            List<string> lstExpected = new List<string> {"CustomerId", "@p0", "@customvalue", "@p1", "chaine", "chaine"};
 
             for (int i = 0; i < lstExpected.Count; i++)
             {

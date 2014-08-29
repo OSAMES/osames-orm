@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using OsamesMicroOrm.Configuration;
+using System.Text.RegularExpressions;
 
 namespace OsamesMicroOrm.DbTools
 {
@@ -225,8 +226,11 @@ namespace OsamesMicroOrm.DbTools
         /// <list type="bullet">
         /// <item><description>si null : retourner un nom de paramètre. Ex.: "@pN"</description></item>
         /// <item><description>si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés. Ex: "@last_name"</description></item>
-        /// <item><description>si chaîne : retourner le nom issu du mapping. Ex. "TrackID"</description></item>
+        /// <item><description>si chaîne : retourner le nom d'une colonne db issu du mapping. Ex. "TrackID"</description></item>
+        /// <item><description>si commence par "%" : retourner simplement la string sans espace</description></item>
         /// </list>
+        /// <para>Enlève tout caractère non alphanumérique des litéraux et des paramètres non dynamique.</para>
+        /// <para>Le nom d'un mapping n'est pas concerné par ce traitement.</para>
         /// </summary>
         /// <param name="value_">Chaîne à traiter selon les règles énoncées ci-dessus</param>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping</param>
@@ -236,6 +240,8 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Nom de colonne DB</returns>
         internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_)
         {
+            Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+            
             if (value_ == null)
             {
                 parameterIndex_++;
@@ -246,6 +252,14 @@ namespace OsamesMicroOrm.DbTools
             if (value_.StartsWith("@"))
             {
                 parameterIndex_++;
+                value_ = rgx.Replace(value_, "");
+                return "@" + value_.ToLowerInvariant().Replace(" ", "_");
+            }
+
+            if (value_.StartsWith("%"))
+            {
+                parameterIndex_++;
+                value_ = rgx.Replace(value_, "");
                 return value_.ToLowerInvariant().Replace(" ", "_");
             }
 
