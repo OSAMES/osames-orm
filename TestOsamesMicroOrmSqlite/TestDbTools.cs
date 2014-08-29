@@ -77,7 +77,7 @@ namespace TestOsamesMicroOrmSqlite
 
             Assert.AreEqual(lstMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments");
 
-            //Column name, dynamic, paramname, dynamic
+            //Column name, dynamic 0, paramname 1, dynamic 1, paramname 2, paramname 3
             List<string> lstExpected = new List<string> {"CustomerId", "@p0", "@customvalue", "@p1", "chaine", "chaine"};
 
             for (int i = 0; i < lstExpected.Count; i++)

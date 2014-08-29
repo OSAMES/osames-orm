@@ -19,6 +19,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using OsamesMicroOrm.Configuration;
 using System.Text.RegularExpressions;
@@ -82,7 +83,7 @@ namespace OsamesMicroOrm.DbTools
             sb.Remove(sb.Length - 2, 2);
             return sb.ToString();
         }
-        
+
         #endregion
 
         #region Determine
@@ -188,7 +189,7 @@ namespace OsamesMicroOrm.DbTools
                 ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
             }
 
-        }        
+        }
 
         /// <summary>
         /// En connaissant le nom du mapping associé à un objet, génération en sortie de l'information suivante :
@@ -240,28 +241,66 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Nom de colonne DB</returns>
         internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_)
         {
-            Regex rgx = new Regex("[^a-zA-Z0-9 -]");
-            
-            if (value_ == null)
-            {
-                parameterIndex_++;
-                parameterAutomaticNameIndex_++;
-                return "@p" + parameterAutomaticNameIndex_;
-            }
+            string returnValue = null;
+                if (value_ == null)
+                {
+                    parameterIndex_++;
+                    parameterAutomaticNameIndex_++;
+                    return "@p" + parameterAutomaticNameIndex_;
+                }
 
             if (value_.StartsWith("@"))
             {
                 parameterIndex_++;
-                value_ = rgx.Replace(value_, "");
-                return "@" + value_.ToLowerInvariant().Replace(" ", "_");
+
+#if DEBUG
+                Stopwatch timer = new Stopwatch();
+                timer.Start();
+#endif
+
+                for (int i = 0; i < 1000; i++)
+                {
+
+                    char[] valueAsCharArray = value_.Where(c => (char.IsLetterOrDigit(c) ||
+                           char.IsWhiteSpace(c) ||
+                           c == '-')).ToArray();
+
+                    returnValue = new string(valueAsCharArray);
+                }
+
+#if DEBUG
+                timer.Stop();
+                Console.WriteLine("Temps : " + timer.ElapsedMilliseconds + "ms");
+#endif
+
+
+                return "@" + returnValue.ToLowerInvariant();
             }
 
             if (value_.StartsWith("%"))
             {
                 parameterIndex_++;
-                value_ = rgx.Replace(value_, "");
-                return value_.ToLowerInvariant().Replace(" ", "_");
-            }
+
+#if DEBUG
+                Stopwatch timer = new Stopwatch();
+                timer.Start();
+#endif
+
+                for (int i = 0; i < 1000; i++)
+                {
+
+                    char[] valueAsCharArray = value_.Where(c => (char.IsLetterOrDigit(c) ||
+                           char.IsWhiteSpace(c) ||
+                           c == '-')).ToArray();
+
+                    returnValue = new string(valueAsCharArray);
+                }
+#if DEBUG
+                timer.Stop();
+                Console.WriteLine("Temps : " + timer.ElapsedMilliseconds + "ms");
+#endif
+                return returnValue.ToLowerInvariant();
+            } 
 
             // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
             string columnName;
