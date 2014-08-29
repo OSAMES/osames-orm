@@ -259,6 +259,7 @@ namespace OsamesMicroOrm.DbTools
 
                 char[] valueAsCharArray = value_.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                              char.IsWhiteSpace(c_) ||
+                                                             c_ == '_' ||
                                                              c_ == '-')).ToArray();
 
                 returnValue = new string(valueAsCharArray);
@@ -274,6 +275,7 @@ namespace OsamesMicroOrm.DbTools
 
                 char[] valueAsCharArray = value_.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                              char.IsWhiteSpace(c_) ||
+                                                             c_ == '_' ||
                                                              c_ == '-')).ToArray();
 
                 returnValue = new string(valueAsCharArray);
