@@ -266,7 +266,7 @@ namespace OsamesMicroOrm.DbTools
 
                 returnValue = new string(valueAsCharArray);
 
-                return "@" + returnValue;
+                return "@" + returnValue.ToLowerInvariant();
             }
 
             if (value_.StartsWith("%"))
@@ -283,7 +283,7 @@ namespace OsamesMicroOrm.DbTools
 
                 returnValue = new string(valueAsCharArray);
 
-                return returnValue.ToLowerInvariant().Replace(' ', '_'); 
+                return returnValue.ToLowerInvariant(); 
             }
 
             // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
