@@ -41,14 +41,14 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {1} dans le template sql</param>
         /// <param name="sqlTemplate_">Template SQL</param>
         /// <param name="lstDataObjectColumnName_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à sélectionner. Permet de formater {0} dans le template SQL</param>
-        /// <param name="lstWhereColumnNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_/un paramètre dynamique/un littéral. 
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB. Sera utilisé pour le data reader</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void FormatSqlForSelect(string sqlTemplate_, List<string> lstDataObjectColumnName_, string mappingDictionariesContainerKey_, List<string> lstWhereColumnNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_, out List<string> lstDbColumnNames_)
+        internal static void FormatSqlForSelect(string sqlTemplate_, List<string> lstDataObjectColumnName_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_, out List<string> lstDbColumnNames_)
         {
             adoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
 
@@ -61,7 +61,7 @@ namespace OsamesMicroOrm.DbTools
             List<string> sqlPlaceholders = new List<string> { sbSqlSelectFieldsCommand, string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 3. Détermine les noms des paramètres pour le where
-            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereColumnNames_, oWhereValues_, sqlPlaceholders, adoParameters_);
+            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, oWhereValues_, sqlPlaceholders, adoParameters_);
 
             DbToolsCommon.TryFormat(ConfigurationLoader.DicSelectSql[sqlTemplate_], out sqlCommand_, sqlPlaceholders.ToArray());
         }
@@ -78,13 +78,13 @@ namespace OsamesMicroOrm.DbTools
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {0} dans le template sql</param>
         /// <param name="sqlTemplate_">Template SQL</param>
-        /// <param name="lstWhereColumnNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
         /// Pour formater à partir de {1} dans le template SQL. Peut être null</param>
         /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB. Sera utilisé pour le data reader</param>
-        private static void FormatSqlForSelect(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereColumnNames_, List<object> oWhereValues_, List<string> lstDbColumnNames_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+        private static void FormatSqlForSelect(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> oWhereValues_, List<string> lstDbColumnNames_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
         {
             adoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
 
@@ -92,10 +92,59 @@ namespace OsamesMicroOrm.DbTools
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 2. Détermine les noms des paramètres pour le where
-            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereColumnNames_, oWhereValues_, sqlPlaceholders, adoParameters_);
+            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, oWhereValues_, sqlPlaceholders, adoParameters_);
 
             DbToolsCommon.TryFormat(ConfigurationLoader.DicSelectSql[sqlTemplate_], out sqlCommand_, sqlPlaceholders.ToArray());
 
+        }
+
+        /// <summary>
+        /// Lit les champs indiqués en paramètre dans le tableau de données du DataReader et positionne les valeurs sur les propriétés de dataObject_ paramètre.
+        /// </summary>
+        /// <typeparam name="T">Type C#</typeparam>
+        /// <param name="dataObject_"></param>
+        /// <param name="reader_"></param>
+        /// <param name="lstDbColumnNames_"></param>
+        /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
+        /// <returns>Ne retourne rien</returns>
+        private static void FillDataObjectFromDataReader<T>(T dataObject_, IDataReader reader_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_)
+        {
+            // parcourir toutes les colonnes de résultat et affecter la valeur à la propriété correspondante.
+            for (int i = 0; i < lstDbColumnNames_.Count; i++)
+            {
+                string columnName = lstDbColumnNames_[i];
+                int dataInReaderIndex;
+                try
+                {
+                    dataInReaderIndex = reader_.GetOrdinal(columnName);
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    throw new Exception("Column '" + columnName + "' doesn't exist in sql data reader");
+                }
+
+                if (dataInReaderIndex == -1)
+                {
+                    throw new Exception("Column '" + columnName + "' doesn't exist in sql data reader");
+                }
+
+                // TODO traiter ORM-45 pour cast vers le bon type.
+                object dbValue = reader_[dataInReaderIndex];
+
+                // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
+                if (dbValue.GetType() != typeof(DBNull))
+                {
+                    try
+                    {
+                        dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValue);
+                    }
+                    catch (ArgumentException)
+                    {
+                        // par exemple valeur entière et propriété de type string
+                        dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValue.ToString());
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -226,56 +275,7 @@ namespace OsamesMicroOrm.DbTools
                 }
             }
             return dataObjects;
-        }
-
-        /// <summary>
-        /// Lit les champs indiqués en paramètre dans le tableau de données du DataReader et positionne les valeurs sur les propriétés de dataObject_ paramètre.
-        /// </summary>
-        /// <typeparam name="T">Type C#</typeparam>
-        /// <param name="dataObject_"></param>
-        /// <param name="reader_"></param>
-        /// <param name="lstDbColumnNames_"></param>
-        /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
-        /// <returns>Ne retourne rien</returns>
-        private static void FillDataObjectFromDataReader<T>(T dataObject_, IDataReader reader_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_)
-        {
-            // parcourir toutes les colonnes de résultat et affecter la valeur à la propriété correspondante.
-            for (int i = 0; i < lstDbColumnNames_.Count; i++)
-            {
-                string columnName = lstDbColumnNames_[i];
-                int dataInReaderIndex;
-                try
-                {
-                    dataInReaderIndex = reader_.GetOrdinal(columnName);
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    throw new Exception("Column '" + columnName + "' doesn't exist in sql data reader");
-                }
-
-                if (dataInReaderIndex == -1)
-                {
-                    throw new Exception("Column '" + columnName + "' doesn't exist in sql data reader");
-                }
-
-                // TODO traiter ORM-45 pour cast vers le bon type.
-                object dbValue = reader_[dataInReaderIndex];
-
-                // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
-                if (dbValue.GetType() != typeof(DBNull))
-                {
-                    try
-                    {
-                        dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValue);
-                    }
-                    catch (ArgumentException)
-                    {
-                        // par exemple valeur entière et propriété de type string
-                        dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValue.ToString());
-                    }
-                }
-            }
-        }
+        }        
 
     }
 }

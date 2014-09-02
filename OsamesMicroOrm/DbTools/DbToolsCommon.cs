@@ -19,8 +19,10 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using OsamesMicroOrm.Configuration;
+using System.Text.RegularExpressions;
 
 namespace OsamesMicroOrm.DbTools
 {
@@ -81,7 +83,7 @@ namespace OsamesMicroOrm.DbTools
             sb.Remove(sb.Length - 2, 2);
             return sb.ToString();
         }
-        
+
         #endregion
 
         #region Determine
@@ -190,30 +192,6 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// En connaissant le nom du mapping associé à un objet et le nom de sa propriété, génération en sortie de l'information suivante :
-        /// <para>nom de la colonne en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
-        /// </summary>
-        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet dataObject_</param>
-        /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
-        /// <returns>Ne renvoie rien</returns>
-        private static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_)
-        {
-            dbColumnName_ = null;
-
-            try
-            {
-                dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
-            }
-            catch (Exception e)
-            {
-                // TODO remonter une exception ?
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
-            }
-
-        }
-
-        /// <summary>
         /// En connaissant le nom du mapping associé à un objet, génération en sortie de l'information suivante :
         /// <para>noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping, lister toutes les colonnes)</para>
         /// </summary>
@@ -249,32 +227,75 @@ namespace OsamesMicroOrm.DbTools
         /// <list type="bullet">
         /// <item><description>si null : retourner un nom de paramètre. Ex.: "@pN"</description></item>
         /// <item><description>si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés. Ex: "@last_name"</description></item>
-        /// <item><description>si chaîne : retourner le nom issu du mapping. Ex. "TrackID"</description></item>
+        /// <item><description>si chaîne : retourner le nom d'une colonne db issu du mapping. Ex. "TrackID"</description></item>
+        /// <item><description>si commence par "%" : retourner simplement la string sans espace</description></item>
         /// </list>
+        /// <para>Enlève tout caractère non alphanumérique des littéraux, des paramètres non dynamiques, des noms de colonne, pour éviter les injections SQL</para>
+        /// <para>Le nom d'un mapping n'est pas concerné par ce traitement.</para>
         /// </summary>
         /// <param name="value_">Chaîne à traiter selon les règles énoncées ci-dessus</param>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping</param>
-        /// <param name="index_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
+        /// <param name="parameterAutomaticNameIndex_">Index incrémenté à chaque fois qu'on génère un nom de paramètre "@p..."</param>
+        /// <param name="parameterIndex_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
         /// Sert aussi pour le nom du paramètre dynamique si on avait passé null.</param>
         /// <returns>Nom de colonne DB</returns>
-        internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int index_)
+        internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_)
         {
+            string returnValue;
+            char[] valueAsCharArray;
+
             if (value_ == null)
             {
-                index_++;
-                return "@p" + index_;
+                // C'est un nom automatique de paramètre ADO.NET.
+
+                parameterIndex_++;
+                parameterAutomaticNameIndex_++;
+                return "@p" + parameterAutomaticNameIndex_;
             }
 
             if (value_.StartsWith("@"))
             {
-                index_++;
-                return value_.ToLowerInvariant().Replace(" ", "_");
+                // C'est un nom personnalisé de paramètre ADO.NET.
+                // Il ne peut contenir d'espaces par définition.
+
+                parameterIndex_++;
+
+
+                valueAsCharArray = value_.Where(c_ => (char.IsLetterOrDigit(c_) ||
+                                                             c_ == '_' ||
+                                                             c_ == '-')).ToArray();
+
+                returnValue = new string(valueAsCharArray);
+
+                return "@" + returnValue.ToLowerInvariant();
             }
 
-            // Dans ce dernier cas c'est une colonne et non pas un paramètre, index_ n'est donc pas modifié.
+            if (value_.StartsWith("%"))
+            {
+                // C'est un littéral.
+                // Dans un literal on permet les espaces.
+                
+                parameterIndex_++;
+
+                
+                valueAsCharArray = value_.Where(c_ => (char.IsLetterOrDigit(c_) ||
+                                                             char.IsWhiteSpace(c_) ||
+                                                             c_ == '_' ||
+                                                             c_ == '-')).ToArray();
+
+                returnValue = new string(valueAsCharArray);
+
+                return returnValue.ToLowerInvariant(); 
+            }
+
+            // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
+            // On peut avoir des espaces dans le nom de la colonne ainsi que "_" mais pas "-" (norme SQL).
             string columnName;
             DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName);
-            return columnName;
+            valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
+                                                             char.IsWhiteSpace(c_) ||
+                                                             c_ == '_')).ToArray();
+            return new string(valueAsCharArray);
         }
 
         /// <summary>
@@ -295,15 +316,16 @@ namespace OsamesMicroOrm.DbTools
             if (strColumnNames_ == null) return;
 
             int iCount = strColumnNames_.Count;
-            int dynamicParameterIndex = -1;
+            int parameterIndex = -1;
+            int parameterAutomaticNameIndex = -1;
             for (int i = 0; i < iCount; i++)
             {
                 //Analyse la chaine courante de strColumnNames_ et retoure soit un @pN ou alors @nomcolonne
-                string paramName = DeterminePlaceholderType(strColumnNames_[i], mappingDictionariesContainerKey_, ref dynamicParameterIndex);
+                string paramName = DeterminePlaceholderType(strColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex);
 
                 // Ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ.
                 if (paramName.StartsWith("@"))
-                    adoParameters_.Add(new KeyValuePair<string, object>(paramName, oValues_[dynamicParameterIndex]));
+                    adoParameters_.Add(new KeyValuePair<string, object>(paramName, oValues_[parameterIndex]));
                 else
                     paramName = string.Concat(ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
 
@@ -311,6 +333,30 @@ namespace OsamesMicroOrm.DbTools
                 sqlPlaceholders_.Add(paramName);
 
             }
+        }
+
+        /// <summary>
+        /// En connaissant le nom du mapping associé à un objet et le nom de sa propriété, génération en sortie de l'information suivante :
+        /// <para>nom de la colonne en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
+        /// </summary>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
+        /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet dataObject_</param>
+        /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
+        /// <returns>Ne renvoie rien</returns>
+        private static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_)
+        {
+            dbColumnName_ = null;
+
+            try
+            {
+                dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
+            }
+            catch (Exception e)
+            {
+                // TODO remonter une exception ?
+                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+            }
+
         }
 
         #endregion

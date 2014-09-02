@@ -95,17 +95,6 @@ namespace OsamesMicroOrm.Configuration
         }
 
         /// <summary>
-        /// Loads configuration.
-        /// <para>Parses XML configuration to internal dictionaries</para>
-        /// <para>Initializes database connection</para></pa>
-        /// </summary>
-        private void LoadConfiguration()
-        {
-            LoadXmlConfiguration();
-            InitializeDatabaseConnection();
-        }
-
-        /// <summary>
         /// Singleton access. Creates an empty object once.
         /// </summary>
         public static ConfigurationLoader Instance
@@ -136,6 +125,67 @@ namespace OsamesMicroOrm.Configuration
                 _singleton = null;
             }
         }
+
+        #region mapping dictionary getter helpers
+
+        /// <summary>
+        /// Asks mapping dictionary for a DB column name, given a Db entity property name.
+        /// </summary>
+        /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
+        /// <param name="propertyName_">DB entity C# object property name. Ex: "CustomerId"</param>
+        /// <returns>DB column name. Ex: "id_customer"</returns>
+        public string GetDbColumnNameFromMappingDictionary(string mappingDictionaryName_, string propertyName_)
+        {
+            Dictionary<string, string> mappingObjectSet;
+            string resultColumnName;
+
+            MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
+            if (mappingObjectSet == null)
+                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
+            mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
+            if (mappingObjectSet == null)
+                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "' and property name '" + propertyName_ + "'");
+
+            return resultColumnName;
+        }
+
+        /// <summary>
+        /// Asks mapping dictionary for a Db entity object property name, given a DB column name.
+        /// </summary>
+        /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
+        /// <param name="dbColumnName_">DB column name. Ex: "id_customer"</param>
+        /// <returns>DB entity C# object property name. Ex: "CustomerId"</returns>
+        public string GetDbEntityPropertyNameFromMappingDictionary(string mappingDictionaryName_, string dbColumnName_)
+        {
+            Dictionary<string, string> mappingObjectSet;
+
+            MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
+            if (mappingObjectSet == null)
+                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
+            string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
+
+            if (resultPropertyName == null)
+                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "' and DB column name '" + dbColumnName_ + "'");
+
+            return resultPropertyName;
+        }
+
+        /// <summary>
+        /// Asks mapping dictionary for all mapping defined for a given table.
+        /// </summary>
+        /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
+        /// <returns>Mapping dictionary</returns>
+        public Dictionary<string, string> GetMappingDefinitionsForTable(string mappingDictionaryName_)
+        {
+            Dictionary<string, string> mappingObjectSet;
+
+            MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
+            if (mappingObjectSet == null)
+                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
+            return mappingObjectSet;
+        }
+
+        #endregion
 
         /// <summary>
         /// Initialize active connection string values from configuration and setup DbHelper.
@@ -454,67 +504,6 @@ namespace OsamesMicroOrm.Configuration
             } while (node_.Current.MoveToNext());
         }
 
-        #region mapping dictionary getter helpers
-
-        /// <summary>
-        /// Asks mapping dictionary for a DB column name, given a Db entity property name.
-        /// </summary>
-        /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="propertyName_">DB entity C# object property name. Ex: "CustomerId"</param>
-        /// <returns>DB column name. Ex: "id_customer"</returns>
-        public string GetDbColumnNameFromMappingDictionary(string mappingDictionaryName_, string propertyName_)
-        {
-            Dictionary<string, string> mappingObjectSet;
-            string resultColumnName;
-
-            MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
-            if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
-            mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
-            if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "' and property name '" + propertyName_ + "'");
-
-            return resultColumnName;
-        }
-
-        /// <summary>
-        /// Asks mapping dictionary for a Db entity object property name, given a DB column name.
-        /// </summary>
-        /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="dbColumnName_">DB column name. Ex: "id_customer"</param>
-        /// <returns>DB entity C# object property name. Ex: "CustomerId"</returns>
-        public string GetDbEntityPropertyNameFromMappingDictionary(string mappingDictionaryName_, string dbColumnName_)
-        {
-            Dictionary<string, string> mappingObjectSet;
-
-            MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
-            if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
-            string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
-
-            if (resultPropertyName == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "' and DB column name '" + dbColumnName_ + "'");
-
-            return resultPropertyName;
-        }
-
-        /// <summary>
-        /// Asks mapping dictionary for all mapping defined for a given table.
-        /// </summary>
-        /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <returns>Mapping dictionary</returns>
-        public Dictionary<string, string> GetMappingDefinitionsForTable(string mappingDictionaryName_)
-        {
-            Dictionary<string, string> mappingObjectSet;
-
-            MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
-            if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
-            return mappingObjectSet;
-        }
-
-        #endregion
-
         /// <summary>
         /// Recherche dans le tableau des providers disponibles, un provider donné.
         /// Méthode static car ne dépend pas de la lecture de la configuration
@@ -533,6 +522,17 @@ namespace OsamesMicroOrm.Configuration
                     return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Loads configuration.
+        /// <para>Parses XML configuration to internal dictionaries</para>
+        /// <para>Initializes database connection</para></pa>
+        /// </summary>
+        private void LoadConfiguration()
+        {
+            LoadXmlConfiguration();
+            InitializeDatabaseConnection();
         }
     }
 }

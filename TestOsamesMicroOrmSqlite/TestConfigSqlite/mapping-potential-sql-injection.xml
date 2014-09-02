@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--/*
+This file is part of OSAMES Micro ORM.
+Copyright 2014 OSAMES
+
+OSAMES Micro ORM is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+OSAMES Micro ORM is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
+*/-->
+
+<!-- This test incorrect mapping set a non-existent column which name could lead for SQL injections, for Customer property "FirstName"  -->
+
+<orm:Tables xmlns:orm="http://www.osames.org/osamesorm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osames.org/osamesorm xml_schemas\omo-mapping.xsd">
+  <orm:Table name="Customer">
+    <orm:MappingObject property="CustomerId" column="CustomerId"/>
+    <orm:MappingObject property="FirstName" column="FirstName, 'FirstName'"/>
+  	<orm:MappingObject property="LastName" column="Last_Name"/>
+  	<orm:MappingObject property="Company" column="Company"/>
+  	<orm:MappingObject property="Address" column="Address"/>
+  	<orm:MappingObject property="City" column="City"/>
+  	<orm:MappingObject property="State" column="State"/>
+  	<orm:MappingObject property="Country" column="Country"/>
+  	<orm:MappingObject property="PostalCode" column="Postal-Code"/>
+  	<orm:MappingObject property="Phone" column="Phone"/>
+  	<orm:MappingObject property="Fax" column="Fax"/>
+  	<orm:MappingObject property="Email" column="Email"/>
+  	<orm:MappingObject property="SupportRepId" column="SupportRepId"/>
+  </orm:Table>
+</orm:Tables>

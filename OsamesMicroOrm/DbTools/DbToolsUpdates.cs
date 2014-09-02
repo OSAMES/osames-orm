@@ -44,13 +44,13 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="sqlTemplate_">Contient le nom du template sql update à utiliser</param>
         /// <param name="lstDataObjectColumnName_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
-        /// <param name="lstWhereColumnNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string sqlTemplate_, List<string> lstDataObjectColumnName_, List<string> lstWhereColumnNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+        internal static void FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string sqlTemplate_, List<string> lstDataObjectColumnName_, List<string> lstWhereMetaNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
         {
             StringBuilder sbFieldsToUpdate = new StringBuilder();
 
@@ -72,7 +72,7 @@ namespace OsamesMicroOrm.DbTools
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbFieldsToUpdate.ToString() };
 
             // 3. Détermine les noms des paramètres pour le where
-            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereColumnNames_, oWhereValues_, sqlPlaceholders, adoParameters_);
+            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, oWhereValues_, sqlPlaceholders, adoParameters_);
 
             DbToolsCommon.TryFormat(ConfigurationLoader.DicUpdateSql[sqlTemplate_], out sqlCommand_, sqlPlaceholders.ToArray());
         }
