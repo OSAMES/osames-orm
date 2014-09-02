@@ -16,6 +16,9 @@ namespace TestOsamesMicroOrmSqlite
     public class TestDbTools : OsamesMicroOrmSqliteTest
     {
         private readonly string _incorrectMappingFileFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CommonSqlite.CST_INCORRECT_MAPPING_CUSTOMER);
+        private readonly string _potentialSqlInjectionMappingFileFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CommonSqlite.CST_POTENTIAL_SQL_INJECTION_MAPPING_CUSTOMER);
+
+
 
        // TODO les différents tests seront à réintégrer ici.
 
@@ -64,27 +67,41 @@ namespace TestOsamesMicroOrmSqlite
         [Owner("Barbara Post")]
         public void TestDeterminePlaceholderType()
         {
-            int parameterIndex = -1;
-            int parameterAutomaticNameIndex = -1;
 
-            List<string> lstMetaNamesToProcess = new List<string> { "CustomerId", null, "@customValue", null, "%chaine", "%chaine#{" };
-            List<string> lstResult = new List<string>();
-
-            foreach (string metaName in lstMetaNamesToProcess)
+            try
             {
-                lstResult.Add(DbToolsCommon.DeterminePlaceholderType(metaName, "customer", ref parameterIndex, ref parameterAutomaticNameIndex));
+                // Customization, ce fichier de mapping contient un nom de colonne pour "FirstName" pouvant mener à une injection SQL
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.mappingFileName.ToString(), _potentialSqlInjectionMappingFileFullPath);
+                // Reload modified configuration
+                ConfigurationLoader.Clear();
+                _config = ConfigurationLoader.Instance;
+
+                int parameterIndex = -1;
+                int parameterAutomaticNameIndex = -1;
+
+                List<string> lstMetaNamesToProcess = new List<string> {"CustomerId", null, "@customValue", null, "%chaine", "%chaine#{", "%chaine,", "%ma chaine", "FirstName"};
+                List<string> lstResult = new List<string>();
+
+                foreach (string metaName in lstMetaNamesToProcess)
+                {
+                    lstResult.Add(DbToolsCommon.DeterminePlaceholderType(metaName, "customer", ref parameterIndex, ref parameterAutomaticNameIndex));
+                }
+
+                Assert.AreEqual(lstMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments");
+
+                //Column name, dynamic 0, paramname 1, dynamic 1, paramname 2, paramname 3...
+                List<string> lstExpected = new List<string> {"CustomerId", "@p0", "@customvalue", "@p1", "chaine", "chaine", "chaine", "ma chaine", "FirstName FirstName"};
+
+                for (int i = 0; i < lstExpected.Count; i++)
+                {
+                    Assert.AreEqual(lstExpected[i], lstResult[i]);
+                }
             }
 
-            Assert.AreEqual(lstMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments");
-
-            //Column name, dynamic 0, paramname 1, dynamic 1, paramname 2, paramname 3
-            List<string> lstExpected = new List<string> {"CustomerId", "@p0", "@customvalue", "@p1", "chaine", "chaine"};
-
-            for (int i = 0; i < lstExpected.Count; i++)
+            finally
             {
-                Assert.AreEqual(lstExpected[i], lstResult[i]);
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.mappingFileName.ToString());
             }
         }
-
     }
 }
