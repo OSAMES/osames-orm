@@ -42,7 +42,7 @@ namespace TestOsamesMicroOrmSqlite
                 // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
                 Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAll", "customer",
                     new List<string> {"City"}, new List<object> {"Paris"});
-                Assert.IsNotNull(customer, "Pas d'enregistrement trouvé, requeête select à corriger");
+                Assert.IsNotNull(customer, "Pas d'enregistrement trouvé, requête select à corriger");
                 // Si une exception est lancée, la ligne ci-dessous n'est pas exécutée.
                 // Elle a vocation à faire échouer le test si elle s'exécute.
                 Assert.Fail("Erreur, pas d'exception lancée/catchée ci-dessous");
@@ -79,7 +79,7 @@ namespace TestOsamesMicroOrmSqlite
                 int parameterIndex = -1;
                 int parameterAutomaticNameIndex = -1;
 
-                List<string> lstMetaNamesToProcess = new List<string> {"CustomerId", null, "@customValue", null, "%chaine", "%chaine#{", "%chaine,", "%ma chaine", "FirstName"};
+                List<string> lstMetaNamesToProcess = new List<string> {"CustomerId", null, "@customValue", null, "%chaine", "%chaine#{", "%chaine,", "%ma chaine", "FirstName", "LastName", "PostalCode"};
                 List<string> lstResult = new List<string>();
 
                 foreach (string metaName in lstMetaNamesToProcess)
@@ -90,7 +90,7 @@ namespace TestOsamesMicroOrmSqlite
                 Assert.AreEqual(lstMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments");
 
                 //Column name, dynamic 0, paramname 1, dynamic 1, paramname 2, paramname 3...
-                List<string> lstExpected = new List<string> {"CustomerId", "@p0", "@customvalue", "@p1", "chaine", "chaine", "chaine", "ma chaine", "FirstName FirstName"};
+                List<string> lstExpected = new List<string> {"CustomerId", "@p0", "@customvalue", "@p1", "chaine", "chaine", "chaine", "ma chaine", "FirstName FirstName", "Last_Name", "PostalCode"};
 
                 for (int i = 0; i < lstExpected.Count; i++)
                 {

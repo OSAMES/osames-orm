@@ -23,13 +23,13 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
   <orm:Table name="Customer">
     <orm:MappingObject property="CustomerId" column="CustomerId"/>
     <orm:MappingObject property="FirstName" column="FirstName, 'FirstName'"/>
-  	<orm:MappingObject property="LastName" column="LastName"/>
+  	<orm:MappingObject property="LastName" column="Last_Name"/>
   	<orm:MappingObject property="Company" column="Company"/>
   	<orm:MappingObject property="Address" column="Address"/>
   	<orm:MappingObject property="City" column="City"/>
   	<orm:MappingObject property="State" column="State"/>
   	<orm:MappingObject property="Country" column="Country"/>
-  	<orm:MappingObject property="PostalCode" column="PostalCode"/>
+  	<orm:MappingObject property="PostalCode" column="Postal-Code"/>
   	<orm:MappingObject property="Phone" column="Phone"/>
   	<orm:MappingObject property="Fax" column="Fax"/>
   	<orm:MappingObject property="Email" column="Email"/>
