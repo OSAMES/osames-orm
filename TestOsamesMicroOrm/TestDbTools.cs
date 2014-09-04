@@ -17,7 +17,7 @@ namespace TestOsamesMicroOrm
     [ExcludeFromCodeCoverage]
     public class TestDbTools : OsamesMicroOrmTest
     {
-        static Employee _employee = new Employee {LastName = "Doe", FirstName = "John"};
+        static Employee _employee = new Employee { LastName = "Doe", FirstName = "John" };
         static Customer _customer = new Customer();
         static Invoice _invoice = new Invoice();
         static InvoiceLine _invoiceLine = new InvoiceLine();
@@ -34,7 +34,7 @@ namespace TestOsamesMicroOrm
 
             InitializeDbConnexion();
 
-            _employee.Customer.Add(new Customer {FirstName = "toto"});
+            _employee.Customer.Add(new Customer { FirstName = "toto" });
             foreach (var i in _employee.Customer)
             {
                 //ici faire un select pour chaque invoice qui est lié à l'id de customer
@@ -58,7 +58,7 @@ namespace TestOsamesMicroOrm
         /// </summary>
         [TestMethod]
         [TestCategory("Sql formatting")]
-        public void TestFormatSqlFieldsListAsString()
+        public void TestGenerateCommaSeparatedDbFieldsString()
         {
             List<KeyValuePair<string, object>> adoParams = new List<KeyValuePair<string, object>>
                 {
@@ -70,19 +70,21 @@ namespace TestOsamesMicroOrm
             Assert.IsFalse(string.IsNullOrWhiteSpace(str), "string builder empty");
             Assert.AreEqual(string.Format("{0}FirstName{1}, {0}LastName{1}", ConfigurationLoader.StartFieldEncloser, ConfigurationLoader.EndFieldEncloser), str.ToString());
         }
-        
+
         /// <summary>
         /// Test of DetermineDatabaseColumnNamesAndAdoParameters<T> with a single property.
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping GetPropertyValue")]
-        public void TestExtractFromProperty()
+        public void TestDetermineDatabaseColumnNameAndAdoParameter()
         {
             // DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
 
             string dbColumnName;
             KeyValuePair<string, object> adoParams;
             DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(ref _employee, "Employee", "LastName", out dbColumnName, out adoParams);
+
+            // Ici on devra faire un Assert.IsTrue du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
 
             Assert.AreEqual("LastName", dbColumnName);
 
@@ -91,17 +93,37 @@ namespace TestOsamesMicroOrm
         }
 
         /// <summary>
-        /// Test of DetermineDatabaseColumnNamesAndAdoParameters<T> with a 2 properties.
+        /// Test of DetermineDatabaseColumnNamesAndAdoParameters<T> with a single property.
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping GetPropertyValue")]
-        public void TestExtractFromPropertyMulti()
+        [TestCategory("Parameter NOK")]
+        public void TestDetermineDatabaseColumnNameAndAdoParameterWrongDictionaryName()
+        {
+            // DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
+
+            string dbColumnName;
+            KeyValuePair<string, object> adoParams;
+            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(ref _employee, "NotAnEmployee", "LastName", out dbColumnName, out adoParams);
+
+            // Ici on devra faire un Assert.IsFalse du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
+
+        }
+
+        /// <summary>
+        /// Test of DetermineDatabaseColumnNamesAndAdoParameters<T> with 2 properties.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Mapping GetPropertyValue")]
+        public void TestDetermineDatabaseColumnNamesAndAdoParameters()
         {
             // DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
 
             List<string> lstDbColumnNames;
             List<KeyValuePair<string, object>> adoParams;
             DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref _employee, "Employee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
+
+            // Ici on devra faire un Assert.IsTrue du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
 
             Assert.AreEqual("LastName", lstDbColumnNames[0]);
             Assert.AreEqual("FirstName", lstDbColumnNames[1]);
@@ -110,6 +132,25 @@ namespace TestOsamesMicroOrm
             Assert.AreEqual(_employee.LastName, adoParams[0].Value);
             Assert.AreEqual("@firstname", adoParams[1].Key);
             Assert.AreEqual(_employee.FirstName, adoParams[1].Value);
+        }
+
+        /// <summary>
+        /// Test of DetermineDatabaseColumnNamesAndAdoParameters<T> with 2 properties.
+        /// Mauvais nom de dictionnaire.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Mapping GetPropertyValue")]
+        [TestCategory("Parameter NOK")]
+        public void TestDetermineDatabaseColumnNamesAndAdoParametersWrongDictionaryName()
+        {
+            // DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
+
+            List<string> lstDbColumnNames;
+            List<KeyValuePair<string, object>> adoParams;
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref _employee, "NotAnEmployee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
+
+            // Ici on devra faire un Assert.IsFalse du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
+
         }
 
         /// <summary>
@@ -132,7 +173,7 @@ namespace TestOsamesMicroOrm
 
                 string sqlCommand;
                 List<KeyValuePair<string, object>> adoParams;
-                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "Employee", "BaseUpdateOne", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", null}, new List<object>{ 2 }, out sqlCommand, out adoParams);
+                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "Employee", "BaseUpdateOne", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", null }, new List<object> { 2 }, out sqlCommand, out adoParams);
 
                 Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", sqlCommand);
                 Assert.AreEqual(3, adoParams.Count, "no parameters generated");
@@ -142,13 +183,14 @@ namespace TestOsamesMicroOrm
                 Assert.AreEqual(_employee.FirstName, adoParams[1].Value);
                 Assert.AreEqual("@p0", adoParams[2].Key);
                 Assert.AreEqual(2, adoParams[2].Value);
-            } finally
+            }
+            finally
             {
                 Customizer.ConfigurationManagerRestoreAllKeys();
             }
         }
 
-#endregion
+        #endregion
 
         #region DbToolsSelect - test sql formatting
 
@@ -215,23 +257,68 @@ namespace TestOsamesMicroOrm
 
         }
 
-#endregion
+        #endregion
 
         #region DbToolsCommon - test Determine
+
+        /// <summary>
+        /// Test of DetermineDatabaseColumnName for a given mapping.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Mapping")]
+        public void TestDetermineDatabaseColumnName()
+        {
+            string columnName;
+            DbToolsCommon.DetermineDatabaseColumnName("Customer", "LastName", out columnName);
+            // TODO cette méthode est à modifier pour renvoyer ici true (ajouter un assert) #ORM-85
+            Assert.AreEqual("LastName", columnName);
+        }
+
+        /// <summary>
+        /// Test of DetermineDatabaseColumnName for a given mapping.
+        /// On demande le mauvais nom de dictionnaire.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Mapping")]
+        [TestCategory("Parameter NOK")]
+        public void TestDetermineDatabaseColumnNameWrongDictionaryName()
+        {
+            string columnName;
+            DbToolsCommon.DetermineDatabaseColumnName("NotACustomer", "LastName", out columnName);
+            // TODO cette méthode est à modifier pour renvoyer ici false (ajouter un assert) #ORM-85
+        }
 
         /// <summary>
         /// Test of DetermineDatabaseColumnNamesAndDataObjectPropertyNames for a given mapping.
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping")]
-        public void TestDetermineDatabaseColumnsAndPropertiesNames()
+        public void TestDetermineDatabaseColumnNamesAndDataObjectPropertyNames()
         {
             List<string> lstPropertiesNames;
             List<string> lstDbColumnNames;
             DbToolsCommon.DetermineDatabaseColumnNamesAndDataObjectPropertyNames("Customer", out lstDbColumnNames, out lstPropertiesNames);
+
+            // TODO cette méthode est à modifier pour renvoyer ici true (ajouter un assert) #ORM-85
+
             Assert.IsFalse(lstDbColumnNames.Count == 0);
             Assert.IsFalse(lstPropertiesNames.Count == 0);
             Assert.AreEqual(lstDbColumnNames.Count, lstPropertiesNames.Count);
+        }
+
+        /// <summary>
+        /// Test of DetermineDatabaseColumnNamesAndDataObjectPropertyNames for a given mapping.
+        /// Mauvais nom de dictionnaire demandé.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Mapping")]
+        [TestCategory("Parameter NOK")]
+        public void TestDetermineDatabaseColumnNamesAndDataObjectPropertyNamesWrongDictionaryName()
+        {
+            List<string> lstPropertiesNames;
+            List<string> lstDbColumnNames;
+            DbToolsCommon.DetermineDatabaseColumnNamesAndDataObjectPropertyNames("NotACustomer", out lstDbColumnNames, out lstPropertiesNames);
+            // TODO cette méthode est à modifier pour renvoyer ici false (ajouter un assert) #ORM-85
         }
 
         #endregion

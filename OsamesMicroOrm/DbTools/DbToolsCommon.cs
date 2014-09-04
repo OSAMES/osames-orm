@@ -343,7 +343,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
         /// <returns>Ne renvoie rien</returns>
-        private static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_)
+        internal static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_)
         {
             dbColumnName_ = null;
 
