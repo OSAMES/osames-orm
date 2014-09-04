@@ -285,7 +285,7 @@ namespace OsamesMicroOrm.DbTools
 
                 returnValue = new string(valueAsCharArray);
 
-                return returnValue.ToLowerInvariant(); 
+                return returnValue; 
             }
 
             // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
