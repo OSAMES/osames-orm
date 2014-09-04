@@ -401,7 +401,7 @@ namespace OsamesMicroOrm.Configuration
 
         /// <summary>
         /// Loads XML file which contains mapping definitions to internal dictionary.
-        /// <para>Transform all xml tag name in .ToLowerInvariant()</para>
+        /// <para>Transforme en ToLowerInariant() le nom du dictionnaire de mapping (nom de la table de la DB)</para>
         /// </summary>
         /// <param name="xmlNavigator_">Reused XPathNavigator instance</param>
         /// <param name="xmlRootTagPrefix_"> </param>
@@ -419,7 +419,7 @@ namespace OsamesMicroOrm.Configuration
                 var propertyColumnDictionary = new Dictionary<string, string>();
                 while (xPathNodeIterator.MoveNext()) // Read Table node
                 {
-                    MappingDictionnary.Add(xPathNodeIterator.Current.GetAttribute("name", "").ToLowerInvariant(), propertyColumnDictionary);
+                    MappingDictionnary.Add(xPathNodeIterator.Current.GetAttribute("name", ""), propertyColumnDictionary);
                     xPathNodeIterator.Current.MoveToFirstChild();
                     do
                     {

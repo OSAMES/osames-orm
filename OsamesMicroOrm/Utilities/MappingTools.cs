@@ -46,8 +46,6 @@ namespace OsamesMicroOrm.Utilities
             if (string.IsNullOrWhiteSpace(dbTableName))
                 throw new Exception("Type " + dataObject_.GetType().FullName + " defines an empty DatabaseMapping attribute (at class level)");
 
-            dbTableName = dbTableName.ToLowerInvariant();
-
             // Check that value exists in mapping
             if(!Configuration.ConfigurationLoader.MappingDictionnary.ContainsKey(dbTableName))
                 throw new Exception("Key '" + dbTableName + "' not found in mapping configuration");

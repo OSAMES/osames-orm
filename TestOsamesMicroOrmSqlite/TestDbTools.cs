@@ -40,7 +40,7 @@ namespace TestOsamesMicroOrmSqlite
                 ConfigurationLoader.Clear();
                 _config = ConfigurationLoader.Instance;
                 // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
-                Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAll", "customer",
+                Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAll", "Customer",
                     new List<string> {"City"}, new List<object> {"Paris"});
                 Assert.IsNotNull(customer, "Pas d'enregistrement trouvé, requête select à corriger");
                 // Si une exception est lancée, la ligne ci-dessous n'est pas exécutée.
@@ -84,7 +84,7 @@ namespace TestOsamesMicroOrmSqlite
 
                 foreach (string metaName in lstMetaNamesToProcess)
                 {
-                    lstResult.Add(DbToolsCommon.DeterminePlaceholderType(metaName, "customer", ref parameterIndex, ref parameterAutomaticNameIndex));
+                    lstResult.Add(DbToolsCommon.DeterminePlaceholderType(metaName, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex));
                 }
 
                 Assert.AreEqual(lstMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments");

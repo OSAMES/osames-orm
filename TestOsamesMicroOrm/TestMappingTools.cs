@@ -36,11 +36,11 @@ namespace TestOsamesMicroOrm
             InvoiceLine entityInvoiceLineI = new InvoiceLine();
             Track entityTrack = new Track();
 
-            Assert.AreEqual("employee", MappingTools.GetDbEntityDictionnaryMappingKey(entityEmployee));
-            Assert.AreEqual("customer", MappingTools.GetDbEntityDictionnaryMappingKey(entityCustomer));
-            Assert.AreEqual("invoice", MappingTools.GetDbEntityDictionnaryMappingKey(entityInvoice));
-            Assert.AreEqual("invoiceline", MappingTools.GetDbEntityDictionnaryMappingKey(entityInvoiceLineI));
-            Assert.AreEqual("track", MappingTools.GetDbEntityDictionnaryMappingKey(entityTrack));
+            Assert.AreEqual("Employee", MappingTools.GetDbEntityDictionnaryMappingKey(entityEmployee));
+            Assert.AreEqual("Customer", MappingTools.GetDbEntityDictionnaryMappingKey(entityCustomer));
+            Assert.AreEqual("Invoice", MappingTools.GetDbEntityDictionnaryMappingKey(entityInvoice));
+            Assert.AreEqual("InvoiceLine", MappingTools.GetDbEntityDictionnaryMappingKey(entityInvoiceLineI));
+            Assert.AreEqual("Track", MappingTools.GetDbEntityDictionnaryMappingKey(entityTrack));
         }
 
         /// <summary>
