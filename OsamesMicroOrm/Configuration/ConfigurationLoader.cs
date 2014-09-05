@@ -527,7 +527,7 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Loads configuration.
         /// <para>Parses XML configuration to internal dictionaries</para>
-        /// <para>Initializes database connection</para></pa>
+        /// <para>Initializes database connection</para>
         /// </summary>
         private void LoadConfiguration()
         {

@@ -171,24 +171,27 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="lstDataObjectPropertyName_">Liste de noms des propriétés d'un objet</param>
         /// <param name="lstDbColumnName_">Sortie : liste des noms des colonnes en DB</param>
+        /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void DetermineDatabaseColumnNames(string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_)
+        internal static bool DetermineDatabaseColumnNames(string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out string strErrorMsg_)
         {
             lstDbColumnName_ = new List<string>();
-
+            strErrorMsg_ = null;
             try
             {
                 foreach (string columnName in lstDataObjectPropertyName_)
                 {
                     lstDbColumnName_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
                 }
+                return true;
             }
             catch (Exception e)
             {
                 // TODO remonter une exception ?
                 ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+                strErrorMsg_ = e.Message;
+                return false;
             }
-
         }
 
         /// <summary>
@@ -291,7 +294,8 @@ namespace OsamesMicroOrm.DbTools
             // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
             // On peut avoir des espaces dans le nom de la colonne ainsi que "_" mais pas "-" (norme SQL).
             string columnName;
-            DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName);
+            string errorMsg;
+            DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName, out errorMsg);
             valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                              char.IsWhiteSpace(c_) ||
                                                              c_ == '_')).ToArray();
@@ -342,21 +346,24 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
+        /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_)
+        internal static bool DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out string strErrorMsg_)
         {
             dbColumnName_ = null;
-
+            strErrorMsg_ = null;
             try
             {
                 dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
+                return true;
             }
             catch (Exception e)
             {
                 // TODO remonter une exception ?
                 ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+                strErrorMsg_ = e.Message;
+                return false;
             }
-
         }
 
         #endregion
@@ -369,9 +376,11 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="format_">Chaîne texte avec des placeholders</param>
         /// <param name="result_">Chaine avec les placeholders remplacés si succès ou bien message d'erreur pour l'utilisateur si échec du remplacement (cas d'erreur)</param>
         /// <param name="args_">Valeurs à mettre dans les placeholders</param>
+        /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
         /// <returns>Renvoie vrai si réussi, sinon retourne faux.</returns>
-        internal static bool TryFormat(string format_, out string result_, params Object[] args_)
+        internal static bool TryFormat(string format_, out string result_, out string strErrorMsg_, params Object[] args_)
         {
+            strErrorMsg_ = null;
             try
             {
                 result_ = String.Format(format_, args_);
@@ -383,6 +392,7 @@ namespace OsamesMicroOrm.DbTools
                 ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 0,
                     "Error, not same number of placeholders. Expected : " + nbOfPlaceholders + ", given parameters : " + args_.Length + ", exception: " + ex.Message);
                 result_ = "Error, not same number of placeholders. See log file for more details.";
+                strErrorMsg_ = ex.Message + "\n" + result_;
                 return false;
             }
         }

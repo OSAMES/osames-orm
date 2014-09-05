@@ -171,9 +171,9 @@ namespace TestOsamesMicroOrm
                 // FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
                 //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
-                string sqlCommand;
+                string sqlCommand, strErrorMsg_;
                 List<KeyValuePair<string, object>> adoParams;
-                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "Employee", "BaseUpdateOne", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", null }, new List<object> { 2 }, out sqlCommand, out adoParams);
+                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "Employee", "BaseUpdateOne", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", null }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
 
                 Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", sqlCommand);
                 Assert.AreEqual(3, adoParams.Count, "no parameters generated");
@@ -203,10 +203,10 @@ namespace TestOsamesMicroOrm
         [TestCategory("Sql formatting for Select")]
         public void TestFormatSqlForSelect()
         {
-            string sqlCommand;
+            string sqlCommand, strErrorMgs_;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelect("BaseReadWhere", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", null }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
+            DbToolsSelects.FormatSqlForSelect("BaseReadWhere", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", null }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames, out strErrorMgs_);
 
             Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @p0;", sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
@@ -225,10 +225,10 @@ namespace TestOsamesMicroOrm
         [TestCategory("Sql formatting for Select")]
         public void TestFormatSqlForSelect2()
         {
-            string sqlCommand;
+            string sqlCommand, strErrorMgs_;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelect("BaseReadWhere", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", "@employeeId" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
+            DbToolsSelects.FormatSqlForSelect("BaseReadWhere", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", "@employeeId" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames, out strErrorMgs_);
 
             Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @employeeid;", sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
@@ -246,10 +246,10 @@ namespace TestOsamesMicroOrm
         [TestCategory("Sql formatting for Select")]
         public void TestFormatSqlForSelectMultipleRecordsWithoutWhere()
         {
-            string sqlCommand;
+            string sqlCommand, strErrorMgs_;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelect("BaseRead", new List<string> { "LastName", "FirstName", "Address" }, "Employee", null, null, out sqlCommand, out adoParams, out lstDbColumnNames);
+            DbToolsSelects.FormatSqlForSelect("BaseRead", new List<string> { "LastName", "FirstName", "Address" }, "Employee", null, null, out sqlCommand, out adoParams, out lstDbColumnNames, out strErrorMgs_);
 
             Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee];", sqlCommand);
             Assert.AreEqual(0, adoParams.Count);
@@ -268,10 +268,30 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping")]
         public void TestDetermineDatabaseColumnName()
         {
-            string columnName;
-            DbToolsCommon.DetermineDatabaseColumnName("Customer", "LastName", out columnName);
+            string columnName, strErrorMsg_;
+            DbToolsCommon.DetermineDatabaseColumnName("Customer", "LastName", out columnName, out strErrorMsg_);
             // TODO cette méthode est à modifier pour renvoyer ici true (ajouter un assert) #ORM-85
             Assert.AreEqual("LastName", columnName);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Mapping")]
+        public void TestDetermineDatabaseColumnNames()
+        {
+            string strErrorMsg_ = null;
+            List<string> columnsNames;
+            bool result = DbToolsCommon.DetermineDatabaseColumnNames("NotCustomer", new List<string> { "FirstName", "LastName" }, out columnsNames, out strErrorMsg_);
+
+            Assert.IsFalse(result);
+
+            columnsNames.Clear();
+
+            result = DbToolsCommon.DetermineDatabaseColumnNames("Customer", new List<string> { "FirstName", "LastName" }, out columnsNames, out strErrorMsg_);
+
+            Assert.IsTrue(result);
         }
 
         /// <summary>
@@ -283,9 +303,10 @@ namespace TestOsamesMicroOrm
         [TestCategory("Parameter NOK")]
         public void TestDetermineDatabaseColumnNameWrongDictionaryName()
         {
-            string columnName;
-            DbToolsCommon.DetermineDatabaseColumnName("NotACustomer", "LastName", out columnName);
-            // TODO cette méthode est à modifier pour renvoyer ici false (ajouter un assert) #ORM-85
+            string columnName, strErrorMsg_;
+            bool result = DbToolsCommon.DetermineDatabaseColumnName("NotACustomer", "LastName", out columnName, out strErrorMsg_);
+
+            Assert.IsFalse(result);
         }
 
         /// <summary>
