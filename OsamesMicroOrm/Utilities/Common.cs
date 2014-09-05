@@ -26,14 +26,14 @@ namespace OsamesMicroOrm.Utilities
     /// <summary>
     /// 
     /// </summary>
-    public static class Common
+    internal static class Common
     {
         /// <summary>
         /// Checks that a file exists, else throws an ApplicativeException.
         /// </summary>
         /// <param name="fileFullPath_"></param>
         /// <param name="context_"></param>
-        public static void CheckFile(string fileFullPath_, string context_)
+        internal static void CheckFile(string fileFullPath_, string context_)
         {
             if (!File.Exists(fileFullPath_))
             {
@@ -47,7 +47,7 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <param name="stringWithPlaceholders_">String with substrings like "{digits}"</param>
         /// <returns>Number of placeholders</returns>
-        public static int CountPlaceholders(string stringWithPlaceholders_)
+        internal static int CountPlaceholders(string stringWithPlaceholders_)
         {
             // Je capture la chaîne "{digits}".
             var matches = Regex.Matches(stringWithPlaceholders_, @"(\{[0-9]+.*?\})");
@@ -61,7 +61,7 @@ namespace OsamesMicroOrm.Utilities
         /// <param name="stringWithPlaceholders_">String with substrings like "{digits}"</param>
         /// <param name="listValuesForPlaceholders_">List of string values</param>
         /// <returns>True/false</returns>
-        public static bool CheckPlaceholdersAndParametersNumbers(string stringWithPlaceholders_, List<string> listValuesForPlaceholders_)
+        internal static bool CheckPlaceholdersAndParametersNumbers(string stringWithPlaceholders_, List<string> listValuesForPlaceholders_)
         {
             int count = CountPlaceholders(stringWithPlaceholders_);
             return count == listValuesForPlaceholders_.Count;

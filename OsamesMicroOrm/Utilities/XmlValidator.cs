@@ -26,17 +26,17 @@ namespace OsamesMicroOrm.Utilities
     /// <summary>
     /// 
     /// </summary>
-    public class XmlValidator
+    internal class XmlValidator
     {
         /// <summary>
         /// Errors.
         /// </summary>
-        public List<string> Errors { get; private set; }
+        internal List<string> Errors { get; private set; }
 
         /// <summary>
         /// Warnings. Some warnings are as critical as errors, such as not finding XML schema.
         /// </summary>
-        public List<string> Warnings { get; private set; }
+        internal List<string> Warnings { get; private set; }
 
         private readonly XmlReaderSettings _settings;
 
@@ -45,7 +45,7 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <param name="xmlNamespaces_">XML schemas base namespaces</param>
         /// <param name="xmlSchemas_">XML schemas .xsd files full paths</param>
-        public XmlValidator(string[] xmlNamespaces_ = null, string[] xmlSchemas_ = null)
+        internal XmlValidator(string[] xmlNamespaces_ = null, string[] xmlSchemas_ = null)
         {
             Errors = new List<string>();
             Warnings = new List<string>();
@@ -84,7 +84,7 @@ namespace OsamesMicroOrm.Utilities
         /// XML validation.
         /// </summary>
         /// <param name="xmlFile_">Xml file full path</param>
-        public void ValidateXml(string xmlFile_)
+        internal void ValidateXml(string xmlFile_)
         {
             Common.CheckFile(xmlFile_, "XmlValidator");
             XmlReader xml = XmlReader.Create(xmlFile_, _settings);
@@ -103,7 +103,7 @@ namespace OsamesMicroOrm.Utilities
         /// XML validation, multiple XML files.
         /// </summary>
         /// <param name="xmlFiles_">Xml file full path</param>
-        public void ValidateXml(string[] xmlFiles_)
+        internal void ValidateXml(string[] xmlFiles_)
         {
             StringBuilder sb = new StringBuilder();
             foreach (string xmlFile in xmlFiles_)

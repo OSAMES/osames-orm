@@ -28,7 +28,7 @@ namespace OsamesMicroOrm.DbTools
     /// <summary>
     /// Classe dédiée à la transformation des templates vers des chaînes SQL prêtes à l'exécution, en déterminant en parallèle le tableau des paramètres ADO.NET.
     /// </summary>
-    class DbToolsCommon
+    internal class DbToolsCommon
     {
         #region SQL string formatting
 
