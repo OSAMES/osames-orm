@@ -22,7 +22,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using OsamesMicroOrm.Configuration;
-using System.Text.RegularExpressions;
 
 namespace OsamesMicroOrm.DbTools
 {
@@ -187,7 +186,6 @@ namespace OsamesMicroOrm.DbTools
             }
             catch (Exception e)
             {
-                // TODO remonter une exception ?
                 ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
                 strErrorMsg_ = e.Message;
                 return false;
@@ -359,7 +357,6 @@ namespace OsamesMicroOrm.DbTools
             }
             catch (Exception e)
             {
-                // TODO remonter une exception ?
                 ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
                 strErrorMsg_ = e.Message;
                 return false;
