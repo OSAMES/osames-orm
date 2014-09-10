@@ -76,7 +76,7 @@ namespace OsamesMicroOrm
 
         /// <summary>
         /// Standard SQL provider specific connection string.
-        /// Getter thrws an exception if setter hasn't been called with a value.
+        /// Getter throws an exception if setter hasn't been called with a value.
         /// </summary>
         internal static string ConnectionString
         {
@@ -222,7 +222,7 @@ namespace OsamesMicroOrm
             return dbConnection;
         }
         /// <summary>
-        /// Fermeture d'une connexion et dispose/mise à null de l'objet.
+        /// Fermeture d'une connexion et dispose/mise ï¿½ null de l'objet.
         /// </summary>
         /// <param name="connexion_">connexion</param>
         /// <returns>Ne renvoie rien</returns>
@@ -507,7 +507,7 @@ namespace OsamesMicroOrm
             {
                 if (transaction_ == null && dbConnection != null)
                 {
-                    // La connexion n'était pas celle de la transaction
+                    // La connexion n'ï¿½tait pas celle de la transaction
                     dbConnection.Close();
                     dbConnection.Dispose();
                 }
@@ -561,7 +561,7 @@ namespace OsamesMicroOrm
             {
                 if (transaction_ == null && dbConnection != null)
                 {
-                    // La connexion n'était pas celle de la transaction
+                    // La connexion n'ï¿½tait pas celle de la transaction
                     dbConnection.Close();
                     dbConnection.Dispose();
                 }
@@ -615,7 +615,7 @@ namespace OsamesMicroOrm
             {
                 if (transaction_ == null && dbConnection != null)
                 {
-                    // La connexion n'était pas celle de la transaction
+                    // La connexion n'ï¿½tait pas celle de la transaction
                     dbConnection.Close();
                     dbConnection.Dispose();
                 }
@@ -673,7 +673,7 @@ namespace OsamesMicroOrm
         /// <returns>ADO .NET data reader</returns>
         public DbDataReader ExecuteReader(string cmdText_, CommandType cmdType_ = CommandType.Text)
         {
-            // Ne pas mettre dans un using la connexion sinon elle sera diposée avant d'avoir lu le data reader
+            // Ne pas mettre dans un using la connexion sinon elle sera diposï¿½e avant d'avoir lu le data reader
             DbConnection dbConnection = CreateConnection();
             using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdType_))
                 try
@@ -701,7 +701,7 @@ namespace OsamesMicroOrm
         /// <returns>ADO .NET data reader</returns>
         public DbDataReader ExecuteReader(string cmdText_, object[,] cmdParms_, CommandType cmdType_ = CommandType.Text)
         {
-            // Ne pas mettre dans un using la connexion sinon elle sera diposée avant d'avoir lu le data reader
+            // Ne pas mettre dans un using la connexion sinon elle sera diposï¿½e avant d'avoir lu le data reader
             DbConnection dbConnection = CreateConnection();
             using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParms_, cmdType_))
                 try
@@ -729,7 +729,7 @@ namespace OsamesMicroOrm
         /// <returns>ADO .NET data reader</returns>
         public DbDataReader ExecuteReader(string cmdText_, Parameter[] cmdParms_, CommandType cmdType_ = CommandType.Text)
         {
-            // Ne pas mettre dans un using la connexion sinon elle sera diposée avant d'avoir lu le data reader
+            // Ne pas mettre dans un using la connexion sinon elle sera diposï¿½e avant d'avoir lu le data reader
             DbConnection dbConnection = CreateConnection();
             using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParms_, cmdType_))
             {
@@ -754,7 +754,7 @@ namespace OsamesMicroOrm
         /// <returns>ADO .NET data reader</returns>
         public DbDataReader ExecuteReader(string cmdText_, List<KeyValuePair<string, object>> cmdParms_, CommandType cmdType_ = CommandType.Text)
         {
-            // Ne pas mettre dans un using la connexion sinon elle sera diposée avant d'avoir lu le data reader
+            // Ne pas mettre dans un using la connexion sinon elle sera diposï¿½e avant d'avoir lu le data reader
             DbConnection dbConnection = CreateConnection();
             using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParms_, cmdType_))
                 try
