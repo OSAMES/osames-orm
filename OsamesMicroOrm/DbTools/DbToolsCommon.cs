@@ -221,10 +221,13 @@ namespace OsamesMicroOrm.DbTools
         /// <summary>
         /// Détermine de quel type sera le placeholder en cours :
         /// <list type="bullet">
-        /// <item><description>si null : retourner un nom de paramètre. Ex.: "@pN"</description></item>
+        /// <item><description>si "#" : retourner un nom de paramètre. Ex.: "@pN"</description></item>
         /// <item><description>si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés. Ex: "@last_name"</description></item>
-        /// <item><description>si chaîne : retourner le nom d'une colonne db issu du mapping. Ex. "TrackID"</description></item>
         /// <item><description>si commence par "%" : retourner simplement la string sans espace</description></item>
+        /// <item><description>si chaîne avec un ":" : retourner le nom d'une colonne DB issu du mapping en supposant que le chaîne avant le ":" est un nom de dictionnaire de mapping (table DB).
+        ///  Ex. "Track:TrackID"</description></item>
+        /// <item><description>si chaîne : retourner le nom d'une colonne DB issu du mapping. Ex. "TrackID"</description></item>
+        /// <item><description>sinon lance une exception</description></item>
         /// </list>
         /// <para>Enlève tout caractère non alphanumérique des littéraux, des paramètres non dynamiques, des noms de colonne, pour éviter les injections SQL</para>
         /// <para>Le nom d'un mapping n'est pas concerné par ce traitement.</para>
@@ -233,7 +236,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping</param>
         /// <param name="parameterAutomaticNameIndex_">Index incrémenté à chaque fois qu'on génère un nom de paramètre "@p..."</param>
         /// <param name="parameterIndex_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
-        /// Sert aussi pour le nom du paramètre dynamique si on avait passé null.</param>
+        /// Sert aussi pour le nom du paramètre dynamique si on avait passé "#".</param>
         /// <returns>Nom de colonne DB</returns>
         internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_)
         {
