@@ -244,7 +244,7 @@ namespace OsamesMicroOrm.DbTools
             string returnValue;
             char[] valueAsCharArray;
 
-            if (value_ == null)
+            if (value_ == "#")
             {
                 // C'est un nom automatique de paramètre ADO.NET.
 
@@ -288,14 +288,31 @@ namespace OsamesMicroOrm.DbTools
                 return returnValue; 
             }
 
+            if (value_.Count(c_ => c_ == ':') > 1)
+                throw new Exception("No matching rules for given parameter: \"" + value_ + "\"");
+
+            string columnName;
+            var temp = value_.Split(':');
+
+            if (temp.Length == 1)
+            {
+                // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
+                // On peut avoir des espaces dans le nom de la colonne ainsi que "_" mais pas "-" (norme SQL).
+                DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName);
+                valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
+                                                           char.IsWhiteSpace(c_) ||
+                                                           c_ == '_')).ToArray();
+                return new string(valueAsCharArray);
+            }
+
             // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
             // On peut avoir des espaces dans le nom de la colonne ainsi que "_" mais pas "-" (norme SQL).
-            string columnName;
-            DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName);
+            DetermineDatabaseColumnName(mappingDictionariesContainerKey_, temp[1], out columnName);
             valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
-                                                             char.IsWhiteSpace(c_) ||
-                                                             c_ == '_')).ToArray();
-            return new string(valueAsCharArray);
+                                                       char.IsWhiteSpace(c_) ||
+                                                       c_ == '_')).ToArray();
+            return temp[0] + '.' + new string(valueAsCharArray);
+
         }
 
         /// <summary>
