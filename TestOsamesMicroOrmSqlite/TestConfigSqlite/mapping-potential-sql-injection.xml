@@ -35,4 +35,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
   	<orm:MappingObject property="Email" column="Email"/>
   	<orm:MappingObject property="SupportRepId" column="SupportRepId"/>
   </orm:Table>
+  <orm:Table name="Track">
+    <orm:MappingObject property="TrackId" column="TrackId"/>
+  </orm:Table>
 </orm:Tables>

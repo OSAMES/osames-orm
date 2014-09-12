@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
@@ -20,7 +21,7 @@ namespace TestOsamesMicroOrmSqlite
 
 
 
-       // TODO les différents tests seront à réintégrer ici.
+        // TODO les différents tests seront à réintégrer ici.
 
         /// <summary>
         /// Test de haut niveau du Select.
@@ -41,7 +42,7 @@ namespace TestOsamesMicroOrmSqlite
                 _config = ConfigurationLoader.Instance;
                 // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
                 Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAll", "Customer",
-                    new List<string> {"City"}, new List<object> {"Paris"});
+                    new List<string> { "City" }, new List<object> { "Paris" });
                 Assert.IsNotNull(customer, "Pas d'enregistrement trouvé, requête select à corriger");
                 // Si une exception est lancée, la ligne ci-dessous n'est pas exécutée.
                 // Elle a vocation à faire échouer le test si elle s'exécute.
@@ -79,24 +80,52 @@ namespace TestOsamesMicroOrmSqlite
                 int parameterIndex = -1;
                 int parameterAutomaticNameIndex = -1;
 
-                List<string> lstMetaNamesToProcess = new List<string> {"CustomerId", null, "@customValue", null, "%chaine", "%chaine#{", "%chaine,", "%ma chaine", "FirstName", "LastName", "PostalCode"};
-                List<string> lstResult = new List<string>();
+                List<string> lstSyntaxticallyCorrectMetaNamesToProcess = new List<string> { "CustomerId", "#", "@customValue", "#", "%chaine", "%chaine#{", "%chaine,", "%ma chaine", "FirstName", "LastName", "PostalCode", "Customer:CustomerId", "Track:TrackId" };
+                List<string> lstSyntaxticallyIncorrectMetaNamesToProcess = new List<string> { null, "Customer::CustomerId", "Customer:TrackId" };
+                
+                
+                List<string> lstResult = lstSyntaxticallyCorrectMetaNamesToProcess.Select(metaName_ => DbToolsCommon.DeterminePlaceholderType(metaName_, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex)).ToList();
 
-                foreach (string metaName in lstMetaNamesToProcess)
-                {
-                    lstResult.Add(DbToolsCommon.DeterminePlaceholderType(metaName, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex));
-                }
-
-                Assert.AreEqual(lstMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments");
+                Assert.AreEqual(lstSyntaxticallyCorrectMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments");
 
                 //Column name, dynamic 0, paramname 1, dynamic 1, paramname 2, paramname 3...
-                //Look in mapping file for "FirstName FirstName"
-                List<string> lstExpected = new List<string> {"CustomerId", "@p0", "@customvalue", "@p1", "chaine", "chaine", "chaine", "ma chaine", "FirstName FirstName", "Last_Name", "PostalCode"};
+                //Look in mapping file : 
+                // - "FirstName" gives "FirstName, 'FirstName'" which will give "FirstName FirstName"
+                // - "LastName" gives "Last_Name" which will give "Last_Name"
+                // - "PostalCode" gives "Postal-Code" which will give "PostalCode"
+                List<string> lstExpected = new List<string> {"CustomerId", "@p0", "@customvalue", "@p1", "chaine", "chaine", "chaine", "ma chaine", "FirstName FirstName", "Last_Name", "PostalCode", "Customer.CustomerId", "Track.TrackId"};
 
-                for (int i = 0; i < lstExpected.Count; i++)
+                try
                 {
-                    Assert.AreEqual(lstExpected[i], lstResult[i]);
+                    for (int i = 0; i < lstExpected.Count; i++)
+                    {
+                        Assert.AreEqual(lstExpected[i], lstResult[i]);
+                    }
                 }
+                catch (Exception ex)
+                {
+                    Assert.Fail("Avec ces valeurs de paramètres on ne doit pas avoir d'exception. Obtenu : " + ex.Message);
+                }
+
+                foreach (string metaName in lstSyntaxticallyIncorrectMetaNamesToProcess)
+                {
+                    bool exception = false;
+                    try
+                    {
+                        DbToolsCommon.DeterminePlaceholderType(metaName, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex);
+                    }
+                    catch (Exception ex)
+                    {
+                        exception = true;
+                        Console.WriteLine(ex.Message);
+                    }
+                    finally
+                    {
+                        Assert.IsTrue(exception, "Exception attendue sur valeur testée : " + metaName);
+                    }
+                    
+                }
+
             }
 
             finally

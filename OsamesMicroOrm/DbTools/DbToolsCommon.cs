@@ -22,7 +22,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using OsamesMicroOrm.Configuration;
-using System.Text.RegularExpressions;
 
 namespace OsamesMicroOrm.DbTools
 {
@@ -178,10 +177,7 @@ namespace OsamesMicroOrm.DbTools
 
             try
             {
-                foreach (string columnName in lstDataObjectPropertyName_)
-                {
-                    lstDbColumnName_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
-                }
+                lstDbColumnName_.AddRange(lstDataObjectPropertyName_.Select(columnName_ => ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName_)));
             }
             catch (Exception e)
             {
@@ -307,7 +303,7 @@ namespace OsamesMicroOrm.DbTools
 
             // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
             // On peut avoir des espaces dans le nom de la colonne ainsi que "_" mais pas "-" (norme SQL).
-            DetermineDatabaseColumnName(mappingDictionariesContainerKey_, temp[1], out columnName);
+            DetermineDatabaseColumnName(temp[0], temp[1], out columnName);
             valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                        char.IsWhiteSpace(c_) ||
                                                        c_ == '_')).ToArray();
