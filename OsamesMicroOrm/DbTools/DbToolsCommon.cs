@@ -22,7 +22,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using OsamesMicroOrm.Configuration;
-using System.Text.RegularExpressions;
 
 namespace OsamesMicroOrm.DbTools
 {
@@ -178,10 +177,7 @@ namespace OsamesMicroOrm.DbTools
 
             try
             {
-                foreach (string columnName in lstDataObjectPropertyName_)
-                {
-                    lstDbColumnName_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
-                }
+                lstDbColumnName_.AddRange(lstDataObjectPropertyName_.Select(columnName_ => ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName_)));
             }
             catch (Exception e)
             {
@@ -225,10 +221,13 @@ namespace OsamesMicroOrm.DbTools
         /// <summary>
         /// Détermine de quel type sera le placeholder en cours :
         /// <list type="bullet">
-        /// <item><description>si null : retourner un nom de paramètre. Ex.: "@pN"</description></item>
+        /// <item><description>si "#" : retourner un nom de paramètre. Ex.: "@pN"</description></item>
         /// <item><description>si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés. Ex: "@last_name"</description></item>
-        /// <item><description>si chaîne : retourner le nom d'une colonne db issu du mapping. Ex. "TrackID"</description></item>
         /// <item><description>si commence par "%" : retourner simplement la string sans espace</description></item>
+        /// <item><description>si chaîne avec un ":" : retourner le nom d'une colonne DB issu du mapping en supposant que le chaîne avant le ":" est un nom de dictionnaire de mapping (table DB).
+        ///  Ex. "Track:TrackID"</description></item>
+        /// <item><description>si chaîne : retourner le nom d'une colonne DB issu du mapping. Ex. "TrackID"</description></item>
+        /// <item><description>sinon lance une exception</description></item>
         /// </list>
         /// <para>Enlève tout caractère non alphanumérique des littéraux, des paramètres non dynamiques, des noms de colonne, pour éviter les injections SQL</para>
         /// <para>Le nom d'un mapping n'est pas concerné par ce traitement.</para>
@@ -237,14 +236,14 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping</param>
         /// <param name="parameterAutomaticNameIndex_">Index incrémenté à chaque fois qu'on génère un nom de paramètre "@p..."</param>
         /// <param name="parameterIndex_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
-        /// Sert aussi pour le nom du paramètre dynamique si on avait passé null.</param>
+        /// Sert aussi pour le nom du paramètre dynamique si on avait passé "#".</param>
         /// <returns>Nom de colonne DB</returns>
         internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_)
         {
             string returnValue;
             char[] valueAsCharArray;
 
-            if (value_ == null)
+            if (value_ == "#")
             {
                 // C'est un nom automatique de paramètre ADO.NET.
 
@@ -288,14 +287,31 @@ namespace OsamesMicroOrm.DbTools
                 return returnValue; 
             }
 
+            if (value_.Count(c_ => c_ == ':') > 1)
+                throw new Exception("No matching rules for given parameter: \"" + value_ + "\"");
+
+            string columnName;
+            var temp = value_.Split(':');
+
+            if (temp.Length == 1)
+            {
+                // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
+                // On peut avoir des espaces dans le nom de la colonne ainsi que "_" mais pas "-" (norme SQL).
+                DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName);
+                valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
+                                                           char.IsWhiteSpace(c_) ||
+                                                           c_ == '_')).ToArray();
+                return new string(valueAsCharArray);
+            }
+
             // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
             // On peut avoir des espaces dans le nom de la colonne ainsi que "_" mais pas "-" (norme SQL).
-            string columnName;
-            DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName);
+            DetermineDatabaseColumnName(temp[0], temp[1], out columnName);
             valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
-                                                             char.IsWhiteSpace(c_) ||
-                                                             c_ == '_')).ToArray();
-            return new string(valueAsCharArray);
+                                                       char.IsWhiteSpace(c_) ||
+                                                       c_ == '_')).ToArray();
+            return temp[0] + '.' + new string(valueAsCharArray);
+
         }
 
         /// <summary>
