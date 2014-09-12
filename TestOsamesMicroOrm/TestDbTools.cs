@@ -173,7 +173,7 @@ namespace TestOsamesMicroOrm
 
                 string sqlCommand;
                 List<KeyValuePair<string, object>> adoParams;
-                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "Employee", "BaseUpdateOne", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", null }, new List<object> { 2 }, out sqlCommand, out adoParams);
+                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "Employee", "BaseUpdateOne", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams);
 
                 Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", sqlCommand);
                 Assert.AreEqual(3, adoParams.Count, "no parameters generated");
@@ -196,7 +196,7 @@ namespace TestOsamesMicroOrm
 
         /// <summary>
         /// Select avec clause where retournant un enregistrement.
-        /// Ici le paramètre dynamique est représenté par "null".
+        /// Ici le paramètre dynamique est représenté par "#".
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping")]
@@ -206,7 +206,7 @@ namespace TestOsamesMicroOrm
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelect("BaseReadWhere", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", null }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
+            DbToolsSelects.FormatSqlForSelect("BaseReadWhere", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
 
             Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @p0;", sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
