@@ -32,7 +32,7 @@ namespace OsamesMicroOrm.Utilities
         /// <param name="message_"></param>
         internal static void AddErrorMessage(ErrorType errortype, string message_)
         {
-            ErrorMsg = new KeyValuePair<ErrorType, string>(errortype, DateTime.Now + " :: " + message_));
+            ErrorMsg = new KeyValuePair<ErrorType, string>(errortype, DateTime.Now + " :: " + message_);
         }
 
         internal static void DisplayErrorMessageWinforms()

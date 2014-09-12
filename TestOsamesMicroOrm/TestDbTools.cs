@@ -190,6 +190,42 @@ namespace TestOsamesMicroOrm
             }
         }
 
+        /// <summary>
+        /// Nom de template incorrect !
+        /// Test of FormatSqlForUpdate<T> with a list of 2 properties.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Mapping")]
+        [TestCategory("Sql formatting for Update")]
+        [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(KeyNotFoundException))]
+        public void TestFormatSqlForUpdateIncorrectTemplateName()
+        {
+            try
+            {
+
+                // Utiliser la DB Sqlite
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
+
+                // FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
+                //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+
+                string sqlCommand, strErrorMsg_;
+                List<KeyValuePair<string, object>> adoParams;
+                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "Employee", "ThisTemplateDoesntExist", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", null }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
+
+                Assert.IsNull(sqlCommand);
+
+            }
+            finally
+            {
+                Customizer.ConfigurationManagerRestoreAllKeys();
+            }
+        }
+
+
+
         #endregion
 
         #region DbToolsSelect - test sql formatting
@@ -213,6 +249,27 @@ namespace TestOsamesMicroOrm
             Assert.AreEqual("@p0", adoParams[0].Key);
             Assert.AreEqual(5, adoParams[0].Value);
             Assert.AreEqual(3, lstDbColumnNames.Count);
+
+        }
+
+        /// <summary>
+        /// Mauvais template utilisé !
+        /// Select avec clause where retournant un enregistrement.
+        /// Ici le paramètre dynamique est représenté par "null".
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Mapping")]
+        [TestCategory("Sql formatting for Select")]
+        [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(KeyNotFoundException))]
+        public void TestFormatSqlForSelectIncorrectTemplateName()
+        {
+            string sqlCommand, strErrorMgs_;
+            List<KeyValuePair<string, object>> adoParams;
+            List<string> lstDbColumnNames;
+            DbToolsSelects.FormatSqlForSelect("ThisTemplateDoesntExist", new List<string> { "LastName", "FirstName", "Address" }, "Employee", new List<string> { "EmployeeId", null }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames, out strErrorMgs_);
+
+            Assert.IsNull(sqlCommand);
 
         }
 
