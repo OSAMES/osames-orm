@@ -30,12 +30,12 @@ namespace OsamesMicroOrm.DbTools
     public class DbToolsSelects
     {
         /// <summary>
-        /// Crée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET, dans le cas d'un select basé sur un template <c>"SELECT {0} FROM {1}..."</c>.
+        /// Dans le cas d'un select basé sur un template <c>"SELECT {0} FROM {1}...", cée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET, </c>.
         /// Utilise :
         /// <list type="bullet">
         /// <item><description>clé du dictionnaire de mapping</description></item>
-        /// <item><description>liste de noms de propriétés de dataObject_ à utiliser pour les champs à mettre à jour</description></item>
-        /// <item><description>liste de noms de propriétés de dataObject_ ou paramètres dynamiques pour les paramètres dans la partie WHERE.</description></item>
+        /// <item><description>liste de noms de propriétés de dataObject_ à utiliser pour les champs à sélectionner</description></item>
+        /// <item><description>liste de noms de propriétés de dataObject_ ou paramètres dynamiques pour les paramètres dans la partie WHERE, ainsi que les valeurs associées.</description></item>
         /// </list>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {1} dans le template sql</param>
@@ -67,12 +67,11 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Crée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET, dans le cas d'un select basé sur un template "SELECT * FROM {0}...".
+        /// Dans le cas d'un select basé sur un template "SELECT * FROM {0}...", crée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET, .
         /// <para>Utilise :
         /// <list type="bullet">
         /// <item><description>clé du dictionnaire de mapping</description></item>
-        /// <item><description>liste de noms de propriétés de dataObject_ à utiliser pour les champs à mettre à jour</description></item>
-        /// <item><description>liste de noms de propriétés de dataObject_ ou paramètres dynamiques pour les paramètres dans la partie WHERE.</description></item>
+        /// <item><description>liste de noms de propriétés de dataObject_ ou paramètres dynamiques pour les paramètres dans la partie WHERE, ainsi que les valeurs associées..</description></item>
         /// </list>
         /// </para>
         /// </summary>
