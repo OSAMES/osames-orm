@@ -98,19 +98,19 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
-        /// <param name="adoParameterNameAndValues_">Sortie : nom/valeur du paramètre ADO.NET</param>
+        /// <param name="adoParameterNameAndValue_">Sortie : nom/valeur du paramètre ADO.NET</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValues_)
+        internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
         {
             dbColumnName_ = null;
-            adoParameterNameAndValues_ = new KeyValuePair<string, object>();
+            adoParameterNameAndValue_ = new KeyValuePair<string, object>();
 
             try
             {
                 dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
 
                 // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
-                adoParameterNameAndValues_ = new KeyValuePair<string, object>(
+                adoParameterNameAndValue_ = new KeyValuePair<string, object>(
                                         "@" + dataObjectPropertyName_.ToLowerInvariant(),
                                         dataObject_.GetType().GetProperty(dataObjectPropertyName_).GetValue(dataObject_)
                                         );
