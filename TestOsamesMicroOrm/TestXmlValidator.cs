@@ -53,7 +53,7 @@ namespace TestOsamesMicroOrm
         {
             // Obligatoire car Resharper ne comprend pas qu'il faut initilaliser la classe mère.
             var tempo = ConfigurationLoader.Instance;
-            InitializeDbConnexion();
+            //InitializeDbConnexion();
             // On passe tous les namespaces et fichiers de schémas locaux à utiliser
             _xmlValidatorWithSchemasAndNamespaces = new XmlValidator(new[] { "http://www.osames.org/osamesorm", "http://www.osames.org/osamesorm" }, new[] { _mappingXsdFullPath, _templatesXsdFullPath });
 

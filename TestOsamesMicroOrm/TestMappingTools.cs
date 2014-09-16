@@ -18,7 +18,7 @@ namespace TestOsamesMicroOrm
         public override void Setup()
         {
             var tempo = ConfigurationLoader.Instance;
-            InitializeDbConnexion();
+            //InitializeDbConnexion();
         }
 
         /// <summary>
