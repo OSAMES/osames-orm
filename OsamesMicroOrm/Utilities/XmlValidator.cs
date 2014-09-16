@@ -38,6 +38,9 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         internal List<string> Warnings { get; private set; }
 
+        /// <summary>
+        /// Paramètres du XML reader.
+        /// </summary>
         private readonly XmlReaderSettings Settings;
 
         /// <summary>

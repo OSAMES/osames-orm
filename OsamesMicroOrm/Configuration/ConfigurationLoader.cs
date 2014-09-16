@@ -38,7 +38,7 @@ namespace OsamesMicroOrm.Configuration
     public class ConfigurationLoader
     {
         private static ConfigurationLoader Singleton;
-        private static readonly object oSingletonInit = new object();
+        private static readonly object SingletonInitLockObject = new object();
 
         /// <summary>
         /// Templates dictionary for select
@@ -101,7 +101,7 @@ namespace OsamesMicroOrm.Configuration
         {
             get
             {
-                lock (oSingletonInit)
+                lock (SingletonInitLockObject)
                 {
                     if (Singleton != null)
                         return Singleton;
@@ -120,7 +120,7 @@ namespace OsamesMicroOrm.Configuration
         /// </summary>
         public static void Clear()
         {
-            lock (oSingletonInit)
+            lock (SingletonInitLockObject)
             {
                 Singleton = null;
             }

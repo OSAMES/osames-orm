@@ -39,15 +39,15 @@ namespace OsamesMicroOrm
         private DbProviderFactory DbProviderFactory;
 
         /// <summary>
-        /// Connection string that is set/checked by corresponding column.
+        /// Connection string that is set/checked by ConnectionString property.
         /// </summary>
         private static string ConnectionStringField;
         /// <summary>
-        /// Invariant provider name that is set/checked by corresponding column.
+        /// Invariant provider name that is set/checked by ProviderName property.
         /// </summary>
-        private static string ProviderDefinition;
+        private static string ProviderInvariantName;
         /// <summary>
-        /// Provider specific SQL code for "select last insert id" that is set/checked by corresponding column.
+        /// Provider specific SQL code for "select last insert id" that is set/checked by SelectLastInsertIdCommandText property.
         /// </summary>
         private static string SelectLastInsertIdCommandTextField;
 
@@ -58,7 +58,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Lock object for singleton initialization.
         /// </summary>
-        private static readonly object oSingletonInit = new object();
+        private static readonly object SingletonInitLockObject = new object();
 
         /// <summary>
         /// Singleton acess, with singleton thread-safe initialization using dedicated lock object.
@@ -67,7 +67,7 @@ namespace OsamesMicroOrm
         {
             get
             {
-                lock (oSingletonInit)
+                lock (SingletonInitLockObject)
                 {
                     return Singleton ?? (Singleton = new DbManager());
                 }
@@ -117,14 +117,14 @@ namespace OsamesMicroOrm
         {
             get
             {
-                if (ProviderDefinition == null)
+                if (ProviderInvariantName == null)
                 {
                     ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Database provider not set!");
                     throw new Exception("ProviderName column not initialized, please set a value!");
                 }
-                return ProviderDefinition;
+                return ProviderInvariantName;
             }
-            set { ProviderDefinition = value; }
+            set { ProviderInvariantName = value; }
         }
 
         #endregion

@@ -24,7 +24,7 @@ using OsamesMicroOrm.Configuration;
 namespace OsamesMicroOrm.Utilities
 {
     /// <summary>
-    /// 
+    /// Common utilities.
     /// </summary>
     internal static class Common
     {
