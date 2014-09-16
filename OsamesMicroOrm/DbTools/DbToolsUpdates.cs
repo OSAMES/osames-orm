@@ -106,7 +106,7 @@ namespace OsamesMicroOrm.DbTools
             long lastInsertedRowId;
             int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(sqlCommand, adoParameters, out lastInsertedRowId);
             if (nbRowsAffected == 0)
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Warning, 0, "Query didn't update any row: " + sqlCommand);
+                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Warning, 0, "Query didn't update any row: " + sqlCommand);
 
             return nbRowsAffected;
         }

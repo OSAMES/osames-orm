@@ -37,7 +37,7 @@ namespace OsamesMicroOrm.Utilities
         {
             if (!File.Exists(fileFullPath_))
             {
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader: XML templates definitions analysis error. Throw message : " + fileFullPath_ + " : file " + context_ + " does not exist.");
+                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader: XML templates definitions analysis error. Throw message : " + fileFullPath_ + " : file " + context_ + " does not exist.");
                 
             }
         }

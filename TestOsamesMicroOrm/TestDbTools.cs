@@ -17,11 +17,11 @@ namespace TestOsamesMicroOrm
     [ExcludeFromCodeCoverage]
     public class TestDbTools : OsamesMicroOrmTest
     {
-        static Employee _employee = new Employee { LastName = "Doe", FirstName = "John" };
-        static Customer _customer = new Customer();
-        static Invoice _invoice = new Invoice();
-        static InvoiceLine _invoiceLine = new InvoiceLine();
-        static Track _track = new Track();
+        static Employee Employee = new Employee { LastName = "Doe", FirstName = "John" };
+        static Customer Customer = new Customer();
+        static Invoice Invoice = new Invoice();
+        static InvoiceLine InvoiceLine = new InvoiceLine();
+        static Track Track = new Track();
 
         /// <summary>
         /// Initialization once for all tests.
@@ -34,8 +34,8 @@ namespace TestOsamesMicroOrm
 
             InitializeDbConnexion();
 
-            _employee.Customer.Add(new Customer { FirstName = "toto" });
-            foreach (var i in _employee.Customer)
+            Employee.Customer.Add(new Customer { FirstName = "toto" });
+            foreach (var i in Employee.Customer)
             {
                 //ici faire un select pour chaque invoice qui est lié à l'id de customer
                 i.Invoice.Add(new Invoice());
@@ -82,14 +82,14 @@ namespace TestOsamesMicroOrm
 
             string dbColumnName;
             KeyValuePair<string, object> adoParams;
-            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(ref _employee, "Employee", "LastName", out dbColumnName, out adoParams);
+            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(ref Employee, "Employee", "LastName", out dbColumnName, out adoParams);
 
             // Ici on devra faire un Assert.IsTrue du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
 
             Assert.AreEqual("LastName", dbColumnName);
 
             Assert.AreEqual("@lastname", adoParams.Key);
-            Assert.AreEqual(_employee.LastName, adoParams.Value);
+            Assert.AreEqual(Employee.LastName, adoParams.Value);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace TestOsamesMicroOrm
 
             string dbColumnName;
             KeyValuePair<string, object> adoParams;
-            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(ref _employee, "NotAnEmployee", "LastName", out dbColumnName, out adoParams);
+            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(ref Employee, "NotAnEmployee", "LastName", out dbColumnName, out adoParams);
 
             // Ici on devra faire un Assert.IsFalse du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
 
@@ -121,7 +121,7 @@ namespace TestOsamesMicroOrm
 
             List<string> lstDbColumnNames;
             List<KeyValuePair<string, object>> adoParams;
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref _employee, "Employee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref Employee, "Employee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
 
             // Ici on devra faire un Assert.IsTrue du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
 
@@ -129,9 +129,9 @@ namespace TestOsamesMicroOrm
             Assert.AreEqual("FirstName", lstDbColumnNames[1]);
             Assert.AreEqual(2, adoParams.Count, "no parameters generated");
             Assert.AreEqual("@lastname", adoParams[0].Key);
-            Assert.AreEqual(_employee.LastName, adoParams[0].Value);
+            Assert.AreEqual(Employee.LastName, adoParams[0].Value);
             Assert.AreEqual("@firstname", adoParams[1].Key);
-            Assert.AreEqual(_employee.FirstName, adoParams[1].Value);
+            Assert.AreEqual(Employee.FirstName, adoParams[1].Value);
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace TestOsamesMicroOrm
 
             List<string> lstDbColumnNames;
             List<KeyValuePair<string, object>> adoParams;
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref _employee, "NotAnEmployee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref Employee, "NotAnEmployee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
 
             // Ici on devra faire un Assert.IsFalse du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
 
@@ -173,14 +173,14 @@ namespace TestOsamesMicroOrm
 
                 string sqlCommand, strErrorMsg_;
                 List<KeyValuePair<string, object>> adoParams;
-                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "Employee", "BaseUpdateOne", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", null }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
+                DbToolsUpdates.FormatSqlForUpdate(ref Employee, "Employee", "BaseUpdateOne", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", null }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
 
                 Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", sqlCommand);
                 Assert.AreEqual(3, adoParams.Count, "no parameters generated");
                 Assert.AreEqual("@lastname", adoParams[0].Key);
-                Assert.AreEqual(_employee.LastName, adoParams[0].Value);
+                Assert.AreEqual(Employee.LastName, adoParams[0].Value);
                 Assert.AreEqual("@firstname", adoParams[1].Key);
-                Assert.AreEqual(_employee.FirstName, adoParams[1].Value);
+                Assert.AreEqual(Employee.FirstName, adoParams[1].Value);
                 Assert.AreEqual("@p0", adoParams[2].Key);
                 Assert.AreEqual(2, adoParams[2].Value);
             }
@@ -213,7 +213,7 @@ namespace TestOsamesMicroOrm
 
                 string sqlCommand, strErrorMsg_;
                 List<KeyValuePair<string, object>> adoParams;
-                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "Employee", "ThisTemplateDoesntExist", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", null }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
+                DbToolsUpdates.FormatSqlForUpdate(ref Employee, "Employee", "ThisTemplateDoesntExist", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", null }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
 
                 Assert.IsNull(sqlCommand);
 

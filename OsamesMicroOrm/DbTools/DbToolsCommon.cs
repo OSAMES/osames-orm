@@ -49,35 +49,35 @@ namespace OsamesMicroOrm.DbTools
         /// Utilitaire de formatage d'une chaîne texte <c>"my_column = @myParam, my_column2 = @myValue2"</c> en l'ajoutant à un <see cref="System.Text.StringBuilder"/>.
         /// <para>Le suffixe est ajouté entre chaque élément de la liste lstDbColumnNames_.</para>
         /// </summary>
-        /// <param name="lstDbColumnName_">Liste de noms de colonne en Db</param>
+        /// <param name="lstDbColumnNames_">Liste de noms de colonne en Db</param>
         /// <param name="adoParameters_">Objets représentatifs des paramètres ADO.NET</param>
         /// <param name="sqlCommand_">StringBuilder à compléter</param>
         /// <param name="optionalSuffix_">Suffixe optionnel, par exemple ",", ajouté entre chaque élément (pas à la fin)</param>
         /// <returns>Ne renvoie rien.</returns>
-        internal static void FormatSqlNameEqualValueString(List<string> lstDbColumnName_, List<KeyValuePair<string, object>> adoParameters_, ref StringBuilder sqlCommand_, string optionalSuffix_ = "")
+        internal static void FormatSqlNameEqualValueString(List<string> lstDbColumnNames_, List<KeyValuePair<string, object>> adoParameters_, ref StringBuilder sqlCommand_, string optionalSuffix_ = "")
         {
-            int iCountMinusOne = lstDbColumnName_.Count - 1;
+            int iCountMinusOne = lstDbColumnNames_.Count - 1;
             for (int i = 0; i < iCountMinusOne; i++)
             {
-                sqlCommand_.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnName_[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(adoParameters_[i].Key).Append(optionalSuffix_);
+                sqlCommand_.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames_[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(adoParameters_[i].Key).Append(optionalSuffix_);
             }
-            sqlCommand_.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnName_[iCountMinusOne]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(adoParameters_[iCountMinusOne].Key);
+            sqlCommand_.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames_[iCountMinusOne]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(adoParameters_[iCountMinusOne].Key);
         }
 
         /// <summary>
         /// Création d'une chaîne de texte en prenant chaque élément de la liste paramètre et mettant une virgule entre chaque élément.
         /// <para>Chaque élément est considéré comme étant un nom de colonne DB, il est protégé par des caractères spéciaux.</para>
         /// </summary>
-        /// <param name="lstDbColumnName_">Liste de chaînes, ex : "FirstName", "LastName"...</param>
+        /// <param name="lstDbColumnNames_">Liste de chaînes, ex : "FirstName", "LastName"...</param>
         /// <returns>Chaîne de texte. Ex: "[FirstName], [LastName]..."</returns>
-        internal static string GenerateCommaSeparatedDbFieldsString(List<string> lstDbColumnName_)
+        internal static string GenerateCommaSeparatedDbFieldsString(List<string> lstDbColumnNames_)
         {
             StringBuilder sb = new StringBuilder();
 
-            int iCount = lstDbColumnName_.Count;
+            int iCount = lstDbColumnNames_.Count;
             for (int i = 0; i < iCount; i++)
             {
-                sb.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnName_[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(", ");
+                sb.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames_[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(", ");
             }
             sb.Remove(sb.Length - 2, 2);
             return sb.ToString();
@@ -98,19 +98,19 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
-        /// <param name="adoParameterNameAndValue_">Sortie : nom/valeur du paramètre ADO.NET</param>
+        /// <param name="adoParameterNameAndValues_">Sortie : nom/valeur du paramètre ADO.NET</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
+        internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValues_)
         {
             dbColumnName_ = null;
-            adoParameterNameAndValue_ = new KeyValuePair<string, object>();
+            adoParameterNameAndValues_ = new KeyValuePair<string, object>();
 
             try
             {
                 dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
 
                 // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
-                adoParameterNameAndValue_ = new KeyValuePair<string, object>(
+                adoParameterNameAndValues_ = new KeyValuePair<string, object>(
                                         "@" + dataObjectPropertyName_.ToLowerInvariant(),
                                         dataObject_.GetType().GetProperty(dataObjectPropertyName_).GetValue(dataObject_)
                                         );
@@ -118,7 +118,7 @@ namespace OsamesMicroOrm.DbTools
             catch (Exception e)
             {
                 // TODO remonter une exception ?
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
             }
 
         }
@@ -133,23 +133,23 @@ namespace OsamesMicroOrm.DbTools
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="lstDataObjectPropertyName_">Liste de noms des propriétés de l'objet dataObject_</param>
-        /// <param name="lstDbColumnName_">Sortie : liste de noms des colonnes en DB</param>
-        /// <param name="lstAdoParameterNameAndValue_">Sortie : liste de nom/valeur des paramètres ADO.NET</param>
+        /// <param name="lstDataObjectPropertyNames_">Liste de noms des propriétés de l'objet dataObject_</param>
+        /// <param name="lstDbColumnNames_">Sortie : liste de noms des colonnes en DB</param>
+        /// <param name="lstAdoParameterNameAndValues_">Sortie : liste de nom/valeur des paramètres ADO.NET</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> lstAdoParameterNameAndValue_)
+        internal static void DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, out List<string> lstDbColumnNames_, out List<KeyValuePair<string, object>> lstAdoParameterNameAndValues_)
         {
-            lstDbColumnName_ = new List<string>();
+            lstDbColumnNames_ = new List<string>();
 
-            lstAdoParameterNameAndValue_ = new List<KeyValuePair<string, object>>();
+            lstAdoParameterNameAndValues_ = new List<KeyValuePair<string, object>>();
             try
             {
-                foreach (string columnName in lstDataObjectPropertyName_)
+                foreach (string columnName in lstDataObjectPropertyNames_)
                 {
-                    lstDbColumnName_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
+                    lstDbColumnNames_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
 
                     // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
-                    lstAdoParameterNameAndValue_.Add(new KeyValuePair<string, object>(
+                    lstAdoParameterNameAndValues_.Add(new KeyValuePair<string, object>(
                                                     "@" + columnName.ToLowerInvariant(),
                                                     dataObject_.GetType().GetProperty(columnName).GetValue(dataObject_)
                                                 ));
@@ -158,7 +158,7 @@ namespace OsamesMicroOrm.DbTools
             catch (Exception e)
             {
                 // TODO remonter une exception ?
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
             }
 
         }
@@ -168,25 +168,25 @@ namespace OsamesMicroOrm.DbTools
         /// <para>noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="lstDataObjectPropertyName_">Liste de noms des propriétés d'un objet</param>
-        /// <param name="lstDbColumnName_">Sortie : liste des noms des colonnes en DB</param>
+        /// <param name="lstDataObjectPropertyNames_">Liste de noms des propriétés d'un objet</param>
+        /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes en DB</param>
         /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static bool DetermineDatabaseColumnNames(string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out string strErrorMsg_)
+        internal static bool DetermineDatabaseColumnNames(string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, out List<string> lstDbColumnNames_, out string strErrorMsg_)
         {
-            lstDbColumnName_ = new List<string>();
+            lstDbColumnNames_ = new List<string>();
             strErrorMsg_ = null;
             try
             {
-                foreach (string columnName in lstDataObjectPropertyName_)
+                foreach (string columnName in lstDataObjectPropertyNames_)
                 {
-                    lstDbColumnName_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
+                    lstDbColumnNames_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
                 }
                 return true;
             }
             catch (Exception e)
             {
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
                 strErrorMsg_ = e.Message;
                 return false;
             }
@@ -218,7 +218,7 @@ namespace OsamesMicroOrm.DbTools
             catch (Exception e)
             {
                 // TODO remonter une exception ?
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
             }
 
         }
@@ -357,7 +357,7 @@ namespace OsamesMicroOrm.DbTools
             }
             catch (Exception e)
             {
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
                 strErrorMsg_ = e.Message;
                 return false;
             }
@@ -386,7 +386,7 @@ namespace OsamesMicroOrm.DbTools
             catch (FormatException ex)
             {
                 int nbOfPlaceholders = Utilities.Common.CountPlaceholders(format_);
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Critical, 0,
+                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0,
                     "Error, not same number of placeholders. Expected : " + nbOfPlaceholders + ", given parameters : " + args_.Length + ", exception: " + ex.Message);
                 result_ = "Error, not same number of placeholders. See log file for more details.";
                 strErrorMsg_ = ex.Message + "\n" + result_;

@@ -61,7 +61,7 @@ namespace TestOsamesMicroOrm
             }
             catch (Exception ex)
             {
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Information, 0, ex.Message);
+                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Information, 0, ex.Message);
                 throw;
             }
 
@@ -85,7 +85,7 @@ namespace TestOsamesMicroOrm
             }
             catch (Exception ex)
             {
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Information, 0, ex.Message);
+                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Information, 0, ex.Message);
                 throw;
             }
 
@@ -109,7 +109,7 @@ namespace TestOsamesMicroOrm
             }
             catch (Exception ex)
             {
-                ConfigurationLoader._loggerTraceSource.TraceEvent(TraceEventType.Information, 0, ex.Message);
+                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Information, 0, ex.Message);
                 throw;
             }
 
