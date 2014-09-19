@@ -24,14 +24,14 @@ namespace TestOsamesMicroOrmSqlite
         // TODO les différents tests seront à réintégrer ici.
 
         /// <summary>
-        /// Test de haut niveau du Select.
+        /// Test de haut niveau du Select avec auto-détermination des proprétés et colonnes.
         /// Test ORM-37. Configuration incorrecte du mapping : exception attendue.
         /// </summary>
         [TestMethod]
         [TestCategory("SqLite")]
         [TestCategory("Configuration NOK")]
         [TestCategory("Select")]
-        public void TestExecuteReaderIncorrectMapping()
+        public void TestSelectSingleAllColumnsIncorrectMapping()
         {
             try
             {
@@ -61,6 +61,22 @@ namespace TestOsamesMicroOrmSqlite
         }
 
         /// <summary>
+        /// Test de haut niveau du Select avec auto-détermination des proprétés et colonnes.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("SqLite")]
+        [TestCategory("Select")]
+        public void TestSelectSingleAllColumns()
+        {
+            _config = ConfigurationLoader.Instance;
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer",
+              new List<string> { "CustomerId" }, new List<object> { 1 });
+            Assert.IsNotNull(customer, "Pas d'enregistrement trouvé, requête select à corriger");
+
+            // TODO les asserts
+        }
+
+        /// <summary>
         /// Test de DeterminePlaceholderType qui détermine une chaîne et gère des compteurs incrémentaux.
         /// </summary>
         [TestMethod]
@@ -82,8 +98,8 @@ namespace TestOsamesMicroOrmSqlite
 
                 List<string> lstSyntaxticallyCorrectMetaNamesToProcess = new List<string> { "CustomerId", "#", "@customValue", "#", "%chaine", "%chaine#{", "%chaine,", "%ma chaine", "FirstName", "LastName", "PostalCode", "Customer:CustomerId", "Track:TrackId" };
                 List<string> lstSyntaxticallyIncorrectMetaNamesToProcess = new List<string> { null, "Customer::CustomerId", "Customer:TrackId" };
-                
-                
+
+
                 List<string> lstResult = lstSyntaxticallyCorrectMetaNamesToProcess.Select(metaName_ => DbToolsCommon.DeterminePlaceholderType(metaName_, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex)).ToList();
 
                 Assert.AreEqual(lstSyntaxticallyCorrectMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments");
@@ -93,7 +109,7 @@ namespace TestOsamesMicroOrmSqlite
                 // - "FirstName" gives "FirstName, 'FirstName'" which will give "FirstName FirstName"
                 // - "LastName" gives "Last_Name" which will give "Last_Name"
                 // - "PostalCode" gives "Postal-Code" which will give "PostalCode"
-                List<string> lstExpected = new List<string> {"CustomerId", "@p0", "@customvalue", "@p1", "chaine", "chaine", "chaine", "ma chaine", "FirstName FirstName", "Last_Name", "PostalCode", "Customer.CustomerId", "Track.TrackId"};
+                List<string> lstExpected = new List<string> { "CustomerId", "@p0", "@customvalue", "@p1", "chaine", "chaine", "chaine", "ma chaine", "FirstName FirstName", "Last_Name", "PostalCode", "Customer.CustomerId", "Track.TrackId" };
 
                 try
                 {
@@ -123,7 +139,7 @@ namespace TestOsamesMicroOrmSqlite
                     {
                         Assert.IsTrue(exception, "Exception attendue sur valeur testée : " + metaName);
                     }
-                    
+
                 }
 
             }
