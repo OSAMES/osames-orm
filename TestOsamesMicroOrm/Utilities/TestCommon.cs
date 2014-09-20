@@ -15,7 +15,7 @@ namespace TestOsamesMicroOrm.Utilities
         public override void Setup()
         {
             var tempo = ConfigurationLoader.Instance;
- 	        InitializeDbConnexion();
+            // Pas de DB déployée donc ne pas appeler InitializeDbConnexion();
         }
 
         [ExcludeFromCodeCoverage]

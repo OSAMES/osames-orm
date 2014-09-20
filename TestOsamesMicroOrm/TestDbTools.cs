@@ -32,7 +32,7 @@ namespace TestOsamesMicroOrm
             // Obligatoire car ne prend pas en compte celui de la classe mère.
             var init = ConfigurationLoader.Instance;
 
-            InitializeDbConnexion();
+            // Pas de DB déployée donc ne pas appeler InitializeDbConnexion();
 
             _employee.Customer.Add(new Customer { FirstName = "toto" });
             foreach (var i in _employee.Customer)

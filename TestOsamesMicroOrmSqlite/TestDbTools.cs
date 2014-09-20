@@ -24,7 +24,7 @@ namespace TestOsamesMicroOrmSqlite
         // TODO les différents tests seront à réintégrer ici.
 
         /// <summary>
-        /// Test de haut niveau du Select avec auto-détermination des proprétés et colonnes.
+        /// Test de haut niveau du Select avec auto-détermination des propriétés et colonnes.
         /// Test ORM-37. Configuration incorrecte du mapping : exception attendue.
         /// </summary>
         [TestMethod]
@@ -61,7 +61,7 @@ namespace TestOsamesMicroOrmSqlite
         }
 
         /// <summary>
-        /// Test de haut niveau du Select avec auto-détermination des proprétés et colonnes.
+        /// Test de haut niveau du Select avec auto-détermination des propriétés et colonnes.
         /// </summary>
         [TestMethod]
         [TestCategory("SqLite")]
