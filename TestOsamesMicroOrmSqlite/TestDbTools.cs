@@ -70,7 +70,7 @@ namespace TestOsamesMicroOrmSqlite
         {
             _config = ConfigurationLoader.Instance;
             Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer",
-              new List<string> { "CustomerId" }, new List<object> { 1 });
+              new List<string> { "CustomerId", "#" }, new List<object> { 1 });
             Assert.IsNotNull(customer, "Pas d'enregistrement trouvé, requête select à corriger");
 
             // TODO les asserts
