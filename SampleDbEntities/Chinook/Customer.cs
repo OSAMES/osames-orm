@@ -64,7 +64,7 @@ namespace SampleDbEntities.Chinook
         /// <summary>
         /// Id Customer.
         /// </summary>
-        public long IdCustomer { get; set; }
+        public long CustomerId { get; set; }
 
         /// <summary>
         /// 
@@ -87,7 +87,7 @@ namespace SampleDbEntities.Chinook
         /// <summary>
         /// 
         /// </summary>
-        public string Compagny
+        public string Company
         {
             get { return _compagny; }
             set { _compagny = value.Trim(); }
