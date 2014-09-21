@@ -178,7 +178,7 @@ namespace OsamesMicroOrm.DbTools
             strErrorMsg_ = null;
             try
             {
-                lstDbColumnName_.AddRange(lstDataObjectPropertyName_.Select(columnName_ => ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName_)));
+                lstDbColumnNames_.AddRange(lstDataObjectPropertyNames_.Select(columnName_ => ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName_)));
                 return true;
             }
             catch (Exception e)
@@ -243,6 +243,7 @@ namespace OsamesMicroOrm.DbTools
         internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_)
         {
             string returnValue;
+            string strErrorMsg;
             char[] valueAsCharArray;
 
             if (value_ == "#")
@@ -289,11 +290,17 @@ namespace OsamesMicroOrm.DbTools
                 return returnValue; 
             }
 
-            // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
-            // On peut avoir des espaces dans le nom de la colonne ainsi que "_" mais pas "-" (norme SQL).
+            if (value_.Count(c_ => c_ == ':') > 1)
+                throw new Exception("No matching rules for given parameter: \"" + value_ + "\"");
+
             string columnName;
-            string errorMsg;
-            DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName, out errorMsg);
+            var temp = value_.Split(':');
+
+            if (temp.Length == 1)
+            {
+                // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
+                // On peut avoir des espaces dans le nom de la colonne ainsi que "_" mais pas "-" (norme SQL).
+                DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName, out strErrorMsg);
                 valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                            char.IsWhiteSpace(c_) ||
                                                            c_ == '_')).ToArray();
@@ -302,7 +309,7 @@ namespace OsamesMicroOrm.DbTools
 
             // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
             // On peut avoir des espaces dans le nom de la colonne ainsi que "_" mais pas "-" (norme SQL).
-            DetermineDatabaseColumnName(temp[0], temp[1], out columnName);
+            DetermineDatabaseColumnName(temp[0], temp[1], out columnName, out strErrorMsg);
             valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                        char.IsWhiteSpace(c_) ||
                                                        c_ == '_')).ToArray();

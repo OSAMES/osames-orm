@@ -173,7 +173,7 @@ namespace TestOsamesMicroOrm
 
                 string sqlCommand, strErrorMsg_;
                 List<KeyValuePair<string, object>> adoParams;
-                DbToolsUpdates.FormatSqlForUpdate(ref _employee, "Employee", "BaseUpdateOne", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams);
+                DbToolsUpdates.FormatSqlForUpdate(ref Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
 
                 Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", sqlCommand);
                 Assert.AreEqual(3, adoParams.Count, "no parameters generated");
@@ -262,11 +262,12 @@ namespace TestOsamesMicroOrm
         [TestCategory("Sql formatting for Select")]
         public void TestFormatSqlForSelectAutoDetermineSelectedFields()
         {
-            string sqlCommand, strErrorMsg;
+            string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             // cette liste va être créée par la méthode testée
+            List<string> lstDbEntityPropertyNames;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("BaseReadAllWhere", "Employee", new List<string> { "EmployeeId", null }, new List<object> { 5 }, out lstDbColumnNames, out sqlCommand, out adoParams, out strErrorMsg);
+            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("BaseReadAllWhere", "Employee", new List<string> { "EmployeeId", null }, new List<object> { 5 },  out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
 
             Assert.AreEqual("SELECT * FROM [Employee] WHERE [EmployeeId] = @p0;", sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
@@ -289,10 +290,10 @@ namespace TestOsamesMicroOrm
         [ExpectedException(typeof(KeyNotFoundException))]
         public void TestFormatSqlForSelectIncorrectTemplateName()
         {
-            string sqlCommand, strErrorMsg;
+            string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelect("ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", null }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames, out strErrorMsg);
+            DbToolsSelects.FormatSqlForSelect("ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", null }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
 
             Assert.IsNull(sqlCommand);
 
@@ -310,11 +311,12 @@ namespace TestOsamesMicroOrm
         [ExpectedException(typeof(KeyNotFoundException))]
         public void TestFormatSqlForSelectAutoDetermineSelectedFieldsIncorrectTemplateName()
         {
-            string sqlCommand, strErrorMsg;
+            string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             // cette liste va être créée par la méthode testée
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("ThisTemplateDoesntExist", "Employee", new List<string> { "EmployeeId", null }, new List<object> { 5 }, out lstDbColumnNames, out sqlCommand, out adoParams, out strErrorMsg);
+            List<string> lstDbEntityPropertyNames;
+            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("ThisTemplateDoesntExist", "Employee", new List<string> { "EmployeeId", null }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
 
             Assert.IsNull(sqlCommand);
 
@@ -329,7 +331,7 @@ namespace TestOsamesMicroOrm
         [TestCategory("Sql formatting for Select")]
         public void TestFormatSqlForSelectNamedDynamicParameter()
         {
-            string sqlCommand, strErrorMsg;
+            string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
             DbToolsSelects.FormatSqlForSelect("BaseReadWhere", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", "@employeeId" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
