@@ -213,7 +213,7 @@ namespace TestOsamesMicroOrm
 
                 string sqlCommand, strErrorMsg_;
                 List<KeyValuePair<string, object>> adoParams;
-                DbToolsUpdates.FormatSqlForUpdate(ref Employee, "ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", null }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
+                DbToolsUpdates.FormatSqlForUpdate(ref Employee, "ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
 
                 Assert.IsNull(sqlCommand);
 
@@ -255,7 +255,7 @@ namespace TestOsamesMicroOrm
 
         /// <summary>
         /// Select avec clause where retournant un enregistrement. Auto-détermination des champs à sélectionner d'après le mapping utilisé.
-        /// Ici le paramètre dynamique est représenté par "null".
+        /// Ici le paramètre dynamique est représenté par "#".
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping")]
@@ -267,21 +267,20 @@ namespace TestOsamesMicroOrm
             // cette liste va être créée par la méthode testée
             List<string> lstDbEntityPropertyNames;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("BaseReadAllWhere", "Employee", new List<string> { "EmployeeId", null }, new List<object> { 5 },  out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
+            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("BaseReadAllWhere", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 },  out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
 
             Assert.AreEqual("SELECT * FROM [Employee] WHERE [EmployeeId] = @p0;", sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
             Assert.AreEqual("@p0", adoParams[0].Key);
             Assert.AreEqual(5, adoParams[0].Value);
-            // TODO FIXME les noms des colonnes ne sont pas générés en sortie
-            Assert.AreEqual(3, lstDbColumnNames.Count);
+            Assert.AreEqual(15, lstDbColumnNames.Count, "Epected number of public properties of Employee C# class");
 
         }
 
         /// <summary>
         /// Mauvais template utilisé !
         /// Select avec clause where retournant un enregistrement.
-        /// Ici le paramètre dynamique est représenté par "null".
+        /// Ici le paramètre dynamique est représenté par "#".
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping")]
@@ -293,7 +292,7 @@ namespace TestOsamesMicroOrm
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelect("ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", null }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
+            DbToolsSelects.FormatSqlForSelect("ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
 
             Assert.IsNull(sqlCommand);
 
@@ -302,7 +301,7 @@ namespace TestOsamesMicroOrm
         /// <summary>
         /// Mauvais template utilisé !
         /// Select avec clause where retournant un enregistrement. Auto-détermination des champs à sélectionner d'après le mapping utilisé.
-        /// Ici le paramètre dynamique est représenté par "null".
+        /// Ici le paramètre dynamique est représenté par "#".
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping")]
@@ -316,7 +315,7 @@ namespace TestOsamesMicroOrm
             // cette liste va être créée par la méthode testée
             List<string> lstDbColumnNames;
             List<string> lstDbEntityPropertyNames;
-            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("ThisTemplateDoesntExist", "Employee", new List<string> { "EmployeeId", null }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
+            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("ThisTemplateDoesntExist", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
 
             Assert.IsNull(sqlCommand);
 

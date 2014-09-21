@@ -240,11 +240,15 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="parameterIndex_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
         /// Sert aussi pour le nom du paramètre dynamique si on avait passé "#".</param>
         /// <returns>Nom de colonne DB</returns>
+        /// <throws>ArgumentException when value_ parameter is null</throws>
         internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_)
         {
             string returnValue;
             string strErrorMsg;
             char[] valueAsCharArray;
+
+            if (value_ == null)
+                throw new ArgumentException("value_ cannot be null");
 
             if (value_ == "#")
             {
