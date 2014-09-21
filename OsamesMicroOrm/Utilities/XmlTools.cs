@@ -23,7 +23,7 @@ namespace OsamesMicroOrm.Utilities
     /// <summary>
     /// 
     /// </summary>
-    public static class XmlTools
+    internal static class XmlTools
     {
         /// <summary>
         /// Reads XML root tag and get information.
@@ -32,7 +32,7 @@ namespace OsamesMicroOrm.Utilities
         /// <param name="rootTagPrefix_">Prefix associated to namespace, for example "orm"</param>
         /// <param name="rootTagNamespace_">Namespace, for example "http://www.osames.org/osamesorm"</param>
         /// <returns>XPathNavigator for later use</returns>
-        public static XPathNavigator GetRootTagInfos(string xmlFile_, out string rootTagPrefix_, out string rootTagNamespace_)
+        internal static XPathNavigator GetRootTagInfos(string xmlFile_, out string rootTagPrefix_, out string rootTagNamespace_)
         {
             XPathDocument doc = new XPathDocument(xmlFile_);
             XPathNavigator navigator = doc.CreateNavigator();

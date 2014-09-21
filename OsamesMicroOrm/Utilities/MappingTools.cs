@@ -22,7 +22,7 @@ namespace OsamesMicroOrm.Utilities
     /// <summary>
     /// Utility methods related to database/object mapping.
     /// </summary>
-    public static class MappingTools
+    internal static class MappingTools
     {
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace OsamesMicroOrm.Utilities
         /// <param name="dataObject_">data object</param>
         /// <typeparam name="T">type indication</typeparam>
         /// <returns></returns>
-        public static string GetDbEntityDictionnaryMappingKey<T>(T dataObject_)
+        internal static string GetDbEntityDictionnaryMappingKey<T>(T dataObject_)
         {
             // Get value
             object[] classAttributes = dataObject_.GetType().GetCustomAttributes(typeof(DatabaseMappingAttribute), false);

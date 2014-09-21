@@ -53,6 +53,7 @@ namespace TestOsamesMicroOrm
 
         /// <summary>
         /// Initialisation de la connexion et ouverture d'une transaction.
+        /// Ne doit pas être appelé si la base de données n'est pas copiée en post-deployment item.
         /// </summary>
         public virtual void InitializeDbConnexion()
         {

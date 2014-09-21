@@ -19,7 +19,6 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using OsamesMicroOrm.Configuration;
 
 namespace OsamesMicroOrm.DbTools
@@ -40,21 +39,24 @@ namespace OsamesMicroOrm.DbTools
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {1} dans le template sql</param>
         /// <param name="sqlTemplate_">Template SQL</param>
-        /// <param name="lstDataObjectColumnName_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à sélectionner. Permet de formater {0} dans le template SQL</param>
+        /// <param name="lstDataObjectColumnNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à sélectionner. Permet de formater {0} dans le template SQL</param>
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB. Sera utilisé pour le data reader</param>
+        /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
         /// <returns>Ne renvoie rien</returns>
         internal static void FormatSqlForSelect(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnName_, List<string> lstWhereMetaNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_, out List<string> lstDbColumnNames_)
         {
             adoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
+            string strLocalErrorMsg;
 
             // 1. Détermine les colonnes pour les champs à sélectionner.
             // lstDbColumnNames_ sert de fournisseur pour remplir sbSqlSelectFieldsCommand
-            DbToolsCommon.DetermineDatabaseColumnNames(mappingDictionariesContainerKey_, lstDataObjectColumnName_, out lstDbColumnNames_);
+            DbToolsCommon.DetermineDatabaseColumnNames(mappingDictionariesContainerKey_, lstDataObjectColumnNames_, out lstDbColumnNames_, out strErrorMsg_);
+            
             string sbSqlSelectFieldsCommand = DbToolsCommon.GenerateCommaSeparatedDbFieldsString(lstDbColumnNames_); //{0} dans le template sql
 
             // 2. Positionne les deux premiers placeholders
@@ -63,7 +65,9 @@ namespace OsamesMicroOrm.DbTools
             // 3. Détermine les noms des paramètres pour le where
             DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, oWhereValues_, sqlPlaceholders, adoParameters_);
 
-            DbToolsCommon.TryFormat(ConfigurationLoader.DicSelectSql[sqlTemplate_], out sqlCommand_, sqlPlaceholders.ToArray());
+            DbToolsCommon.TryFormat(ConfigurationLoader.DicSelectSql[sqlTemplate_], out sqlCommand_, out strLocalErrorMsg, sqlPlaceholders.ToArray());
+
+            strErrorMsg_ = string.Concat(strErrorMsg_, "\n", strLocalErrorMsg);
         }
 
         /// <summary>
@@ -98,7 +102,7 @@ namespace OsamesMicroOrm.DbTools
             // 2. Détermine les noms des paramètres pour le where
             DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, oWhereValues_, sqlPlaceholders, adoParameters_);
 
-            DbToolsCommon.TryFormat(ConfigurationLoader.DicSelectSql[sqlTemplate_], out sqlCommand_, sqlPlaceholders.ToArray());
+            DbToolsCommon.TryFormat(ConfigurationLoader.DicSelectSql[sqlTemplate_], out sqlCommand_, out strErrorMsg_, sqlPlaceholders.ToArray());
 
         }
 
@@ -165,7 +169,7 @@ namespace OsamesMicroOrm.DbTools
         internal static T SelectSingle<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereColumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             T dataObject = new T();
-            string sqlCommand;
+            string sqlCommand, strErrorMsg_;
             List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
 
@@ -194,7 +198,7 @@ namespace OsamesMicroOrm.DbTools
         public static T SelectSingleAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereColumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             T dataObject = new T();
-            string sqlCommand;
+            string sqlCommand, strErrorMsg_;
             List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
             List<string> lstPropertiesNames;
@@ -225,7 +229,7 @@ namespace OsamesMicroOrm.DbTools
         public static List<T> Select<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWherecolumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             List<T> dataObjects = new List<T>();
-            string sqlCommand;
+            string sqlCommand, strErrorMsg_;
             List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
 
@@ -257,7 +261,7 @@ namespace OsamesMicroOrm.DbTools
         public static List<T> SelectAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWherecolumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             List<T> dataObjects = new List<T>();
-            string sqlCommand;
+            string sqlCommand, strErrorMsg_;
             List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
             List<string> lstPropertiesNames;

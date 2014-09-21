@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
@@ -30,7 +29,10 @@ namespace OsamesMicroOrm.Configuration.Tweak
     /// </summary>
     public static class Customizer
     {
-        private static readonly Dictionary<string, string> _appSettingsOriginalValue = new Dictionary<string, string>();
+        /// <summary>
+        /// Dictionnaire de sauvegarde des valeurs de AppSettings avant modification.
+        /// </summary>
+        private static readonly Dictionary<string, string> AppSettingsOriginalValues = new Dictionary<string, string>();
 
         /// <summary>
         /// Permet de modifier une clé dans ConfigurationManager.AppSettings.
@@ -47,9 +49,9 @@ namespace OsamesMicroOrm.Configuration.Tweak
                 return;
             }
 
-            if (!_appSettingsOriginalValue.ContainsKey(key_))
+            if (!AppSettingsOriginalValues.ContainsKey(key_))
             {
-                _appSettingsOriginalValue.Add(key_,ConfigurationManager.AppSettings[key_]);
+                AppSettingsOriginalValues.Add(key_,ConfigurationManager.AppSettings[key_]);
                 Log(customLogger_, "Changing ConfigurationManager.AppSettings key '" + key_ + "' from '" + ConfigurationManager.AppSettings[key_] + "' to '" + keyValue_ + "'", false);
                 ConfigurationManager.AppSettings[key_] = keyValue_;
 
@@ -69,14 +71,14 @@ namespace OsamesMicroOrm.Configuration.Tweak
         /// <param name="customLogger_">if not null, TraceSource logger to use instead of default ORM TraceSource logger</param>
         public static void ConfigurationManagerRestoreKey(string key_, TraceSource customLogger_ = null)
         {
-            if (_appSettingsOriginalValue.ContainsKey(key_))
+            if (AppSettingsOriginalValues.ContainsKey(key_))
             {
-                ConfigurationManager.AppSettings[key_] = _appSettingsOriginalValue[key_];
+                ConfigurationManager.AppSettings[key_] = AppSettingsOriginalValues[key_];
 
                 // Rechargement de la configuration
                 ConfigurationLoader.Clear();
 
-                _appSettingsOriginalValue.Remove(key_);
+                AppSettingsOriginalValues.Remove(key_);
                 Log(customLogger_, "Key [" + key_ + "] was restored to original value", false);
             }
             else
@@ -90,11 +92,11 @@ namespace OsamesMicroOrm.Configuration.Tweak
         /// </summary>
         public static void ConfigurationManagerRestoreAllKeys()
         {
-            foreach (var key in _appSettingsOriginalValue.Keys)
+            foreach (var key in AppSettingsOriginalValues.Keys)
             {
-                ConfigurationManager.AppSettings[key] = _appSettingsOriginalValue[key];
+                ConfigurationManager.AppSettings[key] = AppSettingsOriginalValues[key];
             }
-            _appSettingsOriginalValue.Clear();
+            AppSettingsOriginalValues.Clear();
 
             // Rechargement de la configuration
             ConfigurationLoader.Clear();
@@ -110,7 +112,7 @@ namespace OsamesMicroOrm.Configuration.Tweak
         {
             if (customLogger_ == null)
             {
-                ConfigurationLoader._loggerTraceSource.TraceEvent(error_ ? TraceEventType.Error : TraceEventType.Information, 0, message_);
+                ConfigurationLoader.LoggerTraceSource.TraceEvent(error_ ? TraceEventType.Error : TraceEventType.Information, 0, message_);
             }
             else
             {

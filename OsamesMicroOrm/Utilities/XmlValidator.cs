@@ -26,26 +26,29 @@ namespace OsamesMicroOrm.Utilities
     /// <summary>
     /// 
     /// </summary>
-    public class XmlValidator
+    internal class XmlValidator
     {
         /// <summary>
         /// Errors.
         /// </summary>
-        public List<string> Errors { get; private set; }
+        internal List<string> Errors { get; private set; }
 
         /// <summary>
         /// Warnings. Some warnings are as critical as errors, such as not finding XML schema.
         /// </summary>
-        public List<string> Warnings { get; private set; }
+        internal List<string> Warnings { get; private set; }
 
-        private readonly XmlReaderSettings _settings;
+        /// <summary>
+        /// Paramètres du XML reader.
+        /// </summary>
+        private readonly XmlReaderSettings Settings;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="xmlNamespaces_">XML schemas base namespaces</param>
         /// <param name="xmlSchemas_">XML schemas .xsd files full paths</param>
-        public XmlValidator(string[] xmlNamespaces_ = null, string[] xmlSchemas_ = null)
+        internal XmlValidator(string[] xmlNamespaces_ = null, string[] xmlSchemas_ = null)
         {
             Errors = new List<string>();
             Warnings = new List<string>();
@@ -60,34 +63,34 @@ namespace OsamesMicroOrm.Utilities
                 throw new ArgumentException("Schema given but no namespaces");
             }
             
-            _settings = new XmlReaderSettings
+            Settings = new XmlReaderSettings
                 {
                     ValidationType = ValidationType.Schema,
                     ValidationFlags = XmlSchemaValidationFlags.ReportValidationWarnings
                 };
-            _settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessSchemaLocation;
+            Settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessSchemaLocation;
 
             if (xmlSchemas_ != null)
             {
                 for (int i = 0; i < xmlSchemas_.Length; i++)
                 {
                     Common.CheckFile(xmlSchemas_[i], "XmlValidator");
-                    _settings.Schemas.Add(xmlNamespaces_[i], xmlSchemas_[i]);
+                    Settings.Schemas.Add(xmlNamespaces_[i], xmlSchemas_[i]);
                 }
             }
 
-            _settings.ValidationType = ValidationType.Schema;
-            _settings.ValidationEventHandler += validationEventHandler;
+            Settings.ValidationType = ValidationType.Schema;
+            Settings.ValidationEventHandler += validationEventHandler;
             
         }
         /// <summary>
         /// XML validation.
         /// </summary>
         /// <param name="xmlFile_">Xml file full path</param>
-        public void ValidateXml(string xmlFile_)
+        internal void ValidateXml(string xmlFile_)
         {
             Common.CheckFile(xmlFile_, "XmlValidator");
-            XmlReader xml = XmlReader.Create(xmlFile_, _settings);
+            XmlReader xml = XmlReader.Create(xmlFile_, Settings);
             while (xml.Read()) { }
             if (Errors.Count == 0 && Warnings.Count == 0) return;
             StringBuilder sb = new StringBuilder();
@@ -103,13 +106,13 @@ namespace OsamesMicroOrm.Utilities
         /// XML validation, multiple XML files.
         /// </summary>
         /// <param name="xmlFiles_">Xml file full path</param>
-        public void ValidateXml(string[] xmlFiles_)
+        internal void ValidateXml(string[] xmlFiles_)
         {
             StringBuilder sb = new StringBuilder();
             foreach (string xmlFile in xmlFiles_)
             {
                 Common.CheckFile(xmlFile, "XmlValidator");
-                XmlReader xml = XmlReader.Create(xmlFile, _settings);
+                XmlReader xml = XmlReader.Create(xmlFile, Settings);
                 while (xml.Read())
                 {
 #if DEBUG

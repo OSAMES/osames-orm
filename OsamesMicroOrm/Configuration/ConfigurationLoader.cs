@@ -37,8 +37,8 @@ namespace OsamesMicroOrm.Configuration
     /// </summary>
     public class ConfigurationLoader
     {
-        private static ConfigurationLoader _singleton;
-        private static readonly object _oSingletonInit = new object();
+        private static ConfigurationLoader Singleton;
+        private static readonly object SingletonInitLockObject = new object();
 
         /// <summary>
         /// Templates dictionary for select
@@ -80,12 +80,12 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Generic logging trace source that traces error messages only.
         /// </summary>
-        internal static TraceSource _loggerTraceSource = new TraceSource("osamesOrmTraceSource");
+        internal static TraceSource LoggerTraceSource = new TraceSource("osamesOrmTraceSource");
 
         /// <summary>
         /// Specific logging trace source that traces error messages and stacktraces.
         /// </summary>
-        internal static TraceSource _detailedLoggerTraceSource = new TraceSource("osamesOrmDetailedTraceSource");
+        internal static TraceSource DetailedLoggerTraceSource = new TraceSource("osamesOrmDetailedTraceSource");
 
         /// <summary>
         /// Private constructor for singleton.
@@ -101,14 +101,14 @@ namespace OsamesMicroOrm.Configuration
         {
             get
             {
-                lock (_oSingletonInit)
+                lock (SingletonInitLockObject)
                 {
-                    if (_singleton != null)
-                        return _singleton;
+                    if (Singleton != null)
+                        return Singleton;
 
-                    _singleton = new ConfigurationLoader();
-                    _singleton.LoadConfiguration();
-                    return _singleton;
+                    Singleton = new ConfigurationLoader();
+                    Singleton.LoadConfiguration();
+                    return Singleton;
 
                 }
             }
@@ -120,9 +120,9 @@ namespace OsamesMicroOrm.Configuration
         /// </summary>
         public static void Clear()
         {
-            lock (_oSingletonInit)
+            lock (SingletonInitLockObject)
             {
-                _singleton = null;
+                Singleton = null;
             }
         }
 
@@ -200,7 +200,7 @@ namespace OsamesMicroOrm.Configuration
             string dbConnexion = ConfigurationManager.AppSettings["activeDbConnection"];
             if (string.IsNullOrWhiteSpace(dbConnexion))
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No active connection name defined in appSettings ('activeDbConnection')");
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No active connection name defined in appSettings ('activeDbConnection')");
                 return false;
             }
 
@@ -209,7 +209,7 @@ namespace OsamesMicroOrm.Configuration
             var activeConnection = ConfigurationManager.ConnectionStrings[dbConnexion];
             if (activeConnection == null)
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Active connection not found in available connection strings (key : '" + dbConnexion + "'");
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Active connection not found in available connection strings (key : '" + dbConnexion + "'");
                 return false;
             }
           
@@ -217,21 +217,21 @@ namespace OsamesMicroOrm.Configuration
             string provider = activeConnection.ProviderName;
             if (string.IsNullOrWhiteSpace(provider))
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No provider name defined in connection strings configuration for connection with name '" + dbConnexion + "'");
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No provider name defined in connection strings configuration for connection with name '" + dbConnexion + "'");
                 return false;
             }
 
             // 4. ce provider doit exister sur le système
             if (!FindInProviderFactoryClasses(provider))
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Provider with name '" + provider +"' is not installed '");
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Provider with name '" + provider +"' is not installed '");
                 return false;
             }
             // 5. Une chaîne de connexion doit être définie (attribut "ConnectionString")
             string conn = activeConnection.ConnectionString;
             if (string.IsNullOrWhiteSpace(conn))
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No connection string value defined in connection strings configuration for connection with name '" + dbConnexion + "'");
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No connection string value defined in connection strings configuration for connection with name '" + dbConnexion + "'");
                 return false;
             }
 
@@ -244,7 +244,7 @@ namespace OsamesMicroOrm.Configuration
             string dbName = ConfigurationManager.AppSettings["dbName"];
             if (string.IsNullOrWhiteSpace(dbName))
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No database name defined in appSettings ('dbName')");
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No database name defined in appSettings ('dbName')");
                 return false;
             }
             
@@ -257,7 +257,7 @@ namespace OsamesMicroOrm.Configuration
             if (!string.IsNullOrWhiteSpace(dbPassword))
                 conn = conn.Replace("$dbPassword", dbPassword);
             
-            _loggerTraceSource.TraceEvent(TraceEventType.Information, 0, "Using DB connection string: " + conn);
+            LoggerTraceSource.TraceEvent(TraceEventType.Information, 0, "Using DB connection string: " + conn);
             
             // Now pass information to DbHelper
             DbManager.ConnectionString = conn;
@@ -279,7 +279,7 @@ namespace OsamesMicroOrm.Configuration
 
             try
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Information, 0, "Osames ORM Initializing...");
+                LoggerTraceSource.TraceEvent(TraceEventType.Information, 0, "Osames ORM Initializing...");
 
                 // Format path for loading the configuration file
                 string configBaseDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["configurationFolder"].TrimStart('\\').TrimStart('/'));
@@ -305,7 +305,7 @@ namespace OsamesMicroOrm.Configuration
                 // Validate SQL Templates and Mapping
                 xmlvalidator.ValidateXml(new[] { sqlTemplatesFullPath, sqlMappingsFullPath });
 
-                _loggerTraceSource.TraceEvent(TraceEventType.Information, 0, "Osames ORM Initialized.");
+                LoggerTraceSource.TraceEvent(TraceEventType.Information, 0, "Osames ORM Initialized.");
 
                 // 2. Load provider specific information
                 string dbConnexionName = ConfigurationManager.AppSettings["activeDbConnection"];
@@ -321,8 +321,8 @@ namespace OsamesMicroOrm.Configuration
             }
             catch (Exception ex)
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader LoadXmlConfiguration, see detailed log");
-                _detailedLoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader : " + ex);
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader LoadXmlConfiguration, see detailed log");
+                DetailedLoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader : " + ex);
                 throw;
             }
         }
@@ -344,26 +344,26 @@ namespace OsamesMicroOrm.Configuration
 
             if (string.IsNullOrWhiteSpace(activeDbConnectionName_))
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No active connection name defined in appSettings ('activeDbConnection')");
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No active connection name defined in appSettings ('activeDbConnection')");
                 return;
             }
 
             var activeConnection = ConfigurationManager.ConnectionStrings[activeDbConnectionName_];
             if (activeConnection == null)
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Active connection not found in available connection strings (key : '" + activeDbConnectionName_ + "'");
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Active connection not found in available connection strings (key : '" + activeDbConnectionName_ + "'");
                 return;
             }
             string conn = activeConnection.Name;
             if (string.IsNullOrWhiteSpace(conn))
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No active connection name defined in appSettings for active connection '" + activeDbConnectionName_+ "'");
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No active connection name defined in appSettings for active connection '" + activeDbConnectionName_+ "'");
                 return;
             }
             string providerInvariantName = activeConnection.ProviderName;
             if (string.IsNullOrWhiteSpace(providerInvariantName))
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No active connection provider invariant name defined in appSettings  for active connection '" + activeDbConnectionName_ + "'");
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "No active connection provider invariant name defined in appSettings  for active connection '" + activeDbConnectionName_ + "'");
                 return;
             }
             // Expression XPath pour se positionner sur le noeud Provider avec l'attribut "name" à la valeur désirée
@@ -395,7 +395,7 @@ namespace OsamesMicroOrm.Configuration
             }
             else
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader LoadProviderSpecificInformation, no value matching XPath '" + strXPathExpression + "' for the provider '" + providerInvariantName + "'");
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader LoadProviderSpecificInformation, no value matching XPath '" + strXPathExpression + "' for the provider '" + providerInvariantName + "'");
             }
         }
 
@@ -434,8 +434,8 @@ namespace OsamesMicroOrm.Configuration
             }
             catch (Exception ex)
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader FillMappingDictionary, see detailed log");
-                _detailedLoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader: XML mapping definitions analyzis error: " + ex);
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader FillMappingDictionary, see detailed log");
+                DetailedLoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader: XML mapping definitions analyzis error: " + ex);
                 throw;
             }
         }
@@ -476,8 +476,8 @@ namespace OsamesMicroOrm.Configuration
             }
             catch (Exception ex)
             {
-                _loggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader FillTemplatesDictionaries, see detailed log");
-                _detailedLoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader: XML templates definitions analyzis error: " + ex);
+                LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader FillTemplatesDictionaries, see detailed log");
+                DetailedLoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader: XML templates definitions analyzis error: " + ex);
                 throw;
             }
         }
@@ -527,7 +527,7 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Loads configuration.
         /// <para>Parses XML configuration to internal dictionaries</para>
-        /// <para>Initializes database connection</para></pa>
+        /// <para>Initializes database connection</para>
         /// </summary>
         private void LoadConfiguration()
         {
