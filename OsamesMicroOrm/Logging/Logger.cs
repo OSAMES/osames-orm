@@ -72,18 +72,27 @@ namespace OsamesMicroOrm.Logging
         private static void CheckLoggerConfiguration()
         {
             SimpleTraceSource = new TraceSource("osamesOrmTraceSource");
-            if (SimpleTraceSource.Listeners.Count == 0)
-            {
-                SimpleTraceSource.Switch.Level = SourceLevels.All;
-                SimpleTraceSource.Listeners.Add(new EventLogTraceListener());
-            }
             DetailedTraceSource = new TraceSource("osamesOrmDetailedTraceSource");
-            if (DetailedTraceSource.Listeners.Count == 0)
-            {
-                DetailedTraceSource.Switch.Level = SourceLevels.All;
-                DetailedTraceSource.Listeners.Add(new EventLogTraceListener());
-            }
 
+            // Si absence de configuration XML, alors un seul listener est présent, du type DefaultTraceListener
+
+            if (SimpleTraceSource.Listeners.Count == 1 && SimpleTraceSource.Listeners[0] is DefaultTraceListener)
+                AddEventLogListener(SimpleTraceSource);
+
+            if (DetailedTraceSource.Listeners.Count == 1 && DetailedTraceSource.Listeners[0] is DefaultTraceListener)
+                AddEventLogListener(DetailedTraceSource);
+        }
+
+        /// <summary>
+        /// Configure un TraceSource pour lui adjoindre un listener de type EventLogTraceListener.
+        /// </summary>
+        /// <param name="source_"></param>
+        private static void AddEventLogListener(TraceSource source_)
+        {
+            source_.Switch = new SourceSwitch("sourceSwitch", "Error") {Level = SourceLevels.All};
+            source_.Listeners.Remove("Default");
+            source_.Listeners.Add(new EventLogTraceListener { Name = "eventLogListener", Filter = new EventTypeFilter(SourceLevels.All)});
+            
         }
 
     }
