@@ -22,6 +22,7 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Logging;
 
 namespace OsamesMicroOrm
 {
@@ -84,7 +85,7 @@ namespace OsamesMicroOrm
             {
                 if (string.IsNullOrWhiteSpace(ConnectionStringField))
                 {
-                    ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Connection string not set!");
+                    Logger.Log(TraceEventType.Critical, "Connection string not set!");
                     throw new Exception("ConnectionString column not initialized, please set a value!");
                 }
                 return ConnectionStringField;
@@ -102,7 +103,7 @@ namespace OsamesMicroOrm
             {
                 if (SelectLastInsertIdCommandTextField == null)
                 {
-                    ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Select Last Insert Id Command Text not set!");
+                    Logger.Log(TraceEventType.Critical, "Select Last Insert Id Command Text not set!");
                     throw new Exception("SelectLastInsertIdCommandText column not initialized, please set a value!");
                 }
                 return SelectLastInsertIdCommandTextField;
@@ -119,7 +120,7 @@ namespace OsamesMicroOrm
             {
                 if (ProviderInvariantName == null)
                 {
-                    ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "Database provider not set!");
+                    Logger.Log(TraceEventType.Critical, "Database provider not set!");
                     throw new Exception("ProviderName column not initialized, please set a value!");
                 }
                 return ProviderInvariantName;
@@ -251,7 +252,7 @@ namespace OsamesMicroOrm
             }
             catch (InvalidOperationException ex)
             {
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex.ToString());
+                Logger.Log(TraceEventType.Critical, ex.ToString());
                 throw new Exception("OpenTransaction - " + ex.Message);
             }
         }
@@ -270,7 +271,7 @@ namespace OsamesMicroOrm
             }
             catch (InvalidOperationException ex)
             {
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex.ToString());
+                Logger.Log(TraceEventType.Critical, ex.ToString());
                 throw new Exception("CommitTransaction - " + ex.Message);
             }
         }
@@ -289,7 +290,7 @@ namespace OsamesMicroOrm
             }
             catch (InvalidOperationException ex)
             {
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex.ToString());
+                Logger.Log(TraceEventType.Critical, ex.ToString());
                 throw new Exception("@HandleTransaction - " + ex.Message);
             }
         }
@@ -500,7 +501,7 @@ namespace OsamesMicroOrm
             }
             catch (Exception ex)
             {
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex.ToString());
+                Logger.Log(TraceEventType.Critical, ex.ToString());
                 throw;
             }
             finally
@@ -554,7 +555,7 @@ namespace OsamesMicroOrm
             }
             catch (Exception ex)
             {
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex.ToString());
+                Logger.Log(TraceEventType.Critical, ex.ToString());
                 throw;
             }
             finally
@@ -608,7 +609,7 @@ namespace OsamesMicroOrm
             }
             catch (Exception ex)
             {
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex.ToString());
+                Logger.Log(TraceEventType.Critical, ex.ToString());
                 throw;
             }
             finally
@@ -683,7 +684,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_);
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_);
                     throw;
                 }
         }
@@ -711,7 +712,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                     throw;
                 }
         }
@@ -739,7 +740,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                     throw;
                 }
             }
@@ -763,7 +764,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                     throw;
                 }
         }
@@ -805,7 +806,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_);
+                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_);
                         throw;
                     }
 
@@ -845,7 +846,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                         throw;
                     }
             }
@@ -884,7 +885,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                         throw;
                     }
             }
@@ -916,7 +917,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex+ " Command was: " + cmdText_);
+                        Logger.Log(TraceEventType.Critical, ex+ " Command was: " + cmdText_);
                         throw;
                     }
             }
@@ -946,7 +947,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                         throw;
                     }
             }
@@ -973,7 +974,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                         throw;
                     }
             }
@@ -1004,7 +1005,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                         throw;
                     }
             }
@@ -1031,7 +1032,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 1, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                         throw;
                     }
             }

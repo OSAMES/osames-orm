@@ -19,6 +19,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using OsamesMicroOrm.Logging;
 
 namespace OsamesMicroOrm.Configuration.Tweak
 {
@@ -112,7 +113,7 @@ namespace OsamesMicroOrm.Configuration.Tweak
         {
             if (customLogger_ == null)
             {
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(error_ ? TraceEventType.Error : TraceEventType.Information, 0, message_);
+                Logger.Log(error_ ? TraceEventType.Error : TraceEventType.Information, message_);
             }
             else
             {

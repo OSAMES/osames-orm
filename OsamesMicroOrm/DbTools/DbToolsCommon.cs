@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Logging;
 
 namespace OsamesMicroOrm.DbTools
 {
@@ -118,7 +119,7 @@ namespace OsamesMicroOrm.DbTools
             catch (Exception e)
             {
                 // TODO remonter une exception ?
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+                Logger.Log(TraceEventType.Critical, e.Message);
             }
 
         }
@@ -158,7 +159,7 @@ namespace OsamesMicroOrm.DbTools
             catch (Exception e)
             {
                 // TODO remonter une exception ?
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+                Logger.Log(TraceEventType.Critical, e.Message);
             }
 
         }
@@ -183,7 +184,7 @@ namespace OsamesMicroOrm.DbTools
             }
             catch (Exception e)
             {
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+                Logger.Log(TraceEventType.Critical, e.Message);
                 strErrorMsg_ = e.Message;
                 return false;
             }
@@ -215,7 +216,7 @@ namespace OsamesMicroOrm.DbTools
             catch (Exception e)
             {
                 // TODO remonter une exception ?
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+                Logger.Log(TraceEventType.Critical, e.Message);
             }
 
         }
@@ -378,7 +379,7 @@ namespace OsamesMicroOrm.DbTools
             }
             catch (Exception e)
             {
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 3, e.Message);
+                Logger.Log(TraceEventType.Critical, e.Message);
                 strErrorMsg_ = e.Message;
                 return false;
             }
@@ -407,7 +408,7 @@ namespace OsamesMicroOrm.DbTools
             catch (FormatException ex)
             {
                 int nbOfPlaceholders = Utilities.Common.CountPlaceholders(format_);
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0,
+                Logger.Log(TraceEventType.Critical,
                     "Error, not same number of placeholders. Expected : " + nbOfPlaceholders + ", given parameters : " + args_.Length + ", exception: " + ex.Message);
                 result_ = "Error, not same number of placeholders. See log file for more details.";
                 strErrorMsg_ = ex.Message + "\n" + result_;
