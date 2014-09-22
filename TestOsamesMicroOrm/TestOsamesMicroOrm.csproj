@@ -66,6 +66,7 @@
     <Compile Include="Tools\Common.cs" />
     <Compile Include="Tools\TestTracing.cs" />
     <Compile Include="Utilities\TestCommon.cs" />
+    <Compile Include="Utilities\TestLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
