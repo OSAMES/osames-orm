@@ -50,15 +50,9 @@ namespace OsamesMicroOrm.Logging
         /// <param name="message_">Texte</param>
         internal static void Log(TraceEventType logLevel_, string message_, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
-            StringBuilder logMessage = new StringBuilder();
-            logMessage.Append("member name: ");
-            logMessage.Append(memberName);
-            logMessage.Append("|---|");
-            logMessage.Append("source line number: ");
-            logMessage.Append(sourceLineNumber);
-            logMessage.Append("|---|");
-            logMessage.Append(message_);
-            SimpleTraceSource.TraceEvent(logLevel_, 0, logMessage.ToString());
+            string contextualInfo = FormatContextualInformation(memberName, sourceFilePath, sourceLineNumber);
+            string messageToLog = contextualInfo + message_;
+            SimpleTraceSource.TraceEvent(logLevel_, 0, messageToLog);
         }
 
         /// <summary>
@@ -69,10 +63,34 @@ namespace OsamesMicroOrm.Logging
         /// <param name="error_">Exception</param>
         internal static void Log(TraceEventType logLevel_, Exception error_, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
-            SimpleTraceSource.TraceEvent(logLevel_, 0, error_.Message);
+            string contextualInfo = FormatContextualInformation(memberName, sourceFilePath, sourceLineNumber);
+            string messageToLog = contextualInfo + error_.Message;
+
+            SimpleTraceSource.TraceEvent(logLevel_, 0, messageToLog);
             // TODO compléter le texte loggué avec l'info qu'il faut lire le log détaillé.
 
-            DetailedTraceSource.TraceEvent(logLevel_, 0, error_.Message + " " + error_.StackTrace);
+            DetailedTraceSource.TraceEvent(logLevel_, 0, messageToLog + " " + error_.StackTrace);
+        }
+
+        /// <summary>
+        /// Formatage lisible des informations contextuelles de l'appelant de la méthode de log.
+        /// </summary>
+        /// <param name="memberName"></param>
+        /// <param name="sourceFilePath"></param>
+        /// <param name="sourceLineNumber"></param>
+        /// <returns></returns>
+        private static string FormatContextualInformation(string memberName, string sourceFilePath, int sourceLineNumber)
+        {
+            StringBuilder logMessage = new StringBuilder();
+            logMessage.Append("Calling method : ");
+            logMessage.Append(memberName);
+            logMessage.Append("() in source file ");
+            logMessage.Append(sourceFilePath);
+            logMessage.Append(" at line number ");
+            logMessage.Append(sourceLineNumber);
+            logMessage.Append(" |---| ");
+
+            return logMessage.ToString();
         }
 
         /// <summary>
@@ -111,7 +129,7 @@ namespace OsamesMicroOrm.Logging
                 {
                     Filter = new EventTypeFilter(SourceLevels.All)
                 });
-            
+
         }
 
     }
