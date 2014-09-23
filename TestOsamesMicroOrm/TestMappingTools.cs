@@ -1,9 +1,9 @@
 ﻿using System;
-using System.CodeDom;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Logging;
 using OsamesMicroOrm.Utilities;
 using SampleDbEntities.Chinook;
 using TestOsamesMicroOrm.TestDbEntities;
@@ -61,7 +61,7 @@ namespace TestOsamesMicroOrm
             }
             catch (Exception ex)
             {
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Information, 0, ex.Message);
+                Logger.Log(TraceEventType.Information, ex.Message);
                 throw;
             }
 
@@ -85,7 +85,7 @@ namespace TestOsamesMicroOrm
             }
             catch (Exception ex)
             {
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Information, 0, ex.Message);
+                Logger.Log(TraceEventType.Information, ex.Message);
                 throw;
             }
 
@@ -109,7 +109,7 @@ namespace TestOsamesMicroOrm
             }
             catch (Exception ex)
             {
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Information, 0, ex.Message);
+                Logger.Log(TraceEventType.Information, ex.Message);
                 throw;
             }
 

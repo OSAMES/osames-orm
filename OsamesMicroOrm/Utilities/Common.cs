@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Logging;
 
 namespace OsamesMicroOrm.Utilities
 {
@@ -37,7 +38,7 @@ namespace OsamesMicroOrm.Utilities
         {
             if (!File.Exists(fileFullPath_))
             {
-                ConfigurationLoader.LoggerTraceSource.TraceEvent(TraceEventType.Critical, 0, "ConfigurationLoader: XML templates definitions analysis error. Throw message : " + fileFullPath_ + " : file " + context_ + " does not exist.");
+                Logger.Log(TraceEventType.Critical, "ConfigurationLoader: XML templates definitions analysis error. Throw message : " + fileFullPath_ + " : file " + context_ + " does not exist.");
                 
             }
         }
