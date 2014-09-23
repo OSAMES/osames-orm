@@ -89,9 +89,18 @@ namespace OsamesMicroOrm.Logging
         /// <param name="source_"></param>
         private static void AddEventLogListener(TraceSource source_)
         {
-            source_.Switch = new SourceSwitch("sourceSwitch", "Error") {Level = SourceLevels.All};
-            source_.Listeners.Remove("Default");
-            source_.Listeners.Add(new EventLogTraceListener { Name = "eventLogListener", Filter = new EventTypeFilter(SourceLevels.All)});
+            // source switch 
+            source_.Switch = new SourceSwitch("mySwitch", "my switch")
+                {
+                    Level = SourceLevels.All
+                };
+            // listeners
+            source_.Listeners.Clear();
+            // tracer dans la section Application des évènements Windows
+            source_.Listeners.Add(new EventLogTraceListener("Application")
+                {
+                    Filter = new EventTypeFilter(SourceLevels.All)
+                });
             
         }
 
