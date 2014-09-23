@@ -179,7 +179,7 @@ namespace OsamesMicroOrm.DbTools
         internal static T SelectSingle<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereColumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             T dataObject = new T();
-            string sqlCommand, strErrorMsg_;
+            string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
 
@@ -208,7 +208,7 @@ namespace OsamesMicroOrm.DbTools
         public static T SelectSingleAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereColumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             T dataObject = new T();
-            string sqlCommand, strErrorMsg_;
+            string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
             List<string> lstPropertiesNames;
@@ -239,7 +239,7 @@ namespace OsamesMicroOrm.DbTools
         public static List<T> Select<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWherecolumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             List<T> dataObjects = new List<T>();
-            string sqlCommand, strErrorMsg_;
+            string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
 
@@ -271,7 +271,7 @@ namespace OsamesMicroOrm.DbTools
         public static List<T> SelectAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWherecolumnNames_ = null, List<object> oWhereValues_ = null) where T : new()
         {
             List<T> dataObjects = new List<T>();
-            string sqlCommand, strErrorMsg_;
+            string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
             List<string> lstPropertiesNames;

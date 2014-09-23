@@ -22,7 +22,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Logging;
 
-namespace TestOsamesMicroOrm.Utilities
+namespace TestOsamesMicroOrm.Logging
 {
     [TestClass]
     public class TestLogger
