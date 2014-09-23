@@ -17,7 +17,9 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Text;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace OsamesMicroOrm.Logging
 {
@@ -46,9 +48,17 @@ namespace OsamesMicroOrm.Logging
         /// </summary>
         /// <param name="logLevel_">Niveau de log</param>
         /// <param name="message_">Texte</param>
-        internal static void Log(TraceEventType logLevel_, string message_)
+        internal static void Log(TraceEventType logLevel_, string message_, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
-            SimpleTraceSource.TraceEvent(logLevel_, 0, message_);
+            StringBuilder logMessage = new StringBuilder();
+            logMessage.Append("member name: ");
+            logMessage.Append(memberName);
+            logMessage.Append("|---|");
+            logMessage.Append("source line number: ");
+            logMessage.Append(sourceLineNumber);
+            logMessage.Append("|---|");
+            logMessage.Append(message_);
+            SimpleTraceSource.TraceEvent(logLevel_, 0, logMessage.ToString());
         }
 
         /// <summary>
@@ -57,7 +67,7 @@ namespace OsamesMicroOrm.Logging
         /// </summary>
         /// <param name="logLevel_">Niveau de log</param>
         /// <param name="error_">Exception</param>
-        internal static void Log(TraceEventType logLevel_, Exception error_)
+        internal static void Log(TraceEventType logLevel_, Exception error_, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
             SimpleTraceSource.TraceEvent(logLevel_, 0, error_.Message);
             // TODO compléter le texte loggué avec l'info qu'il faut lire le log détaillé.
