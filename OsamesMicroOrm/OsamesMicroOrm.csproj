@@ -76,6 +76,7 @@
     </None>
     <None Include="Config\OsamesOrm.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>

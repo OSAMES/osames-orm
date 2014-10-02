@@ -140,9 +140,14 @@
   <PropertyGroup>
     <PreBuildEvent>taskkill /F /IM vstest.executionengine.x86.exe /FI "MEMUSAGE gt 1"
 taskkill /F /IM vstest.discoveryengine.x86.exe /FI "MEMUSAGE gt 1"
-xcopy /Y "$(SolutionDir)DB\Chinook_Sqlite.sqlite" "$(TargetDir)DB\"
-xcopy /Y "$(ProjectDir)TestConfigSqlite\*.*" "$(TargetDir)Config\"
+
+RD /S /Q "$(OutDir)"
+
 </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Y "$(SolutionDir)DB\Chinook_Sqlite.sqlite" "$(TargetDir)DB\"
+xcopy /Y "$(ProjectDir)TestConfigSqlite\*.*" "$(TargetDir)Config\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

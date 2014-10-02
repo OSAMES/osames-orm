@@ -112,9 +112,13 @@
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy /Y "$(SolutionDir)DB\Chinook.mdf" "$(TargetDir)DB\"
+    <PreBuildEvent>RD /S /Q "$(OutDir)"
+</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Y "$(SolutionDir)DB\Chinook.mdf" "$(TargetDir)DB\"
 xcopy /Y "$(SolutionDir)DB\Chinook_log.ldf" "$(TargetDir)DB\"
-xcopy /Y "$(ProjectDir)TestConfigMsSql\*.*" "$(TargetDir)Config\"</PreBuildEvent>
+xcopy /Y "$(ProjectDir)TestConfigMsSql\*.*" "$(TargetDir)Config\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
