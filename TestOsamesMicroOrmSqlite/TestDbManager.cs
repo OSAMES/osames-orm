@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -128,5 +127,43 @@ namespace TestOsamesMicroOrmSqlite
              }
              Console.WriteLine();
          }
+
+        /// <summary>
+        /// Test de comportement du provider factory SQLite en cas de demande et ouverture de plus de connexions que le pool peut en donner.
+        /// /!\ Il n'y a pas d'exception renvoyée.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("SqLite")]
+        [TestCategory("ADO.NET pooling")]
+        [ExpectedException(typeof(InvalidOperationException))]
+        [Ignore]
+        public void TestExhaustingPoolSqlite()
+        {
+            List<DbConnection> lstConnections = new List<DbConnection>();
+            try
+            {
+                // changement de la connexion string
+                DbManager.ConnectionString += @"Pooling=True;Max Pool Size=10";
+                for (int i = 0; i < 20; i++)
+                {
+                    lstConnections.Add(DbManager.Instance.CreateConnection());
+                    DbManager.Instance.ExecuteScalar("select count(*) from Customer");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message + " " + ex.StackTrace);
+                throw;
+            }
+            finally
+            {
+                // cleanup
+                foreach (DbConnection connection in lstConnections)
+                {
+                    connection.Close();
+                    connection.Dispose();
+                }
+            }
+        }
     }
 }

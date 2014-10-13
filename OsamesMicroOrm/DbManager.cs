@@ -206,7 +206,7 @@ namespace OsamesMicroOrm
         #region CONNECTIONS
 
         /// <summary>
-        /// If a connection doesn't exist, try to create it.
+        /// If a connection doesn't exist, try to create it and returns it opened.
         /// If it exists but is closed, reopen it.
         /// May throw exceptions.	
         /// </summary>
