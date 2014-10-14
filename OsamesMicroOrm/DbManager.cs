@@ -61,7 +61,7 @@ namespace OsamesMicroOrm
         private static readonly object SingletonInitLockObject = new object();
 
         /// <summary>
-        /// Singleton acess, with singleton thread-safe initialization using dedicated lock object.
+        /// Singleton access, with singleton thread-safe initialization using dedicated lock object.
         /// </summary>
         public static DbManager Instance
         {
