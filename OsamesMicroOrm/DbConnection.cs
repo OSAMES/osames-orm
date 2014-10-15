@@ -16,9 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Data;
-using System.Data.Common;
 using System.Threading;
 using System.Transactions;
 using IsolationLevel = System.Data.IsolationLevel;
@@ -28,6 +26,7 @@ namespace OsamesMicroOrm
     /// <summary>
     /// Wrapper de la classe System.Data.Common.DbConnection pour gérer en plus un indicateur booléen.
     /// Elle expose les mêmes méthodes que System.Data.Common.DbConnection à qui elle délègue.
+    /// On encapsule au lieu d'hériter car System.Data.Common.DbConnection est une classe abstraite.
     /// </summary>
     public class DbConnection
     {
@@ -62,7 +61,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="isolationLevel"></param>
         /// <returns></returns>
-        public DbTransaction BeginDbTransaction(IsolationLevel isolationLevel)
+        public DbTransaction BeginTransaction(IsolationLevel isolationLevel)
         {
             return new DbTransaction (AdoDbConnection.BeginTransaction(isolationLevel)) { Connection = this};
         }
@@ -71,7 +70,7 @@ namespace OsamesMicroOrm
         /// Commence une transaction de base de données.
         /// </summary>
         /// <returns></returns>
-        public DbTransaction BeginDbTransaction()
+        public DbTransaction BeginTransaction()
         {
 
             return new DbTransaction(AdoDbConnection.BeginTransaction()) { Connection = this };

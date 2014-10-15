@@ -23,6 +23,7 @@ namespace OsamesMicroOrm
     /// <summary>
     /// Wrapper de la classe System.Data.Common.DbTransaction pour gérer une référence vers la classe DbConnection de l'ORM.
     /// Elle expose les mêmes méthodes que System.Data.Common.DbTransaction à qui elle délègue.
+    /// On encapsule au lieu d'hériter car System.Data.Common.DbConnection est une classe abstraite.
     /// </summary>
     public class DbTransaction
     {

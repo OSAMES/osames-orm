@@ -39,6 +39,11 @@ namespace OsamesMicroOrm
         private DbProviderFactory DbProviderFactory;
 
         /// <summary>
+        /// First created connection, to be used when pool is exhausted when pooling is active.
+        /// </summary>
+        private DbConnection BackupConnection;
+
+        /// <summary>
         /// Connection string that is set/checked by ConnectionString property.
         /// </summary>
         private static string ConnectionStringField;
@@ -206,23 +211,50 @@ namespace OsamesMicroOrm
         #region CONNECTIONS
 
         /// <summary>
-        /// If a connection doesn't exist, try to create it and returns it opened.
-        /// If it exists but is closed, reopen it.
-        /// May throw exceptions.	
+        /// Try to get a new connection, usually from pool (may get backup connection in this case) or single connection.
+        /// Opens the connection before returning it.
+        /// May throw exception only when no connection at all can be opened.	
         /// </summary>
         public DbConnection CreateConnection()
         {
-            DbConnection dbConnection = DbProviderFactory.CreateConnection();
+            try
+            {
+                System.Data.Common.DbConnection adoConnection = DbProviderFactory.CreateConnection();
+                adoConnection.ConnectionString = ConnectionString;
+                adoConnection.Open();
+                // everything OK
+                if (BackupConnection == null)
+                {
+                    // we just opened our first connection!
+                    BackupConnection = new DbConnection(adoConnection, true);
+                    return BackupConnection;
+                }
+                // Not the first connection
+                DbConnection pooledConnection = new DbConnection(adoConnection, false);
+                return pooledConnection;
 
-            if (dbConnection == null)
-                throw new Exception("DbHelper, CreateConnection: Connection could not be created");
+            }
+            catch (Exception ex)
+            {
+                // could not get a new connection !
+                if (BackupConnection == null)
+                {
+                    // could not get any connection
+                    Logger.Log(TraceEventType.Critical, ex);
+                    throw new Exception("DbManager, CreateConnection: Connection could not be created! *** " + ex.Message + " *** . Look at detailed log for details");
+                }
+                // could not get a second connection
+                // use backup connection
+                // We may have to reopen it
+                if(BackupConnection.State != ConnectionState.Open)
+                    BackupConnection.Open();
 
-            dbConnection.ConnectionString = ConnectionString;
-            dbConnection.Open();
-            return dbConnection;
+                return BackupConnection;
+            }
+            
         }
         /// <summary>
-        /// Fermeture d'une connexion et dispose/mise � null de l'objet.
+        /// Fermeture d'une connexion et dispose/mise à null de l'objet.
         /// </summary>
         /// <param name="connexion_">connexion</param>
         /// <returns>Ne renvoie rien</returns>
@@ -231,7 +263,6 @@ namespace OsamesMicroOrm
             if(connexion_ == null) return;
 
             connexion_.Close();
-            connexion_.Dispose();
             connexion_ = null;
         }
 
@@ -309,21 +340,24 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, CommandType cmdType_ = CommandType.Text)
         {
-            DbCommand command = DbProviderFactory.CreateCommand();
+            System.Data.Common.DbCommand adoCommand = DbProviderFactory.CreateCommand();
 
-            if (command == null)
+            if (adoCommand == null)
             {
                 throw new Exception("DbHelper, PrepareCommand: Command could not be created");
             }
+            // TODO ORM-94, continuer ici
+            DbCommand command = new DbCommand();
 
-            command.Connection = connection_;
-            command.CommandText = cmdText_;
-            command.CommandType = cmdType_;
+            // code original avec DbCommand ado.net :
+            adoCommand.Connection = connection_;
+            adoCommand.CommandText = cmdText_;
+            adoCommand.CommandType = cmdType_;
 
             if (transaction_ != null)
-                command.Transaction = transaction_;
+                adoCommand.Transaction = transaction_;
 
-            return command;
+            return adoCommand;
         }
 
         #endregion
