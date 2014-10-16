@@ -517,6 +517,28 @@ namespace OsamesMicroOrm.Configuration
         }
 
         /// <summary>
+        /// Méthode permettant de réaliser les remplacement de valeurs dans les connexionstring
+        /// </summary>
+        /// <param name="connexionString_"></param>
+        /// <param name="varToReplace_"></param>
+        /// <param name="replacedVarValue_"></param>
+        /// <param name="required_"></param>
+        internal static void OrmConfigStringReplace(ref string connexionString_, string varToReplace_, string replacedVarValue_, bool required_)
+        {
+            if (string.IsNullOrWhiteSpace(varToReplace_))
+                throw new Exception("The string " + varToReplace_ + " is null or white spaces");
+
+            if ((connexionString_.LastIndexOf(varToReplace_, StringComparison.InvariantCulture) < 0) && required_)
+                throw new Exception("The string " + varToReplace_ + " was not found in ConnexionString.");
+
+            if ((string.IsNullOrWhiteSpace(varToReplace_) || string.IsNullOrWhiteSpace(replacedVarValue_)) && required_)
+                throw new Exception("Toto boit du lolo :D");
+
+            connexionString_ = connexionString_.Replace(varToReplace_, replacedVarValue_);
+           
+        }
+
+        /// <summary>
         /// Loads configuration.
         /// <para>Parses XML configuration to internal dictionaries</para>
         /// <para>Initializes database connection</para>

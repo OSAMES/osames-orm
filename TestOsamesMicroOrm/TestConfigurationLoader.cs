@@ -199,7 +199,6 @@ namespace TestOsamesMicroOrm
 
             ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("foobar", "Email");
         }
-
  
         /// <summary>
         /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is not found (property name).
@@ -251,8 +250,6 @@ namespace TestOsamesMicroOrm
             Assert.AreEqual("SELECT {0} FROM {1} WHERE {2} = {3};", ConfigurationLoader.DicSelectSql["BaseReadWhere"]);
         }
 
-        
-
         /// <summary>
         /// Pour ce projet de TU il n'y a pas de providers définis dans App.Config.
         /// </summary>
@@ -269,6 +266,25 @@ namespace TestOsamesMicroOrm
             Assert.IsFalse(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SQLite"));
             Assert.IsTrue(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SqlClient"));
 
+        }
+
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Benjamin Nolmans")]
+        [TestCategory("Configuration")]
+        [TestCategory("StringConnextion replace")]
+        public void TestOrmConfigStringReplace()
+        {
+            List<string> stringConnectionDictionary = new List<string>();
+            stringConnectionDictionary.Add("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$dbPath$dbName;Persist Security Info=False;");
+            stringConnectionDictionary.Add("Data Source=(LocalDB)\v11.0;AttachDbFilename=$dbPath$dbName;Integrated Security=True;");
+            stringConnectionDictionary.Add("Server=$dbServerAddress;Port=$dbServerPort;Database=$dbName;Uid=$dbuser;Pwd=$dbpassword;");
+            stringConnectionDictionary.Add("Data Source=$dbPath$dbName;Version=3;UTF8Encoding=True;Pooling=False;Max Pool Size=100;Read Only=False;");
+
+            var toto = stringConnectionDictionary[0];
+            ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "DATABASE", true);
+
+            Console.WriteLine(toto);
         }
     }
 }
