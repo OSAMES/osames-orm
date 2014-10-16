@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Data;
 using System.Threading;
 using System.Transactions;
@@ -28,7 +29,7 @@ namespace OsamesMicroOrm
     /// Elle expose les mêmes méthodes que System.Data.Common.DbConnection à qui elle délègue.
     /// On encapsule au lieu d'hériter car System.Data.Common.DbConnection est une classe abstraite.
     /// </summary>
-    public class DbConnection
+    public class DbConnection : IDisposable
     {
         /// <summary>
         /// Indicateur positionné à la création de l'objet connexion.

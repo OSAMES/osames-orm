@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Threading;
@@ -27,13 +28,18 @@ namespace OsamesMicroOrm
     /// Elle expose les mêmes méthodes que System.Data.Common.DbCommand à qui elle délègue.
     /// On encapsule au lieu d'hériter car System.Data.Common.DbCommand est une classe abstraite.
     /// </summary>
-    public class DbCommand
+    public class DbCommand : IDisposable
     {
+        /// <summary>
+        /// Connexion de l'ORM (wrapper de la connexion ADO.NET).
+        /// </summary>
+        private DbConnection OrmConnection;
+
         /// <summary>
         /// Commande telle que fournie par l'appel à DbProviderFactory.CreateCommand();
         /// Accessible en interne pour l'ORM.
         /// </summary>
-        internal System.Data.Common.DbCommand AdoCommand { get; private set; }
+        internal System.Data.Common.DbCommand AdoDbCommand { get; private set; }
 
         /// <summary>
         /// Constructeur.
@@ -41,39 +47,52 @@ namespace OsamesMicroOrm
         /// <param name="command_">DbConnection de l'ORM</param>
         internal DbCommand(System.Data.Common.DbCommand command_)
         {
-            AdoCommand = command_;
+            AdoDbCommand = command_;
         }
 
         #region reprise des mêmes propriétés publiques que System.Data.Common.DbCommand
         /// <summary>
         /// Obtient ou définit la commande de texte à exécuter par rapport à la source de données.
         /// </summary>
-        public string CommandText { get { return AdoCommand.CommandText; } set { AdoCommand.CommandText = value; } }
+        public string CommandText { get { return AdoDbCommand.CommandText; } set { AdoDbCommand.CommandText = value; } }
 
         /// <summary>
         /// Obtient ou définit la durée d'attente qui précède le moment où il est mis fin à une tentative d'exécution d'une commande et où une erreur est générée.
         /// </summary>
-        public int CommandTimeout { get { return AdoCommand.CommandTimeout; } set { AdoCommand.CommandTimeout = value; } }
+        public int CommandTimeout { get { return AdoDbCommand.CommandTimeout; } set { AdoDbCommand.CommandTimeout = value; } }
 
         /// <summary>
         /// Indique ou spécifie la manière dont la propriété CommandText doit être interprétée.
         /// </summary>
-        public CommandType CommandType { get { return AdoCommand.CommandType; } set { AdoCommand.CommandType = value; } }
+        public CommandType CommandType { get { return AdoDbCommand.CommandType; } set { AdoDbCommand.CommandType = value; } }
 
         /// <summary>
         /// Obtient ou définit la manière dont les résultats des commandes sont appliqués à DataRow lorsqu'ils sont utilisés par la méthode Update de DbDataAdapter.
         /// </summary>
-        public UpdateRowSource UpdatedRowSource { get { return AdoCommand.UpdatedRowSource; } set { AdoCommand.UpdatedRowSource = value; } }
+        public UpdateRowSource UpdatedRowSource { get { return AdoDbCommand.UpdatedRowSource; } set { AdoDbCommand.UpdatedRowSource = value; } }
 
         /// <summary>
         /// Connexion associée (DbConnection de l'ORM).
         /// </summary>
-        public DbConnection Connection { get; set; }
+        public DbConnection Connection
+        {
+            get { return OrmConnection; }
+            set
+            {
+                OrmConnection = value;
+                AdoDbCommand.Connection = OrmConnection.AdoDbConnection;
+            }
+        }
 
         /// <summary>
         /// Transaction associée (DbTransaction de l'ORM).
         /// </summary>
         public DbTransaction Transaction { get; set; }
+
+        /// <summary>
+        /// Obtient la collection d'objets DbParameter. 
+        /// </summary>
+        public DbParameterCollection Parameters { get { return AdoDbCommand.Parameters; } }
 
         #endregion
         #region reprise des mêmes méthodes publiques que System.Data.Common.DbCommand
@@ -83,7 +102,7 @@ namespace OsamesMicroOrm
         /// </summary>
         public void Prepare()
         {
-            AdoCommand.Prepare();
+            AdoDbCommand.Prepare();
         }
 
 
@@ -92,7 +111,7 @@ namespace OsamesMicroOrm
         /// </summary>
         public void Cancel()
         {
-            AdoCommand.Cancel();
+            AdoDbCommand.Cancel();
         }
 
         /// <summary>
@@ -101,7 +120,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         public DbParameter CreateParameter()
         {
-            return AdoCommand.CreateParameter();
+            return AdoDbCommand.CreateParameter();
         }
 
         /// <summary>
@@ -111,7 +130,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         public DbDataReader ExecuteReader(CommandBehavior behavior_)
         {
-            return AdoCommand.ExecuteReader();
+            return AdoDbCommand.ExecuteReader();
         }
 
         /// <summary>
@@ -120,7 +139,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         public DbDataReader ExecuteReaderAsync()
         {
-            return AdoCommand.ExecuteReader();
+            return AdoDbCommand.ExecuteReader();
         }
 
         /// <summary>
@@ -129,7 +148,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         public int ExecuteNonQuery()
         {
-            return AdoCommand.ExecuteNonQuery();
+            return AdoDbCommand.ExecuteNonQuery();
         }
 
         /// <summary>
@@ -138,7 +157,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         public void ExecuteNonQueryAsync()
         {
-            AdoCommand.ExecuteNonQueryAsync();
+            AdoDbCommand.ExecuteNonQueryAsync();
         }
 
         /// <summary>
@@ -147,7 +166,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         public void ExecuteNonQueryAsync(CancellationToken token_)
         {
-            AdoCommand.ExecuteNonQueryAsync(token_);
+            AdoDbCommand.ExecuteNonQueryAsync(token_);
         }
 
         /// <summary>
@@ -156,7 +175,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         public object ExecuteScalar()
         {
-            return AdoCommand.ExecuteScalar();
+            return AdoDbCommand.ExecuteScalar();
         }
 
         /// <summary>
@@ -165,7 +184,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         public void ExecuteScalarAsync()
         {
-            AdoCommand.ExecuteScalarAsync();
+            AdoDbCommand.ExecuteScalarAsync();
         }
 
         /// <summary>
@@ -174,7 +193,15 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         public void ExecuteScalarAsync(CancellationToken token_)
         {
-            AdoCommand.ExecuteScalarAsync(token_);
+            AdoDbCommand.ExecuteScalarAsync(token_);
+        }
+
+        /// <summary>
+        /// Libération des ressources utilisées.
+        /// </summary>
+        public void Dispose()
+        {
+            AdoDbCommand.Dispose();
         }
 
         #endregion

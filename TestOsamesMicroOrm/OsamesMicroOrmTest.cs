@@ -5,6 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using TestOsamesMicroOrm.Tools;
+using DbConnection = OsamesMicroOrm.DbConnection;
+using DbTransaction = OsamesMicroOrm.DbTransaction;
 
 namespace TestOsamesMicroOrm
 {

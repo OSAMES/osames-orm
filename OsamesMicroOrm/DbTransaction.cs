@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Data;
 
 namespace OsamesMicroOrm
@@ -25,14 +26,13 @@ namespace OsamesMicroOrm
     /// Elle expose les mêmes méthodes que System.Data.Common.DbTransaction à qui elle délègue.
     /// On encapsule au lieu d'hériter car System.Data.Common.DbConnection est une classe abstraite.
     /// </summary>
-    public class DbTransaction
+    public class DbTransaction : IDisposable
     {
-        
         /// <summary>
         /// Connexion telle que fournie par l'appel à DbProviderFactory.CreateConnection().
         /// Accessible en interne pour l'ORM.
         /// </summary>
-        internal System.Data.Common.DbTransaction AdoTransaction { get; private set; }
+        internal System.Data.Common.DbTransaction AdoDbTransaction { get; private set; }
 
         /// <summary>
         /// Constructeur.
@@ -40,7 +40,7 @@ namespace OsamesMicroOrm
         /// <param name="adoTransaction_">DbTransaction ADO.NET</param>
         internal DbTransaction(System.Data.Common.DbTransaction adoTransaction_)
         {
-            AdoTransaction = adoTransaction_;
+            AdoDbTransaction = adoTransaction_;
         }
 
         #region reprise des mêmes propriétés publiques que System.Data.Common.DbConnection
@@ -53,7 +53,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Niveau d'isolation de la transaction.
         /// </summary>
-        public IsolationLevel IsolationLevel { get { return AdoTransaction.IsolationLevel; } }
+        public IsolationLevel IsolationLevel { get { return AdoDbTransaction.IsolationLevel; } }
         
         #endregion
 
@@ -64,7 +64,7 @@ namespace OsamesMicroOrm
         /// </summary>
         public void Dispose()
         {
-            AdoTransaction.Dispose();
+            AdoDbTransaction.Dispose();
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace OsamesMicroOrm
         /// </summary>
         public void Commit()
         {
-            AdoTransaction.Commit();
+            AdoDbTransaction.Commit();
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace OsamesMicroOrm
         /// </summary>
         public void Rollback()
         {
-            AdoTransaction.Rollback();
+            AdoDbTransaction.Rollback();
         }
 
   

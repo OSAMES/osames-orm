@@ -83,7 +83,7 @@ namespace TestOsamesMicroOrm
 
                 ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-                Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook.mdf;Integrated Security=True"), DbManager.ConnectionString);
+                Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1};", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook.mdf;Integrated Security=True"), DbManager.ConnectionString);
                 Assert.AreEqual(@"System.Data.SqlClient", DbManager.ProviderName);
             } finally
             {

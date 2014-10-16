@@ -36,7 +36,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Current DB provider factory.
         /// </summary>
-        private DbProviderFactory DbProviderFactory;
+        internal DbProviderFactory DbProviderFactory;
 
         /// <summary>
         /// First created connection, to be used when pool is exhausted when pooling is active.
@@ -346,18 +346,13 @@ namespace OsamesMicroOrm
             {
                 throw new Exception("DbHelper, PrepareCommand: Command could not be created");
             }
-            // TODO ORM-94, continuer ici
-            DbCommand command = new DbCommand();
 
-            // code original avec DbCommand ado.net :
-            adoCommand.Connection = connection_;
-            adoCommand.CommandText = cmdText_;
-            adoCommand.CommandType = cmdType_;
+            DbCommand command = new DbCommand(adoCommand) {Connection = connection_, CommandText = cmdText_, CommandType = cmdType_};
 
             if (transaction_ != null)
-                adoCommand.Transaction = transaction_;
+                command.Transaction = transaction_;
 
-            return adoCommand;
+            return command;
         }
 
         #endregion
@@ -482,7 +477,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="command_">DbCommand to add parameters to</param>
         /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
-        private void CreateDbParameters(DbCommand command_, List<KeyValuePair<string, object>> adoParams_)
+        private void CreateDbParameters(DbCommand command_, IEnumerable<KeyValuePair<string, object>> adoParams_)
         {
             foreach (KeyValuePair<string, object> oParam in adoParams_)
             {
@@ -832,7 +827,7 @@ namespace OsamesMicroOrm
                             throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
                         }
 
-                        dda.SelectCommand = command;
+                        dda.SelectCommand = command.AdoDbCommand;
                         DataSet ds = new DataSet();
                         dda.Fill(ds);
                         return ds;
@@ -872,7 +867,7 @@ namespace OsamesMicroOrm
                         {
                             throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
                         }
-                        dda.SelectCommand = command;
+                        dda.SelectCommand = command.AdoDbCommand;
                         DataSet ds = new DataSet();
                         dda.Fill(ds);
                         return ds;
@@ -911,7 +906,7 @@ namespace OsamesMicroOrm
                         {
                             throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
                         }
-                        dda.SelectCommand = command;
+                        dda.SelectCommand = command.AdoDbCommand;
                         DataSet ds = new DataSet();
                         dda.Fill(ds);
                         return ds;

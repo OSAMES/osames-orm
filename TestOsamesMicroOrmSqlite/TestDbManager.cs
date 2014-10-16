@@ -130,6 +130,7 @@ namespace TestOsamesMicroOrmSqlite
 
         /// <summary>
         /// Test de comportement du provider factory SQLite en cas de demande et ouverture de plus de connexions que le pool peut en donner.
+        /// Travail avec DbConnection de ADO.NET, pas celui de l'ORM.
         /// /!\ Il n'y a pas d'exception renvoyée.
         /// </summary>
         [TestMethod]
@@ -139,14 +140,14 @@ namespace TestOsamesMicroOrmSqlite
         [Ignore]
         public void TestExhaustingPoolSqlite()
         {
-            List<DbConnection> lstConnections = new List<DbConnection>();
+            List<System.Data.Common.DbConnection> lstConnections = new List<System.Data.Common.DbConnection>();
             try
             {
                 // changement de la connexion string
                 DbManager.ConnectionString += @"Pooling=True;Max Pool Size=10";
                 for (int i = 0; i < 20; i++)
                 {
-                    lstConnections.Add(DbManager.Instance.CreateConnection());
+                    lstConnections.Add(DbManager.Instance.DbProviderFactory.CreateConnection());
                     DbManager.Instance.ExecuteScalar("select count(*) from Customer");
                 }
             }
@@ -158,7 +159,7 @@ namespace TestOsamesMicroOrmSqlite
             finally
             {
                 // cleanup
-                foreach (DbConnection connection in lstConnections)
+                foreach (System.Data.Common.DbConnection connection in lstConnections)
                 {
                     connection.Close();
                     connection.Dispose();
