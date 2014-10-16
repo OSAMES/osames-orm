@@ -54,16 +54,61 @@ namespace OsamesMicroOrm
             AdoDbConnection = adoDbConnection_;
         }
 
-        #region reprise des propriétés et méthodes publiques de System.Data.Common.DbConnection
+        #region reprise des mêmes propriétés publiques que System.Data.Common.DbConnection
+
+        /// <summary>
+        /// Obtient ou définit la chaîne utilisée pour ouvrir la connexion.
+        /// </summary>
+        public string ConnectionString { get { return AdoDbConnection.ConnectionString; } set { AdoDbConnection.ConnectionString = value; } }
+
+        /// <summary>
+        /// Obtient la durée d'attente préalable à l'établissement d'une connexion avant que la tentative ne soit abandonnée et qu'une erreur ne soit générée.
+        /// </summary>
+        public int ConnectionTimeout { get { return AdoDbConnection.ConnectionTimeout; } }
+
+        /// <summary>
+        /// Obtient le nom de la base de données active après avoir ouvert une connexion, ou le nom de la base de données spécifié dans la chaîne de connexion avant que la connexion ne soit ouverte.
+        /// </summary>
+        public string Database
+        {
+            get { return AdoDbConnection.Database; }
+        }
+
+        /// <summary>
+        /// Obtient une chaîne qui décrit l'état de la connexion.
+        /// </summary>
+        public ConnectionState State
+        {
+            get { return AdoDbConnection.State; }
+        }
+
+        /// <summary>
+        /// Obtient le nom du serveur de base de données auquel se connecter.
+        /// </summary>
+        public string DataSource
+        {
+            get { return AdoDbConnection.DataSource; }
+        }
+
+        /// <summary>
+        /// Obtient une chaîne qui représente la version du serveur auquel l'objet est connecté.
+        /// </summary>
+        public string ServerVersion
+        {
+            get { return AdoDbConnection.ServerVersion; }
+        }
+
+        #endregion
+        #region reprise des mêmes méthodes publiques que System.Data.Common.DbConnection
 
         /// <summary>
         /// Commence une transaction de base de données.
         /// </summary>
-        /// <param name="isolationLevel"></param>
+        /// <param name="isolationLevel_"></param>
         /// <returns></returns>
-        public DbTransaction BeginTransaction(IsolationLevel isolationLevel)
+        public DbTransaction BeginTransaction(IsolationLevel isolationLevel_)
         {
-            return new DbTransaction (AdoDbConnection.BeginTransaction(isolationLevel)) { Connection = this};
+            return new DbTransaction(AdoDbConnection.BeginTransaction(isolationLevel_)) { Connection = this };
         }
 
         /// <summary>
@@ -166,54 +211,12 @@ namespace OsamesMicroOrm
         }
 
         /// <summary>
-        /// Obtient ou définit la chaîne utilisée pour ouvrir la connexion.
-        /// </summary>
-        public string ConnectionString { get { return AdoDbConnection.ConnectionString; } set { AdoDbConnection.ConnectionString = value; } }
-
-        /// <summary>
-        /// Obtient la durée d'attente préalable à l'établissement d'une connexion avant que la tentative ne soit abandonnée et qu'une erreur ne soit générée.
-        /// </summary>
-        public int ConnectionTimeout { get { return AdoDbConnection.ConnectionTimeout; } }
-
-        /// <summary>
-        /// Obtient le nom de la base de données active après avoir ouvert une connexion, ou le nom de la base de données spécifié dans la chaîne de connexion avant que la connexion ne soit ouverte.
-        /// </summary>
-        public string Database
-        {
-            get { return AdoDbConnection.Database; }
-        }
-
-        /// <summary>
-        /// Obtient une chaîne qui décrit l'état de la connexion.
-        /// </summary>
-        public ConnectionState State
-        {
-            get { return AdoDbConnection.State; }
-        }
-
-        /// <summary>
-        /// Obtient le nom du serveur de base de données auquel se connecter.
-        /// </summary>
-        public string DataSource
-        {
-            get { return AdoDbConnection.DataSource; }
-        }
-
-        /// <summary>
-        /// Obtient une chaîne qui représente la version du serveur auquel l'objet est connecté.
-        /// </summary>
-        public string ServerVersion
-        {
-            get { return AdoDbConnection.ServerVersion; }
-        }
-
-        /// <summary>
         /// Crée et retourne un objet DbCommand associé à la connexion active.
         /// </summary>
         /// <returns></returns>
         protected DbCommand CreateDbCommand()
         {
-            return AdoDbConnection.CreateCommand();
+            return new DbCommand(AdoDbConnection.CreateCommand());
         }
 
         /// <summary>

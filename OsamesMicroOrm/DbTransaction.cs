@@ -43,6 +43,22 @@ namespace OsamesMicroOrm
             AdoTransaction = adoTransaction_;
         }
 
+        #region reprise des mêmes propriétés publiques que System.Data.Common.DbConnection
+
+        /// <summary>
+        /// Connexion (classe définie dans l'ORM)
+        /// </summary>
+        public DbConnection Connection { get; internal set; }
+
+        /// <summary>
+        /// Niveau d'isolation de la transaction.
+        /// </summary>
+        public IsolationLevel IsolationLevel { get { return AdoTransaction.IsolationLevel; } }
+        
+        #endregion
+
+        #region reprise des mêmes méthodes publiques que System.Data.Common.DbTransaction
+
         /// <summary>
         /// Libère les ressources non managées utilisées.
         /// </summary>
@@ -67,14 +83,7 @@ namespace OsamesMicroOrm
             AdoTransaction.Rollback();
         }
 
-        /// <summary>
-        /// Connexion (classe définie dans l'ORM)
-        /// </summary>
-        public DbConnection Connection { get; internal set; }
-
-        /// <summary>
-        /// Niveau d'isolation de la transaction.
-        /// </summary>
-        public IsolationLevel IsolationLevel { get { return AdoTransaction.IsolationLevel; } }
+  
+        #endregion
     }
 }

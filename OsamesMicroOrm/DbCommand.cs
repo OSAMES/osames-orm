@@ -18,6 +18,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Data;
 using System.Data.Common;
+using System.Threading;
 
 namespace OsamesMicroOrm
 {
@@ -43,55 +44,139 @@ namespace OsamesMicroOrm
             AdoCommand = command_;
         }
 
-        // TODO même principe que pour DbConnection : délégation. Vérifier tout ce qui est public sur System.Data.Common.DbCommand et l'implémenter avec délégation.
-        // TODO remplacer les "protected" par "internal" car on n'est plus dans le namespace d'origine.
-
-        public void Prepare()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public string CommandText { get; set; }
-        public int CommandTimeout { get; set; }
-        public CommandType CommandType { get; set; }
-        public UpdateRowSource UpdatedRowSource { get; set; }
+        #region reprise des mêmes propriétés publiques que System.Data.Common.DbCommand
+        /// <summary>
+        /// Obtient ou définit la commande de texte à exécuter par rapport à la source de données.
+        /// </summary>
+        public string CommandText { get { return AdoCommand.CommandText; } set { AdoCommand.CommandText = value; } }
 
         /// <summary>
-        /// DbConnection de l'ORM.
+        /// Obtient ou définit la durée d'attente qui précède le moment où il est mis fin à une tentative d'exécution d'une commande et où une erreur est générée.
         /// </summary>
-        internal DbConnection DbConnection { get; set; }
+        public int CommandTimeout { get { return AdoCommand.CommandTimeout; } set { AdoCommand.CommandTimeout = value; } }
 
-        protected DbParameterCollection DbParameterCollection
+        /// <summary>
+        /// Indique ou spécifie la manière dont la propriété CommandText doit être interprétée.
+        /// </summary>
+        public CommandType CommandType { get { return AdoCommand.CommandType; } set { AdoCommand.CommandType = value; } }
+
+        /// <summary>
+        /// Obtient ou définit la manière dont les résultats des commandes sont appliqués à DataRow lorsqu'ils sont utilisés par la méthode Update de DbDataAdapter.
+        /// </summary>
+        public UpdateRowSource UpdatedRowSource { get { return AdoCommand.UpdatedRowSource; } set { AdoCommand.UpdatedRowSource = value; } }
+
+        /// <summary>
+        /// Connexion associée (DbConnection de l'ORM).
+        /// </summary>
+        public DbConnection Connection { get; set; }
+
+        /// <summary>
+        /// Transaction associée (DbTransaction de l'ORM).
+        /// </summary>
+        public DbTransaction Transaction { get; set; }
+
+        #endregion
+        #region reprise des mêmes méthodes publiques que System.Data.Common.DbCommand
+
+        /// <summary>
+        /// Crée une version préparée (ou compilée) de la commande dans la source de données.
+        /// </summary>
+        public void Prepare()
         {
-            get { throw new System.NotImplementedException(); }
+            AdoCommand.Prepare();
         }
 
-        protected System.Data.Common.DbTransaction DbTransaction { protected get; protected set; }
-        public bool DesignTimeVisible { get; set; }
 
+        /// <summary>
+        /// Tente d'annuler l'exécution de DbCommand.
+        /// </summary>
         public void Cancel()
         {
-            throw new System.NotImplementedException();
+            AdoCommand.Cancel();
         }
 
-        protected DbParameter CreateDbParameter()
+        /// <summary>
+        /// Crée une nouvelle instance d'un objet DbParameter.
+        /// </summary>
+        /// <returns></returns>
+        public DbParameter CreateParameter()
         {
-            throw new System.NotImplementedException();
+            return AdoCommand.CreateParameter();
         }
 
-        protected DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
+        /// <summary>
+        /// Exécute CommandText par rapport à Connection, et retourne un DbDataReader.
+        /// </summary>
+        /// <param name="behavior_"></param>
+        /// <returns></returns>
+        public DbDataReader ExecuteReader(CommandBehavior behavior_)
         {
-            throw new System.NotImplementedException();
+            return AdoCommand.ExecuteReader();
         }
 
+        /// <summary>
+        /// Version asynchrone de ExecuteReader, qui exécute CommandText par rapport à Connection et retourne DbDataReader.Appelle ExecuteDbDataReaderAsync avec CancellationToken.None.
+        /// </summary>
+        /// <returns></returns>
+        public DbDataReader ExecuteReaderAsync()
+        {
+            return AdoCommand.ExecuteReader();
+        }
+
+        /// <summary>
+        /// Exécute une instruction SQL par rapport à un objet de connexion.
+        /// </summary>
+        /// <returns></returns>
         public int ExecuteNonQuery()
         {
-            throw new System.NotImplementedException();
+            return AdoCommand.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Version asynchrone de ExecuteNonQuery, qui exécute une instruction SQL par rapport à un objet de connexion.Appelle ExecuteNonQueryAsync avec CancellationToken.None.
+        /// </summary>
+        /// <returns></returns>
+        public void ExecuteNonQueryAsync()
+        {
+            AdoCommand.ExecuteNonQueryAsync();
+        }
+
+        /// <summary>
+        /// Version asynchrone de ExecuteNonQuery, qui exécute une instruction SQL par rapport à un objet de connexion.
+        /// </summary>
+        /// <returns></returns>
+        public void ExecuteNonQueryAsync(CancellationToken token_)
+        {
+            AdoCommand.ExecuteNonQueryAsync(token_);
+        }
+
+        /// <summary>
+        /// Exécute la requête et retourne la première colonne de la première ligne du jeu de résultats retourné par la requête. Toutes les autres colonnes et lignes sont ignorées.
+        /// </summary>
+        /// <returns></returns>
         public object ExecuteScalar()
         {
-            throw new System.NotImplementedException();
+            return AdoCommand.ExecuteScalar();
         }
+
+        /// <summary>
+        /// Version asynchrone de ExecuteScalar, qui exécute la requête et retourne la première colonne de la première ligne du jeu de résultats retourné par la requête. Toutes les autres colonnes et lignes sont ignorées. Appelle ExecuteScalarAsync avec CancellationToken.None.
+        /// </summary>
+        /// <returns></returns>
+        public void ExecuteScalarAsync()
+        {
+            AdoCommand.ExecuteScalarAsync();
+        }
+
+        /// <summary>
+        /// Version asynchrone de ExecuteScalar, qui exécute la requête et retourne la première colonne de la première ligne du jeu de résultats retourné par la requête. Toutes les autres colonnes et lignes sont ignorées.
+        /// </summary>
+        /// <returns></returns>
+        public void ExecuteScalarAsync(CancellationToken token_)
+        {
+            AdoCommand.ExecuteScalarAsync(token_);
+        }
+
+        #endregion
     }
 }
