@@ -148,7 +148,17 @@ namespace TestOsamesMicroOrmSqlite
                 for (int i = 0; i < 20; i++)
                 {
                     lstConnections.Add(DbManager.Instance.DbProviderFactory.CreateConnection());
-                    DbManager.Instance.ExecuteScalar("select count(*) from Customer");
+                    lstConnections[i].ConnectionString = DbManager.ConnectionString;
+                    lstConnections[i].Open();
+
+                    using (System.Data.Common.DbCommand command = DbManager.Instance.DbProviderFactory.CreateCommand())
+                    {
+                        Assert.IsNotNull(command, "Commande non créée");
+                        command.Connection = lstConnections[i];
+                        command.CommandText = "select count(*) from Customer";
+                        command.CommandType = CommandType.Text;
+                        command.ExecuteScalar();
+                    }
                 }
             }
             catch (Exception ex)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -27,10 +28,18 @@ namespace TestOsamesMicroOrmMsSql
                 DbManager.ConnectionString += @"Pooling=True;Max Pool Size=10";
                 for (int i = 0; i < 9; i++)
                 {
-                    // On a une exception dès qu'on demande 9 connexions, on en demande 8 ici. 
-                    // Il faut prendre en compte celle d'initialisation de l'ORM qui est oujours ouverte et peut-être une autre ??
                     lstConnections.Add(DbManager.Instance.DbProviderFactory.CreateConnection());
-                    DbManager.Instance.ExecuteScalar("select count(*) from Customer");
+                    lstConnections[i].ConnectionString = DbManager.ConnectionString;
+                    lstConnections[i].Open();
+
+                    using (System.Data.Common.DbCommand command = DbManager.Instance.DbProviderFactory.CreateCommand())
+                    {
+                        Assert.IsNotNull(command, "Commande non créée");
+                        command.Connection = lstConnections[i];
+                        command.CommandText = "select count(*) from Customer";
+                        command.CommandType = CommandType.Text;
+                        command.ExecuteScalar();
+                    }
                 }
             }
             catch (Exception ex)
@@ -63,19 +72,23 @@ namespace TestOsamesMicroOrmMsSql
             try
             {
                 // changement de la connexion string
-                DbManager.ConnectionString += @"Pooling=True;Max Pool Size=10";
-                for (int i = 0; i < 12; i++)
+                // en plus, réduction du temps d'exécution du TU par un petit timeout
+                DbManager.ConnectionString += @"Pooling=True;Max Pool Size=10;Connection Timeout = 1;";
+                for (int i = 0; i < 11; i++)
                 {
-                    // On a une exception dès qu'on demande 11 connexions, 
+                    // On a une exception dès qu'on demande 10 connexions, 
                     lstConnections.Add(DbManager.Instance.DbProviderFactory.CreateConnection());
+                    lstConnections[i].ConnectionString = DbManager.ConnectionString;
+                    lstConnections[i].Open();
 
                      using (System.Data.Common.DbCommand command = DbManager.Instance.DbProviderFactory.CreateCommand())
                      {
-                         // TODO ORM-94 continuer ici à utiliser uniquement les objets ADO.NET et mettre à jour dans les 3 autres TUs de ce type
-                        // command (positionner...)
+                         Assert.IsNotNull(command, "Commande non créée");
+                         command.Connection = lstConnections[i];
+                         command.CommandText = "select count(*) from Customer";
+                         command.CommandType = CommandType.Text;
                          command.ExecuteScalar();
                      }
-                    //DbManager.Instance.ExecuteScalar("select count(*) from Customer");
                 }
             }
             catch (Exception ex)
