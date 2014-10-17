@@ -17,6 +17,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -64,6 +65,11 @@ namespace OsamesMicroOrm
         /// Lock object for singleton initialization.
         /// </summary>
         private static readonly object SingletonInitLockObject = new object();
+
+        /// <summary>
+        /// Lock object for using backup connection.
+        /// </summary>
+        private static readonly object BackupConnectionUsageLockObject = new object();
 
         /// <summary>
         /// Singleton access, with singleton thread-safe initialization using dedicated lock object.
@@ -203,6 +209,7 @@ namespace OsamesMicroOrm
         /// </summary>
         ~DbManager()
         {
+            BackupConnection.Close();
             DbProviderFactory = null;
         }
 
@@ -256,7 +263,7 @@ namespace OsamesMicroOrm
 
                 return BackupConnection;
             }
-            
+
         }
         /// <summary>
         /// Fermeture d'une connexion et dispose/mise à null de l'objet.
@@ -265,7 +272,7 @@ namespace OsamesMicroOrm
         /// <returns>Ne renvoie rien</returns>
         public void DisposeConnection(ref DbConnection connexion_)
         {
-            if(connexion_ == null) return;
+            if (connexion_ == null) return;
 
             connexion_.Close();
             connexion_ = null;
@@ -352,7 +359,7 @@ namespace OsamesMicroOrm
                 throw new Exception("DbHelper, PrepareCommand: Command could not be created");
             }
 
-            DbCommand command = new DbCommand(adoCommand) {Connection = connection_, CommandText = cmdText_, CommandType = cmdType_};
+            DbCommand command = new DbCommand(adoCommand) { Connection = connection_, CommandText = cmdText_, CommandType = cmdType_ };
 
             if (transaction_ != null)
                 command.Transaction = transaction_;
@@ -365,19 +372,36 @@ namespace OsamesMicroOrm
         #region OBJECT BASED PARAMETER ARRAY
 
         /// <summary>
+        /// Signature de PrepareCommand sous forme "générique". Le compilateur trouvera des signatures identiques mais avec un type donné pour cmdParams_.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connection_"></param>
+        /// <param name="transaction_"></param>
+        /// <param name="cmdText_"></param>
+        /// <param name="cmdParams_"></param>
+        /// <param name="cmdType_"></param>
+        /// <returns></returns>
+        private DbCommand PrepareCommand<T>(DbConnection connection_, DbTransaction transaction_, string cmdText_, T cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+            // TODO à supprimer ou pas selon le code résultant de la boucle sur les éléments
+            throw new NotImplementedException("PrepareCommand() doit avoir une implémentation propre au type " + typeof(T));
+        }
+     
+
+        /// <summary>
         /// Initializes a DbCommand object with parameters and returns it ready for execution.
         /// </summary>
         /// <param name="connection_">Current connection</param>
         /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) in multiple array format</param>
-        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, object[,] cmdParms_, CommandType cmdType_ = CommandType.Text)
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
+        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             DbCommand command = PrepareCommand(connection_, transaction_, cmdText_, cmdType_);
 
-            if (cmdParms_ != null)
-                CreateDbParameters(command, cmdParms_);
+            if (cmdParams_ != null)
+                CreateDbParameters(command, cmdParams_);
 
             return command;
         }
@@ -393,13 +417,13 @@ namespace OsamesMicroOrm
         /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
-        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, IEnumerable<Parameter> cmdParms_, CommandType cmdType_ = CommandType.Text)
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
+        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             DbCommand command = PrepareCommand(connection_, transaction_, cmdText_, cmdType_);
 
-            if (cmdParms_ != null)
-                CreateDbParameters(command, cmdParms_);
+            if (cmdParams_ != null)
+                CreateDbParameters(command, cmdParams_);
             return command;
         }
 
@@ -414,13 +438,13 @@ namespace OsamesMicroOrm
         /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) in list of key/value pair format</param>
-        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, List<KeyValuePair<string, object>> cmdParms_, CommandType cmdType_ = CommandType.Text)
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in list of key/value pair format</param>
+        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, List<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             DbCommand command = PrepareCommand(connection_, transaction_, cmdText_, cmdType_);
 
-            if (cmdParms_ != null)
-                CreateDbParameters(command, cmdParms_);
+            if (cmdParams_ != null)
+                CreateDbParameters(command, cmdParams_);
             return command;
         }
 
@@ -518,19 +542,20 @@ namespace OsamesMicroOrm
                 // Utiliser la connexion de la transaction ou une nouvelle connexion
                 dbConnection = transaction_ != null ? transaction_.Connection : CreateConnection();
 
-                int iNbAffectedRows;
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdType_))
+                // on n'a pas de paramètres donc on passe null
+                // pour l'écriture générique, on caste null en IEnumerable (on doit passer un type C#)
+                if (!dbConnection.IsBackup)
                 {
-                     iNbAffectedRows = command.ExecuteNonQuery();
+                    return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, (IEnumerable)null, out lastInsertedRowId_);
                 }
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, SelectLastInsertIdCommandText))
+                else
                 {
-                        
-                    object oValue = command.ExecuteScalar();
-                    if(!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                    lock (BackupConnectionUsageLockObject)
+                    {
+                        return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, (IEnumerable)null, out lastInsertedRowId_);
+                    }
                 }
-                return iNbAffectedRows;
+
             }
             catch (Exception ex)
             {
@@ -541,7 +566,7 @@ namespace OsamesMicroOrm
             {
                 if (transaction_ == null && dbConnection != null)
                 {
-                    // La connexion n'�tait pas celle de la transaction
+                    // La connexion n'etait pas celle de la transaction
                     dbConnection.Close();
                     dbConnection.Dispose();
                 }
@@ -561,10 +586,10 @@ namespace OsamesMicroOrm
         /// <param name="lastInsertedRowId_">Last inserted row ID (long number)</param>
         /// <param name="cmdType_">Command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) in multiple array format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
         /// <param name="transaction_">When not null, transaction to use</param>
         /// <returns>Number of affected rows</returns>
-        public int ExecuteNonQuery(string cmdText_, object[,] cmdParms_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
+        public int ExecuteNonQuery(string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
         {
             DbConnection dbConnection = null;
             try
@@ -572,19 +597,18 @@ namespace OsamesMicroOrm
                 // Utiliser la connexion de la transaction ou une nouvelle connexion
                 dbConnection = transaction_ != null ? transaction_.Connection : CreateConnection();
 
-                int iNbAffectedRows;
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdParms_, cmdType_))
+                // pour l'écriture générique, on caste object[,] en IEnumerable (on doit passer un type C#)
+                if (!dbConnection.IsBackup)
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, cmdParams_, out lastInsertedRowId_);
                 }
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, SelectLastInsertIdCommandText))
+                else
                 {
-
-                    object oValue = command.ExecuteScalar();
-                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                    lock (BackupConnectionUsageLockObject)
+                    {
+                        return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, cmdParams_, out lastInsertedRowId_);
+                    }
                 }
-                return iNbAffectedRows;
             }
             catch (Exception ex)
             {
@@ -595,7 +619,7 @@ namespace OsamesMicroOrm
             {
                 if (transaction_ == null && dbConnection != null)
                 {
-                    // La connexion n'�tait pas celle de la transaction
+                    // La connexion n'etait pas celle de la transaction
                     dbConnection.Close();
                     dbConnection.Dispose();
                 }
@@ -615,10 +639,10 @@ namespace OsamesMicroOrm
         /// <param name="lastInsertedRowId_">Last inserted row ID (long number)</param>
         /// <param name="cmdType_">Command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <param name="transaction_">When not null, transaction to use</param>
         /// <returns>Number of affected rows</returns>
-        public int ExecuteNonQuery(string cmdText_, Parameter[] cmdParms_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
+        public int ExecuteNonQuery(string cmdText_, Parameter[] cmdParams_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
         {
             DbConnection dbConnection = null;
             try
@@ -626,19 +650,18 @@ namespace OsamesMicroOrm
                 // Utiliser la connexion de la transaction ou une nouvelle connexion
                 dbConnection = transaction_ != null ? transaction_.Connection : CreateConnection();
 
-                int iNbAffectedRows;
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdParms_, cmdType_))
+                // pour l'écriture générique, on caste Parameter[] en IEnumerable (on doit passer un type C#)
+                if (!dbConnection.IsBackup)
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, cmdParams_, out lastInsertedRowId_);
                 }
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, SelectLastInsertIdCommandText))
+                else
                 {
-
-                    object oValue = command.ExecuteScalar();
-                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                    lock (BackupConnectionUsageLockObject)
+                    {
+                        return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, cmdParams_, out lastInsertedRowId_);
+                    }
                 }
-                return iNbAffectedRows;
             }
             catch (Exception ex)
             {
@@ -649,7 +672,7 @@ namespace OsamesMicroOrm
             {
                 if (transaction_ == null && dbConnection != null)
                 {
-                    // La connexion n'�tait pas celle de la transaction
+                    // La connexion n'etait pas celle de la transaction
                     dbConnection.Close();
                     dbConnection.Dispose();
                 }
@@ -667,32 +690,77 @@ namespace OsamesMicroOrm
         /// <param name="lastInsertedRowId_">Last inserted row ID (long number)</param>
         /// <param name="cmdType_">Command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) in list of key/value pair format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in list of key/value pair format</param>
         /// <param name="transaction_">When not null, transaction to use</param>
         /// <returns>Number of affected rows</returns>
-        public int ExecuteNonQuery(string cmdText_, List<KeyValuePair<string, object>> cmdParms_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
+        public int ExecuteNonQuery(string cmdText_, List<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
         {
-            using (DbConnection dbConnection = CreateConnection())
+            DbConnection dbConnection = null;
+            try
             {
-                int iNbAffectedRows;
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, cmdText_, cmdParms_, cmdType_))
-                {
-                    iNbAffectedRows = command.ExecuteNonQuery();
-                }
-                using (DbCommand command = PrepareCommand(dbConnection, transaction_, SelectLastInsertIdCommandText))
-                {
+                // Utiliser la connexion de la transaction ou une nouvelle connexion
+                dbConnection = transaction_ != null ? transaction_.Connection : CreateConnection();
 
-                    object oValue = command.ExecuteScalar();
-                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                // pour l'écriture générique, on caste Parameter[] en IEnumerable (on doit passer un type C#)
+                if (!dbConnection.IsBackup)
+                {
+                    return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, cmdParams_, out lastInsertedRowId_);
                 }
-                return iNbAffectedRows;
+                else
+                {
+                    lock (BackupConnectionUsageLockObject)
+                    {
+                        return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, cmdParams_, out lastInsertedRowId_);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(TraceEventType.Critical, ex.ToString());
+                throw;
+            }
+            finally
+            {
+                if (transaction_ == null && dbConnection != null)
+                {
+                    // La connexion n'etait pas celle de la transaction
+                    dbConnection.Close();
+                    dbConnection.Dispose();
+                }
+
             }
         }
 
         #endregion
 
+        /// <summary>
+        /// Exécution de ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir
+        /// l'ID de la ligne insérée.
+        /// Utilisation des génériques pour factoriser les 3 représentations en types C# des paramètres ADO.NET.
+        /// </summary>
+        /// <param name="connection_"></param>
+        /// <param name="transaction_"></param>
+        /// <param name="cmdParams_"></param>
+        /// <param name="lastInsertedRowId_"></param>
+        /// <param name="cmdType_"></param>
+        /// <param name="cmdText_"></param>
+        /// <returns></returns>
+        private int ExecuteNonQuery(DbConnection connection_, DbTransaction transaction_, CommandType cmdType_, string cmdText_, IEnumerable cmdParams_, out long lastInsertedRowId_)
+         {
+            int iNbAffectedRows;
+            using (DbCommand command = PrepareCommand(connection_, transaction_, cmdText_, cmdParams_, cmdType_))
+            {
+                iNbAffectedRows = command.ExecuteNonQuery();
+            }
 
+            using (DbCommand command = PrepareCommand(connection_, transaction_, SelectLastInsertIdCommandText))
+            {
+                object oValue = command.ExecuteScalar();
+                if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                    throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+            }
+            return iNbAffectedRows;
+        }
         #endregion
 
         #region READER METHODS
@@ -731,13 +799,13 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) in multiple array format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(string cmdText_, object[,] cmdParms_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             // Ne pas mettre dans un using la connexion sinon elle sera dipos�e avant d'avoir lu le data reader
             DbConnection dbConnection = CreateConnection();
-            using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParms_, cmdType_))
+            using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
                     DbDataReader dr = command.ExecuteReader(CommandBehavior.CloseConnection);
@@ -759,13 +827,13 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(string cmdText_, Parameter[] cmdParms_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             // Ne pas mettre dans un using la connexion sinon elle sera dipos�e avant d'avoir lu le data reader
             DbConnection dbConnection = CreateConnection();
-            using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParms_, cmdType_))
+            using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
             {
                 try
                 {
@@ -784,13 +852,13 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) formatted as a list of key/value</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) formatted as a list of key/value</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(string cmdText_, List<KeyValuePair<string, object>> cmdParms_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(string cmdText_, List<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             // Ne pas mettre dans un using la connexion sinon elle sera dipos�e avant d'avoir lu le data reader
             DbConnection dbConnection = CreateConnection();
-            using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParms_, cmdType_))
+            using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
                     return command.ExecuteReader(CommandBehavior.CloseConnection);
@@ -855,14 +923,14 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) in multiple object array format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(string cmdText_, object[,] cmdParms_, CommandType cmdType_ = CommandType.Text)
+        public DataSet DataAdapter(string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             using (DbConnection dbConnection = CreateConnection())
             {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParms_, cmdType_))
+                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
                     try
                     {
 
@@ -894,14 +962,14 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(string cmdText_, Parameter[] cmdParms_, CommandType cmdType_ = CommandType.Text)
+        public DataSet DataAdapter(string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             using (DbConnection dbConnection = CreateConnection())
             {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParms_, cmdType_))
+                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
                     try
                     {
 
@@ -950,7 +1018,7 @@ namespace OsamesMicroOrm
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log(TraceEventType.Critical, ex+ " Command was: " + cmdText_);
+                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_);
                         throw;
                     }
             }
@@ -966,13 +1034,13 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) in multiple object array format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(string cmdText_, object[,] cmdParms_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             using (DbConnection dbConnection = CreateConnection())
             {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParms_, cmdType_))
+                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
                     try
                     {
                         return command.ExecuteScalar();
@@ -992,14 +1060,14 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) in multiple object array format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format</param>
         /// <param name="blTransaction_">When true, query will be executed using current transaction. OpenTransaction() should have been called first</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(bool blTransaction_, string cmdText_, object[,] cmdParms_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(bool blTransaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             using (DbConnection dbConnection = CreateConnection())
             {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParms_, cmdType_))
+                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
                     try
                     {
                         return command.ExecuteScalar();
@@ -1024,13 +1092,13 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(string cmdText_, Parameter[] cmdParms_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             using (DbConnection dbConnection = CreateConnection())
             {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParms_, cmdType_))
+                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
                     try
                     {
                         return command.ExecuteScalar();
@@ -1050,14 +1118,14 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParms_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <param name="blTransaction_">When true, query will be executed using current transaction. OpenTransaction() should have been called first</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(bool blTransaction_, string cmdText_, Parameter[] cmdParms_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(bool blTransaction_, string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             using (DbConnection dbConnection = CreateConnection())
             {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParms_, cmdType_))
+                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
                     try
                     {
                         return command.ExecuteScalar();
