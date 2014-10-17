@@ -137,14 +137,15 @@ namespace TestOsamesMicroOrmSqlite
         [TestCategory("SqLite")]
         [TestCategory("ADO.NET pooling")]
         [ExpectedException(typeof(InvalidOperationException))]
-        [Ignore]
+        //[Ignore]
         public void TestExhaustingPoolSqlite()
         {
             List<System.Data.Common.DbConnection> lstConnections = new List<System.Data.Common.DbConnection>();
             try
             {
                 // changement de la connexion string
-                DbManager.ConnectionString += @"Pooling=True;Max Pool Size=10";
+                string cs = DbManager.ConnectionString;
+                ConfigurePool(ref cs, 10);
                 for (int i = 0; i < 20; i++)
                 {
                     lstConnections.Add(DbManager.Instance.DbProviderFactory.CreateConnection());
@@ -175,6 +176,21 @@ namespace TestOsamesMicroOrmSqlite
                     connection.Dispose();
                 }
             }
+        }
+
+        /// <summary>
+        /// Utilitaire de modification de valeurs dans une connection string.
+        /// </summary>
+        /// <param name="connectionString_"></param>
+        /// <param name="maxPoolSize_"></param>
+        private void ConfigurePool(ref string connectionString_, int maxPoolSize_)
+        {
+            DbConnectionStringBuilder tool = new DbConnectionStringBuilder { ConnectionString = connectionString_ };
+            tool["Pooling"] = "True";
+            tool["Max Pool Size"] = maxPoolSize_;
+            
+            connectionString_ = tool.ConnectionString;
+
         }
     }
 }

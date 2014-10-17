@@ -226,8 +226,10 @@ namespace OsamesMicroOrm
                 if (BackupConnection == null)
                 {
                     // we just opened our first connection!
+                    // Keep a reference to it and keep this backup connexion unused for now
                     BackupConnection = new DbConnection(adoConnection, true);
-                    return BackupConnection;
+                    // Try to get a second connection and return it
+                    return CreateConnection();
                 }
                 // Not the first connection
                 DbConnection pooledConnection = new DbConnection(adoConnection, false);
@@ -245,9 +247,12 @@ namespace OsamesMicroOrm
                 }
                 // could not get a second connection
                 // use backup connection
-                // We may have to reopen it
-                if(BackupConnection.State != ConnectionState.Open)
+                // We may have to reopen it because we waited a long time before using it
+                if (BackupConnection.State != ConnectionState.Open)
+                {
+                    BackupConnection.ConnectionString = ConnectionString;
                     BackupConnection.Open();
+                }
 
                 return BackupConnection;
             }
