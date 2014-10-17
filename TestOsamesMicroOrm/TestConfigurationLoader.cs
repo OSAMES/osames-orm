@@ -283,6 +283,7 @@ namespace TestOsamesMicroOrm
 
             var toto = stringConnectionDictionary[0];
             ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "DATABASE", true);
+            Assert.AreEqual("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$dbPathDATABASE;Persist Security Info=False;", toto);
 
             Console.WriteLine(toto);
         }
