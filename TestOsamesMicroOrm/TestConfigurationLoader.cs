@@ -283,8 +283,33 @@ namespace TestOsamesMicroOrm
 
             var toto = stringConnectionDictionary[0];
             ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "DATABASE", true);
+            Console.WriteLine("Test Normal param True: " + toto);
 
-            Console.WriteLine(toto);
+            toto = stringConnectionDictionary[0];
+            ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "DATABASE", false);
+            Console.WriteLine("Test Normal param False " + toto);
+
+            toto = stringConnectionDictionary[0];
+            ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "", false);
+            Console.WriteLine("Test Normal param True: " + toto);
+
+            // A partir d'ici ca plante (throw dans le code)
+            toto = stringConnectionDictionary[0];
+            ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "", true);
+            Console.WriteLine("Test Normal param True: " + toto);
+
+            toto = stringConnectionDictionary[0];
+            ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbPasExistant", "DATABASE", true);
+            Console.WriteLine("Test var inexistante dans la string, param True: " + toto);
+
+            toto = stringConnectionDictionary[0];
+            ConfigurationLoader.OrmConfigStringReplace(ref toto, "", "DATABASE", true);
+            Console.WriteLine("Test pas de variable passé et param True: " + toto);
+
+            toto = stringConnectionDictionary[0];
+            ConfigurationLoader.OrmConfigStringReplace(ref toto, "", "DATABASE", false);
+            Console.WriteLine("Test pas de variable passé et param false: " + toto);
+
         }
     }
 }
