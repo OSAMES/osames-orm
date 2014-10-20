@@ -18,6 +18,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Text;
 using OsamesMicroOrm.Configuration;
@@ -104,12 +105,15 @@ namespace OsamesMicroOrm.DbTools
 
             FormatSqlForUpdate(ref dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, propertiesNames_, strWhereColumnNames_, oWhereValues_, out sqlCommand, out adoParameters, out strErrorMsg_);
 
-            long lastInsertedRowId;
-            int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(sqlCommand, adoParameters, out lastInsertedRowId);
-            if (nbRowsAffected == 0)
-                Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
+            using (DbConnection conn = DbManager.Instance.CreateConnection())
+            {
+                long lastInsertedRowId;
+                int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(conn, null, CommandType.Text, sqlCommand, adoParameters, out lastInsertedRowId);
+                if (nbRowsAffected == 0)
+                    Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
 
-            return nbRowsAffected;
+                return nbRowsAffected;
+            }
         }
 
     }

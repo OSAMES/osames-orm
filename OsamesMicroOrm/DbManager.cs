@@ -341,8 +341,6 @@ namespace OsamesMicroOrm
 
         #region COMMANDS
 
-        #region PARAMETERLESS METHODS
-
         /// <summary>
         /// Initializes a DbCommand object with parameters and returns it ready for execution.
         /// </summary>
@@ -350,7 +348,8 @@ namespace OsamesMicroOrm
         /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, CommandType cmdType_ = CommandType.Text)
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in one of the implemented formats, see CreateDbParameters() methods</param>
+        private DbCommand PrepareCommand<T>(DbConnection connection_, DbTransaction transaction_, string cmdText_, T cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             System.Data.Common.DbCommand adoCommand = DbProviderFactory.CreateCommand();
 
@@ -364,97 +363,30 @@ namespace OsamesMicroOrm
             if (transaction_ != null)
                 command.Transaction = transaction_;
 
-            return command;
-        }
-
-        #endregion
-
-        #region OBJECT BASED PARAMETER ARRAY
-
-        /// <summary>
-        /// Signature de PrepareCommand sous forme "générique". Le compilateur trouvera des signatures identiques mais avec un type donné pour cmdParams_.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="connection_"></param>
-        /// <param name="transaction_"></param>
-        /// <param name="cmdText_"></param>
-        /// <param name="cmdParams_"></param>
-        /// <param name="cmdType_"></param>
-        /// <returns></returns>
-        private DbCommand PrepareCommand<T>(DbConnection connection_, DbTransaction transaction_, string cmdText_, T cmdParams_, CommandType cmdType_ = CommandType.Text)
-        {
-            // TODO à supprimer ou pas selon le code résultant de la boucle sur les éléments
-            throw new NotImplementedException("PrepareCommand() doit avoir une implémentation propre au type " + typeof(T));
-        }
-     
-
-        /// <summary>
-        /// Initializes a DbCommand object with parameters and returns it ready for execution.
-        /// </summary>
-        /// <param name="connection_">Current connection</param>
-        /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
-        /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
-        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
-        {
-            DbCommand command = PrepareCommand(connection_, transaction_, cmdText_, cmdType_);
-
             if (cmdParams_ != null)
                 CreateDbParameters(command, cmdParams_);
 
             return command;
         }
 
-        #endregion
+        #region CreateDbParameters
 
-        #region STRUCTURE BASED PARAMETER ARRAY
+        #region Generic signature
 
         /// <summary>
-        /// Initializes a DbCommand object with parameters and returns it ready for execution.
+        /// Adds ADO.NET parameters to parameter DbCommand.
+        /// Parameters are all input parameters.
         /// </summary>
-        /// <param name="connection_">Current connection</param>
-        /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
-        /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
-        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        /// <param name="command_">DbCommand to add parameters to</param>
+        /// <param name="adoParams_">ADO.NET parameters (name and value) in multiple array format</param>
+        private void CreateDbParameters<T>(DbCommand command_, T adoParams_)
         {
-            DbCommand command = PrepareCommand(connection_, transaction_, cmdText_, cmdType_);
-
-            if (cmdParams_ != null)
-                CreateDbParameters(command, cmdParams_);
-            return command;
+            throw new NotImplementedException("CreateDbParameters doit avoir une implémentation propre au type " + typeof(T));
         }
 
         #endregion
 
-        #region KEY VALUE PAIR BASED PARAMETER ARRAY
-
-        /// <summary>
-        /// Initializes a DbCommand object with parameters and returns it ready for execution.
-        /// </summary>
-        /// <param name="connection_">Current connection</param>
-        /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
-        /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in list of key/value pair format</param>
-        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, List<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
-        {
-            DbCommand command = PrepareCommand(connection_, transaction_, cmdText_, cmdType_);
-
-            if (cmdParams_ != null)
-                CreateDbParameters(command, cmdParams_);
-            return command;
-        }
-
-        #endregion
-
-        #endregion
-
-        #region PARAMETER METHODS
-
-        #region OBJECT BASED
+        #region Specialisation : OBJECT BASED
 
         /// <summary>
         /// Adds ADO.NET parameters to parameter DbCommand.
@@ -476,7 +408,7 @@ namespace OsamesMicroOrm
 
         #endregion
 
-        #region STRUCTURE BASED
+        #region Specialisation : STRUCTURE BASED
 
         /// <summary>
         /// Adds ADO.NET parameters to parameter DbCommand.
@@ -498,7 +430,7 @@ namespace OsamesMicroOrm
 
         #endregion
 
-        #region KeyValuePair based
+        #region Specialisation : KeyValuePair based
 
         /// <summary>
         /// Adds ADO.NET parameters to parameter DbCommand.
@@ -522,243 +454,141 @@ namespace OsamesMicroOrm
 
         #endregion
 
+        #endregion
+
         #region EXECUTE METHODS
 
-        #region PARAMETERLESS METHODS
-
         /// <summary>
-        /// Executes an SQL statement which returns number of affected rows("non query command").
+        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
         /// </summary>
-        /// <param name="lastInsertedRowId_">Last inserted row ID (long number)</param>
-        /// <param name="cmdType_">Command type (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <param name="transaction_">When not null, transaction to use</param>
-        /// <returns>Number of affected rows</returns>
-        public int ExecuteNonQuery(string cmdText_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
+        /// <param name="connection_">Connexion</param>
+        /// <param name="transaction_">Transaction optionnelle</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : object[,]</param>
+        /// <param name="lastInsertedRowId_">Sortie : ID du dernier enregistrement inséré</param>
+        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
+        /// <param name="cmdText_">Texte de la requête SQL</param>
+        /// <returns>Nombre de lignes affectées</returns>
+        public int ExecuteNonQuery(DbConnection connection_, DbTransaction transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
-            DbConnection dbConnection = null;
-            try
-            {
-                // Utiliser la connexion de la transaction ou une nouvelle connexion
-                dbConnection = transaction_ != null ? transaction_.Connection : CreateConnection();
-
-                // on n'a pas de paramètres donc on passe null
-                // pour l'écriture générique, on caste null en IEnumerable (on doit passer un type C#)
-                if (!dbConnection.IsBackup)
-                {
-                    return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, (IEnumerable)null, out lastInsertedRowId_);
-                }
-                else
-                {
-                    lock (BackupConnectionUsageLockObject)
-                    {
-                        return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, (IEnumerable)null, out lastInsertedRowId_);
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(TraceEventType.Critical, ex.ToString());
-                throw;
-            }
-            finally
-            {
-                if (transaction_ == null && dbConnection != null)
-                {
-                    // La connexion n'etait pas celle de la transaction
-                    dbConnection.Close();
-                    dbConnection.Dispose();
-                }
-
-            }
-
+            return ExecuteNonQuery(connection_, transaction_, cmdType_, cmdText_, (IEnumerable) cmdParams_, out lastInsertedRowId_);
         }
 
-
-        #endregion
-
-        #region OBJECT BASED PARAMETER ARRAY
-
         /// <summary>
-        /// Executes an SQL statement which returns number of  affected rows("non query command").
+        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
         /// </summary>
-        /// <param name="lastInsertedRowId_">Last inserted row ID (long number)</param>
-        /// <param name="cmdType_">Command type (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
-        /// <param name="transaction_">When not null, transaction to use</param>
-        /// <returns>Number of affected rows</returns>
-        public int ExecuteNonQuery(string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
+        /// <param name="connection_">Connexion</param>
+        /// <param name="transaction_">Transaction optionnelle</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : Parameter[]</param>
+        /// <param name="lastInsertedRowId_">Sortie : ID du dernier enregistrement inséré</param>
+        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
+        /// <param name="cmdText_">Texte de la requête SQL</param>
+        /// <returns>Nombre de lignes affectées</returns>
+        public int ExecuteNonQuery(DbConnection connection_, DbTransaction transaction_, CommandType cmdType_, string cmdText_, Parameter[] cmdParams_, out long lastInsertedRowId_)
         {
-            DbConnection dbConnection = null;
-            try
-            {
-                // Utiliser la connexion de la transaction ou une nouvelle connexion
-                dbConnection = transaction_ != null ? transaction_.Connection : CreateConnection();
-
-                // pour l'écriture générique, on caste object[,] en IEnumerable (on doit passer un type C#)
-                if (!dbConnection.IsBackup)
-                {
-                    return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, cmdParams_, out lastInsertedRowId_);
-                }
-                else
-                {
-                    lock (BackupConnectionUsageLockObject)
-                    {
-                        return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, cmdParams_, out lastInsertedRowId_);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(TraceEventType.Critical, ex.ToString());
-                throw;
-            }
-            finally
-            {
-                if (transaction_ == null && dbConnection != null)
-                {
-                    // La connexion n'etait pas celle de la transaction
-                    dbConnection.Close();
-                    dbConnection.Dispose();
-                }
-
-            }
-
+            return ExecuteNonQuery(connection_, transaction_, cmdType_, cmdText_, (IEnumerable)cmdParams_, out lastInsertedRowId_);
         }
 
-
-        #endregion
-
-        #region STRUCTURE BASED PARAMETER ARRAY
-
         /// <summary>
-        /// Executes an SQL statement which returns number of  affected rows("non query command").
+        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
         /// </summary>
-        /// <param name="lastInsertedRowId_">Last inserted row ID (long number)</param>
-        /// <param name="cmdType_">Command type (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
-        /// <param name="transaction_">When not null, transaction to use</param>
-        /// <returns>Number of affected rows</returns>
-        public int ExecuteNonQuery(string cmdText_, Parameter[] cmdParams_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
+        /// <param name="connection_">Connexion</param>
+        /// <param name="transaction_">Transaction optionnelle</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : List&lt;KeyValuePair&lt;string, oject&gt;&gt;</param>
+        /// <param name="lastInsertedRowId_">Sortie : ID du dernier enregistrement inséré</param>
+        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
+        /// <param name="cmdText_">Texte de la requête SQL</param>
+        /// <returns>Nombre de lignes affectées</returns>
+        public int ExecuteNonQuery(DbConnection connection_, DbTransaction transaction_, CommandType cmdType_, string cmdText_, List<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
         {
-            DbConnection dbConnection = null;
-            try
-            {
-                // Utiliser la connexion de la transaction ou une nouvelle connexion
-                dbConnection = transaction_ != null ? transaction_.Connection : CreateConnection();
-
-                // pour l'écriture générique, on caste Parameter[] en IEnumerable (on doit passer un type C#)
-                if (!dbConnection.IsBackup)
-                {
-                    return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, cmdParams_, out lastInsertedRowId_);
-                }
-                else
-                {
-                    lock (BackupConnectionUsageLockObject)
-                    {
-                        return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, cmdParams_, out lastInsertedRowId_);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(TraceEventType.Critical, ex.ToString());
-                throw;
-            }
-            finally
-            {
-                if (transaction_ == null && dbConnection != null)
-                {
-                    // La connexion n'etait pas celle de la transaction
-                    dbConnection.Close();
-                    dbConnection.Dispose();
-                }
-
-            }
+            return ExecuteNonQuery(connection_, transaction_, cmdType_, cmdText_, (IEnumerable)cmdParams_, out lastInsertedRowId_);
         }
 
-        #endregion
-
-        #region KEY VALUE PAIR BASED PARAMETER ARRAY
-
         /// <summary>
-        /// Executes an SQL statement which returns number of  affected rows("non query command").
+        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
         /// </summary>
-        /// <param name="lastInsertedRowId_">Last inserted row ID (long number)</param>
-        /// <param name="cmdType_">Command type (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in list of key/value pair format</param>
-        /// <param name="transaction_">When not null, transaction to use</param>
-        /// <returns>Number of affected rows</returns>
-        public int ExecuteNonQuery(string cmdText_, List<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_, CommandType cmdType_ = CommandType.Text, DbTransaction transaction_ = null)
-        {
-            DbConnection dbConnection = null;
-            try
-            {
-                // Utiliser la connexion de la transaction ou une nouvelle connexion
-                dbConnection = transaction_ != null ? transaction_.Connection : CreateConnection();
-
-                // pour l'écriture générique, on caste Parameter[] en IEnumerable (on doit passer un type C#)
-                if (!dbConnection.IsBackup)
-                {
-                    return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, cmdParams_, out lastInsertedRowId_);
-                }
-                else
-                {
-                    lock (BackupConnectionUsageLockObject)
-                    {
-                        return ExecuteNonQuery(dbConnection, transaction_, cmdType_, cmdText_, cmdParams_, out lastInsertedRowId_);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(TraceEventType.Critical, ex.ToString());
-                throw;
-            }
-            finally
-            {
-                if (transaction_ == null && dbConnection != null)
-                {
-                    // La connexion n'etait pas celle de la transaction
-                    dbConnection.Close();
-                    dbConnection.Dispose();
-                }
-
-            }
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Exécution de ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir
-        /// l'ID de la ligne insérée.
-        /// Utilisation des génériques pour factoriser les 3 représentations en types C# des paramètres ADO.NET.
-        /// </summary>
-        /// <param name="connection_"></param>
-        /// <param name="transaction_"></param>
-        /// <param name="cmdParams_"></param>
-        /// <param name="lastInsertedRowId_"></param>
-        /// <param name="cmdType_"></param>
-        /// <param name="cmdText_"></param>
-        /// <returns></returns>
+        /// <param name="connection_">Connexion</param>
+        /// <param name="transaction_">Transaction optionnelle</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : object[,], Parameter[] ou List&lt;KeyValuePair&lt;string, oject&gt;&gt;, ou encore null</param>
+        /// <param name="lastInsertedRowId_">Sortie : ID du dernier enregistrement inséré</param>
+        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
+        /// <param name="cmdText_">Texte de la requête SQL</param>
+        /// <returns>Nombre de lignes affectées</returns>
         private int ExecuteNonQuery(DbConnection connection_, DbTransaction transaction_, CommandType cmdType_, string cmdText_, IEnumerable cmdParams_, out long lastInsertedRowId_)
-         {
+        {
             int iNbAffectedRows;
             using (DbCommand command = PrepareCommand(connection_, transaction_, cmdText_, cmdParams_, cmdType_))
             {
                 iNbAffectedRows = command.ExecuteNonQuery();
             }
 
-            using (DbCommand command = PrepareCommand(connection_, transaction_, SelectLastInsertIdCommandText))
+            using (DbCommand command = PrepareCommand(connection_, transaction_, SelectLastInsertIdCommandText, (IEnumerable)null))
             {
                 object oValue = command.ExecuteScalar();
                 if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                     throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
             }
+            return iNbAffectedRows;
+        }
+
+        /// <summary>
+        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type UPDATE.
+        /// </summary>
+        /// <param name="connection_">Connexion</param>
+        /// <param name="transaction_">Transaction optionnelle</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : object[,]</param>
+        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
+        /// <param name="cmdText_">Texte de la requête SQL</param>
+        /// <returns>Nombre de lignes affectées</returns>
+        public int ExecuteNonQuery(DbConnection connection_, DbTransaction transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_)
+        {
+            return ExecuteNonQuery(connection_, transaction_, cmdType_, cmdText_, (IEnumerable)cmdParams_);
+        }
+
+        /// <summary>
+        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type UPDATE.
+        /// </summary>
+        /// <param name="connection_">Connexion</param>
+        /// <param name="transaction_">Transaction optionnelle</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : Parameter[]</param>
+        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
+        /// <param name="cmdText_">Texte de la requête SQL</param>
+        /// <returns>Nombre de lignes affectées</returns>
+        public int ExecuteNonQuery(DbConnection connection_, DbTransaction transaction_, CommandType cmdType_, string cmdText_, Parameter[] cmdParams_)
+        {
+            return ExecuteNonQuery(connection_, transaction_, cmdType_, cmdText_, (IEnumerable)cmdParams_);
+        }
+
+        /// <summary>
+        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type UPDATE.
+        /// </summary>
+        /// <param name="connection_">Connexion</param>
+        /// <param name="transaction_">Transaction optionnelle</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : List&lt;KeyValuePair&lt;string, oject&gt;&gt;</param>
+        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
+        /// <param name="cmdText_">Texte de la requête SQL</param>
+        /// <returns>Nombre de lignes affectées</returns>
+        public int ExecuteNonQuery(DbConnection connection_, DbTransaction transaction_, CommandType cmdType_, string cmdText_, List<KeyValuePair<string, object>> cmdParams_)
+        {
+            return ExecuteNonQuery(connection_, transaction_, cmdType_, cmdText_, (IEnumerable)cmdParams_);
+        }
+
+        /// <summary>
+        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type UPDATE.
+        /// </summary>
+        /// <param name="connection_">Connexion</param>
+        /// <param name="transaction_">Transaction optionnelle</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : object[,], Parameter[] ou List&lt;KeyValuePair&lt;string, oject&gt;&gt;, ou encore null</param>
+        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
+        /// <param name="cmdText_">Texte de la requête SQL</param>
+        /// <returns>Nombre de lignes affectées</returns>
+        private int ExecuteNonQuery(DbConnection connection_, DbTransaction transaction_, CommandType cmdType_, string cmdText_, IEnumerable cmdParams_)
+        {
+            int iNbAffectedRows;
+            using (DbCommand command = PrepareCommand(connection_, transaction_, cmdText_, cmdParams_, cmdType_))
+            {
+                iNbAffectedRows = command.ExecuteNonQuery();
+            }
+
             return iNbAffectedRows;
         }
         #endregion
@@ -775,9 +605,9 @@ namespace OsamesMicroOrm
         /// <returns>ADO .NET data reader</returns>
         public DbDataReader ExecuteReader(string cmdText_, CommandType cmdType_ = CommandType.Text)
         {
-            // Ne pas mettre dans un using la connexion sinon elle sera dipos�e avant d'avoir lu le data reader
+            // Ne pas mettre dans un using la connexion sinon elle sera diposee avant d'avoir lu le data reader
             DbConnection dbConnection = CreateConnection();
-            using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdType_))
+            using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, (IEnumerable)null, cmdType_))
                 try
                 {
                     DbDataReader dr = command.ExecuteReader(CommandBehavior.CloseConnection);
@@ -889,7 +719,7 @@ namespace OsamesMicroOrm
 
             using (DbConnection dbConnection = CreateConnection())
             {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdType_))
+                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, (IEnumerable)null, cmdType_))
                     try
                     {
 
@@ -1011,7 +841,7 @@ namespace OsamesMicroOrm
         {
             using (DbConnection dbConnection = CreateConnection())
             {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdType_))
+                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, (IEnumerable)null, cmdType_))
                     try
                     {
                         return command.ExecuteScalar();
