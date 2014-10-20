@@ -349,7 +349,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in one of the implemented formats, see CreateDbParameters() methods</param>
-        private DbCommand PrepareCommand<T>(DbConnection connection_, DbTransaction transaction_, string cmdText_, T cmdParams_, CommandType cmdType_ = CommandType.Text)
+        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, IEnumerable cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             System.Data.Common.DbCommand adoCommand = DbProviderFactory.CreateCommand();
 
@@ -381,7 +381,7 @@ namespace OsamesMicroOrm
         /// <param name="adoParams_">ADO.NET parameters (name and value) in multiple array format</param>
         private void CreateDbParameters<T>(DbCommand command_, T adoParams_)
         {
-            throw new NotImplementedException("CreateDbParameters doit avoir une implémentation propre au type " + typeof(T));
+            throw new NotImplementedException("CreateDbParameters doit avoir une implémentation propre au type " + adoParams_.GetType());
         }
 
         #endregion
