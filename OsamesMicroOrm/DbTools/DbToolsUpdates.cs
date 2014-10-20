@@ -108,7 +108,7 @@ namespace OsamesMicroOrm.DbTools
             using (DbConnection conn = DbManager.Instance.CreateConnection())
             {
                 long lastInsertedRowId;
-                int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(conn, null, CommandType.Text, sqlCommand, adoParameters, out lastInsertedRowId);
+                int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters, out lastInsertedRowId);
                 if (nbRowsAffected == 0)
                     Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
 
