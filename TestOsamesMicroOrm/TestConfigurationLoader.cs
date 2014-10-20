@@ -85,7 +85,8 @@ namespace TestOsamesMicroOrm
 
                 Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook.mdf;Integrated Security=True"), DbManager.ConnectionString);
                 Assert.AreEqual(@"System.Data.SqlClient", DbManager.ProviderName);
-            } finally
+            }
+            finally
             {
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.activeDbConnection.ToString());
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.dbName.ToString());
@@ -118,7 +119,7 @@ namespace TestOsamesMicroOrm
             {
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString());
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.mappingFileName.ToString());
-            }            
+            }
         }
 
         /// <summary>
@@ -158,7 +159,7 @@ namespace TestOsamesMicroOrm
             Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["Customer"];
             Assert.AreEqual(13, mappings.Keys.Count, "Expected 13 keys in dictionary for Customer mappings after initialize");
             Assert.IsTrue(mappings.ContainsKey("Email"), "Expected to find 'Email' key");
-            Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");          
+            Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
         }
 
         /// <summary>
@@ -199,7 +200,7 @@ namespace TestOsamesMicroOrm
 
             ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("foobar", "Email");
         }
- 
+
         /// <summary>
         /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is not found (property name).
         /// </summary>
@@ -213,7 +214,7 @@ namespace TestOsamesMicroOrm
         public void TestGetMappingDbColumnNameWrongPropertyName()
         {
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-          // TODO manque l'assert que la clé n'existe pas dans le dico interne
+            // TODO manque l'assert que la clé n'existe pas dans le dico interne
             ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("foobar", "Email");
         }
 
@@ -273,6 +274,7 @@ namespace TestOsamesMicroOrm
         [Owner("Benjamin Nolmans")]
         [TestCategory("Configuration")]
         [TestCategory("StringConnextion replace")]
+        [ExpectedException(typeof(System.Exception), "Execption levée")]
         public void TestOrmConfigStringReplace()
         {
             List<string> stringConnectionDictionary = new List<string>();
@@ -283,33 +285,65 @@ namespace TestOsamesMicroOrm
 
             var toto = stringConnectionDictionary[0];
             ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "DATABASE", true);
-            Console.WriteLine("Test Normal param True: " + toto);
+            Assert.AreEqual("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$dbPathDATABASE;Persist Security Info=False;", toto);
 
             toto = stringConnectionDictionary[0];
             ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "DATABASE", false);
-            Console.WriteLine("Test Normal param False " + toto);
+            Assert.AreEqual("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$dbPathDATABASE;Persist Security Info=False;", toto);
 
             toto = stringConnectionDictionary[0];
             ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "", false);
-            Console.WriteLine("Test Normal param True: " + toto);
+            Assert.AreEqual("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$dbPath;Persist Security Info=False;", toto);
 
             // A partir d'ici ca plante (throw dans le code)
             toto = stringConnectionDictionary[0];
-            ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "", true);
-            Console.WriteLine("Test Normal param True: " + toto);
+            try
+            {
+                Console.WriteLine("Test 1 : remplacement de $DBName par valeur à blanc");
+                ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "", true);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception !!: ", e.Message);
+                //throw;
+            }
+            finally
+            {
+                Console.WriteLine("Fin du test 1");
+            }
 
             toto = stringConnectionDictionary[0];
-            ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbPasExistant", "DATABASE", true);
-            Console.WriteLine("Test var inexistante dans la string, param True: " + toto);
+            try
+            {
+                ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbPasExistant", "DATABASE", true);
+            }
+            catch (Exception e) 
+            {
+                Console.WriteLine("Exception !!: ", e.Message);
+                //throw;
+            }
 
             toto = stringConnectionDictionary[0];
-            ConfigurationLoader.OrmConfigStringReplace(ref toto, "", "DATABASE", true);
-            Console.WriteLine("Test pas de variable passé et param True: " + toto);
+            try
+            {
+                ConfigurationLoader.OrmConfigStringReplace(ref toto, "", "DATABASE", true);
+            }
+            catch (Exception e) 
+            {
+                Console.WriteLine("Exception !!: ", e.Message);
+                //throw;
+            }
 
             toto = stringConnectionDictionary[0];
-            ConfigurationLoader.OrmConfigStringReplace(ref toto, "", "DATABASE", false);
-            Console.WriteLine("Test pas de variable passé et param false: " + toto);
-
+            try
+            {
+                ConfigurationLoader.OrmConfigStringReplace(ref toto, "", "DATABASE", false);
+            }
+            catch (Exception e) 
+            {
+                Console.WriteLine("Exception !!: ", e.Message);
+                //throw;
+            }
         }
     }
 }
