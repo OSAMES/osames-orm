@@ -526,13 +526,13 @@ namespace OsamesMicroOrm.Configuration
         internal static void OrmConfigStringReplace(ref string connexionString_, string varToReplace_, string replacedVarValue_, bool required_)
         {
             if (string.IsNullOrWhiteSpace(varToReplace_))
-                throw new Exception("The string " + varToReplace_ + " is null or white spaces");
+                throw new Exception("The variable to is null or white spaces");
 
             if ((connexionString_.LastIndexOf(varToReplace_, StringComparison.InvariantCulture) < 0) && required_)
-                throw new Exception("The string " + varToReplace_ + " was not found in ConnexionString.");
+                throw new Exception("The variable to replace " + varToReplace_ + " was not found in ConnexionString.");
 
-            if ((string.IsNullOrWhiteSpace(varToReplace_) || string.IsNullOrWhiteSpace(replacedVarValue_)) && required_)
-                throw new Exception("Toto boit du lolo :D");
+            if (string.IsNullOrWhiteSpace(replacedVarValue_) && required_)
+                throw new Exception("The variable or value to replace is null or white spaces.");
 
             connexionString_ = connexionString_.Replace(varToReplace_, replacedVarValue_);
            

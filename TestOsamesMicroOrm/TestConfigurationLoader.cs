@@ -274,7 +274,6 @@ namespace TestOsamesMicroOrm
         [Owner("Benjamin Nolmans")]
         [TestCategory("Configuration")]
         [TestCategory("StringConnextion replace")]
-        [ExpectedException(typeof(System.Exception), "Execption levée")]
         public void TestOrmConfigStringReplace()
         {
             List<string> stringConnectionDictionary = new List<string>();
@@ -296,20 +295,38 @@ namespace TestOsamesMicroOrm
             Assert.AreEqual("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$dbPath;Persist Security Info=False;", toto);
 
             // A partir d'ici ca plante (throw dans le code)
+
+            //ici on ne donne pas de string a remplacer on lance une exception dans tout les cas.
             toto = stringConnectionDictionary[0];
             try
             {
-                Console.WriteLine("Test 1 : remplacement de $DBName par valeur à blanc");
+                ConfigurationLoader.OrmConfigStringReplace(ref toto, "", "DATABASE", false);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception sur variable à remplacer à null: " + e.Message);
+            }
+
+            //ici on ne donne pas de valeur de remplacement et c'est optionnel
+            toto = stringConnectionDictionary[0];
+            try
+            {
+                ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "", false);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception sur value null et optionnel: "+ e.Message);
+            }
+
+            //ici on ne donne pas de valeur de remplacement alors que c'est obligatoire
+            toto = stringConnectionDictionary[0];
+            try
+            {
                 ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "", true);
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception !!: ", e.Message);
-                //throw;
-            }
-            finally
-            {
-                Console.WriteLine("Fin du test 1");
+                Console.WriteLine("Exception sur valeur de remplacement à null et obligatoire: " + e.Message);
             }
 
             toto = stringConnectionDictionary[0];
@@ -319,30 +336,17 @@ namespace TestOsamesMicroOrm
             }
             catch (Exception e) 
             {
-                Console.WriteLine("Exception !!: ", e.Message);
-                //throw;
+                Console.WriteLine("Exception variable a remplacer non trouvée et obligatoire: "+ e.Message);
             }
 
             toto = stringConnectionDictionary[0];
             try
             {
-                ConfigurationLoader.OrmConfigStringReplace(ref toto, "", "DATABASE", true);
+                ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbPasExistant", "DATABASE", false);
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
-                Console.WriteLine("Exception !!: ", e.Message);
-                //throw;
-            }
-
-            toto = stringConnectionDictionary[0];
-            try
-            {
-                ConfigurationLoader.OrmConfigStringReplace(ref toto, "", "DATABASE", false);
-            }
-            catch (Exception e) 
-            {
-                Console.WriteLine("Exception !!: ", e.Message);
-                //throw;
+                Console.WriteLine("Exception variable a remplacer non trouvée et optionnel: " + e.Message);
             }
         }
     }
