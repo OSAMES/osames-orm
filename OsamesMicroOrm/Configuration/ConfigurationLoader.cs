@@ -188,7 +188,6 @@ namespace OsamesMicroOrm.Configuration
             string dbPath = string.Concat(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), ConfigurationManager.AppSettings[@"dbPath"]);
            
             // 1. AppSettings : doit définir une connexion DB active
-
             string dbConnexion = ConfigurationManager.AppSettings["activeDbConnection"];
             if (string.IsNullOrWhiteSpace(dbConnexion))
             {
@@ -197,7 +196,6 @@ namespace OsamesMicroOrm.Configuration
             }
 
             // 2. Cette connexion DB doit être trouvée dans les ConnectionStrings définies dans la configuration (attribute "Name")
-
             var activeConnection = ConfigurationManager.ConnectionStrings[dbConnexion];
             if (activeConnection == null)
             {
@@ -228,11 +226,17 @@ namespace OsamesMicroOrm.Configuration
             }
 
             // Some database connection definition don't need a database path
-            if (!string.IsNullOrWhiteSpace(dbPath))
-                conn = (activeConnection.ConnectionString.Replace(@"$dbPath", dbPath));
+            try
+            {
+                ConfigurationLoader.OrmConfigStringReplace(ref conn, "$dbPath", dbPath, false);
+            }
+            catch (Exception e)
+            {
+                Logger.Log(TraceEventType.Critical, e.Message);
+                return false;
+            }
 
             // 6. Nom de la base de données
-
             string dbName = ConfigurationManager.AppSettings["dbName"];
             if (string.IsNullOrWhiteSpace(dbName))
             {
@@ -240,7 +244,14 @@ namespace OsamesMicroOrm.Configuration
                 return false;
             }
             
-            conn = conn.Replace("$dbName", dbName);
+            try
+            {
+                ConfigurationLoader.OrmConfigStringReplace(ref conn, "$dbName", dbName, true);
+            }
+            catch (Exception e)
+            {
+                Logger.Log(TraceEventType.Critical, "No database name defined in appSettings ('dbName')");
+            }
 
             // 7. Mot de passe optionnel de la base de données
 
