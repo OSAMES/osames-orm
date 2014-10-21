@@ -1006,37 +1006,32 @@ namespace OsamesMicroOrm
         /// Executes a SQL select operation
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(string cmdText_, CommandType cmdType_ = CommandType.Text)
-        {
-            // Ne pas mettre dans un using la connexion sinon elle sera diposee avant d'avoir lu le data reader
-            DbConnection dbConnection = CreateConnection();
-            using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, (object[,])null, cmdType_))
-                try
-                {
-                    DbDataReader dr = command.ExecuteReader(CommandBehavior.CloseConnection);
-                    return dr;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_);
-                    throw;
-                }
-        }
-
-        /// <summary>
-        /// Executes a SQL select operation
-        /// </summary>
-        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbConnection connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            // Ne pas mettre dans un using la connexion sinon elle sera diposee avant d'avoir lu le data reader
-            DbConnection dbConnection = CreateConnection();
-            using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
+            if (connection_.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                        try
+                        {
+                            DbDataReader dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+                            return dr;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
+            }
+            // no lock
+            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
                     DbDataReader dr = command.ExecuteReader(CommandBehavior.CloseConnection);
@@ -1053,14 +1048,75 @@ namespace OsamesMicroOrm
         /// Executes a SQL select operation
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="transaction_">Transaction avec sa connexion associée</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
+        /// <returns>ADO .NET data reader</returns>
+        public DbDataReader ExecuteReader(DbTransaction transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+            if (transaction_.Connection.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                        try
+                        {
+                            DbDataReader dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+                            return dr;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
+            }
+            // no lock
+            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+                    DbDataReader dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+                    return dr;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+        }
+
+        /// <summary>
+        /// Executes a SQL select operation
+        /// </summary>
+        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbConnection connection_, string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            // Ne pas mettre dans un using la connexion sinon elle sera diposee avant d'avoir lu le data reader
-            DbConnection dbConnection = CreateConnection();
-            using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
+            if (connection_.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    {
+                        try
+                        {
+                            return command.ExecuteReader(CommandBehavior.CloseConnection);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                    }
+                }
+            }
+            // no lock
+            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
             {
                 try
                 {
@@ -1073,6 +1129,52 @@ namespace OsamesMicroOrm
                 }
             }
         }
+
+        /// <summary>
+        /// Executes a SQL select operation
+        /// </summary>
+        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="transaction_">Transaction avec sa connexion associée</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
+        /// <returns>ADO .NET data reader</returns>
+        public DbDataReader ExecuteReader(DbTransaction transaction_, string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+            if (transaction_.Connection.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    {
+                        try
+                        {
+                            return command.ExecuteReader(CommandBehavior.CloseConnection);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                    }
+                }
+            }
+            // no lock
+            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+            {
+                try
+                {
+                    return command.ExecuteReader(CommandBehavior.CloseConnection);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+            }
+        }
+
+        // TODO ORM-94 continuer ici le refactoring correctif
 
         /// <summary>
         /// Executes a SQL select operation
