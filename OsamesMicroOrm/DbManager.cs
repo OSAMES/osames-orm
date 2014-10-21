@@ -429,7 +429,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="command_">DbCommand to add parameters to</param>
         /// <param name="adoParams_">ADO.NET parameters (name and value) in multiple array format</param>
-        private void CreateDbParameters(DbCommand command_, object[,] adoParams_)
+        private static void CreateDbParameters(DbCommand command_, object[,] adoParams_)
         {
             for (int i = 0; i < adoParams_.Length / 2; i++)
             {
@@ -447,7 +447,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="command_">DbCommand to add parameters to</param>
         /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
-        private void CreateDbParameters(DbCommand command_, IEnumerable<Parameter> adoParams_)
+        private static void CreateDbParameters(DbCommand command_, IEnumerable<Parameter> adoParams_)
         {
             foreach (Parameter oParam in adoParams_)
             {
@@ -465,7 +465,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="command_">DbCommand to add parameters to</param>
         /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
-        private void CreateDbParameters(DbCommand command_, IEnumerable<KeyValuePair<string, object>> adoParams_)
+        private static void CreateDbParameters(DbCommand command_, IEnumerable<KeyValuePair<string, object>> adoParams_)
         {
             foreach (KeyValuePair<string, object> oParam in adoParams_)
             {
@@ -476,7 +476,6 @@ namespace OsamesMicroOrm
                 command_.Parameters.Add(dbParameter);
             }
         }
-
 
         #endregion
 
@@ -1214,28 +1213,99 @@ namespace OsamesMicroOrm
 
         #region SCALAR METHODS
 
+        /// <summary>
+        /// Executes a SQL operation and returns value of first column and first line of data table result.
+        /// Generally used for a query such as "count()".
+        /// </summary>
+        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="connection_">Connexion (sans transaction)</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format. Can be null</param>
+        /// <returns>data value</returns>
+        public object ExecuteScalar(DbConnection connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+            if (connection_.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    {
+                        try
+                        {
+                            return command.ExecuteScalar();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                    }
+                }
+            }
+
+            // no lock
+            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+            {
+                try
+                {
+                    return command.ExecuteScalar();
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+            }
+        }
 
         /// <summary>
         /// Executes a SQL operation and returns value of first column and first line of data table result.
         /// Generally used for a query such as "count()".
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="transaction_">Transaction avec sa connexion associée</param>
         /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(string cmdText_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbTransaction transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            using (DbConnection dbConnection = CreateConnection())
+            if (transaction_.Connection.IsBackup)
             {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, (object[,])null, cmdType_))
-                    try
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
-                        return command.ExecuteScalar();
+                        try
+                        {
+                            return command.ExecuteScalar();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_);
-                        throw;
-                    }
+                }
+            }
+
+            // no lock
+            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+            {
+                try
+                {
+                    return command.ExecuteScalar();
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
             }
         }
 
@@ -1245,25 +1315,44 @@ namespace OsamesMicroOrm
         /// Generally used for a query such as "count()".
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbConnection connection_, string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            using (DbConnection dbConnection = CreateConnection())
-            {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
-                    try
-                    {
-                        return command.ExecuteScalar();
 
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                        throw;
-                    }
+            if (connection_.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                        try
+                        {
+                            return command.ExecuteScalar();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
             }
+            // no lock
+            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+                    return command.ExecuteScalar();
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+
         }
 
         /// <summary>
@@ -1271,82 +1360,134 @@ namespace OsamesMicroOrm
         /// Generally used for a query such as "count()".
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="transaction_">Transaction avec sa connexion associée</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format</param>
-        /// <param name="blTransaction_">When true, query will be executed using current transaction. OpenTransaction() should have been called first</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(bool blTransaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbTransaction transaction_, string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            using (DbConnection dbConnection = CreateConnection())
+
+            if (transaction_.Connection.IsBackup)
             {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
-                    try
-                    {
-                        return command.ExecuteScalar();
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                        try
+                        {
+                            return command.ExecuteScalar();
 
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                        throw;
-                    }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
             }
-        }
+            // no lock
+            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+                    return command.ExecuteScalar();
 
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+
+        }
+        /// <summary>
+        /// Executes a SQL operation and returns value of first column and first line of data table result.
+        /// Generally used for a query such as "count()".
+        /// </summary>
+        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="connection_">Connexion (sans transaction)</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
+        /// <returns>data value</returns>
+        public object ExecuteScalar(DbConnection connection_, string cmdText_, List<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+
+            if (connection_.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                        try
+                        {
+                            return command.ExecuteScalar();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
+            }
+            // no lock
+            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+                    return command.ExecuteScalar();
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+
+        }
 
         /// <summary>
         /// Executes a SQL operation and returns value of first column and first line of data table result.
         /// Generally used for a query such as "count()".
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="transaction_">Transaction avec sa connexion associée</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbTransaction transaction_, string cmdText_, List<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            using (DbConnection dbConnection = CreateConnection())
+
+            if (transaction_.Connection.IsBackup)
             {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
-                    try
-                    {
-                        return command.ExecuteScalar();
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                        try
+                        {
+                            return command.ExecuteScalar();
 
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                        throw;
-                    }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
             }
+            // no lock
+            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+                    return command.ExecuteScalar();
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+
         }
-
-        /// <summary>
-        /// Executes a SQL operation and returns value of first column and first line of data table result.
-        /// Generally used for a query such as "count()".
-        /// </summary>
-        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
-        /// <param name="blTransaction_">When true, query will be executed using current transaction. OpenTransaction() should have been called first</param>
-        /// <returns>data value</returns>
-        public object ExecuteScalar(bool blTransaction_, string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
-        {
-            using (DbConnection dbConnection = CreateConnection())
-            {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
-                    try
-                    {
-                        return command.ExecuteScalar();
-
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                        throw;
-                    }
-            }
-        }
-
 
         #endregion
 
