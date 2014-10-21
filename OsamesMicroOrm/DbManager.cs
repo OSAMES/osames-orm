@@ -498,16 +498,39 @@ namespace OsamesMicroOrm
         public int ExecuteNonQuery(DbConnection connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
-            {
-                iNbAffectedRows = command.ExecuteNonQuery();
-            }
 
-            using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (object[,])null))
+            if (connection_.IsBackup)
             {
-                object oValue = command.ExecuteScalar();
-                if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                    throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+
+                    using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (object[,])null))
+                    {
+                        object oValue = command.ExecuteScalar();
+                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
+
+                using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (object[,])null))
+                {
+                    object oValue = command.ExecuteScalar();
+                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                }
             }
             return iNbAffectedRows;
         }
@@ -524,17 +547,41 @@ namespace OsamesMicroOrm
         public int ExecuteNonQuery(DbTransaction transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+
+            if (transaction_.Connection.IsBackup)
             {
-                iNbAffectedRows = command.ExecuteNonQuery();
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (object[,])null))
+                    {
+                        object oValue = command.ExecuteScalar();
+                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
+
+                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (object[,])null))
+                {
+                    object oValue = command.ExecuteScalar();
+                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                }
             }
 
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (object[,])null))
-            {
-                object oValue = command.ExecuteScalar();
-                if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                    throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
-            }
             return iNbAffectedRows;
         }
 
@@ -550,16 +597,39 @@ namespace OsamesMicroOrm
         public int ExecuteNonQuery(DbConnection connection_, CommandType cmdType_, string cmdText_, IEnumerable<Parameter> cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
-            {
-                iNbAffectedRows = command.ExecuteNonQuery();
-            }
 
-            using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
+            if (connection_.IsBackup)
             {
-                object oValue = command.ExecuteScalar();
-                if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                    throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+
+                    using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
+                    {
+                        object oValue = command.ExecuteScalar();
+                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
+
+                using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
+                {
+                    object oValue = command.ExecuteScalar();
+                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                }
             }
             return iNbAffectedRows;
         }
@@ -576,17 +646,41 @@ namespace OsamesMicroOrm
         public int ExecuteNonQuery(DbTransaction transaction_, CommandType cmdType_, string cmdText_, IEnumerable<Parameter> cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+
+            if (transaction_.Connection.IsBackup)
             {
-                iNbAffectedRows = command.ExecuteNonQuery();
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
+                    {
+                        object oValue = command.ExecuteScalar();
+                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
+
+                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
+                {
+                    object oValue = command.ExecuteScalar();
+                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                }
             }
 
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
-            {
-                object oValue = command.ExecuteScalar();
-                if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                    throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
-            }
             return iNbAffectedRows;
         }
 
@@ -602,17 +696,41 @@ namespace OsamesMicroOrm
         public int ExecuteNonQuery(DbConnection connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+
+            if (connection_.IsBackup)
             {
-                iNbAffectedRows = command.ExecuteNonQuery();
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+
+                    using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
+                    {
+                        object oValue = command.ExecuteScalar();
+                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
+
+                using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
+                {
+                    object oValue = command.ExecuteScalar();
+                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                }
             }
 
-            using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
-            {
-                object oValue = command.ExecuteScalar();
-                if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                    throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
-            }
             return iNbAffectedRows;
         }
 
@@ -628,17 +746,41 @@ namespace OsamesMicroOrm
         public int ExecuteNonQuery(DbTransaction transaction_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+
+            if (transaction_.Connection.IsBackup)
             {
-                iNbAffectedRows = command.ExecuteNonQuery();
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
+                    {
+                        object oValue = command.ExecuteScalar();
+                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
+
+                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
+                {
+                    object oValue = command.ExecuteScalar();
+                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                }
             }
 
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
-            {
-                object oValue = command.ExecuteScalar();
-                if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                    throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
-            }
             return iNbAffectedRows;
         }
 
@@ -657,9 +799,25 @@ namespace OsamesMicroOrm
         public int ExecuteNonQuery(DbConnection connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_)
         {
             int iNbAffectedRows;
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+
+            if (connection_.IsBackup)
             {
-                iNbAffectedRows = command.ExecuteNonQuery();
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
             }
 
             return iNbAffectedRows;
@@ -676,9 +834,25 @@ namespace OsamesMicroOrm
         public int ExecuteNonQuery(DbTransaction transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_)
         {
             int iNbAffectedRows;
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+
+            if (transaction_.Connection.IsBackup)
             {
-                iNbAffectedRows = command.ExecuteNonQuery();
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
             }
 
             return iNbAffectedRows;
@@ -695,9 +869,25 @@ namespace OsamesMicroOrm
         public int ExecuteNonQuery(DbConnection connection_, CommandType cmdType_, string cmdText_, IEnumerable<Parameter> cmdParams_)
         {
             int iNbAffectedRows;
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+
+            if (connection_.IsBackup)
             {
-                iNbAffectedRows = command.ExecuteNonQuery();
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
             }
 
             return iNbAffectedRows;
@@ -714,9 +904,25 @@ namespace OsamesMicroOrm
         public int ExecuteNonQuery(DbTransaction transaction_, CommandType cmdType_, string cmdText_, IEnumerable<Parameter> cmdParams_)
         {
             int iNbAffectedRows;
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+
+            if (transaction_.Connection.IsBackup)
             {
-                iNbAffectedRows = command.ExecuteNonQuery();
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
             }
 
             return iNbAffectedRows;
@@ -733,9 +939,25 @@ namespace OsamesMicroOrm
         public int ExecuteNonQuery(DbConnection connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
             int iNbAffectedRows;
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+
+            if (connection_.IsBackup)
             {
-                iNbAffectedRows = command.ExecuteNonQuery();
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
             }
 
             return iNbAffectedRows;
@@ -752,9 +974,25 @@ namespace OsamesMicroOrm
         public int ExecuteNonQuery(DbTransaction transaction_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
             int iNbAffectedRows;
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+
+            if (transaction_.Connection.IsBackup)
             {
-                iNbAffectedRows = command.ExecuteNonQuery();
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
             }
 
             return iNbAffectedRows;
