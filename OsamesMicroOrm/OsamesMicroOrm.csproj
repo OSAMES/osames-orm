@@ -54,11 +54,6 @@
     <Compile Include="DbTools\DbToolsUpdates.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
     <Compile Include="Utilities\Common.cs" />
     <Compile Include="Utilities\ErrorsHandler.cs" />
     <Compile Include="Utilities\MappingTools.cs" />
@@ -72,10 +67,6 @@
     <None Include="Config\xml_schemas\sqlTemplates.xsd">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
