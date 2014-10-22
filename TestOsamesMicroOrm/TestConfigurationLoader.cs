@@ -77,13 +77,16 @@ namespace TestOsamesMicroOrm
         {
             try
             {
+                //AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ""));
+
                 // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook.mdf");
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");            
 
                 ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-                Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook.mdf;Integrated Security=True"), DbManager.ConnectionString);
+                Console.WriteLine(AppDomain.CurrentDomain.GetData("DataDirectory").ToString());
+
+                Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook.mdf;Integrated Security=True;Connect Timeout=30"), DbManager.ConnectionString);
                 Assert.AreEqual(@"System.Data.SqlClient", DbManager.ProviderName);
             }
             finally
@@ -269,85 +272,5 @@ namespace TestOsamesMicroOrm
 
         }
 
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Benjamin Nolmans")]
-        [TestCategory("Configuration")]
-        [TestCategory("StringConnextion replace")]
-        public void TestOrmConfigStringReplace()
-        {
-            List<string> stringConnectionDictionary = new List<string>();
-            stringConnectionDictionary.Add("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$dbPath$dbName;Persist Security Info=False;");
-            stringConnectionDictionary.Add("Data Source=(LocalDB)\v11.0;AttachDbFilename=$dbPath$dbName;Integrated Security=True;");
-            stringConnectionDictionary.Add("Server=$dbServerAddress;Port=$dbServerPort;Database=$dbName;Uid=$dbuser;Pwd=$dbpassword;");
-            stringConnectionDictionary.Add("Data Source=$dbPath$dbName;Version=3;UTF8Encoding=True;Pooling=False;Max Pool Size=100;Read Only=False;");
-
-            var toto = stringConnectionDictionary[0];
-            ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "DATABASE", true);
-            Assert.AreEqual("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$dbPathDATABASE;Persist Security Info=False;", toto);
-
-            toto = stringConnectionDictionary[0];
-            ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "DATABASE", false);
-            Assert.AreEqual("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$dbPathDATABASE;Persist Security Info=False;", toto);
-
-            toto = stringConnectionDictionary[0];
-            ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "", false);
-            Assert.AreEqual("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$dbPath;Persist Security Info=False;", toto);
-
-            // A partir d'ici ca plante (throw dans le code)
-
-            //ici on ne donne pas de string a remplacer on lance une exception dans tout les cas.
-            toto = stringConnectionDictionary[0];
-            try
-            {
-                ConfigurationLoader.OrmConfigStringReplace(ref toto, "", "DATABASE", false);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Exception sur variable à remplacer à null: " + e.Message);
-            }
-
-            //ici on ne donne pas de valeur de remplacement et c'est optionnel
-            toto = stringConnectionDictionary[0];
-            try
-            {
-                ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "", false);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Exception sur value null et optionnel: "+ e.Message);
-            }
-
-            //ici on ne donne pas de valeur de remplacement alors que c'est obligatoire
-            toto = stringConnectionDictionary[0];
-            try
-            {
-                ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbName", "", true);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Exception sur valeur de remplacement à null et obligatoire: " + e.Message);
-            }
-
-            toto = stringConnectionDictionary[0];
-            try
-            {
-                ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbPasExistant", "DATABASE", true);
-            }
-            catch (Exception e) 
-            {
-                Console.WriteLine("Exception variable a remplacer non trouvée et obligatoire: "+ e.Message);
-            }
-
-            toto = stringConnectionDictionary[0];
-            try
-            {
-                ConfigurationLoader.OrmConfigStringReplace(ref toto, "$dbPasExistant", "DATABASE", false);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Exception variable a remplacer non trouvée et optionnel: " + e.Message);
-            }
-        }
     }
 }

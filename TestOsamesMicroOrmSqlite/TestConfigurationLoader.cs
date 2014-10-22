@@ -59,6 +59,7 @@ namespace TestOsamesMicroOrmSqlite
         [TestCategory("SqLite")]
         public void TestConfigurationLoaderAssertOnSqLiteDatabaseParameters()
         {
+            AppDomain.CurrentDomain.SetData("DataDirectory", System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ""));
                 ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
                 Assert.AreEqual(string.Format("Data Source={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook_Sqlite.sqlite;Version=3;UTF8Encoding=True;"), DbManager.ConnectionString);

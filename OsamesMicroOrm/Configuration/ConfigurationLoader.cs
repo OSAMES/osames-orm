@@ -184,9 +184,7 @@ namespace OsamesMicroOrm.Configuration
         /// </summary>
         /// <returns>false when configuration is wrong</returns>
         internal bool InitializeDatabaseConnection()
-        {
-            string dbPath = string.Concat(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), ConfigurationManager.AppSettings[@"dbPath"]);
-           
+        {  
             // 1. AppSettings : doit définir une connexion DB active
             string dbConnexion = ConfigurationManager.AppSettings["activeDbConnection"];
             if (string.IsNullOrWhiteSpace(dbConnexion))
@@ -224,41 +222,6 @@ namespace OsamesMicroOrm.Configuration
                 Logger.Log(TraceEventType.Critical, "No connection string value defined in connection strings configuration for connection with name '" + dbConnexion + "'");
                 return false;
             }
-
-            // Some database connection definition don't need a database path
-            try
-            {
-                ConfigurationLoader.OrmConfigStringReplace(ref conn, "$dbPath", dbPath, false);
-            }
-            catch (Exception e)
-            {
-                Logger.Log(TraceEventType.Critical, e.Message);
-                return false;
-            }
-
-            // 6. Nom de la base de données
-            string dbName = ConfigurationManager.AppSettings["dbName"];
-            if (string.IsNullOrWhiteSpace(dbName))
-            {
-                Logger.Log(TraceEventType.Critical, "No database name defined in appSettings ('dbName')");
-                return false;
-            }
-            
-            try
-            {
-                ConfigurationLoader.OrmConfigStringReplace(ref conn, "$dbName", dbName, true);
-            }
-            catch (Exception e)
-            {
-                Logger.Log(TraceEventType.Critical, "No database name defined in appSettings ('dbName')");
-            }
-
-            // 7. Mot de passe optionnel de la base de données
-
-            string dbPassword = ConfigurationManager.AppSettings["dbPassword"];
-            // Some database connection definition don't need a database password
-            if (!string.IsNullOrWhiteSpace(dbPassword))
-                conn = conn.Replace("$dbPassword", dbPassword);
             
             Logger.Log(TraceEventType.Information, "Using DB connection string: " + conn);
             
@@ -525,28 +488,6 @@ namespace OsamesMicroOrm.Configuration
                     return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Méthode permettant de réaliser les remplacement de valeurs dans les connexionstring
-        /// </summary>
-        /// <param name="connexionString_"></param>
-        /// <param name="varToReplace_"></param>
-        /// <param name="replacedVarValue_"></param>
-        /// <param name="required_"></param>
-        internal static void OrmConfigStringReplace(ref string connexionString_, string varToReplace_, string replacedVarValue_, bool required_)
-        {
-            if (string.IsNullOrWhiteSpace(varToReplace_))
-                throw new Exception("The variable to is null or white spaces");
-
-            if ((connexionString_.LastIndexOf(varToReplace_, StringComparison.InvariantCulture) < 0) && required_)
-                throw new Exception("The variable to replace " + varToReplace_ + " was not found in ConnexionString.");
-
-            if (string.IsNullOrWhiteSpace(replacedVarValue_) && required_)
-                throw new Exception("The variable or value to replace is null or white spaces.");
-
-            connexionString_ = connexionString_.Replace(varToReplace_, replacedVarValue_);
-           
         }
 
         /// <summary>
