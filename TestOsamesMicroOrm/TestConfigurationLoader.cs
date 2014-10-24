@@ -84,9 +84,10 @@ namespace TestOsamesMicroOrm
 
                 ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-                Console.WriteLine(AppDomain.CurrentDomain.GetData("DataDirectory").ToString());
+                //Console.WriteLine(AppDomain.CurrentDomain.GetData("DataDirectory").ToString());
 
-                Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook.mdf;Integrated Security=True;Connect Timeout=30"), DbManager.ConnectionString);
+                // "|DataDirectory|" est résolu au runtime, nous ne pouvons pas remplacer la valeur en TU et faire un assert dessus 
+                Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1}", "|DataDirectory|", @"\DB\Chinook.mdf;Integrated Security=True;Connect Timeout=30"), DbManager.ConnectionString);
                 Assert.AreEqual(@"System.Data.SqlClient", DbManager.ProviderName);
             }
             finally

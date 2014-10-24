@@ -26,7 +26,7 @@ using OsamesMicroOrm.Configuration.Tweak;
 namespace TestOsamesMicroOrmSqlite
 {
     [TestClass]
-   public class TestConfigurationLoader : OsamesMicroOrmSqliteTest
+    public class TestConfigurationLoader : OsamesMicroOrmSqliteTest
     {
 
         /// <summary>
@@ -59,11 +59,12 @@ namespace TestOsamesMicroOrmSqlite
         [TestCategory("SqLite")]
         public void TestConfigurationLoaderAssertOnSqLiteDatabaseParameters()
         {
-            AppDomain.CurrentDomain.SetData("DataDirectory", System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ""));
-                ConfigurationLoader tempo = ConfigurationLoader.Instance;
+            //AppDomain.CurrentDomain.SetData("DataDirectory", System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ""));
+            ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-                Assert.AreEqual(string.Format("Data Source={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook_Sqlite.sqlite;Version=3;UTF8Encoding=True;"), DbManager.ConnectionString);
-                Assert.AreEqual(@"System.Data.SQLite", DbManager.ProviderName);
+            // "|DataDirectory|" est résolu au runtime en valeur de AppDomain.CurrentDomain.AppDirectory, nous ne pouvons pas remplacer la valeur en TU et faire un assert dessus 
+            Assert.AreEqual(string.Format("Data Source={0}{1}", "|DataDirectory|", @"\DB\Chinook_Sqlite.sqlite;Version=3;UTF8Encoding=True;Pooling=False;Max Pool Size=100;Read Only=False;"), DbManager.ConnectionString);
+            Assert.AreEqual(@"System.Data.SQLite", DbManager.ProviderName);
         }
 
         [TestMethod]
@@ -74,13 +75,13 @@ namespace TestOsamesMicroOrmSqlite
         [TestCategory("SqLite")]
         public void TestLoadProviderSpecificInformation()
         {
-                ConfigurationLoader tempo = ConfigurationLoader.Instance;
+            ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-                Assert.AreEqual("System.Data.SQLite", DbManager.ProviderName, "Nom du provider incorrect après détermination depuis le fichier des AppSettings et celui des connection strings");
-                Assert.AreEqual("[", ConfigurationLoader.StartFieldEncloser, "Start field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
-                Assert.AreEqual("]", ConfigurationLoader.EndFieldEncloser, "End field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+            Assert.AreEqual("System.Data.SQLite", DbManager.ProviderName, "Nom du provider incorrect après détermination depuis le fichier des AppSettings et celui des connection strings");
+            Assert.AreEqual("[", ConfigurationLoader.StartFieldEncloser, "Start field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+            Assert.AreEqual("]", ConfigurationLoader.EndFieldEncloser, "End field encloser incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
 
-                Assert.AreEqual("select last_insert_rowid();", DbManager.SelectLastInsertIdCommandText, "Texte pour 'select last insert id' incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
+            Assert.AreEqual("select last_insert_rowid();", DbManager.SelectLastInsertIdCommandText, "Texte pour 'select last insert id' incorrect après détermination depuis le fichier des AppSettings et celui des templates XML");
         }
     }
 }
