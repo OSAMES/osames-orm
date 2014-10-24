@@ -185,7 +185,7 @@ namespace OsamesMicroOrm.DbTools
 
             FormatSqlForSelect(refSqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, strWhereColumnNames_, oWhereValues_, out sqlCommand, out adoParameters, out lstDbColumnNames);
 
-            using (IDataReader reader = DbManager.Instance.ExecuteReader(sqlCommand, adoParameters))
+            using (IDataReader reader = DbManager.Instance.ExecuteReader(DbManager.Instance.CreateConnection(), sqlCommand, adoParameters))
             {
                 if (reader.Read())
                 {
@@ -215,7 +215,7 @@ namespace OsamesMicroOrm.DbTools
 
             FormatSqlForSelectAutoDetermineSelectedFields(refSqlTemplate_, mappingDictionariesContainerKey_, strWhereColumnNames_, oWhereValues_, out sqlCommand, out adoParameters, out lstPropertiesNames, out lstDbColumnNames);
 
-            using (IDataReader reader = DbManager.Instance.ExecuteReader(sqlCommand, adoParameters))
+            using (IDataReader reader = DbManager.Instance.ExecuteReader(DbManager.Instance.CreateConnection(), sqlCommand, adoParameters))
             {
                 if (reader.Read())
                 {
@@ -245,7 +245,7 @@ namespace OsamesMicroOrm.DbTools
 
             FormatSqlForSelect(refSqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, strWherecolumnNames_, oWhereValues_, out sqlCommand, out adoParameters, out lstDbColumnNames);
 
-            using (IDataReader reader = DbManager.Instance.ExecuteReader(sqlCommand, adoParameters))
+            using (IDataReader reader = DbManager.Instance.ExecuteReader(DbManager.Instance.CreateConnection(), sqlCommand, adoParameters))
             {
                 while (reader.Read())
                 {
@@ -278,7 +278,7 @@ namespace OsamesMicroOrm.DbTools
 
             FormatSqlForSelectAutoDetermineSelectedFields(refSqlTemplate_, mappingDictionariesContainerKey_, strWherecolumnNames_, oWhereValues_, out sqlCommand, out adoParameters, out lstPropertiesNames, out lstDbColumnNames);
 
-            using (IDataReader reader = DbManager.Instance.ExecuteReader(sqlCommand, adoParameters))
+            using (IDataReader reader = DbManager.Instance.ExecuteReader(DbManager.Instance.CreateConnection(), sqlCommand, adoParameters))
             {
                 while (reader.Read())
                 {

@@ -226,7 +226,9 @@ namespace OsamesMicroOrm
             try
             {
                 System.Data.Common.DbConnection adoConnection = DbProviderFactory.CreateConnection();
+                // ReSharper disable PossibleNullReferenceException
                 adoConnection.ConnectionString = ConnectionString;
+                // ReSharper restore PossibleNullReferenceException
                 adoConnection.Open();
                 // everything OK
                 if (BackupConnection == null)
@@ -1455,6 +1457,196 @@ namespace OsamesMicroOrm
         }
 
         // TODO ORM-94 : les mêmes méthodes que ci-dessus, qui prennent en entrée un DbTransaction
+
+        /// <summary>
+        /// Executes a SQL select operation
+        /// </summary>
+        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="transaction_">Transaction avec sa connexion associée</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format</param>
+        /// <returns>ADO .NET dataset</returns>
+        public DataSet DataAdapter(DbTransaction transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+
+            if (transaction_.Connection.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                        try
+                        {
+
+                            DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
+
+                            if (dda == null)
+                            {
+                                throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                            }
+                            dda.SelectCommand = command.AdoDbCommand;
+                            DataSet ds = new DataSet();
+                            dda.Fill(ds);
+                            return ds;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
+            }
+            // no lock
+
+            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+
+                    DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
+
+                    if (dda == null)
+                    {
+                        throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                    }
+                    dda.SelectCommand = command.AdoDbCommand;
+                    DataSet ds = new DataSet();
+                    dda.Fill(ds);
+                    return ds;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+        }
+
+        /// <summary>
+        /// Executes a SQL select operation
+        /// </summary>
+        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="transaction_">Transaction, avec sa connexion associée</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
+        /// <returns>ADO .NET dataset</returns>
+        public DataSet DataAdapter(DbTransaction transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+
+            if (transaction_.Connection.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                        try
+                        {
+
+                            DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
+
+                            if (dda == null)
+                            {
+                                throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                            }
+                            dda.SelectCommand = command.AdoDbCommand;
+                            DataSet ds = new DataSet();
+                            dda.Fill(ds);
+                            return ds;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
+
+            }
+
+            // no lock
+
+            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+
+                    DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
+
+                    if (dda == null)
+                    {
+                        throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                    }
+                    dda.SelectCommand = command.AdoDbCommand;
+                    DataSet ds = new DataSet();
+                    dda.Fill(ds);
+                    return ds;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+        }
+
+        /// <summary>
+        /// Executes a SQL select operation
+        /// </summary>
+        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="transaction_">Transaction, avec sa connexion associée</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in list of key/value pair format</param>
+        /// <returns>ADO .NET dataset</returns>
+        public DataSet DataAdapter(DbTransaction transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+
+            if (transaction_.Connection.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                        try
+                        {
+
+                            DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
+
+                            if (dda == null)
+                            {
+                                throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                            }
+                            dda.SelectCommand = command.AdoDbCommand;
+                            DataSet ds = new DataSet();
+                            dda.Fill(ds);
+                            return ds;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
+
+            }
+
+            // no lock
+            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+
+                    DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
+
+                    if (dda == null)
+                    {
+                        throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                    }
+                    dda.SelectCommand = command.AdoDbCommand;
+                    DataSet ds = new DataSet();
+                    dda.Fill(ds);
+                    return ds;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+        }
+
 
         #endregion
 

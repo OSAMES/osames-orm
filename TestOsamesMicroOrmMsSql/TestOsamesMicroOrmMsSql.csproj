@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="OsamesMicroOrmMsSqlTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestAdoNetAlone.cs" />
     <Compile Include="TestConfigurationLoader.cs" />
     <Compile Include="TestDbManager.cs" />
     <Compile Include="TestDbTools.cs" />

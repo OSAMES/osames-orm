@@ -67,6 +67,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="OsamesMicroOrmSqliteTest.cs" />
+    <Compile Include="TestAdoNetAlone.cs" />
     <Compile Include="TestConfigurationLoader.cs" />
     <Compile Include="TestDbManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
