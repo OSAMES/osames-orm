@@ -1094,7 +1094,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbConnection connection_, string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbConnection connection_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
             {
@@ -1138,7 +1138,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbTransaction transaction_, string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbTransaction transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (transaction_.Connection.IsBackup)
             {
@@ -1182,7 +1182,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) formatted as a list of key/value</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbConnection connection_, string cmdText_, List<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbConnection connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
             {
@@ -1226,7 +1226,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) formatted as a list of key/value</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbTransaction transaction_, string cmdText_, List<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbTransaction transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (transaction_.Connection.IsBackup)
             {
@@ -1265,113 +1265,196 @@ namespace OsamesMicroOrm
 
         #region ADAPTER METHODS
 
-
         /// <summary>
         /// Executes a SQL select operation
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(string cmdText_, CommandType cmdType_ = CommandType.Text)
-        {
-
-            using (DbConnection dbConnection = CreateConnection())
-            {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, (object[,])null, cmdType_))
-                    try
-                    {
-
-                        DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                        if (dda == null)
-                        {
-                            throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
-                        }
-
-                        dda.SelectCommand = command.AdoDbCommand;
-                        DataSet ds = new DataSet();
-                        dda.Fill(ds);
-                        return ds;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_);
-                        throw;
-                    }
-
-            }
-        }
-
-        /// <summary>
-        /// Executes a SQL select operation
-        /// </summary>
-        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DataSet DataAdapter(DbConnection connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
-            using (DbConnection dbConnection = CreateConnection())
+            if (connection_.IsBackup)
             {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
-                    try
-                    {
-
-                        DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                        if (dda == null)
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                        try
                         {
-                            throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+
+                            DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
+
+                            if (dda == null)
+                            {
+                                throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                            }
+                            dda.SelectCommand = command.AdoDbCommand;
+                            DataSet ds = new DataSet();
+                            dda.Fill(ds);
+                            return ds;
                         }
-                        dda.SelectCommand = command.AdoDbCommand;
-                        DataSet ds = new DataSet();
-                        dda.Fill(ds);
-                        return ds;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                        throw;
-                    }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
             }
+            // no lock
+
+            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+
+                    DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
+
+                    if (dda == null)
+                    {
+                        throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                    }
+                    dda.SelectCommand = command.AdoDbCommand;
+                    DataSet ds = new DataSet();
+                    dda.Fill(ds);
+                    return ds;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
         }
 
         /// <summary>
         /// Executes a SQL select operation
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DataSet DataAdapter(DbConnection connection_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
-            using (DbConnection dbConnection = CreateConnection())
+            if (connection_.IsBackup)
             {
-                using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
-                    try
-                    {
-
-                        DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                        if (dda == null)
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                        try
                         {
-                            throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+
+                            DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
+
+                            if (dda == null)
+                            {
+                                throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                            }
+                            dda.SelectCommand = command.AdoDbCommand;
+                            DataSet ds = new DataSet();
+                            dda.Fill(ds);
+                            return ds;
                         }
-                        dda.SelectCommand = command.AdoDbCommand;
-                        DataSet ds = new DataSet();
-                        dda.Fill(ds);
-                        return ds;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                        throw;
-                    }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
+
             }
+
+            // no lock
+
+            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+
+                    DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
+
+                    if (dda == null)
+                    {
+                        throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                    }
+                    dda.SelectCommand = command.AdoDbCommand;
+                    DataSet ds = new DataSet();
+                    dda.Fill(ds);
+                    return ds;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
         }
 
+        /// <summary>
+        /// Executes a SQL select operation
+        /// </summary>
+        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="connection_">Connexion (sans transaction)</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in list of key/value pair format</param>
+        /// <returns>ADO .NET dataset</returns>
+        public DataSet DataAdapter(DbConnection connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+
+            if (connection_.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                        try
+                        {
+
+                            DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
+
+                            if (dda == null)
+                            {
+                                throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                            }
+                            dda.SelectCommand = command.AdoDbCommand;
+                            DataSet ds = new DataSet();
+                            dda.Fill(ds);
+                            return ds;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
+
+            }
+
+            // no lock
+            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+
+                    DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
+
+                    if (dda == null)
+                    {
+                        throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                    }
+                    dda.SelectCommand = command.AdoDbCommand;
+                    DataSet ds = new DataSet();
+                    dda.Fill(ds);
+                    return ds;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+        }
+
+        // TODO ORM-94 : les mêmes méthodes que ci-dessus, qui prennent en entrée un DbTransaction
 
         #endregion
 
@@ -1483,7 +1566,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbConnection connection_, string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbConnection connection_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
@@ -1528,7 +1611,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbTransaction transaction_, string cmdText_, Parameter[] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbTransaction transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (transaction_.Connection.IsBackup)
@@ -1572,7 +1655,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbConnection connection_, string cmdText_, List<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbConnection connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
@@ -1617,7 +1700,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbTransaction transaction_, string cmdText_, List<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbTransaction transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (transaction_.Connection.IsBackup)
