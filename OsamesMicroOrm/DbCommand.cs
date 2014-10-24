@@ -36,6 +36,11 @@ namespace OsamesMicroOrm
         private DbConnection OrmConnection;
 
         /// <summary>
+        /// Transaction de l'ORM (wrapper de la transaction ADO.NET).
+        /// </summary>
+        private DbTransaction OrmTransaction;
+
+        /// <summary>
         /// Commande telle que fournie par l'appel à DbProviderFactory.CreateCommand();
         /// Accessible en interne pour l'ORM.
         /// </summary>
@@ -87,7 +92,15 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Transaction associée (DbTransaction de l'ORM).
         /// </summary>
-        public DbTransaction Transaction { get; set; }
+        public DbTransaction Transaction
+        {
+            get { return OrmTransaction; }
+            set
+            {
+                OrmTransaction = value;
+                AdoDbCommand.Transaction = OrmTransaction.AdoDbTransaction;
+            }
+        }
 
         /// <summary>
         /// Obtient la collection d'objets DbParameter. 

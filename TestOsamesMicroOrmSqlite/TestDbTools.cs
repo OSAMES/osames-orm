@@ -42,7 +42,7 @@ namespace TestOsamesMicroOrmSqlite
                 _config = ConfigurationLoader.Instance;
                 // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
                 Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAll", "Customer",
-                    new List<string> { "City" }, new List<object> { "Paris" });
+                    new List<string> { "City" }, new List<object> { "Paris" }, _transaction);
                 Assert.IsNotNull(customer, "Pas d'enregistrement trouvé, requête select à corriger");
                 // Si une exception est lancée, la ligne ci-dessous n'est pas exécutée.
                 // Elle a vocation à faire échouer le test si elle s'exécute.
@@ -70,7 +70,7 @@ namespace TestOsamesMicroOrmSqlite
         {
             _config = ConfigurationLoader.Instance;
             Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer",
-              new List<string> { "CustomerId", "#" }, new List<object> { 1 });
+              new List<string> { "CustomerId", "#" }, new List<object> { 1 }, _transaction);
             Assert.IsNotNull(customer, "Pas d'enregistrement trouvé, requête select à corriger");
 
             // TODO les asserts
