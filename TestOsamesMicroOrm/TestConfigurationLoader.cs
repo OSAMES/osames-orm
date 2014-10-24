@@ -77,15 +77,20 @@ namespace TestOsamesMicroOrm
         {
             try
             {
+                //AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ""));
+
                 // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook.mdf");
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");            
 
                 ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
-                Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1}", AppDomain.CurrentDomain.BaseDirectory, @"\DB\Chinook.mdf;Integrated Security=True"), DbManager.ConnectionString);
+                //Console.WriteLine(AppDomain.CurrentDomain.GetData("DataDirectory").ToString());
+
+                // "|DataDirectory|" est résolu au runtime, nous ne pouvons pas remplacer la valeur en TU et faire un assert dessus 
+                Assert.AreEqual(string.Format("Data Source=(LocalDB)\\v11.0;AttachDbFilename={0}{1}", "|DataDirectory|", @"\DB\Chinook.mdf;Integrated Security=True;Connect Timeout=30"), DbManager.ConnectionString);
                 Assert.AreEqual(@"System.Data.SqlClient", DbManager.ProviderName);
-            } finally
+            }
+            finally
             {
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.activeDbConnection.ToString());
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.dbName.ToString());
@@ -118,7 +123,7 @@ namespace TestOsamesMicroOrm
             {
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString());
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.mappingFileName.ToString());
-            }            
+            }
         }
 
         /// <summary>
@@ -158,7 +163,7 @@ namespace TestOsamesMicroOrm
             Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["Customer"];
             Assert.AreEqual(13, mappings.Keys.Count, "Expected 13 keys in dictionary for Customer mappings after initialize");
             Assert.IsTrue(mappings.ContainsKey("Email"), "Expected to find 'Email' key");
-            Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");          
+            Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
         }
 
         /// <summary>
@@ -200,7 +205,6 @@ namespace TestOsamesMicroOrm
             ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("foobar", "Email");
         }
 
- 
         /// <summary>
         /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is not found (property name).
         /// </summary>
@@ -214,7 +218,7 @@ namespace TestOsamesMicroOrm
         public void TestGetMappingDbColumnNameWrongPropertyName()
         {
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-          // TODO manque l'assert que la clé n'existe pas dans le dico interne
+            // TODO manque l'assert que la clé n'existe pas dans le dico interne
             ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("foobar", "Email");
         }
 
@@ -251,8 +255,6 @@ namespace TestOsamesMicroOrm
             Assert.AreEqual("SELECT {0} FROM {1} WHERE {2} = {3};", ConfigurationLoader.DicSelectSql["BaseReadWhere"]);
         }
 
-        
-
         /// <summary>
         /// Pour ce projet de TU il n'y a pas de providers définis dans App.Config.
         /// </summary>
@@ -270,5 +272,6 @@ namespace TestOsamesMicroOrm
             Assert.IsTrue(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SqlClient"));
 
         }
+
     }
 }

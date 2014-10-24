@@ -184,11 +184,8 @@ namespace OsamesMicroOrm.Configuration
         /// </summary>
         /// <returns>false when configuration is wrong</returns>
         internal bool InitializeDatabaseConnection()
-        {
-            string dbPath = string.Concat(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), ConfigurationManager.AppSettings[@"dbPath"]);
-           
+        {  
             // 1. AppSettings : doit définir une connexion DB active
-
             string dbConnexion = ConfigurationManager.AppSettings["activeDbConnection"];
             if (string.IsNullOrWhiteSpace(dbConnexion))
             {
@@ -197,7 +194,6 @@ namespace OsamesMicroOrm.Configuration
             }
 
             // 2. Cette connexion DB doit être trouvée dans les ConnectionStrings définies dans la configuration (attribute "Name")
-
             var activeConnection = ConfigurationManager.ConnectionStrings[dbConnexion];
             if (activeConnection == null)
             {
@@ -226,28 +222,6 @@ namespace OsamesMicroOrm.Configuration
                 Logger.Log(TraceEventType.Critical, "No connection string value defined in connection strings configuration for connection with name '" + dbConnexion + "'");
                 return false;
             }
-
-            // Some database connection definition don't need a database path
-            if (!string.IsNullOrWhiteSpace(dbPath))
-                conn = (activeConnection.ConnectionString.Replace(@"$dbPath", dbPath));
-
-            // 6. Nom de la base de données
-
-            string dbName = ConfigurationManager.AppSettings["dbName"];
-            if (string.IsNullOrWhiteSpace(dbName))
-            {
-                Logger.Log(TraceEventType.Critical, "No database name defined in appSettings ('dbName')");
-                return false;
-            }
-            
-            conn = conn.Replace("$dbName", dbName);
-
-            // 7. Mot de passe optionnel de la base de données
-
-            string dbPassword = ConfigurationManager.AppSettings["dbPassword"];
-            // Some database connection definition don't need a database password
-            if (!string.IsNullOrWhiteSpace(dbPassword))
-                conn = conn.Replace("$dbPassword", dbPassword);
             
             Logger.Log(TraceEventType.Information, "Using DB connection string: " + conn);
             
