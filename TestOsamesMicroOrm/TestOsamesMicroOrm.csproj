@@ -157,7 +157,9 @@
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>RD /S /Q "$(OutDir)"</PreBuildEvent>
+    <PreBuildEvent>RD /S /Q "$(OutDir)"
+RD /S /Q "$(TargetDir)\DB"
+xcopy "$(SolutionDir)\DB" "$(TargetDir)\DB\" /Y /E</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(ProjectDir)TestConfig\*.*" "$(TargetDir)Config\" /Y /E</PostBuildEvent>
