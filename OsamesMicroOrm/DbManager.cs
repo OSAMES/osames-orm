@@ -28,7 +28,7 @@ namespace OsamesMicroOrm
     /// <summary>
     /// Generic ADO.NET level, multi thread class, that deals with database providers and database query execution.
     /// </summary>
-    public class DbManager
+    public sealed class DbManager
     {
 
         #region DECLARATIONS
@@ -1020,7 +1020,7 @@ namespace OsamesMicroOrm
                     using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                         try
                         {
-                            DbDataReader dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+                            DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
                             return dr;
                         }
                         catch (Exception ex)
@@ -1034,7 +1034,7 @@ namespace OsamesMicroOrm
             using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
-                    DbDataReader dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+                    DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
                     return dr;
                 }
                 catch (Exception ex)
@@ -1062,7 +1062,7 @@ namespace OsamesMicroOrm
                     using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                         try
                         {
-                            DbDataReader dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+                            DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
                             return dr;
                         }
                         catch (Exception ex)
@@ -1076,7 +1076,7 @@ namespace OsamesMicroOrm
             using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 try
                 {
-                    DbDataReader dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+                    DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
                     return dr;
                 }
                 catch (Exception ex)
@@ -1105,7 +1105,7 @@ namespace OsamesMicroOrm
                     {
                         try
                         {
-                            return command.ExecuteReader(CommandBehavior.CloseConnection);
+                            return command.ExecuteReader(CommandBehavior.Default);
                         }
                         catch (Exception ex)
                         {
@@ -1120,7 +1120,7 @@ namespace OsamesMicroOrm
             {
                 try
                 {
-                    return command.ExecuteReader(CommandBehavior.CloseConnection);
+                    return command.ExecuteReader(CommandBehavior.Default);
                 }
                 catch (Exception ex)
                 {
@@ -1149,7 +1149,7 @@ namespace OsamesMicroOrm
                     {
                         try
                         {
-                            return command.ExecuteReader(CommandBehavior.CloseConnection);
+                            return command.ExecuteReader(CommandBehavior.Default);
                         }
                         catch (Exception ex)
                         {
@@ -1164,7 +1164,7 @@ namespace OsamesMicroOrm
             {
                 try
                 {
-                    return command.ExecuteReader(CommandBehavior.CloseConnection);
+                    return command.ExecuteReader(CommandBehavior.Default);
                 }
                 catch (Exception ex)
                 {
@@ -1174,31 +1174,93 @@ namespace OsamesMicroOrm
             }
         }
 
-        // TODO ORM-94 continuer ici le refactoring correctif
-
         /// <summary>
         /// Executes a SQL select operation
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) formatted as a list of key/value</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(string cmdText_, List<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbConnection connection_, string cmdText_, List<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            // Ne pas mettre dans un using la connexion sinon elle sera diposee avant d'avoir lu le data reader
-            DbConnection dbConnection = CreateConnection();
-            using (DbCommand command = PrepareCommand(dbConnection, null, cmdText_, cmdParams_, cmdType_))
+            if (connection_.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    {
+                        try
+                        {
+                            return command.ExecuteReader(CommandBehavior.Default);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                    }
+                }
+            }
+            // no lock
+            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+            {
                 try
                 {
-                    return command.ExecuteReader(CommandBehavior.CloseConnection);
+                    return command.ExecuteReader(CommandBehavior.Default);
                 }
                 catch (Exception ex)
                 {
                     Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                     throw;
                 }
+            }
         }
 
+        /// <summary>
+        /// Executes a SQL select operation
+        /// </summary>
+        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="transaction_">Transaction avec sa connexion associée</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) formatted as a list of key/value</param>
+        /// <returns>ADO .NET data reader</returns>
+        public DbDataReader ExecuteReader(DbTransaction transaction_, string cmdText_, List<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+            if (transaction_.Connection.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    {
+                        try
+                        {
+                            return command.ExecuteReader(CommandBehavior.Default);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                    }
+                }
+            }
+            // no lock
+            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+            {
+                try
+                {
+                    return command.ExecuteReader(CommandBehavior.Default);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+            }
+        }
         #endregion
 
         #region ADAPTER METHODS

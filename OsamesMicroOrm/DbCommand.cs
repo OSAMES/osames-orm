@@ -28,7 +28,7 @@ namespace OsamesMicroOrm
     /// Elle expose les mêmes méthodes que System.Data.Common.DbCommand à qui elle délègue.
     /// On encapsule au lieu d'hériter car System.Data.Common.DbCommand est une classe abstraite.
     /// </summary>
-    public class DbCommand : IDisposable
+    public sealed class DbCommand : IDisposable
     {
         /// <summary>
         /// Connexion de l'ORM (wrapper de la connexion ADO.NET).
