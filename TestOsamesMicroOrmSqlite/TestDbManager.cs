@@ -83,7 +83,7 @@ namespace TestOsamesMicroOrmSqlite
             try
             {
                 long lastInsertedRowId;
-                int affectedRecordsCount = DbManager.Instance.ExecuteNonQuery(_connection, CommandType.Text, "INSERT INTO Customer (LastName, FirstName, Email) VALUES (@lastname, @firstname, @email)", parameters.ToArray(), out lastInsertedRowId);
+                int affectedRecordsCount = DbManager.Instance.ExecuteNonQuery(_transaction, CommandType.Text, "INSERT INTO Customer (LastName, FirstName, Email) VALUES (@lastname, @firstname, @email)", parameters.ToArray(), out lastInsertedRowId);
 
                 Assert.AreEqual(1, affectedRecordsCount, "Expected 1 record affected by INSERT operation");
                 Console.WriteLine("New record ID: {0}, expected number > 1", lastInsertedRowId);
