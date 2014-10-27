@@ -70,6 +70,8 @@ namespace TestOsamesMicroOrmSqlite
             DbManager.Instance.RollbackTransaction(_transaction);
 
             // Refaire un select, on lit l'ancienne valeur
+            _transaction = DbManager.Instance.OpenTransaction(_connection);
+
             Customer reReadInitialcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
 
             string nomNonModifie = reReadInitialcustomer.LastName;
