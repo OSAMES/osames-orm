@@ -47,11 +47,11 @@ namespace TestOsamesMicroOrmSqlite
 
             object idCustomer = null, lastName = null;
 
-            using (IDataReader reader = DbManager.Instance.ExecuteReader(_connection, "SELECT * FROM Customer WHERE CustomerId = @customerid", parameters.ToArray()))
+            using (IDataReader reader = DbManager.Instance.ExecuteReader(_connection, "SELECT * FROM Customer WHERE IdCustomer = @customerid", parameters.ToArray()))
             {
                 if (reader.Read())
                 {
-                    idCustomer = reader["CustomerId"];
+                    idCustomer = reader["IdCustomer"];
                     Console.WriteLine("Customer ID: {0}", idCustomer);
                     lastName = reader["LastName"];
                     Console.WriteLine("Last name: {0}", lastName);

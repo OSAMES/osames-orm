@@ -21,7 +21,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
   <!-- Customer -->
   <orm:Table name="Customer">
     <!-- Unique key -->
-    <orm:MappingObject property="CustomerId" column="CustomerId"/>
+    <orm:MappingObject property="IdCustomer" column="CustomerId"/>
     <orm:MappingObject property="FirstName" column="FirstName"/>
   	<orm:MappingObject property="LastName" column="LastName"/>
   	<orm:MappingObject property="Company" column="Company"/>

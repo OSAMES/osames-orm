@@ -25,7 +25,7 @@ namespace SampleDbEntities.Chinook
 {
     /* representation DB de l'objet Invoice
         InvoiceId INTEGER NOT NULL,
-	    CustomerId INTEGER NOT NULL,
+	    IdCustomer INTEGER NOT NULL,
 	    InvoiceDate DATETIME NOT NULL,
 	    BillingAddress NVARCHAR(70),
 	    BillingCity NVARCHAR(40),
@@ -34,7 +34,7 @@ namespace SampleDbEntities.Chinook
 	    BillingPostalCode NVARCHAR(10),
 	    Total NUMERIC(10,2) NOT NULL,
 	    CONSTRAINT INVOICE_PK PRIMARY KEY (InvoiceId),
-	    CONSTRAINT INVOICE_FK_CUSTOMER FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
+	    CONSTRAINT INVOICE_FK_CUSTOMER FOREIGN KEY (IdCustomer) REFERENCES Customer(IdCustomer)
      */
 
     [Serializable]
