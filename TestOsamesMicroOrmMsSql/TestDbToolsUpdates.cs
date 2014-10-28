@@ -7,7 +7,7 @@ using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.DbTools;
 using SampleDbEntities.Chinook;
 
-namespace TestOsamesMicroOrmSqlite
+namespace TestOsamesMicroOrmMsSql
 {
     /// <summary>
     /// Tests unitaires de haut niveau des méthodes d'exécution d'instructions SQL UPDATE, avec formatage de la requête et des paramètres ADO.NET.
@@ -15,16 +15,16 @@ namespace TestOsamesMicroOrmSqlite
     /// </summary>
     [TestClass]
     [ExcludeFromCodeCoverage]
-    public class TestDbToolsUpdate : OsamesMicroOrmSqliteTest
+    public class TestDbToolsUpdate : OsamesMicroOrmMsSqlTest
     {
         /// <summary>
         /// Update d'un seul objet.
         /// </summary>
         [TestMethod]
-        [TestCategory("SqLite")]
+        [TestCategory("MsSql")]
         [TestCategory("Update")]
         [Owner("Benjamin Nolmans")]
-        public void TestUpdateSingleSqlite()
+        public void TestUpdateSingleMsSql()
         {
 
             const int testCustomerId = 3;

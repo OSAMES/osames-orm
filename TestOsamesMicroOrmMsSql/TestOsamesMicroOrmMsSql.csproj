@@ -64,6 +64,7 @@
     <Compile Include="TestConfigurationLoader.cs" />
     <Compile Include="TestDbManager.cs" />
     <Compile Include="TestDbTools.cs" />
+    <Compile Include="TestDbToolsUpdates.cs" />
     <Compile Include="Tools\CommonMsSql.cs" />
   </ItemGroup>
   <ItemGroup>

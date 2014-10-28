@@ -108,8 +108,7 @@ namespace OsamesMicroOrm.DbTools
             if (transaction_ != null)
             {
                 // Présence d'une transaction
-                long lastInsertedRowId;
-                int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters, out lastInsertedRowId);
+                int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters);
                 if (nbRowsAffected == 0)
                     Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
 
@@ -119,8 +118,7 @@ namespace OsamesMicroOrm.DbTools
             // Pas de transaction
             using (DbConnection conn = DbManager.Instance.CreateConnection())
             {
-                long lastInsertedRowId;
-                int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters, out lastInsertedRowId);
+                int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters);
                 if (nbRowsAffected == 0)
                     Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
 
