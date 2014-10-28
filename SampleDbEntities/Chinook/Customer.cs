@@ -24,7 +24,7 @@ using OsamesMicroOrm;
 namespace SampleDbEntities.Chinook
 {
     /* representation DB de l'objet Customer
-        IdCustomer INTEGER NOT NULL,
+        CustomerId INTEGER NOT NULL,
 	    FirstName NVARCHAR(40) NOT NULL,
 	    LastName NVARCHAR(20) NOT NULL,
 	    Company NVARCHAR(80),
@@ -37,7 +37,7 @@ namespace SampleDbEntities.Chinook
 	    Fax NVARCHAR(24),
 	    Email NVARCHAR(60) NOT NULL,
 	    SupportRepId INTEGER,
-	    CONSTRAINT CUSTOMER_PK PRIMARY KEY (IdCustomer),
+	    CONSTRAINT CUSTOMER_PK PRIMARY KEY (CustomerId),
 	    CONSTRAINT CUSTOMER_FK_EMPLOYEE FOREIGN KEY (SupportRepId) REFERENCES Employee(EmployeeId)
      */
     /// <summary>
