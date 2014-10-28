@@ -16,8 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Text;
 using OsamesMicroOrm.Configuration;
@@ -96,20 +96,34 @@ namespace OsamesMicroOrm.DbTools
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
+        /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
-        public static int Update<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> propertiesNames_, List<string> strWhereColumnNames_, List<object> oWhereValues_, out string strErrorMsg_)
+        public static int Update<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> propertiesNames_, List<string> strWhereColumnNames_, List<object> oWhereValues_, out string strErrorMsg_, DbTransaction transaction_ = null)
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
 
             FormatSqlForUpdate(ref dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, propertiesNames_, strWhereColumnNames_, oWhereValues_, out sqlCommand, out adoParameters, out strErrorMsg_);
 
-            long lastInsertedRowId;
-            int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(sqlCommand, adoParameters, out lastInsertedRowId);
-            if (nbRowsAffected == 0)
-                Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
+            if (transaction_ != null)
+            {
+                // Présence d'une transaction
+                int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters);
+                if (nbRowsAffected == 0)
+                    Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
 
-            return nbRowsAffected;
+                return nbRowsAffected;
+            }
+
+            // Pas de transaction
+            using (DbConnection conn = DbManager.Instance.CreateConnection())
+            {
+                int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters);
+                if (nbRowsAffected == 0)
+                    Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
+
+                return nbRowsAffected;
+            }
         }
 
     }

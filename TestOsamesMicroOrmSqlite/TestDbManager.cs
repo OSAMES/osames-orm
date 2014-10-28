@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -46,13 +45,13 @@ namespace TestOsamesMicroOrmSqlite
             // select * from clients where id_client = @p0
             List<DbManager.Parameter> parameters = new List<DbManager.Parameter> { new DbManager.Parameter("@customerid", 3) };
 
-            object idCustomer =  null, lastName = null;
+            object idCustomer = null, lastName = null;
 
-            using (IDataReader reader = DbManager.Instance.ExecuteReader("SELECT * FROM Customer WHERE CustomerId = @customerid", parameters.ToArray()))
+            using (IDataReader reader = DbManager.Instance.ExecuteReader(_connection, "SELECT * FROM Customer WHERE IdCustomer = @customerid", parameters.ToArray()))
             {
                 if (reader.Read())
                 {
-                    idCustomer = reader["CustomerId"];
+                    idCustomer = reader["IdCustomer"];
                     Console.WriteLine("Customer ID: {0}", idCustomer);
                     lastName = reader["LastName"];
                     Console.WriteLine("Last name: {0}", lastName);
@@ -84,7 +83,7 @@ namespace TestOsamesMicroOrmSqlite
             try
             {
                 long lastInsertedRowId;
-                int affectedRecordsCount = DbManager.Instance.ExecuteNonQuery("INSERT INTO Customer (LastName, FirstName, Email) VALUES (@lastname, @firstname, @email)", parameters.ToArray(), out lastInsertedRowId, CommandType.Text, _transaction);
+                int affectedRecordsCount = DbManager.Instance.ExecuteNonQuery(_transaction, CommandType.Text, "INSERT INTO Customer (LastName, FirstName, Email) VALUES (@lastname, @firstname, @email)", parameters.ToArray(), out lastInsertedRowId);
 
                 Assert.AreEqual(1, affectedRecordsCount, "Expected 1 record affected by INSERT operation");
                 Console.WriteLine("New record ID: {0}, expected number > 1", lastInsertedRowId);
@@ -97,36 +96,37 @@ namespace TestOsamesMicroOrmSqlite
                 throw;
             }
         }
-      
+
         /// <summary>
-         /// From http://msdn.microsoft.com/en-us/library/system.data.datatable(v=vs.110).aspx
-         /// Méthode qui liste dans le output du TU (et non dans le output de VS) tout les providers disponibles.
+        /// From http://msdn.microsoft.com/en-us/library/system.data.datatable(v=vs.110).aspx
+        /// Méthode qui liste dans le output du TU (et non dans le output de VS) tout les providers disponibles.
         /// </summary>
         /// <param name="table_"></param>
-         private static void ShowTable(DataTable table_)
-         {
-             foreach (DataColumn col in table_.Columns)
-             {
-                 Console.Write("{0,-14}", col.ColumnName);
-             }
-             Console.WriteLine();
+        private static void ShowTable(DataTable table_)
+        {
+            foreach (DataColumn col in table_.Columns)
+            {
+                Console.Write("{0,-14}", col.ColumnName);
+            }
+            Console.WriteLine();
 
-             foreach (DataRow row in table_.Rows)
-             {
-                 foreach (DataColumn col in table_.Columns)
-                 {
-                     if (col.DataType == typeof(DateTime))
-                         Console.Write("{0,-14:d}", row[col]);
-                     else if (col.DataType == typeof(Decimal))
-                         Console.Write("{0,-14:C}", row[col]);
-                     else
-                         Console.Write("{0,-14}", row[col]);
+            foreach (DataRow row in table_.Rows)
+            {
+                foreach (DataColumn col in table_.Columns)
+                {
+                    if (col.DataType == typeof(DateTime))
+                        Console.Write("{0,-14:d}", row[col]);
+                    else if (col.DataType == typeof(Decimal))
+                        Console.Write("{0,-14:C}", row[col]);
+                    else
+                        Console.Write("{0,-14}", row[col]);
 
-                     Console.Write("   |   ");
-                 }
-                 Console.WriteLine();
-             }
-             Console.WriteLine();
-         }
+                    Console.Write("   |   ");
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+        }
+
     }
 }

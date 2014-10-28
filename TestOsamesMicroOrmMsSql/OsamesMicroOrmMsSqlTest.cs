@@ -40,13 +40,14 @@ namespace TestOsamesMicroOrmMsSql
         [TestInitialize]
         public void SetupTest()
         {
-
+            base.Setup();
+            InitializeDbConnexion();
         }
         
         [TestCleanup]
         public override void TestCleanup()
         {
-
+            base.TestCleanup();
         }
     }
 }

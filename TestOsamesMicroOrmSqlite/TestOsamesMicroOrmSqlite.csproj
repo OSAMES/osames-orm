@@ -67,10 +67,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="OsamesMicroOrmSqliteTest.cs" />
+    <Compile Include="TestAdoNetAlone.cs" />
     <Compile Include="TestConfigurationLoader.cs" />
     <Compile Include="TestDbManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestDbTools.cs" />
+    <Compile Include="TestDbToolsUpdates.cs" />
     <Compile Include="Tools\CommonSqlite.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -138,8 +140,8 @@
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>taskkill /F /IM vstest.executionengine.x86.exe /FI "MEMUSAGE gt 1"
-taskkill /F /IM vstest.discoveryengine.x86.exe /FI "MEMUSAGE gt 1"
+    <PreBuildEvent>rem taskkill /F /IM vstest.executionengine.x86.exe /FI "MEMUSAGE gt 1"
+rem taskkill /F /IM vstest.discoveryengine.x86.exe /FI "MEMUSAGE gt 1"
 
 RD /S /Q "$(OutDir)"
 
