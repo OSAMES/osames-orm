@@ -98,7 +98,7 @@ namespace OsamesMicroOrm
             set
             {
                 OrmTransaction = value;
-                // On doit positionner les connection et transaction ADO.NET sur l'objet DbCommand ADO.NET (dans cet ordre).
+                // On doit positionner les connection et transaction ADO.NET sur l'objet DbCommand ADO.NET.
                 AdoDbCommand.Connection = OrmTransaction.Connection.AdoDbConnection;
                 AdoDbCommand.Transaction = OrmTransaction.AdoDbTransaction;
             }

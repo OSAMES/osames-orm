@@ -37,7 +37,7 @@ namespace TestOsamesMicroOrmSqlite
             string nomInitial = customer.LastName;
             string prenomInitial = customer.FirstName;
 
-            Console.WriteLine("Nom : " + nomInitial + " prénom : " + prenomInitial);
+            Console.WriteLine("En début de test : Nom : " + nomInitial + " prénom : " + prenomInitial);
 
             Assert.AreNotEqual("Nolmans", nomInitial, "Données de début de test pas dans la bonne version en base de données");
             Assert.AreNotEqual("Benjamin", prenomInitial, "Données de début de test pas dans la bonne version en base de données");
@@ -61,7 +61,7 @@ namespace TestOsamesMicroOrmSqlite
             string nomUpdated = reReadcustomer.LastName;
             string prenomUpdated = reReadcustomer.FirstName;
 
-            Console.WriteLine("Nom : " + nomUpdated + " prénom : " + prenomUpdated);
+            Console.WriteLine("Après l'update, dans la transaction : Nom : " + nomUpdated + " prénom : " + prenomUpdated);
 
             Assert.AreEqual("Nolmans", nomUpdated, "Les données relues doivent correspondre à ce qui a été mis à jour (on est dans la transaction)");
             Assert.AreEqual("Benjamin", prenomUpdated, "Les données relues doivent correspondre à ce qui a été mis à jour (on est dans la transaction)");
@@ -77,7 +77,7 @@ namespace TestOsamesMicroOrmSqlite
             string nomNonModifie = reReadInitialcustomer.LastName;
             string prenomNonModifie = reReadInitialcustomer.FirstName;
 
-            Console.WriteLine("Nom : " + nomNonModifie + " prénom : " + prenomNonModifie);
+            Console.WriteLine("Avec une autre transaction, après rollback de la première transaction : Nom : " + nomNonModifie + " prénom : " + prenomNonModifie);
 
             Assert.AreNotEqual("Nolmans", nomNonModifie, "Données de fin de test après rollback pas dans la bonne version en base de données");
             Assert.AreNotEqual("Benjamin", prenomNonModifie, "Données de fin de test après rollback pas dans la bonne version en base de données");
