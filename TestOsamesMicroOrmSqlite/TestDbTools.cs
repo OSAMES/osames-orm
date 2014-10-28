@@ -109,7 +109,7 @@ namespace TestOsamesMicroOrmSqlite
                 // - "FirstName" gives "FirstName, 'FirstName'" which will give "FirstName FirstName"
                 // - "LastName" gives "Last_Name" which will give "Last_Name"
                 // - "PostalCode" gives "Postal-Code" which will give "PostalCode"
-                List<string> lstExpected = new List<string> { "IdCustomer", "@p0", "@customvalue", "@p1", "chaine", "chaine", "chaine", "ma chaine", "FirstName FirstName", "Last_Name", "PostalCode", "Customer.IdCustomer", "Track.TrackId" };
+                List<string> lstExpected = new List<string> { "CustomerId", "@p0", "@customvalue", "@p1", "chaine", "chaine", "chaine", "ma chaine", "FirstName FirstName", "Last_Name", "PostalCode", "Customer.CustomerId", "Track.TrackId" };
 
                 try
                 {
