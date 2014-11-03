@@ -47,7 +47,7 @@ namespace TestOsamesMicroOrmSqlite
 
             object idCustomer = null, lastName = null;
 
-            using (IDataReader reader = DbManager.Instance.ExecuteReader(_connection, "SELECT * FROM Customer WHERE CustomerId = @customerid", parameters.ToArray()))
+            using (IDataReader reader = DbManager.Instance.ExecuteReader(_transaction, "SELECT * FROM Customer WHERE CustomerId = @customerid", parameters.ToArray()))
             {
                 if (reader.Read())
                 {

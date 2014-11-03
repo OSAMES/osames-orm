@@ -98,7 +98,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
-        public static int Update<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> propertiesNames_, List<string> strWhereColumnNames_, List<object> oWhereValues_, out string strErrorMsg_, DbTransaction transaction_ = null)
+        public static int Update<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> propertiesNames_, List<string> strWhereColumnNames_, List<object> oWhereValues_, out string strErrorMsg_, DbTransactionWrapper transaction_ = null)
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
@@ -116,7 +116,7 @@ namespace OsamesMicroOrm.DbTools
             }
 
             // Pas de transaction
-            using (DbConnection conn = DbManager.Instance.CreateConnection())
+            using (DbConnectionWrapper conn = DbManager.Instance.CreateConnection())
             {
                 int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters);
                 if (nbRowsAffected == 0)

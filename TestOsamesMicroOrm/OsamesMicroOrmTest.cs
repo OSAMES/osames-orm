@@ -5,8 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using TestOsamesMicroOrm.Tools;
-using DbConnection = OsamesMicroOrm.DbConnection;
-using DbTransaction = OsamesMicroOrm.DbTransaction;
+using DbConnection = OsamesMicroOrm.DbConnectionWrapper;
+using DbTransaction = OsamesMicroOrm.DbTransactionWrapper;
 
 namespace TestOsamesMicroOrm
 {
@@ -29,9 +29,7 @@ namespace TestOsamesMicroOrm
         /// <summary>
         /// Every test uses a transaction.
         /// </summary>
-        protected static DbTransaction _transaction;
-
-        protected static DbConnection _connection;
+        protected static DbTransactionWrapper _transaction;
 
         /// <summary>
         /// Initialisation des TUs.
@@ -44,13 +42,24 @@ namespace TestOsamesMicroOrm
             _config = ConfigurationLoader.Instance;
         }
 
+        /// <summary>
+        /// Cleanup.
+        /// Si on avait une transaction (ce qui est le cas si on effectue un appel à la base de données, d'après la façon dont les TUs sont organisés),
+        /// libération explicite des ressources :
+        /// - rollback de la transaction
+        /// - fermeture de la connexion
+        /// </summary>
         [TestCleanup]
         public virtual void TestCleanup()
         {
-            if (_transaction != null)
-                DbManager.Instance.RollbackTransaction(_transaction);
+            if(_transaction == null)
+                return;
 
-            DbManager.Instance.DisposeConnection(ref _connection);
+            // Connexion associée
+            DbConnectionWrapper connection = _transaction.Connection;
+            // Libération des ressources
+            DbManager.Instance.RollbackTransaction(_transaction);
+            DbManager.Instance.DisposeConnection(ref connection);
         }
 
         /// <summary>
@@ -59,8 +68,8 @@ namespace TestOsamesMicroOrm
         /// </summary>
         public virtual void InitializeDbConnexion()
         {
-            _connection = DbManager.Instance.CreateConnection();
-            _transaction = DbManager.Instance.OpenTransaction(_connection);
+            DbConnectionWrapper connection = DbManager.Instance.CreateConnection();
+            _transaction = DbManager.Instance.OpenTransaction(connection);
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
-using DbConnection = OsamesMicroOrm.DbConnection;
+using DbConnection = OsamesMicroOrm.DbConnectionWrapper;
 
 namespace TestOsamesMicroOrmMsSql
 {

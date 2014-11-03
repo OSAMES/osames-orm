@@ -29,7 +29,7 @@ namespace OsamesMicroOrm
     /// Elle expose les mêmes méthodes que System.Data.Common.DbConnection à qui elle délègue.
     /// On encapsule au lieu d'hériter car System.Data.Common.DbConnection est une classe abstraite.
     /// </summary>
-    public sealed class DbConnection : IDisposable
+    public sealed class DbConnectionWrapper : IDisposable
     {
         /// <summary>
         /// Indicateur positionné à la création de l'objet connexion.
@@ -49,7 +49,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="adoDbConnection_">Connexion telle que fournie par l'appel à DbProviderFactory.CreateConnection().</param>
         /// <param name="defaultConnection_">Si à vrai c'est la connexion de secours, si à faux une connexion ordinaire (poolée).</param>
-        public DbConnection(System.Data.Common.DbConnection adoDbConnection_, bool defaultConnection_)
+        public DbConnectionWrapper(System.Data.Common.DbConnection adoDbConnection_, bool defaultConnection_)
         {
             IsBackup = defaultConnection_;
             AdoDbConnection = adoDbConnection_;
@@ -107,19 +107,19 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="isolationLevel_"></param>
         /// <returns></returns>
-        public DbTransaction BeginTransaction(IsolationLevel isolationLevel_)
+        public DbTransactionWrapper BeginTransaction(IsolationLevel isolationLevel_)
         {
-            return new DbTransaction(AdoDbConnection.BeginTransaction(isolationLevel_)) { Connection = this };
+            return new DbTransactionWrapper(AdoDbConnection.BeginTransaction(isolationLevel_)) { Connection = this };
         }
 
         /// <summary>
         /// Commence une transaction de base de données.
         /// </summary>
         /// <returns></returns>
-        public DbTransaction BeginTransaction()
+        public DbTransactionWrapper BeginTransaction()
         {
 
-            return new DbTransaction(AdoDbConnection.BeginTransaction()) { Connection = this };
+            return new DbTransactionWrapper(AdoDbConnection.BeginTransaction()) { Connection = this };
         }
 
         /// <summary>
@@ -215,9 +215,9 @@ namespace OsamesMicroOrm
         /// Crée et retourne un objet DbCommand associé à la connexion active.
         /// </summary>
         /// <returns></returns>
-        protected DbCommand CreateDbCommand()
+        public DbCommandWrapper CreateDbCommand()
         {
-            return new DbCommand(AdoDbConnection.CreateCommand());
+            return new DbCommandWrapper(AdoDbConnection.CreateCommand());
         }
 
         /// <summary>

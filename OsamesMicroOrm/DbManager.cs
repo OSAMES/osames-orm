@@ -41,7 +41,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// First created connection, to be used when pool is exhausted when pooling is active.
         /// </summary>
-        private DbConnection BackupConnection;
+        private DbConnectionWrapper BackupConnection;
 
         /// <summary>
         /// Connection string that is set/checked by ConnectionString property.
@@ -222,7 +222,7 @@ namespace OsamesMicroOrm
         /// Opens the connection before returning it.
         /// May throw exception only when no connection at all can be opened.	
         /// </summary>
-        public DbConnection CreateConnection()
+        public DbConnectionWrapper CreateConnection()
         {
             try
             {
@@ -236,12 +236,12 @@ namespace OsamesMicroOrm
                 {
                     // we just opened our first connection!
                     // Keep a reference to it and keep this backup connexion unused for now
-                    BackupConnection = new DbConnection(adoConnection, true);
+                    BackupConnection = new DbConnectionWrapper(adoConnection, true);
                     // Try to get a second connection and return it
                     return CreateConnection();
                 }
                 // Not the first connection
-                DbConnection pooledConnection = new DbConnection(adoConnection, false);
+                DbConnectionWrapper pooledConnection = new DbConnectionWrapper(adoConnection, false);
                 return pooledConnection;
 
             }
@@ -272,7 +272,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="connexion_">connexion</param>
         /// <returns>Ne renvoie rien</returns>
-        public void DisposeConnection(ref DbConnection connexion_)
+        public void DisposeConnection(ref DbConnectionWrapper connexion_)
         {
             if (connexion_ == null) return;
 
@@ -287,7 +287,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Opens a transaction and returns it.
         /// </summary>
-        public DbTransaction OpenTransaction(DbConnection connection_)
+        public DbTransactionWrapper OpenTransaction(DbConnectionWrapper connection_)
         {
             try
             {
@@ -305,7 +305,7 @@ namespace OsamesMicroOrm
         /// Commits and closes a transaction.
         /// </summary>
         /// <param name="transaction_">Transaction to manage</param>
-        public void CommitTransaction(DbTransaction transaction_)
+        public void CommitTransaction(DbTransactionWrapper transaction_)
         {
             try
             {
@@ -324,7 +324,7 @@ namespace OsamesMicroOrm
         /// Rollbacks and closes a transaction.
         /// </summary>
         /// <param name="transaction_">Transaction to manage</param>
-        public void RollbackTransaction(DbTransaction transaction_)
+        public void RollbackTransaction(DbTransactionWrapper transaction_)
         {
             try
             {
@@ -353,9 +353,9 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) as a two-dimensional array</param>
-        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        private DbCommandWrapper PrepareCommand(DbConnectionWrapper connection_, DbTransactionWrapper transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            DbCommand command = PrepareCommandWithoutParameter(connection_, transaction_, cmdText_, cmdType_);
+            DbCommandWrapper command = PrepareCommandWithoutParameter(connection_, transaction_, cmdText_, cmdType_);
 
             if (cmdParams_ != null)
                 CreateDbParameters(command, cmdParams_);
@@ -371,9 +371,9 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) as an array of Parameter structures</param>
-        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        private DbCommandWrapper PrepareCommand(DbConnectionWrapper connection_, DbTransactionWrapper transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            DbCommand command = PrepareCommandWithoutParameter(connection_, transaction_, cmdText_, cmdType_);
+            DbCommandWrapper command = PrepareCommandWithoutParameter(connection_, transaction_, cmdText_, cmdType_);
 
             if (cmdParams_ != null)
                 CreateDbParameters(command, cmdParams_);
@@ -389,9 +389,9 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) as an a list of string and value key value pairs</param>
-        private DbCommand PrepareCommand(DbConnection connection_, DbTransaction transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        private DbCommandWrapper PrepareCommand(DbConnectionWrapper connection_, DbTransactionWrapper transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            DbCommand command = PrepareCommandWithoutParameter(connection_, transaction_, cmdText_, cmdType_);
+            DbCommandWrapper command = PrepareCommandWithoutParameter(connection_, transaction_, cmdText_, cmdType_);
 
             if (cmdParams_ != null)
                 CreateDbParameters(command, cmdParams_);
@@ -406,7 +406,7 @@ namespace OsamesMicroOrm
         /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        private DbCommand PrepareCommandWithoutParameter(DbConnection connection_, DbTransaction transaction_, string cmdText_, CommandType cmdType_ = CommandType.Text)
+        private DbCommandWrapper PrepareCommandWithoutParameter(DbConnectionWrapper connection_, DbTransactionWrapper transaction_, string cmdText_, CommandType cmdType_ = CommandType.Text)
         {
             System.Data.Common.DbCommand adoCommand = DbProviderFactory.CreateCommand();
 
@@ -415,7 +415,7 @@ namespace OsamesMicroOrm
                 throw new Exception("DbHelper, PrepareCommand: Command could not be created");
             }
 
-            DbCommand command = new DbCommand(adoCommand) { Connection = connection_, CommandText = cmdText_, CommandType = cmdType_ };
+            DbCommandWrapper command = new DbCommandWrapper(adoCommand) { Connection = connection_, CommandText = cmdText_, CommandType = cmdType_ };
 
             if (transaction_ != null)
                 command.Transaction = transaction_;
@@ -432,7 +432,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="command_">DbCommand to add parameters to</param>
         /// <param name="adoParams_">ADO.NET parameters (name and value) in multiple array format</param>
-        private static void CreateDbParameters(DbCommand command_, object[,] adoParams_)
+        private static void CreateDbParameters(DbCommandWrapper command_, object[,] adoParams_)
         {
             for (int i = 0; i < adoParams_.Length / 2; i++)
             {
@@ -450,7 +450,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="command_">DbCommand to add parameters to</param>
         /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
-        private static void CreateDbParameters(DbCommand command_, IEnumerable<Parameter> adoParams_)
+        private static void CreateDbParameters(DbCommandWrapper command_, IEnumerable<Parameter> adoParams_)
         {
             foreach (Parameter oParam in adoParams_)
             {
@@ -468,7 +468,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="command_">DbCommand to add parameters to</param>
         /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
-        private static void CreateDbParameters(DbCommand command_, IEnumerable<KeyValuePair<string, object>> adoParams_)
+        private static void CreateDbParameters(DbCommandWrapper command_, IEnumerable<KeyValuePair<string, object>> adoParams_)
         {
             foreach (KeyValuePair<string, object> oParam in adoParams_)
             {
@@ -497,7 +497,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbConnection connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
+        public int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
 
@@ -506,12 +506,12 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
 
-                    using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (object[,])null))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (object[,])null))
                     {
                         object oValue = command.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -522,12 +522,12 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
 
-                using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (object[,])null))
+                using (DbCommandWrapper command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (object[,])null))
                 {
                     object oValue = command.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -546,7 +546,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbTransaction transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
+        public int ExecuteNonQuery(DbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
 
@@ -555,12 +555,12 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
 
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (object[,])null))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (object[,])null))
                     {
                         object oValue = command.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -571,12 +571,12 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
 
-                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (object[,])null))
+                using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (object[,])null))
                 {
                     object oValue = command.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -596,7 +596,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbConnection connection_, CommandType cmdType_, string cmdText_, IEnumerable<Parameter> cmdParams_, out long lastInsertedRowId_)
+        public int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<Parameter> cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
 
@@ -605,12 +605,12 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
 
-                    using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
                     {
                         object oValue = command.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -621,12 +621,12 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
 
-                using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
+                using (DbCommandWrapper command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
                 {
                     object oValue = command.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -645,7 +645,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbTransaction transaction_, CommandType cmdType_, string cmdText_, IEnumerable<Parameter> cmdParams_, out long lastInsertedRowId_)
+        public int ExecuteNonQuery(DbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<Parameter> cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
 
@@ -654,12 +654,12 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
 
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
                     {
                         object oValue = command.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -670,12 +670,12 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
 
-                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
+                using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<Parameter>)null))
                 {
                     object oValue = command.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -695,7 +695,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbConnection connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
+        public int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
 
@@ -704,12 +704,12 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
 
-                    using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
                     {
                         object oValue = command.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -720,12 +720,12 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
 
-                using (DbCommand command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
+                using (DbCommandWrapper command = PrepareCommand(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
                 {
                     object oValue = command.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -745,7 +745,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbTransaction transaction_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
+        public int ExecuteNonQuery(DbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
 
@@ -754,12 +754,12 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
 
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
                     {
                         object oValue = command.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -770,12 +770,12 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
 
-                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
+                using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
                 {
                     object oValue = command.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -798,7 +798,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbConnection connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_)
+        public int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_)
         {
             int iNbAffectedRows;
 
@@ -807,7 +807,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
@@ -816,7 +816,7 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
@@ -833,7 +833,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbTransaction transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_)
+        public int ExecuteNonQuery(DbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_)
         {
             int iNbAffectedRows;
 
@@ -842,7 +842,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
@@ -851,7 +851,7 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
@@ -868,7 +868,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbConnection connection_, CommandType cmdType_, string cmdText_, IEnumerable<Parameter> cmdParams_)
+        public int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<Parameter> cmdParams_)
         {
             int iNbAffectedRows;
 
@@ -877,7 +877,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
@@ -886,7 +886,7 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
@@ -903,7 +903,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbTransaction transaction_, CommandType cmdType_, string cmdText_, IEnumerable<Parameter> cmdParams_)
+        public int ExecuteNonQuery(DbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<Parameter> cmdParams_)
         {
             int iNbAffectedRows;
 
@@ -912,7 +912,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
@@ -921,7 +921,7 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
@@ -938,7 +938,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbConnection connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_)
+        public int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
             int iNbAffectedRows;
 
@@ -947,7 +947,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
@@ -956,7 +956,7 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
@@ -973,7 +973,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbTransaction transaction_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_)
+        public int ExecuteNonQuery(DbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
             int iNbAffectedRows;
 
@@ -982,7 +982,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
@@ -991,7 +991,7 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
@@ -1013,14 +1013,14 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbConnection connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                         try
                         {
                             DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
@@ -1034,7 +1034,7 @@ namespace OsamesMicroOrm
                 }
             }
             // no lock
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
                     DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
@@ -1055,14 +1055,14 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbTransaction transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbTransactionWrapper transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (transaction_.Connection.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                         try
                         {
                             DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
@@ -1076,7 +1076,7 @@ namespace OsamesMicroOrm
                 }
             }
             // no lock
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 try
                 {
                     DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
@@ -1097,14 +1097,14 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbConnection connection_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbConnectionWrapper connection_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
                         try
                         {
@@ -1119,7 +1119,7 @@ namespace OsamesMicroOrm
                 }
             }
             // no lock
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
             {
                 try
                 {
@@ -1141,14 +1141,14 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbTransaction transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (transaction_.Connection.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
                         try
                         {
@@ -1163,7 +1163,7 @@ namespace OsamesMicroOrm
                 }
             }
             // no lock
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
             {
                 try
                 {
@@ -1185,14 +1185,14 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) formatted as a list of key/value</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbConnection connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
                         try
                         {
@@ -1207,7 +1207,7 @@ namespace OsamesMicroOrm
                 }
             }
             // no lock
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
             {
                 try
                 {
@@ -1229,14 +1229,14 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) formatted as a list of key/value</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbTransaction transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (transaction_.Connection.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
                         try
                         {
@@ -1251,7 +1251,7 @@ namespace OsamesMicroOrm
                 }
             }
             // no lock
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
             {
                 try
                 {
@@ -1276,7 +1276,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(DbConnection connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DataSet DataAdapter(DbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
@@ -1284,7 +1284,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                         try
                         {
 
@@ -1308,7 +1308,7 @@ namespace OsamesMicroOrm
             }
             // no lock
 
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
 
@@ -1338,7 +1338,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(DbConnection connection_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DataSet DataAdapter(DbConnectionWrapper connection_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
@@ -1346,7 +1346,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                         try
                         {
 
@@ -1372,7 +1372,7 @@ namespace OsamesMicroOrm
 
             // no lock
 
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
 
@@ -1402,7 +1402,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in list of key/value pair format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(DbConnection connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DataSet DataAdapter(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
@@ -1410,7 +1410,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                         try
                         {
 
@@ -1435,7 +1435,7 @@ namespace OsamesMicroOrm
             }
 
             // no lock
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
 
@@ -1467,7 +1467,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(DbTransaction transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DataSet DataAdapter(DbTransactionWrapper transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (transaction_.Connection.IsBackup)
@@ -1475,7 +1475,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                         try
                         {
 
@@ -1499,7 +1499,7 @@ namespace OsamesMicroOrm
             }
             // no lock
 
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 try
                 {
 
@@ -1529,7 +1529,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(DbTransaction transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DataSet DataAdapter(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (transaction_.Connection.IsBackup)
@@ -1537,7 +1537,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                         try
                         {
 
@@ -1563,7 +1563,7 @@ namespace OsamesMicroOrm
 
             // no lock
 
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 try
                 {
 
@@ -1593,7 +1593,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in list of key/value pair format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(DbTransaction transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DataSet DataAdapter(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (transaction_.Connection.IsBackup)
@@ -1601,7 +1601,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                         try
                         {
 
@@ -1626,7 +1626,7 @@ namespace OsamesMicroOrm
             }
 
             // no lock
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 try
                 {
 
@@ -1662,14 +1662,14 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbConnection connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
                         try
                         {
@@ -1686,7 +1686,7 @@ namespace OsamesMicroOrm
             }
 
             // no lock
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
             {
                 try
                 {
@@ -1710,14 +1710,14 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbTransaction transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbTransactionWrapper transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (transaction_.Connection.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
                         try
                         {
@@ -1734,7 +1734,7 @@ namespace OsamesMicroOrm
             }
 
             // no lock
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
             {
                 try
                 {
@@ -1759,7 +1759,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbConnection connection_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
@@ -1767,7 +1767,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                         try
                         {
                             return command.ExecuteScalar();
@@ -1781,7 +1781,7 @@ namespace OsamesMicroOrm
                 }
             }
             // no lock
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
                     return command.ExecuteScalar();
@@ -1804,7 +1804,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbTransaction transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (transaction_.Connection.IsBackup)
@@ -1812,7 +1812,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                         try
                         {
                             return command.ExecuteScalar();
@@ -1826,7 +1826,7 @@ namespace OsamesMicroOrm
                 }
             }
             // no lock
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 try
                 {
                     return command.ExecuteScalar();
@@ -1848,7 +1848,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbConnection connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
@@ -1856,7 +1856,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                         try
                         {
                             return command.ExecuteScalar();
@@ -1870,7 +1870,7 @@ namespace OsamesMicroOrm
                 }
             }
             // no lock
-            using (DbCommand command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(connection_, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
                     return command.ExecuteScalar();
@@ -1893,7 +1893,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbTransaction transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (transaction_.Connection.IsBackup)
@@ -1901,7 +1901,7 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                         try
                         {
                             return command.ExecuteScalar();
@@ -1915,7 +1915,7 @@ namespace OsamesMicroOrm
                 }
             }
             // no lock
-            using (DbCommand command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+            using (DbCommandWrapper command = PrepareCommand(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 try
                 {
                     return command.ExecuteScalar();

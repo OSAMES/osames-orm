@@ -69,8 +69,9 @@ namespace TestOsamesMicroOrmSqlite
             // Maintenant on rollback la transaction pour annuler les modifs et on relit.
             DbManager.Instance.RollbackTransaction(_transaction);
 
-            // Refaire un select, on lit l'ancienne valeur
-            _transaction = DbManager.Instance.OpenTransaction(_connection);
+            // Refaire un select, on lit l'ancienne valeur après le rollback.
+            // On réutilise la connexion et on rouvre une transaction
+            _transaction = DbManager.Instance.OpenTransaction(_transaction.Connection);
 
             Customer reReadInitialcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
 

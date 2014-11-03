@@ -26,7 +26,7 @@ namespace OsamesMicroOrm
     /// Elle expose les mêmes méthodes que System.Data.Common.DbTransaction à qui elle délègue.
     /// On encapsule au lieu d'hériter car System.Data.Common.DbConnection est une classe abstraite.
     /// </summary>
-    public sealed class DbTransaction : IDisposable
+    public sealed class DbTransactionWrapper : IDisposable
     {
         /// <summary>
         /// Connexion telle que fournie par l'appel à DbProviderFactory.CreateConnection().
@@ -38,7 +38,7 @@ namespace OsamesMicroOrm
         /// Constructeur.
         /// </summary>
         /// <param name="adoTransaction_">DbTransaction ADO.NET</param>
-        internal DbTransaction(System.Data.Common.DbTransaction adoTransaction_)
+        internal DbTransactionWrapper(System.Data.Common.DbTransaction adoTransaction_)
         {
             AdoDbTransaction = adoTransaction_;
         }
@@ -46,9 +46,9 @@ namespace OsamesMicroOrm
         #region reprise des mêmes propriétés publiques que System.Data.Common.DbConnection
 
         /// <summary>
-        /// Connexion (classe définie dans l'ORM)
+        /// Connexion parente.
         /// </summary>
-        public DbConnection Connection { get; internal set; }
+        public DbConnectionWrapper Connection { get; internal set; }
 
         /// <summary>
         /// Niveau d'isolation de la transaction.
