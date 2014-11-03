@@ -28,17 +28,17 @@ namespace OsamesMicroOrm
     /// Elle expose les mêmes méthodes que System.Data.Common.DbCommand à qui elle délègue.
     /// On encapsule au lieu d'hériter car System.Data.Common.DbCommand est une classe abstraite.
     /// </summary>
-    public sealed class DbCommand : IDisposable
+    public sealed class DbCommandWrapper : IDisposable
     {
         /// <summary>
         /// Connexion de l'ORM (wrapper de la connexion ADO.NET).
         /// </summary>
-        private DbConnection OrmConnection;
+        private DbConnectionWrapper OrmConnection;
 
         /// <summary>
         /// Transaction de l'ORM (wrapper de la transaction ADO.NET).
         /// </summary>
-        private DbTransaction OrmTransaction;
+        private DbTransactionWrapper OrmTransaction;
 
         /// <summary>
         /// Commande telle que fournie par l'appel à DbProviderFactory.CreateCommand();
@@ -50,7 +50,7 @@ namespace OsamesMicroOrm
         /// Constructeur.
         /// </summary>
         /// <param name="command_">DbConnection de l'ORM</param>
-        internal DbCommand(System.Data.Common.DbCommand command_)
+        internal DbCommandWrapper(System.Data.Common.DbCommand command_)
         {
             AdoDbCommand = command_;
         }
@@ -77,9 +77,9 @@ namespace OsamesMicroOrm
         public UpdateRowSource UpdatedRowSource { get { return AdoDbCommand.UpdatedRowSource; } set { AdoDbCommand.UpdatedRowSource = value; } }
 
         /// <summary>
-        /// Connexion associée (DbConnection de l'ORM).
+        /// Connexion associée.
         /// </summary>
-        public DbConnection Connection
+        public DbConnectionWrapper Connection
         {
             get { return OrmConnection; }
             set
@@ -90,9 +90,9 @@ namespace OsamesMicroOrm
         }
 
         /// <summary>
-        /// Transaction associée (DbTransaction de l'ORM).
+        /// Transaction associée.
         /// </summary>
-        public DbTransaction Transaction
+        public DbTransactionWrapper Transaction
         {
             get { return OrmTransaction; }
             set
