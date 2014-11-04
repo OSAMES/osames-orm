@@ -58,6 +58,23 @@ namespace OsamesMicroOrm
             AdoDbCommand = command_;
         }
 
+        
+        public DbCommandWrapper(string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+            this.PrepareCommand(cmdText_, cmdParams_, cmdType_);
+        }
+
+        public DbCommandWrapper(string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+            this.PrepareCommand(cmdText_, cmdParams_, cmdType_);
+        }
+
+
+        public DbCommandWrapper(string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+            this.PrepareCommand(cmdText_, cmdParams_, cmdType_);
+        }
+
         #region reprise des mêmes propriétés publiques que System.Data.Common.DbCommand
         /// <summary>
         /// Obtient ou définit la commande de texte à exécuter par rapport à la source de données.
@@ -350,7 +367,7 @@ namespace OsamesMicroOrm
         }
 
         /// <summary>
-        /// Initializes a DbCommand object with parameters and returns it ready for execution.
+        /// Initializes a DbCommand object with parameters and returns it reay for execution.
         /// </summary>
         /// <param name="connection_">Current connection</param>
         /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
@@ -402,7 +419,7 @@ namespace OsamesMicroOrm
             }
 
             //DbCommandWrapper command = new DbCommandWrapper(adoCommand) { Connection = this.OrmConnection, CommandText = cmdText_, CommandType = cmdType_ };
-            this.AdoDbCommand.Connection = OrmConnection;
+            this.AdoDbCommand.Connection = this.OrmConnection.AdoDbConnection;
             this.AdoDbCommand.CommandText = cmdText_;
             this.AdoDbCommand.CommandType = cmdType_;
 
@@ -410,7 +427,7 @@ namespace OsamesMicroOrm
 
 
             if (this.OrmTransaction != null)
-                this.AdoDbCommand.Transaction = this.OrmTransaction;
+                this.AdoDbCommand.Transaction = this.OrmTransaction.AdoDbTransaction;
 
             return this.AdoDbCommand;
         }
