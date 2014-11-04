@@ -20,6 +20,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace OsamesMicroOrm
 {
@@ -30,6 +31,8 @@ namespace OsamesMicroOrm
     /// </summary>
     public sealed class DbCommandWrapper : IDisposable
     {
+        internal DbProviderFactory DbProviderFactory;
+
         /// <summary>
         /// Connexion de l'ORM (wrapper de la connexion ADO.NET).
         /// </summary>
@@ -110,6 +113,7 @@ namespace OsamesMicroOrm
         public DbParameterCollection Parameters { get { return AdoDbCommand.Parameters; } }
 
         #endregion
+
         #region reprise des mêmes méthodes publiques que System.Data.Common.DbCommand
 
         /// <summary>
@@ -220,5 +224,198 @@ namespace OsamesMicroOrm
         }
 
         #endregion
+
+        /// <summary>
+        /// Representation of an ADO.NET parameter. Used same way as an ADO.NET parameter but without depending on System.Data namespace in user code.
+        /// It means more code overhead but is fine to deal with list of complex objects rather than list of values.
+        /// </summary>
+        public struct Parameter
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            public string ParamName;
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public object ParamValue;
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public ParameterDirection ParamDirection;
+
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="name_">Name</param>
+            /// <param name="value_">Value</param>
+            /// <param name="direction_">ADO.NET parameter direction</param>
+            public Parameter(string name_, object value_, ParameterDirection direction_)
+            {
+                ParamName = name_;
+                ParamValue = value_;
+                ParamDirection = direction_;
+            }
+            /// <summary>
+            /// Constructor with default "in" direction.
+            /// </summary>
+            /// <param name="name_">Name</param>
+            /// <param name="value_">Value</param>
+            public Parameter(string name_, object value_)
+            {
+                ParamName = name_;
+                ParamValue = value_;
+                ParamDirection = ParameterDirection.Input;
+            }
+        }
+
+        #region CreateDbParameters
+
+        /// <summary>
+        /// Adds ADO.NET parameters to parameter DbCommand.
+        /// Parameters are all input parameters.
+        /// </summary>
+        /// <param name="command_">DbCommand to add parameters to</param>
+        /// <param name="adoParams_">ADO.NET parameters (name and value) in multiple array format</param>
+        private void CreateDbParameters(object[,] adoParams_)
+        {
+            for (int i = 0; i < adoParams_.Length / 2; i++)
+            {
+                DbParameter dbParameter = this.CreateParameter();
+                dbParameter.ParameterName = adoParams_[i, 0].ToString();
+                dbParameter.Value = adoParams_[i, 1];
+                dbParameter.Direction = ParameterDirection.Input;
+                this.Parameters.Add(dbParameter);
+            }
+        }
+
+        /// <summary>
+        /// Adds ADO.NET parameters to parameter DbCommand.
+        /// Parameters can be input or output parameters.
+        /// </summary>
+        /// <param name="command_">DbCommand to add parameters to</param>
+        /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
+        private void CreateDbParameters(IEnumerable<Parameter> adoParams_)
+        {
+            foreach (Parameter oParam in adoParams_)
+            {
+                DbParameter dbParameter = this.CreateParameter();
+                dbParameter.ParameterName = oParam.ParamName;
+                dbParameter.Value = oParam.ParamValue;
+                dbParameter.Direction = oParam.ParamDirection;
+                this.Parameters.Add(dbParameter);
+            }
+        }
+
+        /// <summary>
+        /// Adds ADO.NET parameters to parameter DbCommand.
+        /// Parameters are all input parameters.
+        /// </summary>
+        /// <param name="command_">DbCommand to add parameters to</param>
+        /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
+        private void CreateDbParameters(IEnumerable<KeyValuePair<string, object>> adoParams_)
+        {
+            foreach (KeyValuePair<string, object> oParam in adoParams_)
+            {
+                DbParameter dbParameter = this.CreateParameter();
+                dbParameter.ParameterName = oParam.Key;
+                dbParameter.Value = oParam.Value;
+                dbParameter.Direction = ParameterDirection.Input;
+                this.Parameters.Add(dbParameter);
+            }
+        }
+
+        #endregion
+
+        #region PrepareCommand
+
+        /// <summary>
+        /// Initializes a DbCommand object with parameters and returns it ready for execution.
+        /// </summary>
+        /// <param name="connection_">Current connection</param>
+        /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
+        /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) as a two-dimensional array</param>
+        private DbCommandWrapper PrepareCommand(string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+            DbCommandWrapper command = PrepareCommandWithoutParameter(cmdText_, cmdType_);
+
+            if (cmdParams_ != null)
+                CreateDbParameters(cmdParams_);
+
+            return command;
+        }
+
+        /// <summary>
+        /// Initializes a DbCommand object with parameters and returns it ready for execution.
+        /// </summary>
+        /// <param name="connection_">Current connection</param>
+        /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
+        /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) as an array of Parameter structures</param>
+        private DbCommandWrapper PrepareCommand(string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+            DbCommandWrapper command = PrepareCommandWithoutParameter(cmdText_, cmdType_);
+
+            if (cmdParams_ != null)
+                CreateDbParameters(cmdParams_);
+
+            return command;
+        }
+
+        /// <summary>
+        /// Initializes a DbCommand object with parameters and returns it ready for execution.
+        /// </summary>
+        /// <param name="connection_">Current connection</param>
+        /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
+        /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) as an a list of string and value key value pairs</param>
+        private DbCommandWrapper PrepareCommand(string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+            DbCommandWrapper command = PrepareCommandWithoutParameter(cmdText_, cmdType_);
+
+            if (cmdParams_ != null)
+                CreateDbParameters(cmdParams_);
+
+            return command;
+        }
+
+        /// <summary>
+        /// Initializes a DbCommand object without parameters and returns it ready for execution.
+        /// </summary>
+        /// <param name="connection_">Current connection</param>
+        /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
+        /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="cmdText_">SQL command text</param>
+        private DbCommandWrapper PrepareCommandWithoutParameter(string cmdText_, CommandType cmdType_ = CommandType.Text)
+        {
+            System.Data.Common.DbCommand adoCommand = DbProviderFactory.CreateCommand();
+
+            if (adoCommand == null)
+            {
+                throw new Exception("DbHelper, PrepareCommand: Command could not be created");
+            }
+
+            //DbCommandWrapper command = new DbCommandWrapper(adoCommand) { Connection = this.OrmConnection, CommandText = cmdText_, CommandType = cmdType_ };
+            this.AdoDbCommand.Connection = OrmConnection;
+            this.AdoDbCommand.CommandText = cmdText_;
+            this.AdoDbCommand.CommandType = cmdType_;
+
+
+
+
+            if (this.OrmTransaction != null)
+                this.AdoDbCommand.Transaction = this.OrmTransaction;
+
+            return this.AdoDbCommand;
+        }
+
+        #endregion
+
     }
 }
