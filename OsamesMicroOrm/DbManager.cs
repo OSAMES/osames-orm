@@ -1782,7 +1782,7 @@ namespace OsamesMicroOrm
                 }
             }
             // no lock
-            using (DbCommandWrapper command = new DbCommandWrapper(cmdParams_, cmdType_))
+            using (DbCommandWrapper command = new DbCommandWrapper(cmdText_, cmdParams_, cmdType_))
                 try
                 {
                     return command.ExecuteScalar();

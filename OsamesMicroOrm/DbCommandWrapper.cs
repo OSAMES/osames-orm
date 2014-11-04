@@ -356,14 +356,12 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) as a two-dimensional array</param>
-        private DbCommandWrapper PrepareCommand(string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        private void PrepareCommand(string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            DbCommandWrapper command = PrepareCommandWithoutParameter(cmdText_, cmdType_);
+            this.PrepareCommandWithoutParameter(cmdText_, cmdType_);
 
             if (cmdParams_ != null)
                 CreateDbParameters(cmdParams_);
-
-            return command;
         }
 
         /// <summary>
@@ -374,14 +372,12 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) as an array of Parameter structures</param>
-        private DbCommandWrapper PrepareCommand(string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        private void PrepareCommand(string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            DbCommandWrapper command = PrepareCommandWithoutParameter(cmdText_, cmdType_);
+            this.PrepareCommandWithoutParameter(cmdText_, cmdType_);
 
             if (cmdParams_ != null)
                 CreateDbParameters(cmdParams_);
-
-            return command;
         }
 
         /// <summary>
@@ -392,14 +388,12 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) as an a list of string and value key value pairs</param>
-        private DbCommandWrapper PrepareCommand(string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        private void PrepareCommand(string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            DbCommandWrapper command = PrepareCommandWithoutParameter(cmdText_, cmdType_);
+            this.PrepareCommandWithoutParameter(cmdText_, cmdType_);
 
             if (cmdParams_ != null)
                 CreateDbParameters(cmdParams_);
-
-            return command;
         }
 
         /// <summary>
@@ -409,7 +403,7 @@ namespace OsamesMicroOrm
         /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        private DbCommandWrapper PrepareCommandWithoutParameter(string cmdText_, CommandType cmdType_ = CommandType.Text)
+        private void PrepareCommandWithoutParameter(string cmdText_, CommandType cmdType_ = CommandType.Text)
         {
             System.Data.Common.DbCommand adoCommand = DbProviderFactory.CreateCommand();
 
@@ -418,18 +412,12 @@ namespace OsamesMicroOrm
                 throw new Exception("DbHelper, PrepareCommand: Command could not be created");
             }
 
-            //DbCommandWrapper command = new DbCommandWrapper(adoCommand) { Connection = this.OrmConnection, CommandText = cmdText_, CommandType = cmdType_ };
             this.AdoDbCommand.Connection = this.OrmConnection.AdoDbConnection;
             this.AdoDbCommand.CommandText = cmdText_;
             this.AdoDbCommand.CommandType = cmdType_;
 
-
-
-
             if (this.OrmTransaction != null)
                 this.AdoDbCommand.Transaction = this.OrmTransaction.AdoDbTransaction;
-
-            return this.AdoDbCommand;
         }
 
         #endregion
