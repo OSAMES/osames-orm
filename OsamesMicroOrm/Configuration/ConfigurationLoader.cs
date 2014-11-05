@@ -180,10 +180,11 @@ namespace OsamesMicroOrm.Configuration
         #endregion
 
         /// <summary>
-        /// Initialize active connection string values from configuration and setup DbHelper.
+        /// Lit la configuration dans les fichiers .config, vérifie la cohérence des valeurs. Teste que le provider factory peut être initialisé.
+        /// Positionne les valeurs de la connexion string et du nom du provider sur le singleton de DbManager.
         /// </summary>
         /// <returns>false when configuration is wrong</returns>
-        internal bool InitializeDatabaseConnection()
+        internal bool CheckDatabaseConfiguration()
         {  
             // 1. AppSettings : doit définir une connexion DB active
             string dbConnexion = ConfigurationManager.AppSettings["activeDbConnection"];
@@ -493,12 +494,12 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Loads configuration.
         /// <para>Parses XML configuration to internal dictionaries</para>
-        /// <para>Initializes database connection</para>
+        /// <para>Checks database configuration and sets values to DbManager</para>
         /// </summary>
         private void LoadConfiguration()
         {
             LoadXmlConfiguration();
-            InitializeDatabaseConnection();
+            CheckDatabaseConfiguration();
         }
     }
 }

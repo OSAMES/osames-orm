@@ -217,7 +217,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         public DbCommandWrapper CreateDbCommand()
         {
-            return new DbCommandWrapper(AdoDbConnection.CreateCommand());
+            return new DbCommandWrapper(this, AdoDbConnection.CreateCommand());
         }
 
         /// <summary>

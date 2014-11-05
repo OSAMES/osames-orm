@@ -31,12 +31,6 @@ namespace OsamesMicroOrm
     /// </summary>
     public sealed class DbCommandWrapper : IDisposable
     {
-        internal DbProviderFactory DbProviderFactory;
-
-        /// <summary>
-        /// Connexion de l'ORM (wrapper de la connexion ADO.NET).
-        /// </summary>
-        private DbConnectionWrapper OrmConnection;
 
         /// <summary>
         /// Transaction de l'ORM (wrapper de la transaction ADO.NET).
@@ -52,43 +46,48 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Constructeur.
         /// </summary>
-        /// <param name="command_">DbConnection de l'ORM</param>
-        internal DbCommandWrapper(System.Data.Common.DbCommand command_)
+        /// <param name="connection_">Référence sur la DbConnection de l'ORM</param>
+        /// <param name="command_">DbCommand ADO.NET</param>
+        internal DbCommandWrapper(DbConnectionWrapper connection_, System.Data.Common.DbCommand command_)
         {
             AdoDbCommand = command_;
+            AdoDbCommand.Connection = connection_.AdoDbConnection;
         }
 
         /// <summary>
         /// Constructeur
         /// </summary>
+        /// <param name="connection_">Référence sur la DbConnection de l'ORM</param>
         /// <param name="cmdText_">Texte SQL</param>
         /// <param name="cmdParams_">Paramètres ADO.NET au format tableau multidimensionnel</param>
         /// <param name="cmdType_">Type de la commande SQL, texte par défaut</param>
-        internal DbCommandWrapper(string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal DbCommandWrapper(DbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            this.PrepareCommand(cmdText_, cmdParams_, cmdType_);
+            this.PrepareCommand(connection_, cmdText_, cmdParams_, cmdType_);
         }
 
         /// <summary>
         /// Constructeur
         /// </summary>
+        /// <param name="connection_">Référence sur la DbConnection de l'ORM</param>
         /// <param name="cmdText_">Texte SQL</param>
         /// <param name="cmdParams_">Paramètres ADO.NET au format liste d'objets Parameter</param>
         /// <param name="cmdType_">Type de la commande SQL, texte par défaut</param>
-        internal DbCommandWrapper(string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal DbCommandWrapper(DbConnectionWrapper connection_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            this.PrepareCommand(cmdText_, cmdParams_, cmdType_);
+            this.PrepareCommand(connection_, cmdText_, cmdParams_, cmdType_);
         }
 
         /// <summary>
         /// Constructeur
         /// </summary>
+        /// <param name="connection_">Référence sur la DbConnection de l'ORM</param>
         /// <param name="cmdText_">Texte SQL</param>
         /// <param name="cmdParams_">Paramètres ADO.NET au format liste de clés/valeurs</param>
         /// <param name="cmdType_">Type de la commande SQL, texte par défaut</param>
-        internal DbCommandWrapper(string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal DbCommandWrapper(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            this.PrepareCommand(cmdText_, cmdParams_, cmdType_);
+            this.PrepareCommand(connection_, cmdText_, cmdParams_, cmdType_);
         }
 
         #region reprise des mêmes propriétés publiques que System.Data.Common.DbCommand
@@ -112,20 +111,7 @@ namespace OsamesMicroOrm
         /// </summary>
         public UpdateRowSource UpdatedRowSource { get { return AdoDbCommand.UpdatedRowSource; } set { AdoDbCommand.UpdatedRowSource = value; } }
 
-        /// <summary>
-        /// Connexion associée.
-        /// </summary>
-        public DbConnectionWrapper Connection
-        {
-            get { return OrmConnection; }
-            set
-            {
-                OrmConnection = value;
-                AdoDbCommand.Connection = OrmConnection.AdoDbConnection;
-            }
-        }
-
-        /// <summary>
+       /// <summary>
         /// Transaction associée.
         /// </summary>
         public DbTransactionWrapper Transaction
@@ -364,12 +350,13 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Initializes current DbCommand with parameters and sets it ready for execution.
         /// </summary>
+        /// <param name="connection_">Référence sur la DbConnection de l'ORM</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) as a two-dimensional array</param>
-        private void PrepareCommand(string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        private void PrepareCommand(DbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            this.PrepareCommandWithoutParameter(cmdText_, cmdType_);
+            this.PrepareCommandWithoutParameter(connection_, cmdText_, cmdType_);
 
             if (cmdParams_ != null)
                 CreateDbParameters(cmdParams_);
@@ -378,12 +365,13 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Initializes current DbCommand object with parameters and sets it reay for execution.
         /// </summary>
+        /// <param name="connection_">Référence sur la DbConnection de l'ORM</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) as an array of Parameter structures</param>
-        private void PrepareCommand(string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        private void PrepareCommand(DbConnectionWrapper connection_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            this.PrepareCommandWithoutParameter(cmdText_, cmdType_);
+            this.PrepareCommandWithoutParameter(connection_, cmdText_, cmdType_);
 
             if (cmdParams_ != null)
                 CreateDbParameters(cmdParams_);
@@ -392,12 +380,13 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Initializes current DbCommand object with parameters and sets it ready for execution.
         /// </summary>
+        /// <param name="connection_">Référence sur la DbConnection de l'ORM</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) as an a list of string and value key value pairs</param>
-        private void PrepareCommand(string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        private void PrepareCommand(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            this.PrepareCommandWithoutParameter(cmdText_, cmdType_);
+            this.PrepareCommandWithoutParameter(connection_, cmdText_, cmdType_);
 
             if (cmdParams_ != null)
                 CreateDbParameters(cmdParams_);
@@ -406,18 +395,19 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Initializes current DbCommand object without parameters and sets it ready for execution.
         /// </summary>
+        /// <param name="connection_">Référence sur la DbConnection de l'ORM</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        private void PrepareCommandWithoutParameter(string cmdText_, CommandType cmdType_ = CommandType.Text)
+        private void PrepareCommandWithoutParameter(DbConnectionWrapper connection_, string cmdText_, CommandType cmdType_ = CommandType.Text)
         {
-            System.Data.Common.DbCommand adoCommand = DbProviderFactory.CreateCommand();
+            AdoDbCommand = DbManager.Instance.DbProviderFactory.CreateCommand();
 
-            if (adoCommand == null)
+            if (AdoDbCommand == null)
             {
                 throw new Exception("DbCommandWrapper, PrepareCommandWithoutParameter: ADO.NET command could not be created");
             }
 
-            this.AdoDbCommand.Connection = this.OrmConnection.AdoDbConnection;
+            this.AdoDbCommand.Connection = connection_.AdoDbConnection;
             this.AdoDbCommand.CommandText = cmdText_;
             this.AdoDbCommand.CommandType = cmdType_;
 
