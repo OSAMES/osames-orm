@@ -208,7 +208,7 @@ namespace OsamesMicroOrm
         /// </summary>
         ~DbManager()
         {
-            if(BackupConnection !=  null)
+            if (BackupConnection != null && BackupConnection.State == ConnectionState.Open)
                 BackupConnection.Close();
             DbProviderFactory = null;
         }

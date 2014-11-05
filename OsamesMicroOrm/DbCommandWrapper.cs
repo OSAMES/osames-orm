@@ -58,18 +58,34 @@ namespace OsamesMicroOrm
             AdoDbCommand = command_;
         }
 
-        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cmdText_"></param>
+        /// <param name="cmdParams_"></param>
+        /// <param name="cmdType_"></param>
         public DbCommandWrapper(string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             this.PrepareCommand(cmdText_, cmdParams_, cmdType_);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cmdText_"></param>
+        /// <param name="cmdParams_"></param>
+        /// <param name="cmdType_"></param>
         public DbCommandWrapper(string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             this.PrepareCommand(cmdText_, cmdParams_, cmdType_);
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cmdText_"></param>
+        /// <param name="cmdParams_"></param>
+        /// <param name="cmdType_"></param>
         public DbCommandWrapper(string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             this.PrepareCommand(cmdText_, cmdParams_, cmdType_);
@@ -294,7 +310,6 @@ namespace OsamesMicroOrm
         /// Adds ADO.NET parameters to parameter DbCommand.
         /// Parameters are all input parameters.
         /// </summary>
-        /// <param name="command_">DbCommand to add parameters to</param>
         /// <param name="adoParams_">ADO.NET parameters (name and value) in multiple array format</param>
         private void CreateDbParameters(object[,] adoParams_)
         {
@@ -312,7 +327,6 @@ namespace OsamesMicroOrm
         /// Adds ADO.NET parameters to parameter DbCommand.
         /// Parameters can be input or output parameters.
         /// </summary>
-        /// <param name="command_">DbCommand to add parameters to</param>
         /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
         private void CreateDbParameters(IEnumerable<Parameter> adoParams_)
         {
@@ -330,7 +344,6 @@ namespace OsamesMicroOrm
         /// Adds ADO.NET parameters to parameter DbCommand.
         /// Parameters are all input parameters.
         /// </summary>
-        /// <param name="command_">DbCommand to add parameters to</param>
         /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
         private void CreateDbParameters(IEnumerable<KeyValuePair<string, object>> adoParams_)
         {
@@ -351,8 +364,6 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Initializes a DbCommand object with parameters and returns it ready for execution.
         /// </summary>
-        /// <param name="connection_">Current connection</param>
-        /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) as a two-dimensional array</param>
@@ -367,8 +378,6 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Initializes a DbCommand object with parameters and returns it reay for execution.
         /// </summary>
-        /// <param name="connection_">Current connection</param>
-        /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) as an array of Parameter structures</param>
@@ -383,8 +392,6 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Initializes a DbCommand object with parameters and returns it ready for execution.
         /// </summary>
-        /// <param name="connection_">Current connection</param>
-        /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) as an a list of string and value key value pairs</param>
@@ -399,8 +406,6 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Initializes a DbCommand object without parameters and returns it ready for execution.
         /// </summary>
-        /// <param name="connection_">Current connection</param>
-        /// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
         private void PrepareCommandWithoutParameter(string cmdText_, CommandType cmdType_ = CommandType.Text)

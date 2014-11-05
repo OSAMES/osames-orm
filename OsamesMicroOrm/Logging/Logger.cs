@@ -48,6 +48,9 @@ namespace OsamesMicroOrm.Logging
         /// </summary>
         /// <param name="logLevel_">Niveau de log</param>
         /// <param name="message_">Texte</param>
+        /// <param name="memberName"></param>
+        /// <param name="sourceFilePath"></param>
+        /// <param name="sourceLineNumber"></param>
         internal static void Log(TraceEventType logLevel_, string message_, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
             string contextualInfo = FormatContextualInformation(memberName, sourceFilePath, sourceLineNumber);
@@ -61,6 +64,9 @@ namespace OsamesMicroOrm.Logging
         /// </summary>
         /// <param name="logLevel_">Niveau de log</param>
         /// <param name="error_">Exception</param>
+        /// <param name="memberName"></param>
+        /// <param name="sourceFilePath"></param>
+        /// <param name="sourceLineNumber"></param>
         internal static void Log(TraceEventType logLevel_, Exception error_, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
             string contextualInfo = FormatContextualInformation(memberName, sourceFilePath, sourceLineNumber);
