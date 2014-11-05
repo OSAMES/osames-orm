@@ -347,149 +347,6 @@ namespace OsamesMicroOrm
 
         #endregion
 
-        #region COMMANDS
-
-        //#region PrepareCommand
-
-        ///// <summary>
-        ///// Initializes a DbCommand object with parameters and returns it ready for execution.
-        ///// </summary>
-        ///// <param name="connection_">Current connection</param>
-        ///// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
-        ///// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
-        ///// <param name="cmdText_">SQL command text</param>
-        ///// <param name="cmdParams_">ADO.NET parameters (name and value) as a two-dimensional array</param>
-        //private DbCommandWrapper PrepareCommand(DbConnectionWrapper connection_, DbTransactionWrapper transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
-        //{
-        //    DbCommandWrapper command = PrepareCommandWithoutParameter(connection_, transaction_, cmdText_, cmdType_);
-
-        //    if (cmdParams_ != null)
-        //        CreateDbParameters(command, cmdParams_);
-
-        //    return command;
-        //}
-
-        ///// <summary>
-        ///// Initializes a DbCommand object with parameters and returns it ready for execution.
-        ///// </summary>
-        ///// <param name="connection_">Current connection</param>
-        ///// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
-        ///// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
-        ///// <param name="cmdText_">SQL command text</param>
-        ///// <param name="cmdParams_">ADO.NET parameters (name and value) as an array of Parameter structures</param>
-        //private DbCommandWrapper PrepareCommand(DbConnectionWrapper connection_, DbTransactionWrapper transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
-        //{
-        //    DbCommandWrapper command = PrepareCommandWithoutParameter(connection_, transaction_, cmdText_, cmdType_);
-
-        //    if (cmdParams_ != null)
-        //        CreateDbParameters(command, cmdParams_);
-
-        //    return command;
-        //}
-
-        ///// <summary>
-        ///// Initializes a DbCommand object with parameters and returns it ready for execution.
-        ///// </summary>
-        ///// <param name="connection_">Current connection</param>
-        ///// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
-        ///// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
-        ///// <param name="cmdText_">SQL command text</param>
-        ///// <param name="cmdParams_">ADO.NET parameters (name and value) as an a list of string and value key value pairs</param>
-        //private DbCommandWrapper PrepareCommand(DbConnectionWrapper connection_, DbTransactionWrapper transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
-        //{
-        //    DbCommandWrapper command = PrepareCommandWithoutParameter(connection_, transaction_, cmdText_, cmdType_);
-
-        //    if (cmdParams_ != null)
-        //        CreateDbParameters(command, cmdParams_);
-
-        //    return command;
-        //}
-
-        ///// <summary>
-        ///// Initializes a DbCommand object without parameters and returns it ready for execution.
-        ///// </summary>
-        ///// <param name="connection_">Current connection</param>
-        ///// <param name="transaction_">When not null, transaction to assign to _command. OpenTransaction() should have been called first</param>
-        ///// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
-        ///// <param name="cmdText_">SQL command text</param>
-        //private DbCommandWrapper PrepareCommandWithoutParameter(DbConnectionWrapper connection_, DbTransactionWrapper transaction_, string cmdText_, CommandType cmdType_ = CommandType.Text)
-        //{
-        //    System.Data.Common.DbCommand adoCommand = DbProviderFactory.CreateCommand();
-
-        //    if (adoCommand == null)
-        //    {
-        //        throw new Exception("DbHelper, PrepareCommand: Command could not be created");
-        //    }
-
-        //    DbCommandWrapper command = new DbCommandWrapper(adoCommand) { Connection = connection_, CommandText = cmdText_, CommandType = cmdType_ };
-
-        //    if (transaction_ != null)
-        //        command.Transaction = transaction_;
-
-        //    return command;
-        //}
-
-        //#endregion
-        //#region CreateDbParameters
-
-        ///// <summary>
-        ///// Adds ADO.NET parameters to parameter DbCommand.
-        ///// Parameters are all input parameters.
-        ///// </summary>
-        ///// <param name="command_">DbCommand to add parameters to</param>
-        ///// <param name="adoParams_">ADO.NET parameters (name and value) in multiple array format</param>
-        //private static void CreateDbParameters(DbCommandWrapper command_, object[,] adoParams_)
-        //{
-        //    for (int i = 0; i < adoParams_.Length / 2; i++)
-        //    {
-        //        DbParameter dbParameter = command_.CreateParameter();
-        //        dbParameter.ParameterName = adoParams_[i, 0].ToString();
-        //        dbParameter.Value = adoParams_[i, 1];
-        //        dbParameter.Direction = ParameterDirection.Input;
-        //        command_.Parameters.Add(dbParameter);
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Adds ADO.NET parameters to parameter DbCommand.
-        ///// Parameters can be input or output parameters.
-        ///// </summary>
-        ///// <param name="command_">DbCommand to add parameters to</param>
-        ///// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
-        //private static void CreateDbParameters(DbCommandWrapper command_, IEnumerable<Parameter> adoParams_)
-        //{
-        //    foreach (Parameter oParam in adoParams_)
-        //    {
-        //        DbParameter dbParameter = command_.CreateParameter();
-        //        dbParameter.ParameterName = oParam.ParamName;
-        //        dbParameter.Value = oParam.ParamValue;
-        //        dbParameter.Direction = oParam.ParamDirection;
-        //        command_.Parameters.Add(dbParameter);
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Adds ADO.NET parameters to parameter DbCommand.
-        ///// Parameters are all input parameters.
-        ///// </summary>
-        ///// <param name="command_">DbCommand to add parameters to</param>
-        ///// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
-        //private static void CreateDbParameters(DbCommandWrapper command_, IEnumerable<KeyValuePair<string, object>> adoParams_)
-        //{
-        //    foreach (KeyValuePair<string, object> oParam in adoParams_)
-        //    {
-        //        DbParameter dbParameter = command_.CreateParameter();
-        //        dbParameter.ParameterName = oParam.Key;
-        //        dbParameter.Value = oParam.Value;
-        //        dbParameter.Direction = ParameterDirection.Input;
-        //        command_.Parameters.Add(dbParameter);
-        //    }
-        //}
-
-        //#endregion
-
-        #endregion
-
         #region EXECUTE METHODS
 
         #region avec sortie d'un ID d'enregistrement (INSERT)
@@ -503,7 +360,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
+        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
 
@@ -602,7 +459,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, out long lastInsertedRowId_)
+        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
 
@@ -701,7 +558,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
+        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
 
@@ -804,7 +661,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_)
+        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_)
         {
             int iNbAffectedRows;
 
@@ -875,7 +732,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_)
+        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_)
         {
             int iNbAffectedRows;
 
@@ -945,7 +802,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_)
+        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
             int iNbAffectedRows;
 
@@ -1020,7 +877,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal DbDataReader ExecuteReader(DbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
             {
@@ -1104,7 +961,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbConnectionWrapper connection_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal DbDataReader ExecuteReader(DbConnectionWrapper connection_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
             {
@@ -1192,7 +1049,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) formatted as a list of key/value</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal DbDataReader ExecuteReader(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
             {
@@ -1283,7 +1140,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(DbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal DataSet DataAdapter(DbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
@@ -1345,7 +1202,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(DbConnectionWrapper connection_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal DataSet DataAdapter(DbConnectionWrapper connection_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
@@ -1409,7 +1266,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in list of key/value pair format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal DataSet DataAdapter(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
@@ -1463,8 +1320,6 @@ namespace OsamesMicroOrm
                     throw;
                 }
         }
-
-        // TODO ORM-94 : les mêmes méthodes que ci-dessus, qui prennent en entrée un DbTransaction
 
         /// <summary>
         /// Executes a SQL select operation
@@ -1669,7 +1524,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
             {
@@ -1755,8 +1610,7 @@ namespace OsamesMicroOrm
                 }
             }
         }
-
-
+        
         /// <summary>
         /// Executes a SQL operation and returns value of first column and first line of data table result.
         /// Generally used for a query such as "count()".
@@ -1766,7 +1620,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
@@ -1846,6 +1700,7 @@ namespace OsamesMicroOrm
                 }
 
         }
+      
         /// <summary>
         /// Executes a SQL operation and returns value of first column and first line of data table result.
         /// Generally used for a query such as "count()".
@@ -1855,7 +1710,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
