@@ -139,56 +139,6 @@ namespace OsamesMicroOrm
 
         #endregion
 
-        //#region STRUCTURES
-
-        ///// <summary>
-        ///// Representation of an ADO.NET parameter. Used same way as an ADO.NET parameter but without depending on System.Data namespace in user code.
-        ///// It means more code overhead but is fine to deal with list of complex objects rather than list of values.
-        ///// </summary>
-        //public struct Parameter
-        //{
-        //    /// <summary>
-        //    /// 
-        //    /// </summary>
-        //    public string ParamName;
-
-        //    /// <summary>
-        //    /// 
-        //    /// </summary>
-        //    public object ParamValue;
-
-        //    /// <summary>
-        //    /// 
-        //    /// </summary>
-        //    public ParameterDirection ParamDirection;
-
-        //    /// <summary>
-        //    /// Constructor.
-        //    /// </summary>
-        //    /// <param name="name_">Name</param>
-        //    /// <param name="value_">Value</param>
-        //    /// <param name="direction_">ADO.NET parameter direction</param>
-        //    public Parameter(string name_, object value_, ParameterDirection direction_)
-        //    {
-        //        ParamName = name_;
-        //        ParamValue = value_;
-        //        ParamDirection = direction_;
-        //    }
-        //    /// <summary>
-        //    /// Constructor with default "in" direction.
-        //    /// </summary>
-        //    /// <param name="name_">Name</param>
-        //    /// <param name="value_">Value</param>
-        //    public Parameter(string name_, object value_)
-        //    {
-        //        ParamName = name_;
-        //        ParamValue = value_;
-        //        ParamDirection = ParameterDirection.Input;
-        //    }
-        //}
-
-        //#endregion
-
         #region CONSTRUCTOR
 
         /// <summary>
