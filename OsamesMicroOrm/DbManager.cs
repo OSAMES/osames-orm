@@ -278,7 +278,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="connexion_">connexion</param>
         /// <returns>Ne renvoie rien</returns>
-        public void DisposeConnection(ref DbConnectionWrapper connexion_)
+        public void DisposeConnection(DbConnectionWrapper connexion_)
         {
             if (connexion_ == null) return;
 

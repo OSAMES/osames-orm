@@ -59,7 +59,7 @@ namespace TestOsamesMicroOrm
             DbConnectionWrapper connection = _transaction.Connection;
             // Libération des ressources
             DbManager.Instance.RollbackTransaction(_transaction);
-            DbManager.Instance.DisposeConnection(ref connection);
+            DbManager.Instance.DisposeConnection(connection);
         }
 
         /// <summary>

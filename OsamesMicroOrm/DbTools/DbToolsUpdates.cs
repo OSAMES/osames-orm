@@ -52,7 +52,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void FormatSqlForUpdate<T>(ref T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, List<string> lstWhereMetaNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_, out string strErrorMsg_)
+        internal static void FormatSqlForUpdate<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, List<string> lstWhereMetaNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_, out string strErrorMsg_)
         {
             StringBuilder sbFieldsToUpdate = new StringBuilder();
 
@@ -60,7 +60,7 @@ namespace OsamesMicroOrm.DbTools
             adoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
 
             // 1. détermine les champs à mettre à jour et remplit la stringbuilder sbFieldsToUpdate
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref dataObject_, mappingDictionariesContainerKey_, lstDataObjectColumnNames_, out lstDbColumnNames, out adoParameters_);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(dataObject_, mappingDictionariesContainerKey_, lstDataObjectColumnNames_, out lstDbColumnNames, out adoParameters_);
 
             int iCountMinusOne = lstDbColumnNames.Count - 1;
             for (int i = 0; i < iCountMinusOne; i++)
@@ -103,7 +103,7 @@ namespace OsamesMicroOrm.DbTools
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
 
-            FormatSqlForUpdate(ref dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, propertiesNames_, strWhereColumnNames_, oWhereValues_, out sqlCommand, out adoParameters, out strErrorMsg_);
+            FormatSqlForUpdate(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, propertiesNames_, strWhereColumnNames_, oWhereValues_, out sqlCommand, out adoParameters, out strErrorMsg_);
 
             if (transaction_ != null)
             {
