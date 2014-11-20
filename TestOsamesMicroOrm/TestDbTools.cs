@@ -78,11 +78,11 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping GetPropertyValue")]
         public void TestDetermineDatabaseColumnNameAndAdoParameter()
         {
-            // DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
+            // DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
 
             string dbColumnName;
             KeyValuePair<string, object> adoParams;
-            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(ref Employee, "Employee", "LastName", out dbColumnName, out adoParams);
+            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(Employee, "Employee", "LastName", out dbColumnName, out adoParams);
 
             // Ici on devra faire un Assert.IsTrue du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
 
@@ -100,11 +100,11 @@ namespace TestOsamesMicroOrm
         [TestCategory("Parameter NOK")]
         public void TestDetermineDatabaseColumnNameAndAdoParameterWrongDictionaryName()
         {
-            // DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
+            // DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
 
             string dbColumnName;
             KeyValuePair<string, object> adoParams;
-            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(ref Employee, "NotAnEmployee", "LastName", out dbColumnName, out adoParams);
+            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(Employee, "NotAnEmployee", "LastName", out dbColumnName, out adoParams);
 
             // Ici on devra faire un Assert.IsFalse du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
 
@@ -117,11 +117,11 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping GetPropertyValue")]
         public void TestDetermineDatabaseColumnNamesAndAdoParameters()
         {
-            // DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
+            // DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
 
             List<string> lstDbColumnNames;
             List<KeyValuePair<string, object>> adoParams;
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref Employee, "Employee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(Employee, "Employee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
 
             // Ici on devra faire un Assert.IsTrue du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
 
@@ -143,11 +143,11 @@ namespace TestOsamesMicroOrm
         [TestCategory("Parameter NOK")]
         public void TestDetermineDatabaseColumnNamesAndAdoParametersWrongDictionaryName()
         {
-            // DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
+            // DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
 
             List<string> lstDbColumnNames;
             List<KeyValuePair<string, object>> adoParams;
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(ref Employee, "NotAnEmployee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(Employee, "NotAnEmployee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
 
             // Ici on devra faire un Assert.IsFalse du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
 
@@ -168,12 +168,12 @@ namespace TestOsamesMicroOrm
                 Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
                 Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
 
-                // FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
+                // FormatSqlForUpdate<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
                 //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
                 string sqlCommand, strErrorMsg_;
                 List<KeyValuePair<string, object>> adoParams;
-                DbToolsUpdates.FormatSqlForUpdate(ref Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
+                DbToolsUpdates.FormatSqlForUpdate(Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
 
                 Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", sqlCommand);
                 Assert.AreEqual(3, adoParams.Count, "no parameters generated");
@@ -208,12 +208,12 @@ namespace TestOsamesMicroOrm
                 Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
                 Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
 
-                // FormatSqlForUpdate<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
+                // FormatSqlForUpdate<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
                 //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
                 string sqlCommand, strErrorMsg_;
                 List<KeyValuePair<string, object>> adoParams;
-                DbToolsUpdates.FormatSqlForUpdate(ref Employee, "ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
+                DbToolsUpdates.FormatSqlForUpdate(Employee, "ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
 
                 Assert.IsNull(sqlCommand);
 

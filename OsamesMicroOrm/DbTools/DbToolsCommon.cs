@@ -41,7 +41,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="sqlCommand_">StringBuilder à compléter</param>
         /// <param name="optionalSuffix_">Suffixe optionnel, par exemple ","</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void FormatSqlNameEqualValueString(string dbColumnName_, KeyValuePair<string, object> adoParameters_, ref StringBuilder sqlCommand_, string optionalSuffix_ = "")
+        internal static void FormatSqlNameEqualValueString(string dbColumnName_, KeyValuePair<string, object> adoParameters_, StringBuilder sqlCommand_, string optionalSuffix_ = "")
         {
             sqlCommand_.Append(ConfigurationLoader.StartFieldEncloser).Append(dbColumnName_).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(adoParameters_.Key).Append(optionalSuffix_);
         }
@@ -55,7 +55,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="sqlCommand_">StringBuilder à compléter</param>
         /// <param name="optionalSuffix_">Suffixe optionnel, par exemple ",", ajouté entre chaque élément (pas à la fin)</param>
         /// <returns>Ne renvoie rien.</returns>
-        internal static void FormatSqlNameEqualValueString(List<string> lstDbColumnNames_, List<KeyValuePair<string, object>> adoParameters_, ref StringBuilder sqlCommand_, string optionalSuffix_ = "")
+        internal static void FormatSqlNameEqualValueString(List<string> lstDbColumnNames_, List<KeyValuePair<string, object>> adoParameters_, StringBuilder sqlCommand_, string optionalSuffix_ = "")
         {
             int iCountMinusOne = lstDbColumnNames_.Count - 1;
             for (int i = 0; i < iCountMinusOne; i++)
@@ -101,7 +101,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
         /// <param name="adoParameterNameAndValue_">Sortie : nom/valeur du paramètre ADO.NET</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(ref T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
+        internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
         {
             dbColumnName_ = null;
             adoParameterNameAndValue_ = new KeyValuePair<string, object>();
@@ -138,7 +138,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstDbColumnNames_">Sortie : liste de noms des colonnes en DB</param>
         /// <param name="lstAdoParameterNameAndValues_">Sortie : liste de nom/valeur des paramètres ADO.NET</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void DetermineDatabaseColumnNamesAndAdoParameters<T>(ref T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, out List<string> lstDbColumnNames_, out List<KeyValuePair<string, object>> lstAdoParameterNameAndValues_)
+        internal static void DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, out List<string> lstDbColumnNames_, out List<KeyValuePair<string, object>> lstAdoParameterNameAndValues_)
         {
             lstDbColumnNames_ = new List<string>();
 

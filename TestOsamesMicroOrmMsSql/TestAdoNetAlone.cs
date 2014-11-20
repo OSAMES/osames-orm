@@ -32,7 +32,7 @@ namespace TestOsamesMicroOrmMsSql
                 // changement de la connexion string, réduction du timeout à 5s.
                 string cs = DbManager.ConnectionString;
                 ConfigurePool(ref cs, 10, 5);
-                for (int i = 0; i < 9; i++)
+                for (int i = 0; i < 10; i++)
                 {
                     lstConnections.Add(DbManager.Instance.DbProviderFactory.CreateConnection());
                     lstConnections[i].ConnectionString = cs;
@@ -46,10 +46,12 @@ namespace TestOsamesMicroOrmMsSql
                         command.CommandType = CommandType.Text;
                         command.ExecuteScalar();
                     }
+                    Console.WriteLine("pool number " + i.ToString());
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine("On est dans le catch");
                 Console.WriteLine(ex.Message + " " + ex.StackTrace);
                 throw;
             }
@@ -83,7 +85,7 @@ namespace TestOsamesMicroOrmMsSql
                 ConfigurePool(ref cs, 10, 5);
                 for (int i = 0; i < 11; i++)
                 {
-                    // On a une exception dès qu'on demande 10 connexions avec un pool de 10
+                    // On a une exception dès qu'on demande 11 connexions avec un pool de 10
                     lstConnections.Add(DbManager.Instance.DbProviderFactory.CreateConnection());
                     lstConnections[i].ConnectionString = cs;
                     lstConnections[i].Open();
@@ -96,11 +98,13 @@ namespace TestOsamesMicroOrmMsSql
                         command.CommandType = CommandType.Text;
                         command.ExecuteScalar();
                     }
+                    Console.WriteLine("pool number " + i.ToString());
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message + " " + ex.StackTrace);
+                Console.WriteLine("On est dans le catch");
+                Console.WriteLine(ex.Message + " " + ex.StackTrace); 
                 throw;
             }
             finally
