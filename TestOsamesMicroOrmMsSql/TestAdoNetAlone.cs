@@ -19,7 +19,7 @@ namespace TestOsamesMicroOrmMsSql
     {
         /// <summary>
         /// Test de comportement du provider factory MsSQL en cas de demande et ouverture de moins de connexions que le pool peut en donner.
-        /// Travail avec DbConnection de ADO.NET, pas celui de l'ORM.
+        /// Travail avec DbConnection de ADO.NET, pas DbConnectionWrapper de l'ORM.
         /// </summary>
         [TestMethod]
         [TestCategory("MsSql")]
@@ -68,7 +68,7 @@ namespace TestOsamesMicroOrmMsSql
 
         /// <summary>
         /// Test de comportement du provider factory MsSQL en cas de demande et ouverture de plus de connexions que le pool peut en donner.
-        /// Travail avec DbConnection de ADO.NET, pas celui de l'ORM.
+        /// Travail avec DbConnection de ADO.NET, pas DbConnectionWrapper de l'ORM.
         /// </summary>
         [TestMethod]
         [TestCategory("MsSql")]
@@ -85,7 +85,9 @@ namespace TestOsamesMicroOrmMsSql
                 ConfigurePool(ref cs, 10, 5);
                 for (int i = 0; i < 11; i++)
                 {
-                    // On a une exception dès qu'on demande 11 connexions avec un pool de 10
+                    // On a une exception dès que i atteint 10 avec un pool de 10 : 10 connexions (i = 0 à 9).
+                    // En effet l'initialisation des tests unitaires a créé une transaction donc une première connexion.
+                    // En tout on essaie donc bien d'en obtenir 1 + 10 = 11 soit une de plus que le pool.
                     lstConnections.Add(DbManager.Instance.DbProviderFactory.CreateConnection());
                     lstConnections[i].ConnectionString = cs;
                     lstConnections[i].Open();
