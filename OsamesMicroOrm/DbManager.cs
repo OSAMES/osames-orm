@@ -348,6 +348,105 @@ namespace OsamesMicroOrm
                 }
             }
             return iNbAffectedRows;
+        }        
+
+        /// <summary>
+        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// </summary>
+        /// <param name="connection_">Connexion (sans transaction)</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;Parameter&gt; (peut être null)</param>
+        /// <param name="lastInsertedRowId_">Sortie : ID du dernier enregistrement inséré</param>
+        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
+        /// <param name="cmdText_">Texte de la requête SQL</param>
+        /// <returns>Nombre de lignes affectées</returns>
+        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, out long lastInsertedRowId_)
+        {
+            int iNbAffectedRows;
+
+            if (connection_.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+
+                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<DbCommandWrapper.Parameter>)null))
+                    {
+                        object oValue = command.ExecuteScalar();
+                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
+
+                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<DbCommandWrapper.Parameter>)null))
+                {
+                    object oValue = command.ExecuteScalar();
+                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                }
+            }
+            return iNbAffectedRows;
+        }        
+
+        /// <summary>
+        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// </summary>
+        /// <param name="connection_">Connexion (sans transaction)</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;KeyValuePair&lt;string, object&gt;&gt; (peut être null)</param>
+        /// <param name="lastInsertedRowId_">Sortie : ID du dernier enregistrement inséré</param>
+        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
+        /// <param name="cmdText_">Texte de la requête SQL</param>
+        /// <returns>Nombre de lignes affectées</returns>
+        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
+        {
+            int iNbAffectedRows;
+
+            if (connection_.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+
+                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
+                    {
+                        object oValue = command.ExecuteScalar();
+                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
+
+                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
+                {
+                    object oValue = command.ExecuteScalar();
+                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
+                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                }
+            }
+
+            return iNbAffectedRows;
         }
 
         /// <summary>
@@ -403,55 +502,6 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
         /// </summary>
-        /// <param name="connection_">Connexion (sans transaction)</param>
-        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;Parameter&gt; (peut être null)</param>
-        /// <param name="lastInsertedRowId_">Sortie : ID du dernier enregistrement inséré</param>
-        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
-        /// <param name="cmdText_">Texte de la requête SQL</param>
-        /// <returns>Nombre de lignes affectées</returns>
-        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, out long lastInsertedRowId_)
-        {
-            int iNbAffectedRows;
-
-            if (connection_.IsBackup)
-            {
-                lock (BackupConnectionUsageLockObject)
-                {
-                    // perform code with locking
-                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                    {
-                        iNbAffectedRows = command.ExecuteNonQuery();
-                    }
-
-                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<DbCommandWrapper.Parameter>)null))
-                    {
-                        object oValue = command.ExecuteScalar();
-                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
-                    }
-                }
-            }
-            else
-            {
-                // no lock
-                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                {
-                    iNbAffectedRows = command.ExecuteNonQuery();
-                }
-
-                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<DbCommandWrapper.Parameter>)null))
-                {
-                    object oValue = command.ExecuteScalar();
-                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
-                }
-            }
-            return iNbAffectedRows;
-        }
-
-        /// <summary>
-        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
-        /// </summary>
         /// <param name="transaction_">Transaction avec sa connexion associée</param>
         /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;Parameter&gt; (peut être null)</param>
         /// <param name="lastInsertedRowId_">Sortie : ID du dernier enregistrement inséré</param>
@@ -489,56 +539,6 @@ namespace OsamesMicroOrm
                 }
 
                 using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<DbCommandWrapper.Parameter>)null))
-                {
-                    object oValue = command.ExecuteScalar();
-                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
-                }
-            }
-
-            return iNbAffectedRows;
-        }
-
-        /// <summary>
-        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
-        /// </summary>
-        /// <param name="connection_">Connexion (sans transaction)</param>
-        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;KeyValuePair&lt;string, object&gt;&gt; (peut être null)</param>
-        /// <param name="lastInsertedRowId_">Sortie : ID du dernier enregistrement inséré</param>
-        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
-        /// <param name="cmdText_">Texte de la requête SQL</param>
-        /// <returns>Nombre de lignes affectées</returns>
-        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
-        {
-            int iNbAffectedRows;
-
-            if (connection_.IsBackup)
-            {
-                lock (BackupConnectionUsageLockObject)
-                {
-                    // perform code with locking
-                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                    {
-                        iNbAffectedRows = command.ExecuteNonQuery();
-                    }
-
-                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
-                    {
-                        object oValue = command.ExecuteScalar();
-                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
-                    }
-                }
-            }
-            else
-            {
-                // no lock
-                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                {
-                    iNbAffectedRows = command.ExecuteNonQuery();
-                }
-
-                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
                 {
                     object oValue = command.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -637,6 +637,76 @@ namespace OsamesMicroOrm
             }
 
             return iNbAffectedRows;
+        }       
+
+        /// <summary>
+        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type UPDATE.
+        /// </summary>
+        /// <param name="connection_">Connexion (sans transaction)</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;Parameter&gt;, ou encore null</param>
+        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
+        /// <param name="cmdText_">Texte de la requête SQL</param>
+        /// <returns>Nombre de lignes affectées</returns>
+        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_)
+        {
+            int iNbAffectedRows;
+
+            if (connection_.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
+            }
+
+            return iNbAffectedRows;
+        }        
+
+        /// <summary>
+        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type UPDATE.
+        /// </summary>
+        /// <param name="connection_">Connexion (sans transaction)</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;KeyValuePair&lt;string,object&gt;&gt;, ou encore null</param>
+        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
+        /// <param name="cmdText_">Texte de la requête SQL</param>
+        /// <returns>Nombre de lignes affectées</returns>
+        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_)
+        {
+            int iNbAffectedRows;
+
+            if (connection_.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
+                    {
+                        iNbAffectedRows = command.ExecuteNonQuery();
+                    }
+                }
+            }
+            else
+            {
+                // no lock
+                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
+                {
+                    iNbAffectedRows = command.ExecuteNonQuery();
+                }
+            }
+
+            return iNbAffectedRows;
         }
 
         /// <summary>
@@ -677,41 +747,6 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type UPDATE.
         /// </summary>
-        /// <param name="connection_">Connexion (sans transaction)</param>
-        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;Parameter&gt;, ou encore null</param>
-        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
-        /// <param name="cmdText_">Texte de la requête SQL</param>
-        /// <returns>Nombre de lignes affectées</returns>
-        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_)
-        {
-            int iNbAffectedRows;
-
-            if (connection_.IsBackup)
-            {
-                lock (BackupConnectionUsageLockObject)
-                {
-                    // perform code with locking
-                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                    {
-                        iNbAffectedRows = command.ExecuteNonQuery();
-                    }
-                }
-            }
-            else
-            {
-                // no lock
-                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                {
-                    iNbAffectedRows = command.ExecuteNonQuery();
-                }
-            }
-
-            return iNbAffectedRows;
-        }
-
-        /// <summary>
-        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type UPDATE.
-        /// </summary>
         /// <param name="transaction_">Transaction avec sa connexion associée</param>
         /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;Parameter&gt;, ou encore null</param>
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
@@ -736,41 +771,6 @@ namespace OsamesMicroOrm
             {
                 // no lock
                 using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
-                {
-                    iNbAffectedRows = command.ExecuteNonQuery();
-                }
-            }
-
-            return iNbAffectedRows;
-        }
-
-        /// <summary>
-        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type UPDATE.
-        /// </summary>
-        /// <param name="connection_">Connexion (sans transaction)</param>
-        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;KeyValuePair&lt;string,object&gt;&gt;, ou encore null</param>
-        /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
-        /// <param name="cmdText_">Texte de la requête SQL</param>
-        /// <returns>Nombre de lignes affectées</returns>
-        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_)
-        {
-            int iNbAffectedRows;
-
-            if (connection_.IsBackup)
-            {
-                lock (BackupConnectionUsageLockObject)
-                {
-                    // perform code with locking
-                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                    {
-                        iNbAffectedRows = command.ExecuteNonQuery();
-                    }
-                }
-            }
-            else
-            {
-                // no lock
-                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
@@ -859,49 +859,7 @@ namespace OsamesMicroOrm
                     Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
                     throw;
                 }
-        }
-
-        /// <summary>
-        /// Executes a SQL select operation
-        /// </summary>
-        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="transaction_">Transaction avec sa connexion associée</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
-        /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbTransactionWrapper transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
-        {
-            if (transaction_.Connection.IsBackup)
-            {
-                lock (BackupConnectionUsageLockObject)
-                {
-                    // perform code with locking
-                    using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
-                        try
-                        {
-                            DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
-                            return dr;
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
-                        }
-                }
-            }
-            // no lock
-            using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
-                try
-                {
-                    DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
-                    return dr;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
-                }
-        }
+        }        
 
         /// <summary>
         /// Executes a SQL select operation
@@ -951,50 +909,6 @@ namespace OsamesMicroOrm
         /// Executes a SQL select operation
         /// </summary>
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="transaction_">Transaction avec sa connexion associée</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
-        /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
-        {
-            if (transaction_.Connection.IsBackup)
-            {
-                lock (BackupConnectionUsageLockObject)
-                {
-                    // perform code with locking
-                    using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
-                    {
-                        try
-                        {
-                            return command.ExecuteReader(CommandBehavior.Default);
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
-                        }
-                    }
-                }
-            }
-            // no lock
-            using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
-            {
-                try
-                {
-                    return command.ExecuteReader(CommandBehavior.Default);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Executes a SQL select operation
-        /// </summary>
-        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) formatted as a list of key/value</param>
@@ -1022,6 +936,92 @@ namespace OsamesMicroOrm
             }
             // no lock
             using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
+            {
+                try
+                {
+                    return command.ExecuteReader(CommandBehavior.Default);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Executes a SQL select operation
+        /// </summary>
+        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="transaction_">Transaction avec sa connexion associée</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
+        /// <returns>ADO .NET data reader</returns>
+        public DbDataReader ExecuteReader(DbTransactionWrapper transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+            if (transaction_.Connection.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                        try
+                        {
+                            DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
+                            return dr;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
+            }
+            // no lock
+            using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+                    DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
+                    return dr;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+        }
+
+        /// <summary>
+        /// Executes a SQL select operation
+        /// </summary>
+        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="transaction_">Transaction avec sa connexion associée</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
+        /// <returns>ADO .NET data reader</returns>
+        public DbDataReader ExecuteReader(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+            if (transaction_.Connection.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
+                    {
+                        try
+                        {
+                            return command.ExecuteReader(CommandBehavior.Default);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                    }
+                }
+            }
+            // no lock
+            using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
             {
                 try
                 {
@@ -1512,6 +1512,96 @@ namespace OsamesMicroOrm
                 }
             }
         }
+        
+        /// <summary>
+        /// Executes a SQL operation and returns value of first column and first line of data table result.
+        /// Generally used for a query such as "count()".
+        /// </summary>
+        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="connection_">Connexion (sans transaction)</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
+        /// <returns>data value</returns>
+        internal object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+
+            if (connection_.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
+                        try
+                        {
+                            return command.ExecuteScalar();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
+            }
+            // no lock
+            using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+                    return command.ExecuteScalar();
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+
+        }       
+      
+        /// <summary>
+        /// Executes a SQL operation and returns value of first column and first line of data table result.
+        /// Generally used for a query such as "count()".
+        /// </summary>
+        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
+        /// <param name="connection_">Connexion (sans transaction)</param>
+        /// <param name="cmdText_">SQL command text</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
+        /// <returns>data value</returns>
+        internal object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        {
+
+            if (connection_.IsBackup)
+            {
+                lock (BackupConnectionUsageLockObject)
+                {
+                    // perform code with locking
+                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
+                        try
+                        {
+                            return command.ExecuteScalar();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                            throw;
+                        }
+                }
+            }
+            // no lock
+            using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
+                try
+                {
+                    return command.ExecuteScalar();
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
+                    throw;
+                }
+
+        }
 
         /// <summary>
         /// Executes a SQL operation and returns value of first column and first line of data table result.
@@ -1560,51 +1650,6 @@ namespace OsamesMicroOrm
                 }
             }
         }
-        
-        /// <summary>
-        /// Executes a SQL operation and returns value of first column and first line of data table result.
-        /// Generally used for a query such as "count()".
-        /// </summary>
-        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="connection_">Connexion (sans transaction)</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
-        /// <returns>data value</returns>
-        internal object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
-        {
-
-            if (connection_.IsBackup)
-            {
-                lock (BackupConnectionUsageLockObject)
-                {
-                    // perform code with locking
-                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                        try
-                        {
-                            return command.ExecuteScalar();
-
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
-                        }
-                }
-            }
-            // no lock
-            using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                try
-                {
-                    return command.ExecuteScalar();
-
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
-                }
-
-        }
 
         /// <summary>
         /// Executes a SQL operation and returns value of first column and first line of data table result.
@@ -1638,51 +1683,6 @@ namespace OsamesMicroOrm
             }
             // no lock
             using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
-                try
-                {
-                    return command.ExecuteScalar();
-
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
-                }
-
-        }
-      
-        /// <summary>
-        /// Executes a SQL operation and returns value of first column and first line of data table result.
-        /// Generally used for a query such as "count()".
-        /// </summary>
-        /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
-        /// <param name="connection_">Connexion (sans transaction)</param>
-        /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
-        /// <returns>data value</returns>
-        internal object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
-        {
-
-            if (connection_.IsBackup)
-            {
-                lock (BackupConnectionUsageLockObject)
-                {
-                    // perform code with locking
-                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                        try
-                        {
-                            return command.ExecuteScalar();
-
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
-                        }
-                }
-            }
-            // no lock
-            using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
                     return command.ExecuteScalar();
