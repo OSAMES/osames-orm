@@ -60,12 +60,12 @@ namespace OsamesMicroOrm.Utilities
         /// Checks that placeholders in parameter string and number of values in parameter list match.
         /// </summary>
         /// <param name="stringWithPlaceholders_">String with substrings like "{digits}"</param>
-        /// <param name="listValuesForPlaceholders_">List of string values</param>
+        /// <param name="lstValuesForPlaceholders_">List of string values</param>
         /// <returns>True/false</returns>
-        internal static bool CheckPlaceholdersAndParametersNumbers(string stringWithPlaceholders_, List<string> listValuesForPlaceholders_)
+        internal static bool CheckPlaceholdersAndParametersNumbers(string stringWithPlaceholders_, List<string> lstValuesForPlaceholders_)
         {
             int count = CountPlaceholders(stringWithPlaceholders_);
-            return count == listValuesForPlaceholders_.Count;
+            return count == lstValuesForPlaceholders_.Count;
         }
     }
 }

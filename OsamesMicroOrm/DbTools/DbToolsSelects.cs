@@ -42,15 +42,15 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstDataObjectPropertyNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à sélectionner. Permet de formater {0} dans le template SQL</param>
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
-        /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
+        /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
-        /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
+        /// <param name="lstAdoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB. Sera utilisé pour le data reader</param>
         /// <returns>Ne renvoie rien</returns>
         /// <throws>Lève une exception en cas d'erreur</throws>
-        internal static void FormatSqlForSelect(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, List<string> lstWhereMetaNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_, out List<string> lstDbColumnNames_)
+        internal static void FormatSqlForSelect(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out List<string> lstDbColumnNames_)
         {
-            adoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
+            lstAdoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
             string strErrorMsg, strErrorMsg2; ;
 
             // 1. Détermine les colonnes pour les champs à sélectionner.
@@ -63,7 +63,7 @@ namespace OsamesMicroOrm.DbTools
             List<string> sqlPlaceholders = new List<string> { sbSqlSelectFieldsCommand, string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 3. Détermine les noms des paramètres pour le where
-            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, oWhereValues_, sqlPlaceholders, adoParameters_);
+            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters_);
 
             DbToolsCommon.TryFormat(ConfigurationLoader.DicSelectSql[sqlTemplate_], out sqlCommand_, out strErrorMsg2, sqlPlaceholders.ToArray());
 
@@ -86,16 +86,16 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {0} dans le template sql</param>
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
         /// Pour formater à partir de {1} dans le template SQL. Peut être null</param>
-        /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
+        /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
-        /// <param name="adoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
+        /// <param name="lstAdoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB à sélectionner. Sera utilisé pour le data reader</param>
         /// <param name="lstPropertiesNames_">Sortie : liste de noms de propriétés d'objet Db Entité à sélectionner. Sera utilisé pour le data reader</param>
         /// <returns>Ne renvoie rien</returns>
         /// <throws>Lève une exception en cas d'erreur</throws>
-        internal static void FormatSqlForSelectAutoDetermineSelectedFields(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> oWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_, out  List<string> lstPropertiesNames_, out List<string> lstDbColumnNames_)
+        internal static void FormatSqlForSelectAutoDetermineSelectedFields(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out  List<string> lstPropertiesNames_, out List<string> lstDbColumnNames_)
         {
-            adoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
+            lstAdoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
             lstDbColumnNames_ = new List<string>(); // Noms des colonnes DB, à construire
             lstPropertiesNames_ = new List<string>(); // Propriétés de l'objet de données, à construire
 
@@ -105,7 +105,7 @@ namespace OsamesMicroOrm.DbTools
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 2. Détermine les noms des paramètres pour le where
-            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, oWhereValues_, sqlPlaceholders, adoParameters_);
+            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters_);
 
             string strErrorMsg;
             DbToolsCommon.TryFormat(ConfigurationLoader.DicSelectSql[sqlTemplate_], out sqlCommand_, out strErrorMsg, sqlPlaceholders.ToArray());
@@ -173,17 +173,17 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
         /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT {0} FROM {1} WHERE ..."</c></param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="strWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
-        /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
+        /// <param name="lstWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
+        /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne un objet de type T rempli par les donnnées du DataReader.</returns>
-        public static T SelectSingle<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereMetaNames_ = null, List<object> oWhereValues_ = null, DbTransactionWrapper transaction_ = null) where T : new()
+        public static T SelectSingle<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, DbTransactionWrapper transaction_ = null) where T : new()
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
 
-            FormatSqlForSelect(refSqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, strWhereMetaNames_, oWhereValues_, out sqlCommand, out adoParameters, out lstDbColumnNames);
+            FormatSqlForSelect(refSqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters, out lstDbColumnNames);
 
             return GetDataObject<T>(transaction_, sqlCommand, lstDbColumnNames, lstPropertiesNames_, adoParameters);
         }
@@ -195,18 +195,18 @@ namespace OsamesMicroOrm.DbTools
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT * FROM {0} WHERE ..."</c></param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="strWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
-        /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
+        /// <param name="lstWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
+        /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne un objet de type T</returns>
-        public static T SelectSingleAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereMetaNames_ = null, List<object> oWhereValues_ = null, DbTransactionWrapper transaction_ = null) where T : new()
+        public static T SelectSingleAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, DbTransactionWrapper transaction_ = null) where T : new()
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
             List<string> lstPropertiesNames;
 
-            FormatSqlForSelectAutoDetermineSelectedFields(refSqlTemplate_, mappingDictionariesContainerKey_, strWhereMetaNames_, oWhereValues_, out sqlCommand, out adoParameters, out lstPropertiesNames, out lstDbColumnNames);
+            FormatSqlForSelectAutoDetermineSelectedFields(refSqlTemplate_, mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters, out lstPropertiesNames, out lstDbColumnNames);
 
             return GetDataObject<T>(transaction_, sqlCommand, lstDbColumnNames, lstPropertiesNames, adoParameters);
         }
@@ -219,17 +219,17 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
         /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT {0} FROM {1} WHERE ..."</c></param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="strWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE". Peut être null</param>
-        /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
+        /// <param name="lstWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE". Peut être null</param>
+        /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne une liste composée d'objets de type T</returns>
-        public static List<T> Select<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereMetaNames_ = null, List<object> oWhereValues_ = null, DbTransactionWrapper transaction_ = null) where T : new()
+        public static List<T> Select<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, DbTransactionWrapper transaction_ = null) where T : new()
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
 
-            FormatSqlForSelect(refSqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, strWhereMetaNames_, oWhereValues_, out sqlCommand, out adoParameters, out lstDbColumnNames);
+            FormatSqlForSelect(refSqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters, out lstDbColumnNames);
 
             return GetListDataObject<T>(transaction_, sqlCommand, lstDbColumnNames, lstPropertiesNames_, adoParameters);
         }
@@ -241,18 +241,18 @@ namespace OsamesMicroOrm.DbTools
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT * FROM {0} WHERE ..."</c></param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="strWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE". Peut être null</param>
-        /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
+        /// <param name="lstWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE". Peut être null</param>
+        /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne une liste composée d'objets de type T</returns>
-        public static List<T> SelectAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> strWhereMetaNames_ = null, List<object> oWhereValues_ = null, DbTransactionWrapper transaction_ = null) where T : new()
+        public static List<T> SelectAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, DbTransactionWrapper transaction_ = null) where T : new()
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
             List<string> lstPropertiesNames;
 
-            FormatSqlForSelectAutoDetermineSelectedFields(refSqlTemplate_, mappingDictionariesContainerKey_, strWhereMetaNames_, oWhereValues_, out sqlCommand, out adoParameters, out lstPropertiesNames, out lstDbColumnNames);
+            FormatSqlForSelectAutoDetermineSelectedFields(refSqlTemplate_, mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters, out lstPropertiesNames, out lstDbColumnNames);
 
             return GetListDataObject<T>(transaction_, sqlCommand, lstDbColumnNames, lstPropertiesNames, adoParameters);
         }

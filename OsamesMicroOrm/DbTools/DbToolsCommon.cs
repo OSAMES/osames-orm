@@ -330,31 +330,31 @@ namespace OsamesMicroOrm.DbTools
         /// </list>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="strColumnNames_">Liste de chaînes contenant le nom des colonnes d'une table.</param>
-        /// <param name="oValues_">Valeurs pour les paramètres ADO.NET</param>
-        /// <param name="sqlPlaceholders_">Liste de string existante, destinée à ajouter les noms des paramètres ADO.NET. (Ex.: @ado_param) à la suite des éléments existant</param>
-        /// <param name="adoParameters_">Liste de clés/valeurs existante, destinée à ajouter les noms et valeurs des paramètres ADO.NET. (Ex. </param>
+        /// <param name="lstColumnNames_">Liste de chaînes contenant le nom des colonnes d'une table.</param>
+        /// <param name="lstValues_">Valeurs pour les paramètres ADO.NET</param>
+        /// <param name="lstSqlPlaceholders_">Liste de string existante, destinée à ajouter les noms des paramètres ADO.NET. (Ex.: @ado_param) à la suite des éléments existant</param>
+        /// <param name="lstAdoParameters_">Liste de clés/valeurs existante, destinée à ajouter les noms et valeurs des paramètres ADO.NET. (Ex. </param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void FillPlaceHoldersAndAdoParametersNamesAndValues(string mappingDictionariesContainerKey_, List<string> strColumnNames_, List<object> oValues_, List<string> sqlPlaceholders_, List<KeyValuePair<string, object>> adoParameters_)
+        internal static void FillPlaceHoldersAndAdoParametersNamesAndValues(string mappingDictionariesContainerKey_, List<string> lstColumnNames_, List<object> lstValues_, List<string> lstSqlPlaceholders_, List<KeyValuePair<string, object>> lstAdoParameters_)
         {
-            if (strColumnNames_ == null) return;
+            if (lstColumnNames_ == null) return;
 
-            int iCount = strColumnNames_.Count;
+            int iCount = lstColumnNames_.Count;
             int parameterIndex = -1;
             int parameterAutomaticNameIndex = -1;
             for (int i = 0; i < iCount; i++)
             {
                 //Analyse la chaine courante de strColumnNames_ et retoure soit un @pN ou alors @nomcolonne
-                string paramName = DeterminePlaceholderType(strColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex);
+                string paramName = DeterminePlaceholderType(lstColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex);
 
                 // Ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ.
                 if (paramName.StartsWith("@"))
-                    adoParameters_.Add(new KeyValuePair<string, object>(paramName, oValues_[parameterIndex]));
+                    lstAdoParameters_.Add(new KeyValuePair<string, object>(paramName, lstValues_[parameterIndex]));
                 else
                     paramName = string.Concat(ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
 
                 // Ajout pour les placeholders
-                sqlPlaceholders_.Add(paramName);
+                lstSqlPlaceholders_.Add(paramName);
 
             }
         }
