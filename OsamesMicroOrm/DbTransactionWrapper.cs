@@ -48,12 +48,12 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Connexion parente.
         /// </summary>
-        public DbConnectionWrapper Connection { get; internal set; }
+        internal DbConnectionWrapper Connection { get; set; }
 
         /// <summary>
         /// Niveau d'isolation de la transaction.
         /// </summary>
-        public IsolationLevel IsolationLevel { get { return AdoDbTransaction.IsolationLevel; } }
+        internal IsolationLevel IsolationLevel { get { return AdoDbTransaction.IsolationLevel; } }
         
         #endregion
 
@@ -70,7 +70,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Valide la transaction de base de données.
         /// </summary>
-        public void Commit()
+        internal void Commit()
         {
             AdoDbTransaction.Commit();
         }
@@ -78,7 +78,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Restaure une transaction à partir d'un état d'attente.
         /// </summary>
-        public void Rollback()
+        internal void Rollback()
         {
             AdoDbTransaction.Rollback();
         }

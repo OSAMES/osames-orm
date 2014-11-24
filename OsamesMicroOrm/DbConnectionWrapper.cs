@@ -107,7 +107,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="isolationLevel_"></param>
         /// <returns></returns>
-        public DbTransactionWrapper BeginTransaction(IsolationLevel isolationLevel_)
+        internal DbTransactionWrapper BeginTransaction(IsolationLevel isolationLevel_)
         {
             return new DbTransactionWrapper(AdoDbConnection.BeginTransaction(isolationLevel_)) { Connection = this };
         }
@@ -116,7 +116,7 @@ namespace OsamesMicroOrm
         /// Commence une transaction de base de données.
         /// </summary>
         /// <returns></returns>
-        public DbTransactionWrapper BeginTransaction()
+        internal DbTransactionWrapper BeginTransaction()
         {
 
             return new DbTransactionWrapper(AdoDbConnection.BeginTransaction()) { Connection = this };
@@ -125,7 +125,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Ferme la connexion à la base de données. C'est la méthode recommandée de fermeture d'une connexion ouverte.
         /// </summary>
-        public void Close()
+        internal void Close()
         {
             AdoDbConnection.Close();
         }
@@ -142,7 +142,7 @@ namespace OsamesMicroOrm
         /// S'inscrit dans la transaction spécifiée.
         /// </summary>
         /// <param name="transaction_"></param>
-        public void EnlistTransaction(Transaction transaction_)
+        internal void EnlistTransaction(Transaction transaction_)
         {
             AdoDbConnection.EnlistTransaction(transaction_);
         }
@@ -151,7 +151,7 @@ namespace OsamesMicroOrm
         /// Retourne les informations de schéma pour la source de données de ce DbConnection.
         /// </summary>
         /// <returns></returns>
-        public DataTable GetSchema()
+        internal DataTable GetSchema()
         {
             return AdoDbConnection.GetSchema();
         }
@@ -161,7 +161,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="name_"></param>
         /// <returns></returns>
-        public DataTable GetSchema(string name_)
+        internal DataTable GetSchema(string name_)
         {
             return AdoDbConnection.GetSchema(name_);
         }
@@ -172,7 +172,7 @@ namespace OsamesMicroOrm
         /// <param name="name_"></param>
         /// <param name="restrictions_"></param>
         /// <returns></returns>
-        public DataTable GetSchema(string name_, string[] restrictions_)
+        internal DataTable GetSchema(string name_, string[] restrictions_)
         {
             return AdoDbConnection.GetSchema(name_, restrictions_);
         }
@@ -181,7 +181,7 @@ namespace OsamesMicroOrm
         /// Modifie la base de données active d'une connexion ouverte.
         /// </summary>
         /// <param name="databaseName"></param>
-        public void ChangeDatabase(string databaseName)
+        internal void ChangeDatabase(string databaseName)
         {
             AdoDbConnection.ChangeDatabase(databaseName);
         }
@@ -189,7 +189,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Ouvre une connexion à une base de données avec les paramètres spécifiés par ConnectionString.
         /// </summary>
-        public void Open()
+        internal void Open()
         {
             AdoDbConnection.Open();
         }
@@ -197,7 +197,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Version asynchrone de Open, qui ouvre une connexion de base de données avec les paramètres spécifiés par ConnectionString. Cette méthode appelle la méthode virtuelle OpenAsync avec CancellationToken.None. 
         /// </summary>
-        public void OpenAsync()
+        internal void OpenAsync()
         {
             AdoDbConnection.OpenAsync();
         }
@@ -206,7 +206,7 @@ namespace OsamesMicroOrm
         /// Il s'agit de la version asynchrone de Open.
         /// </summary>
         /// <param name="token_"></param>
-        public void OpenAsync(CancellationToken token_)
+        internal void OpenAsync(CancellationToken token_)
         {
             AdoDbConnection.OpenAsync(token_);
         }
@@ -215,7 +215,7 @@ namespace OsamesMicroOrm
         /// Crée et retourne un objet DbCommand associé à la connexion active.
         /// </summary>
         /// <returns></returns>
-        public DbCommandWrapper CreateDbCommand()
+        internal DbCommandWrapper CreateDbCommand()
         {
             return new DbCommandWrapper(this, null, AdoDbConnection.CreateCommand());
         }

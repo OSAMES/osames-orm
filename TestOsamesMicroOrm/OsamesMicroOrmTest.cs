@@ -68,8 +68,7 @@ namespace TestOsamesMicroOrm
         /// </summary>
         public virtual void InitializeDbConnexion()
         {
-            DbConnectionWrapper connection = DbManager.Instance.CreateConnection();
-            _transaction = DbManager.Instance.OpenTransaction(connection);
+            _transaction = DbManager.Instance.BeginTransaction();
         }
     }
 }

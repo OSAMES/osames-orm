@@ -95,27 +95,27 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Obtient ou définit la commande de texte à exécuter par rapport à la source de données.
         /// </summary>
-        public string CommandText { get { return AdoDbCommand.CommandText; } set { AdoDbCommand.CommandText = value; } }
+        internal string CommandText { get { return AdoDbCommand.CommandText; } set { AdoDbCommand.CommandText = value; } }
 
         /// <summary>
         /// Obtient ou définit la durée d'attente qui précède le moment où il est mis fin à une tentative d'exécution d'une commande et où une erreur est générée.
         /// </summary>
-        public int CommandTimeout { get { return AdoDbCommand.CommandTimeout; } set { AdoDbCommand.CommandTimeout = value; } }
+        internal int CommandTimeout { get { return AdoDbCommand.CommandTimeout; } set { AdoDbCommand.CommandTimeout = value; } }
 
         /// <summary>
         /// Indique ou spécifie la manière dont la propriété CommandText doit être interprétée.
         /// </summary>
-        public CommandType CommandType { get { return AdoDbCommand.CommandType; } set { AdoDbCommand.CommandType = value; } }
+        internal CommandType CommandType { get { return AdoDbCommand.CommandType; } set { AdoDbCommand.CommandType = value; } }
 
         /// <summary>
         /// Obtient ou définit la manière dont les résultats des commandes sont appliqués à DataRow lorsqu'ils sont utilisés par la méthode Update de DbDataAdapter.
         /// </summary>
-        public UpdateRowSource UpdatedRowSource { get { return AdoDbCommand.UpdatedRowSource; } set { AdoDbCommand.UpdatedRowSource = value; } }
+        internal UpdateRowSource UpdatedRowSource { get { return AdoDbCommand.UpdatedRowSource; } set { AdoDbCommand.UpdatedRowSource = value; } }
 
         /// <summary>
         /// Obtient la collection d'objets DbParameter. 
         /// </summary>
-        public DbParameterCollection Parameters { get { return AdoDbCommand.Parameters; } }
+        internal DbParameterCollection Parameters { get { return AdoDbCommand.Parameters; } }
 
         #endregion
 
@@ -124,7 +124,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Crée une version préparée (ou compilée) de la commande dans la source de données.
         /// </summary>
-        public void Prepare()
+        internal void Prepare()
         {
             AdoDbCommand.Prepare();
         }
@@ -133,7 +133,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Tente d'annuler l'exécution de DbCommand.
         /// </summary>
-        public void Cancel()
+        internal void Cancel()
         {
             AdoDbCommand.Cancel();
         }
@@ -142,7 +142,7 @@ namespace OsamesMicroOrm
         /// Crée une nouvelle instance d'un objet DbParameter.
         /// </summary>
         /// <returns></returns>
-        public DbParameter CreateParameter()
+        internal DbParameter CreateParameter()
         {
             return AdoDbCommand.CreateParameter();
         }
@@ -152,7 +152,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="behavior_"></param>
         /// <returns></returns>
-        public DbDataReader ExecuteReader(CommandBehavior behavior_)
+        internal DbDataReader ExecuteReader(CommandBehavior behavior_)
         {
             return AdoDbCommand.ExecuteReader();
         }
@@ -161,7 +161,7 @@ namespace OsamesMicroOrm
         /// Version asynchrone de ExecuteReader, qui exécute CommandText par rapport à Connection et retourne DbDataReader.Appelle ExecuteDbDataReaderAsync avec CancellationToken.None.
         /// </summary>
         /// <returns></returns>
-        public DbDataReader ExecuteReaderAsync()
+        internal DbDataReader ExecuteReaderAsync()
         {
             return AdoDbCommand.ExecuteReader();
         }
@@ -170,7 +170,7 @@ namespace OsamesMicroOrm
         /// Exécute une instruction SQL par rapport à un objet de connexion.
         /// </summary>
         /// <returns></returns>
-        public int ExecuteNonQuery()
+        internal int ExecuteNonQuery()
         {
             return AdoDbCommand.ExecuteNonQuery();
         }
@@ -179,7 +179,7 @@ namespace OsamesMicroOrm
         /// Version asynchrone de ExecuteNonQuery, qui exécute une instruction SQL par rapport à un objet de connexion.Appelle ExecuteNonQueryAsync avec CancellationToken.None.
         /// </summary>
         /// <returns></returns>
-        public void ExecuteNonQueryAsync()
+        internal void ExecuteNonQueryAsync()
         {
             AdoDbCommand.ExecuteNonQueryAsync();
         }
@@ -188,7 +188,7 @@ namespace OsamesMicroOrm
         /// Version asynchrone de ExecuteNonQuery, qui exécute une instruction SQL par rapport à un objet de connexion.
         /// </summary>
         /// <returns></returns>
-        public void ExecuteNonQueryAsync(CancellationToken token_)
+        internal void ExecuteNonQueryAsync(CancellationToken token_)
         {
             AdoDbCommand.ExecuteNonQueryAsync(token_);
         }
@@ -197,7 +197,7 @@ namespace OsamesMicroOrm
         /// Exécute la requête et retourne la première colonne de la première ligne du jeu de résultats retourné par la requête. Toutes les autres colonnes et lignes sont ignorées.
         /// </summary>
         /// <returns></returns>
-        public object ExecuteScalar()
+        internal object ExecuteScalar()
         {
             return AdoDbCommand.ExecuteScalar();
         }
@@ -206,7 +206,7 @@ namespace OsamesMicroOrm
         /// Version asynchrone de ExecuteScalar, qui exécute la requête et retourne la première colonne de la première ligne du jeu de résultats retourné par la requête. Toutes les autres colonnes et lignes sont ignorées. Appelle ExecuteScalarAsync avec CancellationToken.None.
         /// </summary>
         /// <returns></returns>
-        public void ExecuteScalarAsync()
+        internal void ExecuteScalarAsync()
         {
             AdoDbCommand.ExecuteScalarAsync();
         }
@@ -215,7 +215,7 @@ namespace OsamesMicroOrm
         /// Version asynchrone de ExecuteScalar, qui exécute la requête et retourne la première colonne de la première ligne du jeu de résultats retourné par la requête. Toutes les autres colonnes et lignes sont ignorées.
         /// </summary>
         /// <returns></returns>
-        public void ExecuteScalarAsync(CancellationToken token_)
+        internal void ExecuteScalarAsync(CancellationToken token_)
         {
             AdoDbCommand.ExecuteScalarAsync(token_);
         }

@@ -223,6 +223,7 @@ namespace OsamesMicroOrm
             }
 
         }
+
         /// <summary>
         /// Fermeture d'une connexion et dispose/mise à null de l'objet.
         /// </summary>
@@ -243,7 +244,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Opens a transaction and returns it.
         /// </summary>
-        public DbTransactionWrapper OpenTransaction(DbConnectionWrapper connection_)
+        internal DbTransactionWrapper OpenTransaction(DbConnectionWrapper connection_)
         {
             try
             {
@@ -261,13 +262,16 @@ namespace OsamesMicroOrm
         /// Commits and closes a transaction.
         /// </summary>
         /// <param name="transaction_">Transaction to manage</param>
-        public void CommitTransaction(DbTransactionWrapper transaction_)
+        /// <param name="closeConnexion_">Si true ferme la connexion</param>
+        public void CommitTransaction(DbTransactionWrapper transaction_, bool closeConnexion_=  true)
         {
             try
             {
                 if (transaction_ == null) return;
 
                 transaction_.Commit();
+                if (closeConnexion_)
+                    transaction_.Connection.Close();
             }
             catch (InvalidOperationException ex)
             {
@@ -280,18 +284,39 @@ namespace OsamesMicroOrm
         /// Rollbacks and closes a transaction.
         /// </summary>
         /// <param name="transaction_">Transaction to manage</param>
-        public void RollbackTransaction(DbTransactionWrapper transaction_)
+        /// <param name="closeConnexion_">Si true ferme la connexion</param>
+        public void RollbackTransaction(DbTransactionWrapper transaction_, bool closeConnexion_ = true)
         {
             try
             {
                 if (transaction_ == null) return;
 
                 transaction_.Rollback();
+                if (closeConnexion_)
+                    transaction_.Connection.Close();
             }
             catch (InvalidOperationException ex)
             {
                 Logger.Log(TraceEventType.Critical, ex.ToString());
                 throw new Exception("@HandleTransaction - " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Opens a transaction with connexion and returns it.
+        /// </summary>
+        /// <returns>void</returns>
+        public DbTransactionWrapper BeginTransaction()
+        {
+            try
+            {
+                DbConnectionWrapper connection = this.CreateConnection();
+                return connection.BeginTransaction();
+            }
+            catch (InvalidOperationException ex)
+            {
+                Logger.Log(TraceEventType.Critical, ex.ToString());
+                throw new Exception("beginTransaction - " + ex.Message);
             }
         }
 
