@@ -126,5 +126,55 @@ namespace OsamesMicroOrm.DbTools
             }
         }
 
+        /// <summary>
+        ///  Exécution d'une mise à jour d'objets de données vers la base de données
+        /// </summary>
+        /// <typeparam name="T">Type C#</typeparam>
+        /// <param name="dataObjects_">Instance liste d'objets de la classe T</param>
+        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="sqlTemplate_">Contient le nom du template sql update à utiliser</param>
+        /// <param name="propertiesNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
+        /// <param name="strWhereColumnNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
+        /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
+        /// <param name="oWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
+        /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
+        /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
+        /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
+        public static int Update<T>(List<T> dataObjects_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> propertiesNames_, List<string> strWhereColumnNames_, List<object> oWhereValues_, out string strErrorMsg_, DbTransactionWrapper transaction_ = null)
+        {
+            string sqlCommand;
+            List<KeyValuePair<string, object>> adoParameters;
+            int nbRowsAffected = 0;
+            sqlCommand = "";
+            adoParameters = new List<KeyValuePair<string, object>>() {new KeyValuePair<string, object>("", null) };
+            strErrorMsg_ = "";
+
+            foreach (T dataObject in dataObjects_)
+            {
+                FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, propertiesNames_, strWhereColumnNames_, oWhereValues_, out sqlCommand, out adoParameters, out strErrorMsg_);
+
+                if (transaction_ != null)
+                {
+                    // Présence d'une transaction
+                    nbRowsAffected = DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters);
+                    if (nbRowsAffected == 0)
+                        Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
+ 
+                }
+
+                // Pas de transaction
+                using (DbConnectionWrapper conn = DbManager.Instance.CreateConnection())
+                {
+                    nbRowsAffected = DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters);
+                    if (nbRowsAffected == 0)
+                        Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
+                }
+
+            }
+
+            return nbRowsAffected;
+
+        }
+
     }
 }
