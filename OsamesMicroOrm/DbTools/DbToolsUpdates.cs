@@ -19,6 +19,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Text;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Logging;
@@ -102,15 +103,17 @@ namespace OsamesMicroOrm.DbTools
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
+            int nbRowsAffected=0; 
 
             FormatSqlForUpdate(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_, out sqlCommand, out adoParameters, out strErrorMsg_);
 
             if (transaction_ != null)
             {
                 // Présence d'une transaction
-                int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters);
-                if (nbRowsAffected == 0)
+                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) == 0)
                     Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
+                else
+                    nbRowsAffected++;
 
                 return nbRowsAffected;
             }
@@ -118,9 +121,10 @@ namespace OsamesMicroOrm.DbTools
             // Pas de transaction
             using (OOrmDbConnectionWrapper conn = DbManager.Instance.CreateConnection())
             {
-                int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters);
-                if (nbRowsAffected == 0)
+                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) == 0)
                     Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
+                else
+                    nbRowsAffected++;
 
                 return nbRowsAffected;
             }
@@ -145,8 +149,6 @@ namespace OsamesMicroOrm.DbTools
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             int nbRowsAffected = 0;
-            sqlCommand = "";
-            adoParameters = new List<KeyValuePair<string, object>>() {new KeyValuePair<string, object>("", null) };
             strErrorMsg_ = "";
 
             foreach (T dataObject in dataObjects_)
@@ -156,25 +158,25 @@ namespace OsamesMicroOrm.DbTools
                 if (transaction_ != null)
                 {
                     // Présence d'une transaction
-                    nbRowsAffected = DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters);
-                    if (nbRowsAffected == 0)
+                    if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) == 0)
                         Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
- 
+                    else
+                        nbRowsAffected++;
+
+                    continue;
                 }
 
                 // Pas de transaction
                 using (OOrmDbConnectionWrapper conn = DbManager.Instance.CreateConnection())
                 {
-                    nbRowsAffected = DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters);
-                    if (nbRowsAffected == 0)
+                    if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) == 0)
                         Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
+                    else
+                        nbRowsAffected++;
                 }
-
             }
 
             return nbRowsAffected;
-
         }
-
     }
 }
