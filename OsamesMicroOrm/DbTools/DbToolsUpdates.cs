@@ -52,13 +52,14 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="lstAdoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
+        /// <param name="tryFormat">Si a vrai, on fait un try format sur le sqlcommand</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void FormatSqlForUpdate<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out string strErrorMsg_)
+        internal static void FormatSqlForUpdate<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out string strErrorMsg_, bool tryFormat = true)
         {
             StringBuilder sbFieldsToUpdate = new StringBuilder();
+            strErrorMsg_ = sqlCommand_ = null;
 
             List<string> lstDbColumnNames;
-            lstAdoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
 
             // 1. détermine les champs à mettre à jour et remplit la stringbuilder sbFieldsToUpdate
             DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(dataObject_, mappingDictionariesContainerKey_, lstDataObjectColumnNames_, out lstDbColumnNames, out lstAdoParameters_);
@@ -76,7 +77,8 @@ namespace OsamesMicroOrm.DbTools
             // 3. Détermine les noms des paramètres pour le where
             DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters_);
 
-            DbToolsCommon.TryFormat(ConfigurationLoader.DicUpdateSql[sqlTemplate_], out sqlCommand_, out strErrorMsg_, sqlPlaceholders.ToArray());
+            if (tryFormat)
+                DbToolsCommon.TryFormat(ConfigurationLoader.DicUpdateSql[sqlTemplate_], out sqlCommand_, out strErrorMsg_, sqlPlaceholders.ToArray());
 
         }
 
@@ -103,7 +105,7 @@ namespace OsamesMicroOrm.DbTools
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
-            int nbRowsAffected=0; 
+            int nbRowsAffected = 0;
 
             FormatSqlForUpdate(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_, out sqlCommand, out adoParameters, out strErrorMsg_);
 
@@ -146,14 +148,25 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         public static int Update<T>(List<T> dataObjects_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereColumnNames_, List<object> lstWhereValues_, out string strErrorMsg_, OOrmDbTransactionWrapper transaction_ = null)
         {
-            string sqlCommand;
+            string sqlCommand = null;
+            string tmpSqlCommand;
+            string tmpStrErrorMsg;
+
             List<KeyValuePair<string, object>> adoParameters;
             int nbRowsAffected = 0;
             strErrorMsg_ = "";
 
-            foreach (T dataObject in dataObjects_)
+            for (int i = 0; i < dataObjects_.Count; i++)
             {
-                FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_, out sqlCommand, out adoParameters, out strErrorMsg_);
+                T dataObject = dataObjects_[i];
+                if (i == 0)
+                    //on tryformat le sqlcommand
+                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_, out sqlCommand, out adoParameters, out tmpStrErrorMsg);
+                else
+                    // ici le slqcommand rendu est null
+                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_, out tmpSqlCommand, out adoParameters, out tmpStrErrorMsg, false);
+
+                strErrorMsg_ = string.Concat(strErrorMsg_, tmpStrErrorMsg);
 
                 if (transaction_ != null)
                 {
