@@ -55,7 +55,7 @@ namespace OsamesMicroOrm
             AdoDbConnection = adoDbConnection_;
         }
 
-        #region reprise des mêmes propriétés publiques que System.Data.Common.DbConnection
+        #region reprise des mêmes propriétés publiques que System.Data.Common.DbConnection mais mises en internal
 
         /// <summary>
         /// Obtient ou définit la chaîne utilisée pour ouvrir la connexion.
@@ -100,7 +100,7 @@ namespace OsamesMicroOrm
         }
 
         #endregion
-        #region reprise des mêmes méthodes publiques que System.Data.Common.DbConnection
+        #region reprise des mêmes méthodes publiques que System.Data.Common.DbConnection mais mises en internal
 
         /// <summary>
         /// Commence une transaction de base de données.

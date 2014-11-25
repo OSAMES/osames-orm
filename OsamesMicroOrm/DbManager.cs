@@ -178,7 +178,7 @@ namespace OsamesMicroOrm
         /// Opens the connection before returning it.
         /// May throw exception only when no connection at all can be opened.	
         /// </summary>
-        public DbConnectionWrapper CreateConnection()
+        internal DbConnectionWrapper CreateConnection()
         {
             try
             {
@@ -229,7 +229,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="connexion_">connexion</param>
         /// <returns>Ne renvoie rien</returns>
-        public void DisposeConnection(DbConnectionWrapper connexion_)
+        internal void DisposeConnection(DbConnectionWrapper connexion_)
         {
             if (connexion_ == null) return;
 
@@ -379,12 +379,12 @@ namespace OsamesMicroOrm
         /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
         /// </summary>
         /// <param name="connection_">Connexion (sans transaction)</param>
-        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;Parameter&gt; (peut être null)</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;OrmDbParameter&gt; (peut être null)</param>
         /// <param name="lastInsertedRowId_">Sortie : ID du dernier enregistrement inséré</param>
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, out long lastInsertedRowId_)
+        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<OrmDbParameter> cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
 
@@ -398,7 +398,7 @@ namespace OsamesMicroOrm
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
 
-                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<DbCommandWrapper.Parameter>)null))
+                    using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<OrmDbParameter>)null))
                     {
                         object oValue = command.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -414,7 +414,7 @@ namespace OsamesMicroOrm
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
 
-                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<DbCommandWrapper.Parameter>)null))
+                using (DbCommandWrapper command = new DbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<OrmDbParameter>)null))
                 {
                     object oValue = command.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -528,12 +528,12 @@ namespace OsamesMicroOrm
         /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
         /// </summary>
         /// <param name="transaction_">Transaction avec sa connexion associée</param>
-        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;Parameter&gt; (peut être null)</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;OrmDbParameter&gt; (peut être null)</param>
         /// <param name="lastInsertedRowId_">Sortie : ID du dernier enregistrement inséré</param>
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, out long lastInsertedRowId_)
+        public int ExecuteNonQuery(DbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<OrmDbParameter> cmdParams_, out long lastInsertedRowId_)
         {
             int iNbAffectedRows;
 
@@ -547,7 +547,7 @@ namespace OsamesMicroOrm
                         iNbAffectedRows = command.ExecuteNonQuery();
                     }
 
-                    using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<DbCommandWrapper.Parameter>)null))
+                    using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<OrmDbParameter>)null))
                     {
                         object oValue = command.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -563,7 +563,7 @@ namespace OsamesMicroOrm
                     iNbAffectedRows = command.ExecuteNonQuery();
                 }
 
-                using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<DbCommandWrapper.Parameter>)null))
+                using (DbCommandWrapper command = new DbCommandWrapper(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<OrmDbParameter>)null))
                 {
                     object oValue = command.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -632,7 +632,7 @@ namespace OsamesMicroOrm
         /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type UPDATE.
         /// </summary>
         /// <param name="connection_">Connexion (sans transaction)</param>
-        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : object[,], Parameter[] ou List&lt;KeyValuePair&lt;string, oject&gt;&gt;, ou encore null</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : object[,], OrmDbParameter[] ou List&lt;KeyValuePair&lt;string, oject&gt;&gt;, ou encore null</param>
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
@@ -668,11 +668,11 @@ namespace OsamesMicroOrm
         /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type UPDATE.
         /// </summary>
         /// <param name="connection_">Connexion (sans transaction)</param>
-        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;Parameter&gt;, ou encore null</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;OrmDbParameter&gt;, ou encore null</param>
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_)
+        internal int ExecuteNonQuery(DbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<OrmDbParameter> cmdParams_)
         {
             int iNbAffectedRows;
 
@@ -738,7 +738,7 @@ namespace OsamesMicroOrm
         /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type UPDATE.
         /// </summary>
         /// <param name="transaction_">Transaction avec sa connexion associée</param>
-        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : object[,], Parameter[] ou List&lt;KeyValuePair&lt;string, oject&gt;&gt;, ou encore null</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : object[,], OrmDbParameter[] ou List&lt;KeyValuePair&lt;string, oject&gt;&gt;, ou encore null</param>
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
@@ -773,11 +773,11 @@ namespace OsamesMicroOrm
         /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() pour exécuter une requête de type UPDATE.
         /// </summary>
         /// <param name="transaction_">Transaction avec sa connexion associée</param>
-        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;Parameter&gt;, ou encore null</param>
+        /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;OrmDbParameter&gt;, ou encore null</param>
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        public int ExecuteNonQuery(DbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_)
+        public int ExecuteNonQuery(DbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<OrmDbParameter> cmdParams_)
         {
             int iNbAffectedRows;
 
@@ -892,9 +892,9 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format</param>
         /// <returns>ADO .NET data reader</returns>
-        internal DbDataReader ExecuteReader(DbConnectionWrapper connection_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal DbDataReader ExecuteReader(DbConnectionWrapper connection_, string cmdText_, IEnumerable<OrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
             {
@@ -1022,9 +1022,9 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="transaction_">Transaction avec sa connexion associée</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format</param>
         /// <returns>ADO .NET data reader</returns>
-        public DbDataReader ExecuteReader(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DbDataReader ExecuteReader(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<OrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (transaction_.Connection.IsBackup)
             {
@@ -1175,9 +1175,9 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format</param>
         /// <returns>ADO .NET dataset</returns>
-        internal DataSet DataAdapter(DbConnectionWrapper connection_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal DataSet DataAdapter(DbConnectionWrapper connection_, string cmdText_, IEnumerable<OrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
@@ -1364,9 +1364,9 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="transaction_">Transaction, avec sa connexion associée</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format</param>
         /// <returns>ADO .NET dataset</returns>
-        public DataSet DataAdapter(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public DataSet DataAdapter(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<OrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (transaction_.Connection.IsBackup)
@@ -1545,9 +1545,9 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        internal object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, IEnumerable<OrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (connection_.IsBackup)
@@ -1590,7 +1590,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format. Can be null</param>
         /// <returns>data value</returns>
         internal object ExecuteScalar(DbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
@@ -1683,9 +1683,9 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="transaction_">Transaction avec sa connexion associée</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format. Can be null</param>
         /// <returns>data value</returns>
-        public object ExecuteScalar(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<DbCommandWrapper.Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        public object ExecuteScalar(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<OrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
             if (transaction_.Connection.IsBackup)
@@ -1728,7 +1728,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">SQL command type (Text, StoredProcedure, TableDirect)</param>
         /// <param name="transaction_">Transaction avec sa connexion associée</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of Parameter objects format. Can be null</param>
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format. Can be null</param>
         /// <returns>data value</returns>
         public object ExecuteScalar(DbTransactionWrapper transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {

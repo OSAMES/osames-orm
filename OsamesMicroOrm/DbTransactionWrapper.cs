@@ -43,7 +43,7 @@ namespace OsamesMicroOrm
             AdoDbTransaction = adoTransaction_;
         }
 
-        #region reprise des mêmes propriétés publiques que System.Data.Common.DbConnection
+        #region reprise des mêmes propriétés publiques que System.Data.Common.DbConnection mais mises en internal
 
         /// <summary>
         /// Connexion parente.
@@ -57,7 +57,7 @@ namespace OsamesMicroOrm
         
         #endregion
 
-        #region reprise des mêmes méthodes publiques que System.Data.Common.DbTransaction
+        #region reprise des mêmes méthodes publiques que System.Data.Common.DbTransaction mais mises en internal
 
         /// <summary>
         /// Libère les ressources non managées utilisées.

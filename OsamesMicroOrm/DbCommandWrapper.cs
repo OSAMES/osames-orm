@@ -71,9 +71,9 @@ namespace OsamesMicroOrm
         /// <param name="connection_">Référence sur la DbConnection de l'ORM</param>
         /// <param name="transaction_">Référence sur la DbTransaction de l'ORM</param>
         /// <param name="cmdText_">Texte SQL</param>
-        /// <param name="cmdParams_">Paramètres ADO.NET au format liste d'objets Parameter</param>
+        /// <param name="cmdParams_">Paramètres ADO.NET au format liste d'objets OrmDbParameter</param>
         /// <param name="cmdType_">Type de la commande SQL, texte par défaut</param>
-        internal DbCommandWrapper(DbConnectionWrapper connection_, DbTransactionWrapper transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal DbCommandWrapper(DbConnectionWrapper connection_, DbTransactionWrapper transaction_, string cmdText_, IEnumerable<OrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             this.PrepareCommand(connection_, transaction_, cmdText_, cmdParams_, cmdType_);
         }
@@ -230,52 +230,6 @@ namespace OsamesMicroOrm
 
         #endregion
 
-        /// <summary>
-        /// Representation of an ADO.NET parameter. Used same way as an ADO.NET parameter but without depending on System.Data namespace in user code.
-        /// It means more code overhead but is fine to deal with list of complex objects rather than list of values.
-        /// </summary>
-        internal struct Parameter
-        {
-            /// <summary>
-            /// 
-            /// </summary>
-            internal string ParamName;
-
-            /// <summary>
-            /// 
-            /// </summary>
-            internal object ParamValue;
-
-            /// <summary>
-            /// 
-            /// </summary>
-            internal ParameterDirection ParamDirection;
-
-            /// <summary>
-            /// Constructor.
-            /// </summary>
-            /// <param name="name_">Name</param>
-            /// <param name="value_">Value</param>
-            /// <param name="direction_">ADO.NET parameter direction</param>
-            internal Parameter(string name_, object value_, ParameterDirection direction_)
-            {
-                ParamName = name_;
-                ParamValue = value_;
-                ParamDirection = direction_;
-            }
-            /// <summary>
-            /// Constructor with default "in" direction.
-            /// </summary>
-            /// <param name="name_">Name</param>
-            /// <param name="value_">Value</param>
-            internal Parameter(string name_, object value_)
-            {
-                ParamName = name_;
-                ParamValue = value_;
-                ParamDirection = ParameterDirection.Input;
-            }
-        }
-
         #region CreateDbParameters
 
         /// <summary>
@@ -299,10 +253,10 @@ namespace OsamesMicroOrm
         /// Adds ADO.NET parameters to current DbCommand.
         /// Parameters can be input or output parameters.
         /// </summary>
-       /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
-        private void CreateDbParameters(IEnumerable<Parameter> adoParams_)
+       /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable OrmDbParameter objects format</param>
+        private void CreateDbParameters(IEnumerable<OrmDbParameter> adoParams_)
         {
-            foreach (Parameter oParam in adoParams_)
+            foreach (OrmDbParameter oParam in adoParams_)
             {
                 DbParameter dbParameter = this.CreateParameter();
                 dbParameter.ParameterName = oParam.ParamName;
@@ -316,7 +270,7 @@ namespace OsamesMicroOrm
         /// Adds ADO.NET parameters to current DbCommand.
         /// Parameters are all input parameters.
         /// </summary>
-        /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable Parameter objects format</param>
+        /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable OrmDbParameter objects format</param>
         private void CreateDbParameters(IEnumerable<KeyValuePair<string, object>> adoParams_)
         {
             foreach (KeyValuePair<string, object> oParam in adoParams_)
@@ -356,8 +310,8 @@ namespace OsamesMicroOrm
         /// <param name="transaction_">Référence sur la DbTransaction de l'ORM</param>
         /// <param name="cmdType_">Type of command (Text, StoredProcedure, TableDirect)</param>
         /// <param name="cmdText_">SQL command text</param>
-        /// <param name="cmdParams_">ADO.NET parameters (name and value) as an array of Parameter structures</param>
-        private void PrepareCommand(DbConnectionWrapper connection_, DbTransactionWrapper transaction_, string cmdText_, IEnumerable<Parameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        /// <param name="cmdParams_">ADO.NET parameters (name and value) as an array of OrmDbParameter structures</param>
+        private void PrepareCommand(DbConnectionWrapper connection_, DbTransactionWrapper transaction_, string cmdText_, IEnumerable<OrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             this.PrepareCommandWithoutParameter(connection_, transaction_, cmdText_, cmdType_);
 

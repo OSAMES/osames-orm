@@ -50,6 +50,7 @@
     <Compile Include="DbCommandWrapper.cs" />
     <Compile Include="DbConnectionWrapper.cs" />
     <Compile Include="DbManager.cs" />
+    <Compile Include="OrmDbParameter.cs" />
     <Compile Include="DbTools\DbToolsCommon.cs" />
     <Compile Include="DbTools\DbToolsDeletes.cs" />
     <Compile Include="DbTools\DbToolsInserts.cs" />

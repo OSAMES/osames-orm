@@ -43,7 +43,7 @@ namespace TestOsamesMicroOrmSqlite
         public void TestSelectUsingSqlite()
         {
             // select * from clients where id_client = @p0
-            List<DbCommandWrapper.Parameter> parameters = new List<DbCommandWrapper.Parameter> { new DbCommandWrapper.Parameter("@customerid", 3) };
+            List<OrmDbParameter> parameters = new List<OrmDbParameter> { new OrmDbParameter("@customerid", 3) };
 
             object idCustomer = null, lastName = null;
 
@@ -73,11 +73,11 @@ namespace TestOsamesMicroOrmSqlite
         [TestCategory("ADO.NET Insert")]
         public void TestInsertUsingSqlite()
         {
-            List<DbCommandWrapper.Parameter> parameters = new List<DbCommandWrapper.Parameter>
+            List<OrmDbParameter> parameters = new List<OrmDbParameter>
                 {
-                    new DbCommandWrapper.Parameter("@lastname", "Grey"),
-                    new DbCommandWrapper.Parameter("@firstname", "Paul"),
-                    new DbCommandWrapper.Parameter("@email", "Paul@Grey.com")
+                    new OrmDbParameter("@lastname", "Grey"),
+                    new OrmDbParameter("@firstname", "Paul"),
+                    new OrmDbParameter("@email", "Paul@Grey.com")
                 };
 
             try
