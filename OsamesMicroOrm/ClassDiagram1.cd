@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="OsamesMicroOrm.DbManager">
+    <Position X="0.5" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>gAABAAABIAIAACEQAAAAAFAAAAAQCAMFQCAAAABQIAA=</HashCode>
+      <FileName>DbManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.OOrmDbCommandWrapper">
+    <Position X="9" Y="0.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAQIACIQGAAQCSQAAAAAFAAAAAAAACBAIAAAABQAAA=</HashCode>
+      <FileName>OOrmDbCommandWrapper.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="OsamesMicroOrm.OOrmDbConnectionWrapper">
+    <Position X="3.5" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AEIAAIABAGAAIgAEAAAAAQAAAABAAACAAKAABUCAAAA=</HashCode>
+      <FileName>OOrmDbConnectionWrapper.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="OsamesMicroOrm.OOrmDbTransactionWrapper">
+    <Position X="6.25" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAACAAIAECAAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>OOrmDbTransactionWrapper.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="OsamesMicroOrm.DatabaseMappingAttribute">
+    <Position X="12.25" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DatabaseMappingAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.Utilities.Common">
+    <Position X="0.5" Y="10" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAAAAgAAAgAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Utilities\Common.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.Utilities.ErrorsHandler">
+    <Position X="3.75" Y="10" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAggAAAAAAEAAAAA=</HashCode>
+      <FileName>Utilities\ErrorsHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.Utilities.MappingTools">
+    <Position X="6.5" Y="10" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Utilities\MappingTools.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.Utilities.XmlTools">
+    <Position X="6.5" Y="11.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Utilities\XmlTools.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.Utilities.XmlValidator">
+    <Position X="9.75" Y="10" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgQEAAAAAAAAAAABAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Utilities\XmlValidator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.DbTools.DbToolsCommon">
+    <Position X="0.5" Y="6.75" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAAMAAABAQAAEAACAAAAAAAAgAAAAQAIA=</HashCode>
+      <FileName>DbTools\DbToolsCommon.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.DbTools.DbToolsUpdates">
+    <Position X="5" Y="6.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>DbTools\DbToolsUpdates.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.DbTools.DbToolsSelects">
+    <Position X="7.5" Y="6.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAACAAAAAAAAAAAAoBAAAAEAAAAIAAAAAAQAgAAAA=</HashCode>
+      <FileName>DbTools\DbToolsSelects.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.DbTools.DbToolsInserts">
+    <Position X="11.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DbTools\DbToolsInserts.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.DbTools.DbToolsDeletes">
+    <Position X="11.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DbTools\DbToolsDeletes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.Configuration.ConfigurationLoader">
+    <Position X="0.5" Y="13.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>CAAIIAAIgAEABAAAAABQAAQABAAAgAEEQAEggABAAAI=</HashCode>
+      <FileName>Configuration\ConfigurationLoader.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.Configuration.Tweak.Customizer">
+    <Position X="4.25" Y="13.5" Width="2.75" />
+    <NestedTypes>
+      <Enum Name="OsamesMicroOrm.Configuration.Tweak.Customizer.AppSettingsKeys" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Configuration\Tweak\Customizer.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAACAAAAAACAAAAAAABAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Configuration\Tweak\Customizer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OsamesMicroOrm.Logging.Logger">
+    <Position X="7.25" Y="13.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAAAAAAACAAAAAAAAAgAgAAIAAAAAAAAQAA=</HashCode>
+      <FileName>Logging\Logger.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="OsamesMicroOrm.OOrmDbParameter">
+    <Position X="6.25" Y="3.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAEAAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>OOrmDbParameter.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="OsamesMicroOrm.Utilities.ErrorType">
+    <Position X="3.75" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAAAAAAAAAAAIEAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Utilities\ErrorsHandler.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
