@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using TestOsamesMicroOrm;
-using DbConnection = OsamesMicroOrm.DbConnectionWrapper;
+using DbConnection = OsamesMicroOrm.OOrmDbConnectionWrapper;
 
 namespace TestOsamesMicroOrmMsSql
 {
@@ -202,7 +202,7 @@ namespace TestOsamesMicroOrmMsSql
             finally
             {
                 // cleanup
-                foreach (DbConnectionWrapper connection in lstConnections)
+                foreach (OOrmDbConnectionWrapper connection in lstConnections)
                 {
                     connection.Close();
                     connection.Dispose();

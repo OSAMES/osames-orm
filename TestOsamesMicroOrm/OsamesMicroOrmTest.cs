@@ -5,8 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using TestOsamesMicroOrm.Tools;
-using DbConnection = OsamesMicroOrm.DbConnectionWrapper;
-using DbTransaction = OsamesMicroOrm.DbTransactionWrapper;
+using DbConnection = OsamesMicroOrm.OOrmDbConnectionWrapper;
+using DbTransaction = OsamesMicroOrm.OOrmDbTransactionWrapper;
 
 namespace TestOsamesMicroOrm
 {
@@ -29,7 +29,7 @@ namespace TestOsamesMicroOrm
         /// <summary>
         /// Every test uses a transaction.
         /// </summary>
-        protected static DbTransactionWrapper _transaction;
+        protected static OOrmDbTransactionWrapper _transaction;
 
         /// <summary>
         /// Initialisation des TUs.
@@ -56,7 +56,7 @@ namespace TestOsamesMicroOrm
                 return;
 
             // Connexion associée
-            DbConnectionWrapper connection = _transaction.Connection;
+            OOrmDbConnectionWrapper connection = _transaction.Connection;
             // Libération des ressources
             DbManager.Instance.RollbackTransaction(_transaction);
             DbManager.Instance.DisposeConnection(connection);

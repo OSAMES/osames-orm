@@ -98,7 +98,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
-        public static int Update<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereColumnNames_, List<object> lstWhereValues_, out string strErrorMsg_, DbTransactionWrapper transaction_ = null)
+        public static int Update<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereColumnNames_, List<object> lstWhereValues_, out string strErrorMsg_, OOrmDbTransactionWrapper transaction_ = null)
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
@@ -116,7 +116,7 @@ namespace OsamesMicroOrm.DbTools
             }
 
             // Pas de transaction
-            using (DbConnectionWrapper conn = DbManager.Instance.CreateConnection())
+            using (OOrmDbConnectionWrapper conn = DbManager.Instance.CreateConnection())
             {
                 int nbRowsAffected = DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters);
                 if (nbRowsAffected == 0)
@@ -140,7 +140,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
-        public static int Update<T>(List<T> dataObjects_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereColumnNames_, List<object> lstWhereValues_, out string strErrorMsg_, DbTransactionWrapper transaction_ = null)
+        public static int Update<T>(List<T> dataObjects_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereColumnNames_, List<object> lstWhereValues_, out string strErrorMsg_, OOrmDbTransactionWrapper transaction_ = null)
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
@@ -163,7 +163,7 @@ namespace OsamesMicroOrm.DbTools
                 }
 
                 // Pas de transaction
-                using (DbConnectionWrapper conn = DbManager.Instance.CreateConnection())
+                using (OOrmDbConnectionWrapper conn = DbManager.Instance.CreateConnection())
                 {
                     nbRowsAffected = DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters);
                     if (nbRowsAffected == 0)
