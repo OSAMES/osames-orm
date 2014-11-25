@@ -29,7 +29,7 @@ namespace OsamesMicroOrm
     /// Elle expose les mêmes méthodes que System.Data.Common.DbCommand à qui elle délègue.
     /// On encapsule au lieu d'hériter car System.Data.Common.DbCommand est une classe abstraite.
     /// </summary>
-    public sealed class DbCommandWrapper : IDisposable
+    internal sealed class DbCommandWrapper : IDisposable
     {
 
         /// <summary>
@@ -234,22 +234,22 @@ namespace OsamesMicroOrm
         /// Representation of an ADO.NET parameter. Used same way as an ADO.NET parameter but without depending on System.Data namespace in user code.
         /// It means more code overhead but is fine to deal with list of complex objects rather than list of values.
         /// </summary>
-        public struct Parameter
+        internal struct Parameter
         {
             /// <summary>
             /// 
             /// </summary>
-            public string ParamName;
+            internal string ParamName;
 
             /// <summary>
             /// 
             /// </summary>
-            public object ParamValue;
+            internal object ParamValue;
 
             /// <summary>
             /// 
             /// </summary>
-            public ParameterDirection ParamDirection;
+            internal ParameterDirection ParamDirection;
 
             /// <summary>
             /// Constructor.
@@ -257,7 +257,7 @@ namespace OsamesMicroOrm
             /// <param name="name_">Name</param>
             /// <param name="value_">Value</param>
             /// <param name="direction_">ADO.NET parameter direction</param>
-            public Parameter(string name_, object value_, ParameterDirection direction_)
+            internal Parameter(string name_, object value_, ParameterDirection direction_)
             {
                 ParamName = name_;
                 ParamValue = value_;
@@ -268,7 +268,7 @@ namespace OsamesMicroOrm
             /// </summary>
             /// <param name="name_">Name</param>
             /// <param name="value_">Value</param>
-            public Parameter(string name_, object value_)
+            internal Parameter(string name_, object value_)
             {
                 ParamName = name_;
                 ParamValue = value_;

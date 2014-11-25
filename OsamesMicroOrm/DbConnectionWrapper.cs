@@ -29,14 +29,14 @@ namespace OsamesMicroOrm
     /// Elle expose les mêmes méthodes que System.Data.Common.DbConnection à qui elle délègue.
     /// On encapsule au lieu d'hériter car System.Data.Common.DbConnection est une classe abstraite.
     /// </summary>
-    public sealed class DbConnectionWrapper : IDisposable
+    internal sealed class DbConnectionWrapper : IDisposable
     {
         /// <summary>
         /// Indicateur positionné à la création de l'objet connexion.
         /// Si à vrai c'est la connexion de secours, si à faux une connexion ordinaire (poolée).
         /// Cet indicateur est positionné et utilisé par DbManager.
         /// </summary>
-        public bool IsBackup { get; private set; }
+        internal bool IsBackup { get; private set; }
 
         /// <summary>
         /// Connexion telle que fournie par l'appel à DbProviderFactory.CreateConnection().
@@ -49,7 +49,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="adoDbConnection_">Connexion telle que fournie par l'appel à DbProviderFactory.CreateConnection().</param>
         /// <param name="defaultConnection_">Si à vrai c'est la connexion de secours, si à faux une connexion ordinaire (poolée).</param>
-        public DbConnectionWrapper(System.Data.Common.DbConnection adoDbConnection_, bool defaultConnection_)
+        internal DbConnectionWrapper(System.Data.Common.DbConnection adoDbConnection_, bool defaultConnection_)
         {
             IsBackup = defaultConnection_;
             AdoDbConnection = adoDbConnection_;
@@ -60,17 +60,17 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Obtient ou définit la chaîne utilisée pour ouvrir la connexion.
         /// </summary>
-        public string ConnectionString { get { return AdoDbConnection.ConnectionString; } set { AdoDbConnection.ConnectionString = value; } }
+        internal string ConnectionString { get { return AdoDbConnection.ConnectionString; } set { AdoDbConnection.ConnectionString = value; } }
 
         /// <summary>
         /// Obtient la durée d'attente préalable à l'établissement d'une connexion avant que la tentative ne soit abandonnée et qu'une erreur ne soit générée.
         /// </summary>
-        public int ConnectionTimeout { get { return AdoDbConnection.ConnectionTimeout; } }
+        internal int ConnectionTimeout { get { return AdoDbConnection.ConnectionTimeout; } }
 
         /// <summary>
         /// Obtient le nom de la base de données active après avoir ouvert une connexion, ou le nom de la base de données spécifié dans la chaîne de connexion avant que la connexion ne soit ouverte.
         /// </summary>
-        public string Database
+        internal string Database
         {
             get { return AdoDbConnection.Database; }
         }
@@ -78,7 +78,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Obtient une chaîne qui décrit l'état de la connexion.
         /// </summary>
-        public ConnectionState State
+        internal ConnectionState State
         {
             get { return AdoDbConnection.State; }
         }
@@ -86,7 +86,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Obtient le nom du serveur de base de données auquel se connecter.
         /// </summary>
-        public string DataSource
+        internal string DataSource
         {
             get { return AdoDbConnection.DataSource; }
         }
@@ -94,7 +94,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Obtient une chaîne qui représente la version du serveur auquel l'objet est connecté.
         /// </summary>
-        public string ServerVersion
+        internal string ServerVersion
         {
             get { return AdoDbConnection.ServerVersion; }
         }
