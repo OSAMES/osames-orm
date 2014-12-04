@@ -23,7 +23,7 @@ using System.Reflection;
 
 namespace OsamesMicroOrm.Utilities
 {
-    internal static class ErrorsHandler
+    internal static class OOrmErrorsHandler
     {
         private static KeyValuePair<ErrorType, string> ErrorMsg;
         internal static Dictionary<string, string> HResultCode = new Dictionary<string, string>();
@@ -31,7 +31,7 @@ namespace OsamesMicroOrm.Utilities
         /// <summary>
         /// Cosntructor
         /// </summary>
-        static ErrorsHandler()
+        static OOrmErrorsHandler()
         {
             ReadHResultCodeFromResources("HResult Orm.csv", out HResultCode);
         }
@@ -40,7 +40,7 @@ namespace OsamesMicroOrm.Utilities
         {
             hresultCodes_ = new Dictionary<string, string>();
 
-            using (Stream str = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(ErrorsHandler).Assembly.GetName().Name + ".Resources." + resource_))
+            using (Stream str = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(OOrmErrorsHandler).Assembly.GetName().Name + ".Resources." + resource_))
             {
                 //null if resource doesn't exist
                 if (str == null)
