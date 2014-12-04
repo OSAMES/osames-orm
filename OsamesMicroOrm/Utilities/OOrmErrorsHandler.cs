@@ -31,7 +31,7 @@ namespace OsamesMicroOrm.Utilities
         /// <summary>
         /// Cosntructor
         /// </summary>
-        public static void ErrorEventHandler()
+        static ErrorsHandler()
         {
             ReadHResultCodeFromResources("HResult Orm.csv", out HResultCode);
         }
