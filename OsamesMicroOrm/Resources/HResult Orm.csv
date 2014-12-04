@@ -1,0 +1,36 @@
+Valeur;Nom;Description;Note
+0xA0040200;E_CreateConnectionFailed;DbManager, CreateConnection: Connection could not be created! Look at detailed log for details;
+0xA0040201;E_OpenTransactionFailed;Opening Transaction problem. See log file for details;
+0xA0040202;E_CommitTransactionFailed;Commiting  Transaction problem. See log file for details;
+0xA0040203;E_RollbackTransactionFailed;@HandleTransaction. See log file for details;Message mis dans la méthode RollbackTransaction
+0xA0040204;E_BeginTransactionFail;Begin Transaction problem. See log file for details;doublon du 201 ?
+0xA0040205;E_ExecuteReaderFail;Execute Reader problem. See log file for details;
+0xA0040206;E_CreateDataAdapterFailed;DbHelper, DataAdapter: data adapter could not be created. See log file for details;
+0xA0040207;E_ColumnDoesNotExist;Column doesn't exist in sql data reader, See log file for details;
+0xA0040208;E_NoRowUpdated;Query didn't update any row;
+0xA0040209;;;
+0xA0040210;;;
+0xA0040211;;;
+0xA0040212;;;
+0xA0040213;;;
+0xA0040214;;;
+0xA0040215;;;
+0xA0040216;;;
+0xA0040217;;;
+0xA0040218;;;
+0xA0040219;;;
+0xA0040220;;;
+0xA0040221;;;
+0xA0040222;;;
+0xA0040223;;;
+0xA0040224;;;
+0xA0040225;;;
+0xA0040226;;;
+0xA0040227;;;
+0xA0040228;;;
+0xA0040229;;;
+0xA0040230;;;
+0xA0040231;;;
+0xA0040232;;;
+0xA0040233;;;
+0xA0040234;;;
