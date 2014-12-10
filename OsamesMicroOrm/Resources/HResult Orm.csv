@@ -1,36 +1,71 @@
 Valeur;Nom;Description;Note
-0xA0040200;E_CreateConnectionFailed;DbManager,�CreateConnection:�Connection�could�not�be�created!�Look�at�detailed�log�for�details;
-0xA0040201;E_OpenTransactionFailed;Opening Transaction problem. See log file for details;
-0xA0040202;E_CommitTransactionFailed;Commiting  Transaction problem. See log file for details;
-0xA0040203;E_RollbackTransactionFailed;@HandleTransaction. See log file for details;Message mis dans la m�thode RollbackTransaction
-0xA0040204;E_BeginTransactionFail;Begin Transaction problem. See log file for details;doublon du 201 ?
-0xA0040205;E_ExecuteReaderFail;Execute Reader problem. See log file for details;
-0xA0040206;E_CreateDataAdapterFailed;DbHelper,�DataAdapter:�data�adapter�could�not�be�created. See log file for details;
-0xA0040207;E_ColumnDoesNotExist;Column�doesn't�exist�in�sql�data�reader, See log file for details;
-0xA0040208;E_NoRowUpdated;Query�didn't�update�any�row;
-0xA0040209;;;
-0xA0040210;;;
-0xA0040211;;;
-0xA0040212;;;
-0xA0040213;;;
-0xA0040214;;;
-0xA0040215;;;
-0xA0040216;;;
-0xA0040217;;;
-0xA0040218;;;
-0xA0040219;;;
-0xA0040220;;;
-0xA0040221;;;
-0xA0040222;;;
-0xA0040223;;;
-0xA0040224;;;
-0xA0040225;;;
-0xA0040226;;;
-0xA0040227;;;
-0xA0040228;;;
-0xA0040229;;;
-0xA0040230;;;
-0xA0040231;;;
-0xA0040232;;;
-0xA0040233;;;
-0xA0040234;;;
+"0xA0040200";"E_CREATECONNECTIONFAILED";"DbManager, CreateConnection: Connection could not be created! Look at detailed log for details";""
+"0xA0040201";"E_OPENTRANSACTIONFAILED";"Opening Transaction problem. See log file for details";""
+"0xA0040202";"E_COMMITTRANSACTIONFAILED";"Commiting  Transaction problem. See log file for details";""
+"0xA0040203";"E_ROLLBACKTRANSACTIONFAILED";"@HandleTransaction. See log file for details";"Message mis dans la méthode RollbackTransaction"
+"0xA0040204";"E_BEGINTRANSACTIONFAIL";"Begin Transaction problem. See log file for details";"doublon du 201 ?"
+"0xA0040205";"E_EXECUTEREADERFAIL";"Execute Reader problem. See log file for details";""
+"0xA0040206";"E_CREATEDATAADAPTERFAILED";"DbHelper, DataAdapter: data adapter could not be created. See log file for details";""
+"0xA0040207";"E_COLUMNDOESNOTEXIST";"Column doesn't exist in sql data reader, See log file for details";""
+"0xA0040208";"E_NOROWUPDATED";"Query didn't update any row";""
+"0xA0040209";"";"";""
+"0xA0040210";"";"";""
+"0xA0040211";"";"";""
+"0xA0040212";"";"";""
+"0xA0040213";"";"";""
+"0xA0040214";"";"";""
+"0xA0040215";"";"";""
+"0xA0040216";"";"";""
+"0xA0040217";"";"";""
+"0xA0040218";"";"";""
+"0xA0040219";"";"";""
+"0xA0040220";"";"";""
+"0xA0040221";"";"";""
+"0xA0040222";"";"";""
+"0xA0040223";"";"";""
+"0xA0040224";"";"";""
+"0xA0040225";"";"";""
+"0xA0040226";"";"";""
+"0xA0040227";"";"";""
+"0xA0040228";"";"";""
+"0xA0040229";"";"";""
+"0xA0040230";"";"";""
+"0xA0040231";"";"";""
+"0xA0040232";"";"";""
+"0xA0040233";"";"";""
+"0xA0040234";"";"";""
+"0xA0040300";"";"Returned last insert ID value could not be parsed to Long number";""
+"0xA0040301";"E_XMLTEMPLATEDEFINITION";"[XML] ConfigurationLoader: XML templates definitions analysis error. See log file for details.";"Vérifier et être plus précis dans le message, qu'est-ce qui est NOK au niveau du XML ?"
+"0xA0040302";"E_TYPENOTDEFINEDBMAPPINGATTRIBUTE";"[XML] Type "" + dataObject_.GetType().FullName + "" doesn't define DatabaseMapping attribute (at class level)";""
+"0xA0040303";"E_TYPEDEFINESDBMAPPINGATTRIBUTEMOREONETIME";"[XML] Type "" + dataObject_.GetType().FullName + "" defines more than one DatabaseMapping attribute (at class level)";""
+"0xA0040304";"E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE";"[XML] Type "" + dataObject_.GetType().FullName + "" defines an empty DatabaseMapping attribute (at class level)";""
+"0xA0040305";"E_DBKEYNOTFOUND";"[XML] Key '"" + dbTableName + ""' not found in mapping configuration";"Doublon du 325"
+"0xA0040306";"E_XMLVALIDATIONERRORS";"[XML] XML validation errors";""
+"0xA0040307";"E_NAMESPACESSCHEMASCOUNTMISMATCH";"[XML] Not same number of namespaces and schemas given";""
+"0xA0040308";"E_NONAMESPACEINSCHEMA";"[XML] Schema given but no namespaces";""
+"0xA0040309";"E_NULLVALUE";"[] value_ cannot be null";""
+"0xA0040310";"E_NORULESFORGIVENPARAMETER";"[] No matching rules for given parameter. See log file for details";""
+"0xA0040311";"E_XMLNAMEATTRIBUTEMORETHANONETIME";"[XML] A 'name' attribute with value '"" + name + ""' has been defined more than one time, XML is invalid";""
+"0xA0040312";"E_FILLTEMPLATESDICTIONNARYERROR";"[CONF] ConfigurationLoader FillTemplatesDictionaries, see detailed log";"On ne peut pas être plus précis ?"
+"0xA0040313";"E_TEMPLATEANALYSISERROR";"[CONF] ConfigurationLoader: XML templates definitions analyzis error: "" + ex";"Décrit comme ça ça semble doublonner avec le 301, à préciser les deux donc"
+"0xA0040314";"E_NOACTIVECONNECTIONDEFINED";"[CONF] No active connection name defined in appSettings ('activeDbConnection')";""
+"0xA0040315";"E_NOACTIVECONNECTIONFOUND";"[CONF] Active connection not found in available connection strings (key : '"" + activeDbConnectionName_";""
+"0xA0040316";"E_NOACTIVECONNECTIONPROVIDERNAME";"[CONF] No active connection provider invariant name defined in appSettings  for active connection '"" + activeDbConnectionName_";""
+"0xA0040317";"E_PROVIDERMISSING";"[CONF] Provider with name '"" + providerInvariantName + ""' missing in XML";""
+"0xA0040318";"E_PROVIDERNOTMATCH";"[CONF] ConfigurationLoader LoadProviderSpecificInformation, no value matching XPath '"" + strXPathExpression + ""' for the provider '"" + providerInvariantName";"Trouver une meilleur formulation"
+"0xA0040319";"E_LOADCONFIGURATION";"[CONF] ConfigurationLoader LoadXmlConfiguration, see detailed log";"Trop générique, à mon avis on logguera plus détaillé que ça (on devrait !)"
+"0xA0040320";"E_ACTIVECONNECTIONNOTFOUNDINACTIVECOSTRING";"[CONF] Active connection not found in available connection strings (key : '"" + dbConnexion";""
+"0xA0040321";"E_NOPROVIDERNAMEFORCONNECTIONNAME";"[CONF] No provider name defined in connection strings configuration for connection with name '"" + dbConnexion";""
+"0xA0040322";"E_PROVIDERNOTINSTALLED";"[CONF] Provider with name '"" + provider +""' is not installed";""
+"0xA0040323";"E_NOCONNEXIONSTRINGDEFINED";"[CONF] No connection string value defined in connection strings configuration for connection with name '"" + dbConnexion";""
+"0xA0040324";"E_NOMAPPINGKEY";"[CONF] No mapping for key '"" + mappingDictionaryName_";""
+"0xA0040325";"E_NOMAPPINGKEYANDCOLUMN";"[CONF] No mapping for key '"" + mappingDictionaryName_ + ""' and DB column name '"" + dbColumnName_";""
+"0xA0040326";"";"";""
+"0xA0040327";"";"";""
+"0xA0040328";"";"";""
+"0xA0040329";"";"";""
+"0xA0040330";"";"";""
+"0xA0040331";"";"";""
+"0xA0040332";"";"";""
+"0xA0040333";"";"";""
+"0xA0040334";"";"";""

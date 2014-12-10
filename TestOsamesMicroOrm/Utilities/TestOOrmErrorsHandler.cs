@@ -13,9 +13,10 @@ namespace TestOsamesMicroOrm.Utilities
         [TestCategory("Error handling")]
         public void TestConstructor()
         {
-            Dictionary<string, string> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
+            Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys.Count);
 
+            Console.WriteLine(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultByCode("E_CreateConnectionFailed"));
         }
     }
 }

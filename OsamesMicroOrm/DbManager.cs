@@ -22,6 +22,7 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using OsamesMicroOrm.Logging;
+using OsamesMicroOrm.Utilities;
 
 namespace OsamesMicroOrm
 {

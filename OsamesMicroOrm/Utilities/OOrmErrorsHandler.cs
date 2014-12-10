@@ -18,27 +18,29 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Windows.Forms;
 
 namespace OsamesMicroOrm.Utilities
 {
     internal static class OOrmErrorsHandler
     {
         private static KeyValuePair<ErrorType, string> ErrorMsg;
-        internal static Dictionary<string, string> HResultCode = new Dictionary<string, string>();
+        internal static Dictionary<string, KeyValuePair<string, string>> HResultCode = new Dictionary<string, KeyValuePair<string, string>>();
 
         /// <summary>
         /// Cosntructor
         /// </summary>
         static OOrmErrorsHandler()
         {
-            ReadHResultCodeFromResources("HResult Orm.csv", out HResultCode);
+            ReadHResultCodesFromResources("HResult Orm.csv", out HResultCode);
         }
 
-        private static void ReadHResultCodeFromResources(string resource_, out Dictionary<string, string> hresultCodes_)
+        private static void ReadHResultCodesFromResources(string resource_, out Dictionary<string, KeyValuePair<string, string>> hresultCodes_)
         {
-            hresultCodes_ = new Dictionary<string, string>();
+            hresultCodes_ = new Dictionary<string, KeyValuePair<string, string>>();
 
             using (Stream str = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(OOrmErrorsHandler).Assembly.GetName().Name + ".Resources." + resource_))
             {
@@ -60,13 +62,27 @@ namespace OsamesMicroOrm.Utilities
                     {
                         //Insert to kvp
                         row = currentLine.Split(';');
-                        if (string.IsNullOrWhiteSpace(row[1]))
+                        if (string.IsNullOrWhiteSpace(row[1].Substring(1, row[1].Length - 2)) || string.IsNullOrWhiteSpace(row[0].Substring(1, row[0].Length - 2)))
                             continue;
-                        hresultCodes_.Add(row[1], row[0]);
+                        hresultCodes_.Add(row[1].Substring(1, row[1].Length - 2), new KeyValuePair<string, string>(row[0].Substring(1, row[0].Length - 2), row[2].Substring(1, row[2].Length - 2)));
                     }
                 }
             }
         }
+
+        /// <summary>
+        /// return a key value pair with hresult name and description
+        /// </summary>
+        /// <param name="code_"></param>
+        /// <returns></returns>
+        internal static string FindHResultByCode(string code_)
+        {
+            //int temporyvar = (int) new System.ComponentModel.Int32Converter().ConvertFromString(code_);
+            if (HResultCode.ContainsKey(code_))
+                return string.Format("{0} ({1})", HResultCode[code_].Value, HResultCode[code_].Key);
+            return string.Format("No code {0} found.", code_);
+        }
+
 
         /// <summary>
         /// 
