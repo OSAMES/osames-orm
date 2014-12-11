@@ -11,12 +11,20 @@ namespace TestOsamesMicroOrm.Utilities
     {
         [TestMethod]
         [TestCategory("Error handling")]
+        [Owner("Barbara Post")]
         public void TestConstructor()
         {
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys.Count);
+        }
 
-            Console.WriteLine(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultByCode("E_CreateConnectionFailed"));
+        [TestMethod]
+        [TestCategory("Error handling")]
+        [Owner("Benjamin Nolmans)")]
+        public void TestFindHResultByCode()
+        {
+            Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
+            Assert.IsNotNull(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultByCode("E_CreateConnectionFailed"));
         }
     }
 }
