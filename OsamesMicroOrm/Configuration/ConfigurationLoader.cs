@@ -133,10 +133,10 @@ namespace OsamesMicroOrm.Configuration
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
+                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEY")+ "'"+mappingDictionaryName_ + "'");
             mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
             if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "' and property name '" + propertyName_ + "'");
+                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEY") + mappingDictionaryName_ + "' and property name '" + propertyName_ + "'");
 
             return resultColumnName;
         }
@@ -153,7 +153,7 @@ namespace OsamesMicroOrm.Configuration
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
+                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEY") + "'" + mappingDictionaryName_ + "'");
             string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
 
             if (resultPropertyName == null)
