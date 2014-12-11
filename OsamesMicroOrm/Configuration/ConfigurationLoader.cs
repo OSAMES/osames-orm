@@ -136,7 +136,7 @@ namespace OsamesMicroOrm.Configuration
                 throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEY")+ "'"+mappingDictionaryName_ + "'");
             mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
             if (mappingObjectSet == null)
-                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEY") + mappingDictionaryName_ + "' and property name '" + propertyName_ + "'");
+                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEYANDPROPERTY") + mappingDictionaryName_ + " " + propertyName_ );
 
             return resultColumnName;
         }
