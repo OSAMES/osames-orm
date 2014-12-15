@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.DbTools;
 using SampleDbEntities.Chinook;
@@ -43,7 +39,7 @@ namespace TestOsamesMicroOrmSqlite
         [TestMethod]
         [TestCategory("SqLite")]
         [TestCategory("Insert")]
-        [TestCategory("NoTransaction")]
+        [TestCategory("No Transaction")]
         [Ignore]
         [Owner("Benjamin Nolmans")]
         public void TestInsertWithoutTransaction()

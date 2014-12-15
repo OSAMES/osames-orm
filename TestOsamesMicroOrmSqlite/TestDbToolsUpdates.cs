@@ -88,5 +88,42 @@ namespace TestOsamesMicroOrmSqlite
 
         }
 
+        /// <summary>
+        /// Update d'un seul objet.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("SqLite")]
+        [TestCategory("Update")]
+        [TestCategory("No Transaction")]
+        [Owner("Benjamin Nolmans")]
+        public void TestUpdateSingleSqliteWithoutTransaction()
+        {
+            const int testCustomerId = 1;
+
+            _config = ConfigurationLoader.Instance;
+
+            // Lecture initiale
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId });
+
+            string nomInitial = customer.LastName;
+            string prenomInitial = customer.FirstName;
+
+            Console.WriteLine("En début de test : Nom : " + nomInitial + " prénom : " + prenomInitial);
+
+            customer.FirstName = "Benjamin";
+            customer.LastName = "Nolmans";
+
+            string errorMsg;
+
+            // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
+            int testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
+                new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer },
+                out errorMsg);
+
+            Assert.AreEqual(1, testing);
+            Assert.AreEqual("", errorMsg ?? "", "Attendu pas d'erreur");
+
+           }
+
     }
 }
