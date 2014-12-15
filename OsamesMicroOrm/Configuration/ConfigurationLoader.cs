@@ -133,10 +133,10 @@ namespace OsamesMicroOrm.Configuration
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEY")+ "'"+mappingDictionaryName_ + "'");
+                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEY")+ "["+mappingDictionaryName_ + "]");
             mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
             if (mappingObjectSet == null)
-                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEYANDPROPERTY") + mappingDictionaryName_ + " " + propertyName_ );
+                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEYANDPROPERTY") + "[No property "+ propertyName_ +" in dictionary "+ mappingDictionaryName_ +"]" );
 
             return resultColumnName;
         }
@@ -153,11 +153,11 @@ namespace OsamesMicroOrm.Configuration
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEY") + "'" + mappingDictionaryName_ + "'");
+                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEY") + "[" + mappingDictionaryName_ + "]");
             string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
 
             if (resultPropertyName == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "' and DB column name '" + dbColumnName_ + "'");
+                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEY") + "[key: "+ mappingDictionaryName_ + ", Col.: " + dbColumnName_ +"]");
 
             return resultPropertyName;
         }
@@ -383,20 +383,20 @@ namespace OsamesMicroOrm.Configuration
                 // Table nodes
                 XPathNodeIterator xPathNodeIterator = xmlNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Table", xmlNamespaceManager);
 
-                var propertyColumnDictionary = new Dictionary<string, string>();
+                var databaseTableDictionary = new Dictionary<string, string>();
                 while (xPathNodeIterator.MoveNext()) // Read Table node
                 {
-                    MappingDictionnary.Add(xPathNodeIterator.Current.GetAttribute("name", ""), propertyColumnDictionary);
+                    MappingDictionnary.Add(xPathNodeIterator.Current.GetAttribute("name", ""), databaseTableDictionary);
                     xPathNodeIterator.Current.MoveToFirstChild();
                     do
                     {
                         if (xPathNodeIterator.Current.NodeType != XPathNodeType.Element)
                             continue;
 
-                        propertyColumnDictionary.Add(xPathNodeIterator.Current.GetAttribute("property", ""), xPathNodeIterator.Current.GetAttribute("column", ""));
+                        databaseTableDictionary.Add(xPathNodeIterator.Current.GetAttribute("property", ""), xPathNodeIterator.Current.GetAttribute("column", ""));
                     } while (xPathNodeIterator.Current.MoveToNext()); // Read next Mapping node
 
-                    propertyColumnDictionary = new Dictionary<string, string>();
+                    databaseTableDictionary = new Dictionary<string, string>();
                 }
             }
             catch (Exception ex)

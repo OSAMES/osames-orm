@@ -67,7 +67,7 @@ namespace TestOsamesMicroOrmSqlite
             Assert.AreEqual("Benjamin", prenomUpdated, "Les données relues doivent correspondre à ce qui a été mis à jour (on est dans la transaction)");
 
             // Maintenant on rollback la transaction pour annuler les modifs et on relit.
-            DbManager.Instance.RollbackTransaction(_transaction);
+            DbManager.Instance.RollbackTransaction(_transaction, false);
 
             // Refaire un select, on lit l'ancienne valeur après le rollback.
             // On réutilise la connexion et on rouvre une transaction
