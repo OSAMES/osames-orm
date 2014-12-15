@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
@@ -12,6 +13,13 @@ namespace TestOsamesMicroOrmSqlite
     /// <summary>
     /// Test de ADO.NET sans instancier une transaction et une connexion de base pour les tests unitaires.
     /// </summary>
+
+      [
+        DeploymentItem("x64", "x64"),
+        DeploymentItem("x86", "x86"),
+        DeploymentItem("System.Data.SQLite.dll")
+    ]
+
     [TestClass]
     [ExcludeFromCodeCoverage]
     public class TestAdoNetAlone : OsamesMicroOrmTest
@@ -79,6 +87,50 @@ namespace TestOsamesMicroOrmSqlite
 
             connectionString_ = tool.ConnectionString;
 
+        }
+
+        /// <summary>
+        /// Test de bas niveau du Insert.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Benjamin Nolmans")]
+        [TestCategory("SqLite")]
+        [TestCategory("ADO.NET Insert")]
+        [TestCategory("No Transaction")]
+        public void TestInsertUsingSqliteWithoutTransaction()
+        {
+            List<OOrmDbParameter> parameters = new List<OOrmDbParameter>
+                {
+                    new OOrmDbParameter("@lastname", "Grey"),
+                    new OOrmDbParameter("@firstname", "Paul"),
+                    new OOrmDbParameter("@email", "Paul@Grey.com")
+                };
+
+            try
+            {
+                long lastInsertedRowId;
+                using (OOrmDbConnectionWrapper conn1 = new OOrmDbConnectionWrapper(DbManager.Instance.DbProviderFactory.CreateConnection(), true))
+                {
+                    conn1.ConnectionString = DbManager.ConnectionString;
+                    conn1.Open();
+                    using (OOrmDbConnectionWrapper conn2 = new OOrmDbConnectionWrapper(DbManager.Instance.DbProviderFactory.CreateConnection(), false))
+                    {
+                        conn2.ConnectionString = DbManager.ConnectionString;
+                        conn2.Open();
+                        int affectedRecordsCount = DbManager.Instance.ExecuteNonQuery(conn2, CommandType.Text, "INSERT INTO Customer (LastName, FirstName, Email) VALUES (@lastname, @firstname, @email)", parameters.ToArray(), out lastInsertedRowId);
+                        Assert.AreEqual(1, affectedRecordsCount, "Expected 1 record affected by INSERT operation");
+                        Console.WriteLine("New record ID: {0}, expected number > 1", lastInsertedRowId);
+                        Assert.AreNotEqual(0, lastInsertedRowId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                // relancer l'exception telle que catchée comme ça le test est correctement en erreur
+                throw;
+            }
         }
     }
 }

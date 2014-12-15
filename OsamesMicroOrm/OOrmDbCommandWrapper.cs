@@ -172,6 +172,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         internal int ExecuteNonQuery()
         {
+            Console.WriteLine(AdoDbCommand.Connection.State);
             return AdoDbCommand.ExecuteNonQuery();
         }
 

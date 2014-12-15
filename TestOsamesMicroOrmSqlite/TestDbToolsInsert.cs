@@ -40,7 +40,6 @@ namespace TestOsamesMicroOrmSqlite
         [TestCategory("SqLite")]
         [TestCategory("Insert")]
         [TestCategory("No Transaction")]
-        [Ignore]
         [Owner("Benjamin Nolmans")]
         public void TestInsertWithoutTransaction()
         {

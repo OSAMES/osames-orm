@@ -22,6 +22,7 @@ namespace TestOsamesMicroOrmSqlite
         [ExcludeFromCodeCoverage]
         [Owner("Barbara Post")]
         [TestCategory("SqLite")]
+        [TestCategory("List Provider")]
         public void TestGetProvider()
         {
             DataTable providers = DbProviderFactories.GetFactoryClasses();
@@ -96,6 +97,8 @@ namespace TestOsamesMicroOrmSqlite
                 throw;
             }
         }
+
+        
 
         /// <summary>
         /// From http://msdn.microsoft.com/en-us/library/system.data.datatable(v=vs.110).aspx

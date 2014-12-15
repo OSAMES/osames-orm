@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -86,24 +87,32 @@ namespace OsamesMicroOrm.DbTools
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             long newRecordId_ = 0;
-
-            FormatSqlForInsert(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, out sqlCommand, out adoParameters, out strErrorMsg_);
-
-            if (transaction_ != null)
+            try
             {
-                // Présence d'une transaction
-                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters, out newRecordId_) == 0)
-                    Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
-                return newRecordId_;
-            }
+                FormatSqlForInsert(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, out sqlCommand, out adoParameters, out strErrorMsg_);
 
-            // Pas de transaction
-            using (OOrmDbConnectionWrapper conn = DbManager.Instance.CreateConnection())
-            {
-                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters, out newRecordId_) == 0)
-                    Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
-                return newRecordId_;
+                if (transaction_ != null)
+                {
+                    // Présence d'une transaction
+                    if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters, out newRecordId_) == 0)
+                        Logger.Log(TraceEventType.Warning, "Query didn't insert any row: " + sqlCommand);
+                    return newRecordId_;
+                }
+
+                // Pas de transaction
+                using (OOrmDbConnectionWrapper conn = DbManager.Instance.CreateConnection())
+                {
+                    if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters, out newRecordId_) == 0)
+                        Logger.Log(TraceEventType.Warning, "Query didn't insert any row: " + sqlCommand);
+                    return newRecordId_;
+                }
             }
+            catch (Exception ex)
+            {
+                
+                throw;
+            }
+            
         }
     }
 }
