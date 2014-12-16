@@ -73,7 +73,7 @@ namespace TestOsamesMicroOrmMsSql
             // On réutilise la connexion et on rouvre une transaction
             // teste de robustesse des wrapper en réutilisant expres la connexion
             // (chose que l'on ne peut faire car cette methode est internal)
-            _transaction = DbManager.Instance.OpenTransaction(_transaction.Connection);
+            _transaction = DbManager.Instance.OpenTransaction(_transaction.ConnectionWrapper);
 
             Customer reReadInitialcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
 

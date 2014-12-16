@@ -37,10 +37,11 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Constructeur.
         /// </summary>
-        /// <param name="adoTransaction_">DbTransaction ADO.NET</param>
-        internal OOrmDbTransactionWrapper(System.Data.Common.DbTransaction adoTransaction_)
+        /// <param name="connectionWrapper_"></param>
+        internal OOrmDbTransactionWrapper(OOrmDbConnectionWrapper connectionWrapper_)
         {
-            AdoDbTransaction = adoTransaction_;
+            this.ConnectionWrapper = connectionWrapper_;
+            this.AdoDbTransaction = this.ConnectionWrapper.AdoDbConnection.BeginTransaction();
         }
 
         #region reprise des mêmes propriétés publiques que System.Data.Common.DbConnection mais mises en internal
@@ -48,7 +49,7 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Connexion parente.
         /// </summary>
-        internal OOrmDbConnectionWrapper Connection { get; set; }
+        internal OOrmDbConnectionWrapper ConnectionWrapper { get; set; }
 
         ///// <summary>
         ///// Niveau d'isolation de la transaction.
