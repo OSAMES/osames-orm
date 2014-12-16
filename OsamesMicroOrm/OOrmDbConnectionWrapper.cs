@@ -55,179 +55,184 @@ namespace OsamesMicroOrm
             AdoDbConnection = adoDbConnection_;
         }
 
-        #region reprise des mêmes propriétés publiques que System.Data.Common.DbConnection mais mises en internal
-
-        /// <summary>
-        /// Obtient ou définit la chaîne utilisée pour ouvrir la connexion.
-        /// </summary>
-        internal string ConnectionString { get { return AdoDbConnection.ConnectionString; } set { AdoDbConnection.ConnectionString = value; } }
-
-        /// <summary>
-        /// Obtient la durée d'attente préalable à l'établissement d'une connexion avant que la tentative ne soit abandonnée et qu'une erreur ne soit générée.
-        /// </summary>
-        internal int ConnectionTimeout { get { return AdoDbConnection.ConnectionTimeout; } }
-
-        /// <summary>
-        /// Obtient le nom de la base de données active après avoir ouvert une connexion, ou le nom de la base de données spécifié dans la chaîne de connexion avant que la connexion ne soit ouverte.
-        /// </summary>
-        internal string Database
-        {
-            get { return AdoDbConnection.Database; }
-        }
-
-        /// <summary>
-        /// Obtient une chaîne qui décrit l'état de la connexion.
-        /// </summary>
-        internal ConnectionState State
-        {
-            get { return AdoDbConnection.State; }
-        }
-
-        /// <summary>
-        /// Obtient le nom du serveur de base de données auquel se connecter.
-        /// </summary>
-        internal string DataSource
-        {
-            get { return AdoDbConnection.DataSource; }
-        }
-
-        /// <summary>
-        /// Obtient une chaîne qui représente la version du serveur auquel l'objet est connecté.
-        /// </summary>
-        internal string ServerVersion
-        {
-            get { return AdoDbConnection.ServerVersion; }
-        }
-
-        #endregion
-        #region reprise des mêmes méthodes publiques que System.Data.Common.DbConnection mais mises en internal
-
-        /// <summary>
-        /// Commence une transaction de base de données.
-        /// </summary>
-        /// <param name="isolationLevel_"></param>
-        /// <returns></returns>
-        internal OOrmDbTransactionWrapper BeginTransaction(IsolationLevel isolationLevel_)
-        {
-            return new OOrmDbTransactionWrapper(AdoDbConnection.BeginTransaction(isolationLevel_)) { Connection = this };
-        }
-
-        /// <summary>
-        /// Commence une transaction de base de données.
-        /// </summary>
-        /// <returns></returns>
-        internal OOrmDbTransactionWrapper BeginTransaction()
-        {
-
-            return new OOrmDbTransactionWrapper(AdoDbConnection.BeginTransaction()) { Connection = this };
-        }
-
-        /// <summary>
-        /// Ferme la connexion à la base de données. C'est la méthode recommandée de fermeture d'une connexion ouverte.
-        /// </summary>
-        internal void Close()
-        {
-            AdoDbConnection.Close();
-        }
-
-        /// <summary>
-        /// Libère toutes les ressources utilisées.
-        /// </summary>
         public void Dispose()
         {
-            AdoDbConnection.Dispose();
+            this.AdoDbConnection.Dispose();
         }
 
-        /// <summary>
-        /// S'inscrit dans la transaction spécifiée.
-        /// </summary>
-        /// <param name="transaction_"></param>
-        internal void EnlistTransaction(Transaction transaction_)
-        {
-            AdoDbConnection.EnlistTransaction(transaction_);
-        }
+        //#region reprise des mêmes propriétés publiques que System.Data.Common.DbConnection mais mises en internal
 
-        /// <summary>
-        /// Retourne les informations de schéma pour la source de données de ce DbConnection.
-        /// </summary>
-        /// <returns></returns>
-        internal DataTable GetSchema()
-        {
-            return AdoDbConnection.GetSchema();
-        }
+        ///// <summary>
+        ///// Obtient ou définit la chaîne utilisée pour ouvrir la connexion.
+        ///// </summary>
+        //internal string ConnectionString { get { return AdoDbConnection.ConnectionString; } set { AdoDbConnection.ConnectionString = value; } }
 
-        /// <summary>
-        /// Retourne des informations de schéma pour la source de données de ce DbConnection à l'aide de la chaîne spécifiée pour le nom de schéma.
-        /// </summary>
-        /// <param name="name_"></param>
-        /// <returns></returns>
-        internal DataTable GetSchema(string name_)
-        {
-            return AdoDbConnection.GetSchema(name_);
-        }
+        ///// <summary>
+        ///// Obtient la durée d'attente préalable à l'établissement d'une connexion avant que la tentative ne soit abandonnée et qu'une erreur ne soit générée.
+        ///// </summary>
+        //internal int ConnectionTimeout { get { return AdoDbConnection.ConnectionTimeout; } }
 
-        /// <summary>
-        /// Retourne des informations de schéma pour la source de données de ce DbConnection à l'aide de la chaîne spécifiée pour le nom de schéma et du tableau de chaînes spécifié pour les valeurs de restriction.
-        /// </summary>
-        /// <param name="name_"></param>
-        /// <param name="restrictions_"></param>
-        /// <returns></returns>
-        internal DataTable GetSchema(string name_, string[] restrictions_)
-        {
-            return AdoDbConnection.GetSchema(name_, restrictions_);
-        }
+        ///// <summary>
+        ///// Obtient le nom de la base de données active après avoir ouvert une connexion, ou le nom de la base de données spécifié dans la chaîne de connexion avant que la connexion ne soit ouverte.
+        ///// </summary>
+        //internal string Database
+        //{
+        //    get { return AdoDbConnection.Database; }
+        //}
 
-        /// <summary>
-        /// Modifie la base de données active d'une connexion ouverte.
-        /// </summary>
-        /// <param name="databaseName"></param>
-        internal void ChangeDatabase(string databaseName)
-        {
-            AdoDbConnection.ChangeDatabase(databaseName);
-        }
+        ///// <summary>
+        ///// Obtient une chaîne qui décrit l'état de la connexion.
+        ///// </summary>
+        //internal ConnectionState State
+        //{
+        //    get { return AdoDbConnection.State; }
+        //}
 
-        /// <summary>
-        /// Ouvre une connexion à une base de données avec les paramètres spécifiés par ConnectionString.
-        /// </summary>
-        internal void Open()
-        {
-            AdoDbConnection.Open();
-        }
+        ///// <summary>
+        ///// Obtient le nom du serveur de base de données auquel se connecter.
+        ///// </summary>
+        //internal string DataSource
+        //{
+        //    get { return AdoDbConnection.DataSource; }
+        //}
 
-        /// <summary>
-        /// Version asynchrone de Open, qui ouvre une connexion de base de données avec les paramètres spécifiés par ConnectionString. Cette méthode appelle la méthode virtuelle OpenAsync avec CancellationToken.None. 
-        /// </summary>
-        internal void OpenAsync()
-        {
-            AdoDbConnection.OpenAsync();
-        }
+        ///// <summary>
+        ///// Obtient une chaîne qui représente la version du serveur auquel l'objet est connecté.
+        ///// </summary>
+        //internal string ServerVersion
+        //{
+        //    get { return AdoDbConnection.ServerVersion; }
+        //}
 
-        /// <summary>
-        /// Il s'agit de la version asynchrone de Open.
-        /// </summary>
-        /// <param name="token_"></param>
-        internal void OpenAsync(CancellationToken token_)
-        {
-            AdoDbConnection.OpenAsync(token_);
-        }
+        //#endregion
+        //#region reprise des mêmes méthodes publiques que System.Data.Common.DbConnection mais mises en internal
 
-        /// <summary>
-        /// Crée et retourne un objet DbCommand associé à la connexion active.
-        /// </summary>
-        /// <returns></returns>
-        internal OOrmDbCommandWrapper CreateDbCommand()
-        {
-            return new OOrmDbCommandWrapper(this, null, AdoDbConnection.CreateCommand());
-        }
+        ///// <summary>
+        ///// Commence une transaction de base de données.
+        ///// </summary>
+        ///// <param name="isolationLevel_"></param>
+        ///// <returns></returns>
+        //internal OOrmDbTransactionWrapper BeginTransaction(IsolationLevel isolationLevel_)
+        //{
+        //    return new OOrmDbTransactionWrapper(AdoDbConnection.BeginTransaction(isolationLevel_)) { Connection = this };
+        //}
 
-        /// <summary>
-        /// Chaîne représentative de l'objet courant.
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            return IsBackup ? "[BACKUP]" : "[POOLED]" + AdoDbConnection;
-        }
-        #endregion
+        ///// <summary>
+        ///// Commence une transaction de base de données.
+        ///// </summary>
+        ///// <returns></returns>
+        //internal OOrmDbTransactionWrapper BeginTransaction()
+        //{
+
+        //    return new OOrmDbTransactionWrapper(AdoDbConnection.BeginTransaction()) { Connection = this };
+        //}
+
+        ///// <summary>
+        ///// Ferme la connexion à la base de données. C'est la méthode recommandée de fermeture d'une connexion ouverte.
+        ///// </summary>
+        //internal void Close()
+        //{
+        //    AdoDbConnection.Close();
+        //}
+
+        ///// <summary>
+        ///// Libère toutes les ressources utilisées.
+        ///// </summary>
+        //public void Dispose()
+        //{
+        //    AdoDbConnection.Dispose();
+        //}
+
+        ///// <summary>
+        ///// S'inscrit dans la transaction spécifiée.
+        ///// </summary>
+        ///// <param name="transaction_"></param>
+        //internal void EnlistTransaction(Transaction transaction_)
+        //{
+        //    AdoDbConnection.EnlistTransaction(transaction_);
+        //}
+
+        ///// <summary>
+        ///// Retourne les informations de schéma pour la source de données de ce DbConnection.
+        ///// </summary>
+        ///// <returns></returns>
+        //internal DataTable GetSchema()
+        //{
+        //    return AdoDbConnection.GetSchema();
+        //}
+
+        ///// <summary>
+        ///// Retourne des informations de schéma pour la source de données de ce DbConnection à l'aide de la chaîne spécifiée pour le nom de schéma.
+        ///// </summary>
+        ///// <param name="name_"></param>
+        ///// <returns></returns>
+        //internal DataTable GetSchema(string name_)
+        //{
+        //    return AdoDbConnection.GetSchema(name_);
+        //}
+
+        ///// <summary>
+        ///// Retourne des informations de schéma pour la source de données de ce DbConnection à l'aide de la chaîne spécifiée pour le nom de schéma et du tableau de chaînes spécifié pour les valeurs de restriction.
+        ///// </summary>
+        ///// <param name="name_"></param>
+        ///// <param name="restrictions_"></param>
+        ///// <returns></returns>
+        //internal DataTable GetSchema(string name_, string[] restrictions_)
+        //{
+        //    return AdoDbConnection.GetSchema(name_, restrictions_);
+        //}
+
+        ///// <summary>
+        ///// Modifie la base de données active d'une connexion ouverte.
+        ///// </summary>
+        ///// <param name="databaseName"></param>
+        //internal void ChangeDatabase(string databaseName)
+        //{
+        //    AdoDbConnection.ChangeDatabase(databaseName);
+        //}
+
+        ///// <summary>
+        ///// Ouvre une connexion à une base de données avec les paramètres spécifiés par ConnectionString.
+        ///// </summary>
+        //internal void Open()
+        //{
+        //    AdoDbConnection.Open();
+        //}
+
+        ///// <summary>
+        ///// Version asynchrone de Open, qui ouvre une connexion de base de données avec les paramètres spécifiés par ConnectionString. Cette méthode appelle la méthode virtuelle OpenAsync avec CancellationToken.None. 
+        ///// </summary>
+        //internal void OpenAsync()
+        //{
+        //    AdoDbConnection.OpenAsync();
+        //}
+
+        ///// <summary>
+        ///// Il s'agit de la version asynchrone de Open.
+        ///// </summary>
+        ///// <param name="token_"></param>
+        //internal void OpenAsync(CancellationToken token_)
+        //{
+        //    AdoDbConnection.OpenAsync(token_);
+        //}
+
+        ///// <summary>
+        ///// Crée et retourne un objet DbCommand associé à la connexion active.
+        ///// </summary>
+        ///// <returns></returns>
+        //internal OOrmDbCommandWrapper CreateDbCommand()
+        //{
+        //    return new OOrmDbCommandWrapper(this, null, AdoDbConnection.CreateCommand());
+        //}
+
+        ///// <summary>
+        ///// Chaîne représentative de l'objet courant.
+        ///// </summary>
+        ///// <returns></returns>
+        //public override string ToString()
+        //{
+        //    return IsBackup ? "[BACKUP]" : "[POOLED]" + AdoDbConnection;
+        //}
+        //#endregion
     }
 }

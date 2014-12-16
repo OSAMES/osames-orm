@@ -161,8 +161,8 @@ namespace OsamesMicroOrm
         {
             try
             {
-                if (BackupConnection != null && BackupConnection.State == ConnectionState.Open)
-                    BackupConnection.Close();
+                if (BackupConnection != null && BackupConnection.AdoDbConnection.State == ConnectionState.Open)
+                    BackupConnection.AdoDbConnection.Close();
             }
             catch (ObjectDisposedException)
             {
@@ -214,10 +214,10 @@ namespace OsamesMicroOrm
                 // could not get a second connection
                 // use backup connection
                 // We may have to reopen it because we waited a long time before using it
-                if (BackupConnection.State != ConnectionState.Open)
+                if (BackupConnection.AdoDbConnection.State != ConnectionState.Open)
                 {
-                    BackupConnection.ConnectionString = ConnectionString;
-                    BackupConnection.Open();
+                    BackupConnection.AdoDbConnection.ConnectionString = ConnectionString;
+                    BackupConnection.AdoDbConnection.Open();
                 }
 
                 return BackupConnection;
@@ -234,7 +234,7 @@ namespace OsamesMicroOrm
         {
             if (connexion_ == null) return;
 
-            connexion_.Close();
+            connexion_.AdoDbConnection.Close();
             connexion_ = null;
         }
 
@@ -249,7 +249,7 @@ namespace OsamesMicroOrm
         {
             try
             {
-                return connection_.BeginTransaction();
+                return new OOrmDbTransactionWrapper(connection_.AdoDbConnection.BeginTransaction());
 
             }
             catch (InvalidOperationException ex)
@@ -270,9 +270,9 @@ namespace OsamesMicroOrm
             {
                 if (transaction_ == null) return;
 
-                transaction_.Commit();
+                transaction_.AdoDbTransaction.Commit();
                 if (closeConnexion_)
-                    transaction_.Connection.Close();
+                    transaction_.AdoDbTransaction.Connection.Close();
             }
             catch (InvalidOperationException ex)
             {
@@ -292,9 +292,9 @@ namespace OsamesMicroOrm
             {
                 if (transaction_ == null) return;
 
-                transaction_.Rollback();
+                transaction_.AdoDbTransaction.Rollback();
                 if (closeConnexion_)
-                    transaction_.Connection.Close();
+                    transaction_.AdoDbTransaction.Connection.Close();
             }
             catch (InvalidOperationException ex)
             {
@@ -312,7 +312,7 @@ namespace OsamesMicroOrm
             try
             {
                 OOrmDbConnectionWrapper connection = this.CreateConnection();
-                return connection.BeginTransaction();
+                return new OOrmDbTransactionWrapper(connection.AdoDbConnection.BeginTransaction());
             }
             catch (InvalidOperationException ex)
             {
@@ -347,12 +347,12 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.ExecuteNonQuery();
+                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                     }
 
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (object[,])null))
                     {
-                        object oValue = command.ExecuteScalar();
+                        object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                     }
@@ -363,12 +363,12 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                 }
 
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (object[,])null))
                 {
-                    object oValue = command.ExecuteScalar();
+                    object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                 }
@@ -396,12 +396,12 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.ExecuteNonQuery();
+                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                     }
 
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<OOrmDbParameter>)null))
                     {
-                        object oValue = command.ExecuteScalar();
+                        object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                     }
@@ -412,12 +412,12 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                 }
 
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<OOrmDbParameter>)null))
                 {
-                    object oValue = command.ExecuteScalar();
+                    object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                 }
@@ -445,12 +445,12 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.ExecuteNonQuery();
+                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                     }
 
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
                     {
-                        object oValue = command.ExecuteScalar();
+                        object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                     }
@@ -461,12 +461,12 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                 }
 
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
                 {
-                    object oValue = command.ExecuteScalar();
+                    object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                 }
@@ -495,12 +495,12 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.ExecuteNonQuery();
+                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                     }
 
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (object[,])null))
                     {
-                        object oValue = command.ExecuteScalar();
+                        object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                     }
@@ -511,12 +511,12 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                 }
 
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (object[,])null))
                 {
-                    object oValue = command.ExecuteScalar();
+                    object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                 }
@@ -545,12 +545,12 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.ExecuteNonQuery();
+                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                     }
 
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<OOrmDbParameter>)null))
                     {
-                        object oValue = command.ExecuteScalar();
+                        object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                     }
@@ -561,12 +561,12 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                 }
 
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<OOrmDbParameter>)null))
                 {
-                    object oValue = command.ExecuteScalar();
+                    object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                 }
@@ -595,12 +595,12 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.ExecuteNonQuery();
+                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                     }
 
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
                     {
-                        object oValue = command.ExecuteScalar();
+                        object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                     }
@@ -611,12 +611,12 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                 }
 
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, SelectLastInsertIdCommandText, (IEnumerable<KeyValuePair<string, object>>)null))
                 {
-                    object oValue = command.ExecuteScalar();
+                    object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                 }
@@ -649,7 +649,7 @@ namespace OsamesMicroOrm
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
 
-                        iNbAffectedRows = command.ExecuteNonQuery();
+                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                     }
                 }
             }
@@ -658,7 +658,7 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                 }
             }
 
@@ -684,7 +684,7 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.ExecuteNonQuery();
+                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                     }
                 }
             }
@@ -693,7 +693,7 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                 }
             }
 
@@ -719,7 +719,7 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.ExecuteNonQuery();
+                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                     }
                 }
             }
@@ -728,7 +728,7 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                 }
             }
 
@@ -754,7 +754,7 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.ExecuteNonQuery();
+                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                     }
                 }
             }
@@ -763,7 +763,7 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                 }
             }
 
@@ -789,7 +789,7 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.ExecuteNonQuery();
+                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                     }
                 }
             }
@@ -798,7 +798,7 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                 }
             }
 
@@ -824,7 +824,7 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.ExecuteNonQuery();
+                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                     }
                 }
             }
@@ -833,7 +833,7 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.ExecuteNonQuery();
+                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                 }
             }
 
@@ -863,7 +863,7 @@ namespace OsamesMicroOrm
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                         try
                         {
-                            DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
+                            DbDataReader dr = command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
                             return dr;
                         }
                         catch (Exception ex)
@@ -877,7 +877,7 @@ namespace OsamesMicroOrm
             using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
-                    DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
+                    DbDataReader dr = command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
                     return dr;
                 }
                 catch (Exception ex)
@@ -906,7 +906,7 @@ namespace OsamesMicroOrm
                     {
                         try
                         {
-                            return command.ExecuteReader(CommandBehavior.Default);
+                            return command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
                         }
                         catch (Exception ex)
                         {
@@ -921,7 +921,7 @@ namespace OsamesMicroOrm
             {
                 try
                 {
-                    return command.ExecuteReader(CommandBehavior.Default);
+                    return command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
                 }
                 catch (Exception ex)
                 {
@@ -950,7 +950,7 @@ namespace OsamesMicroOrm
                     {
                         try
                         {
-                            return command.ExecuteReader(CommandBehavior.Default);
+                            return command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
                         }
                         catch (Exception ex)
                         {
@@ -965,7 +965,7 @@ namespace OsamesMicroOrm
             {
                 try
                 {
-                    return command.ExecuteReader(CommandBehavior.Default);
+                    return command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
                 }
                 catch (Exception ex)
                 {
@@ -993,7 +993,7 @@ namespace OsamesMicroOrm
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                         try
                         {
-                            DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
+                            DbDataReader dr = command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
                             return dr;
                         }
                         catch (Exception ex)
@@ -1007,7 +1007,7 @@ namespace OsamesMicroOrm
             using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 try
                 {
-                    DbDataReader dr = command.ExecuteReader(CommandBehavior.Default);
+                    DbDataReader dr = command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
                     return dr;
                 }
                 catch (Exception ex)
@@ -1036,7 +1036,7 @@ namespace OsamesMicroOrm
                     {
                         try
                         {
-                            return command.ExecuteReader(CommandBehavior.Default);
+                            return command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
                         }
                         catch (Exception ex)
                         {
@@ -1051,7 +1051,7 @@ namespace OsamesMicroOrm
             {
                 try
                 {
-                    return command.ExecuteReader(CommandBehavior.Default);
+                    return command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
                 }
                 catch (Exception ex)
                 {
@@ -1080,7 +1080,7 @@ namespace OsamesMicroOrm
                     {
                         try
                         {
-                            return command.ExecuteReader(CommandBehavior.Default);
+                            return command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
                         }
                         catch (Exception ex)
                         {
@@ -1095,7 +1095,7 @@ namespace OsamesMicroOrm
             {
                 try
                 {
-                    return command.ExecuteReader(CommandBehavior.Default);
+                    return command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
                 }
                 catch (Exception ex)
                 {
@@ -1511,7 +1511,7 @@ namespace OsamesMicroOrm
                     {
                         try
                         {
-                            return command.ExecuteScalar();
+                            return command.AdoDbCommand.ExecuteScalar();
 
                         }
                         catch (Exception ex)
@@ -1528,7 +1528,7 @@ namespace OsamesMicroOrm
             {
                 try
                 {
-                    return command.ExecuteScalar();
+                    return command.AdoDbCommand.ExecuteScalar();
 
                 }
                 catch (Exception ex)
@@ -1559,7 +1559,7 @@ namespace OsamesMicroOrm
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                         try
                         {
-                            return command.ExecuteScalar();
+                            return command.AdoDbCommand.ExecuteScalar();
 
                         }
                         catch (Exception ex)
@@ -1573,7 +1573,7 @@ namespace OsamesMicroOrm
             using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
-                    return command.ExecuteScalar();
+                    return command.AdoDbCommand.ExecuteScalar();
 
                 }
                 catch (Exception ex)
@@ -1604,7 +1604,7 @@ namespace OsamesMicroOrm
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                         try
                         {
-                            return command.ExecuteScalar();
+                            return command.AdoDbCommand.ExecuteScalar();
 
                         }
                         catch (Exception ex)
@@ -1618,7 +1618,7 @@ namespace OsamesMicroOrm
             using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 try
                 {
-                    return command.ExecuteScalar();
+                    return command.AdoDbCommand.ExecuteScalar();
 
                 }
                 catch (Exception ex)
@@ -1649,7 +1649,7 @@ namespace OsamesMicroOrm
                     {
                         try
                         {
-                            return command.ExecuteScalar();
+                            return command.AdoDbCommand.ExecuteScalar();
 
                         }
                         catch (Exception ex)
@@ -1666,7 +1666,7 @@ namespace OsamesMicroOrm
             {
                 try
                 {
-                    return command.ExecuteScalar();
+                    return command.AdoDbCommand.ExecuteScalar();
 
                 }
                 catch (Exception ex)
@@ -1697,7 +1697,7 @@ namespace OsamesMicroOrm
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                         try
                         {
-                            return command.ExecuteScalar();
+                            return command.AdoDbCommand.ExecuteScalar();
 
                         }
                         catch (Exception ex)
@@ -1711,7 +1711,7 @@ namespace OsamesMicroOrm
             using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 try
                 {
-                    return command.ExecuteScalar();
+                    return command.AdoDbCommand.ExecuteScalar();
 
                 }
                 catch (Exception ex)
@@ -1742,7 +1742,7 @@ namespace OsamesMicroOrm
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                         try
                         {
-                            return command.ExecuteScalar();
+                            return command.AdoDbCommand.ExecuteScalar();
 
                         }
                         catch (Exception ex)
@@ -1756,7 +1756,7 @@ namespace OsamesMicroOrm
             using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.Connection, transaction_, cmdText_, cmdParams_, cmdType_))
                 try
                 {
-                    return command.ExecuteScalar();
+                    return command.AdoDbCommand.ExecuteScalar();
 
                 }
                 catch (Exception ex)

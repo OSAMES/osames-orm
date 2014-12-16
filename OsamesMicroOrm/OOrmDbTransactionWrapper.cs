@@ -26,7 +26,7 @@ namespace OsamesMicroOrm
     /// Elle expose les mêmes méthodes que System.Data.Common.DbTransaction à qui elle délègue.
     /// On encapsule au lieu d'hériter car System.Data.Common.DbConnection est une classe abstraite.
     /// </summary>
-    public sealed class OOrmDbTransactionWrapper : IDisposable
+    public sealed class OOrmDbTransactionWrapper
     {
         /// <summary>
         /// Connexion telle que fournie par l'appel à DbProviderFactory.CreateConnection().
@@ -50,14 +50,14 @@ namespace OsamesMicroOrm
         /// </summary>
         internal OOrmDbConnectionWrapper Connection { get; set; }
 
-        /// <summary>
-        /// Niveau d'isolation de la transaction.
-        /// </summary>
-        internal IsolationLevel IsolationLevel { get { return AdoDbTransaction.IsolationLevel; } }
+        ///// <summary>
+        ///// Niveau d'isolation de la transaction.
+        ///// </summary>
+        //internal IsolationLevel IsolationLevel { get { return AdoDbTransaction.IsolationLevel; } }
         
-        #endregion
+        //#endregion
 
-        #region reprise des mêmes méthodes publiques que System.Data.Common.DbTransaction mais mises en internal
+        //#region reprise des mêmes méthodes publiques que System.Data.Common.DbTransaction mais mises en internal
 
         /// <summary>
         /// Libère les ressources non managées utilisées.
@@ -67,21 +67,21 @@ namespace OsamesMicroOrm
             AdoDbTransaction.Dispose();
         }
 
-        /// <summary>
-        /// Valide la transaction de base de données.
-        /// </summary>
-        internal void Commit()
-        {
-            AdoDbTransaction.Commit();
-        }
+        ///// <summary>
+        ///// Valide la transaction de base de données.
+        ///// </summary>
+        //internal void Commit()
+        //{
+        //    AdoDbTransaction.Commit();
+        //}
 
-        /// <summary>
-        /// Restaure une transaction à partir d'un état d'attente.
-        /// </summary>
-        internal void Rollback()
-        {
-            AdoDbTransaction.Rollback();
-        }
+        ///// <summary>
+        ///// Restaure une transaction à partir d'un état d'attente.
+        ///// </summary>
+        //internal void Rollback()
+        //{
+        //    AdoDbTransaction.Rollback();
+        //}
 
   
         #endregion

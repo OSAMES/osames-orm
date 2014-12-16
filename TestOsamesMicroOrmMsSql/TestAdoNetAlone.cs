@@ -204,7 +204,7 @@ namespace TestOsamesMicroOrmMsSql
                 // cleanup
                 foreach (OOrmDbConnectionWrapper connection in lstConnections)
                 {
-                    connection.Close();
+                    connection.AdoDbConnection.Close();
                     connection.Dispose();
                 }
             }

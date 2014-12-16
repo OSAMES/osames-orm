@@ -31,7 +31,6 @@ namespace OsamesMicroOrm
     /// </summary>
     internal sealed class OOrmDbCommandWrapper : IDisposable
     {
-
         /// <summary>
         /// Commande telle que fournie par l'appel à DbProviderFactory.CreateCommand();
         /// Accessible en interne pour l'ORM.
@@ -91,52 +90,57 @@ namespace OsamesMicroOrm
             this.PrepareCommand(connection_, transaction_, cmdText_, cmdParams_, cmdType_);
         }
 
-        #region reprise des mêmes propriétés publiques que System.Data.Common.DbCommand
-        /// <summary>
-        /// Obtient ou définit la commande de texte à exécuter par rapport à la source de données.
-        /// </summary>
-        internal string CommandText { get { return AdoDbCommand.CommandText; } set { AdoDbCommand.CommandText = value; } }
+        public void Dispose()
+        {
+            this.AdoDbCommand.Dispose();
+        }
 
-        /// <summary>
-        /// Obtient ou définit la durée d'attente qui précède le moment où il est mis fin à une tentative d'exécution d'une commande et où une erreur est générée.
-        /// </summary>
-        internal int CommandTimeout { get { return AdoDbCommand.CommandTimeout; } set { AdoDbCommand.CommandTimeout = value; } }
+        //#region reprise des mêmes propriétés publiques que System.Data.Common.DbCommand
+        ///// <summary>
+        ///// Obtient ou définit la commande de texte à exécuter par rapport à la source de données.
+        ///// </summary>
+        //internal string CommandText { get { return AdoDbCommand.CommandText; } set { AdoDbCommand.CommandText = value; } }
 
-        /// <summary>
-        /// Indique ou spécifie la manière dont la propriété CommandText doit être interprétée.
-        /// </summary>
-        internal CommandType CommandType { get { return AdoDbCommand.CommandType; } set { AdoDbCommand.CommandType = value; } }
+        ///// <summary>
+        ///// Obtient ou définit la durée d'attente qui précède le moment où il est mis fin à une tentative d'exécution d'une commande et où une erreur est générée.
+        ///// </summary>
+        //internal int CommandTimeout { get { return AdoDbCommand.CommandTimeout; } set { AdoDbCommand.CommandTimeout = value; } }
 
-        /// <summary>
-        /// Obtient ou définit la manière dont les résultats des commandes sont appliqués à DataRow lorsqu'ils sont utilisés par la méthode Update de DbDataAdapter.
-        /// </summary>
-        internal UpdateRowSource UpdatedRowSource { get { return AdoDbCommand.UpdatedRowSource; } set { AdoDbCommand.UpdatedRowSource = value; } }
+        ///// <summary>
+        ///// Indique ou spécifie la manière dont la propriété CommandText doit être interprétée.
+        ///// </summary>
+        //internal CommandType CommandType { get { return AdoDbCommand.CommandType; } set { AdoDbCommand.CommandType = value; } }
+
+        ///// <summary>
+        ///// Obtient ou définit la manière dont les résultats des commandes sont appliqués à DataRow lorsqu'ils sont utilisés par la méthode Update de DbDataAdapter.
+        ///// </summary>
+        //internal UpdateRowSource UpdatedRowSource { get { return AdoDbCommand.UpdatedRowSource; } set { AdoDbCommand.UpdatedRowSource = value; } }
 
         /// <summary>
         /// Obtient la collection d'objets DbParameter. 
         /// </summary>
         internal DbParameterCollection Parameters { get { return AdoDbCommand.Parameters; } }
 
-        #endregion
+        //#endregion
 
-        #region reprise des mêmes méthodes publiques que System.Data.Common.DbCommand
+        //#region reprise des mêmes méthodes publiques que System.Data.Common.DbCommand
 
-        /// <summary>
-        /// Crée une version préparée (ou compilée) de la commande dans la source de données.
-        /// </summary>
-        internal void Prepare()
-        {
-            AdoDbCommand.Prepare();
-        }
+        ///// <summary>
+        ///// Crée une version préparée (ou compilée) de la commande dans la source de données.
+        ///// </summary>
+        //internal void Prepare()
+        //{
+        //    AdoDbCommand.Prepare();
+        //}
 
 
-        /// <summary>
-        /// Tente d'annuler l'exécution de DbCommand.
-        /// </summary>
-        internal void Cancel()
-        {
-            AdoDbCommand.Cancel();
-        }
+        ///// <summary>
+        ///// Tente d'annuler l'exécution de DbCommand.
+        ///// </summary>
+        //internal void Cancel()
+        //{
+        //    AdoDbCommand.Cancel();
+        //}
 
         /// <summary>
         /// Crée une nouvelle instance d'un objet DbParameter.
@@ -147,89 +151,89 @@ namespace OsamesMicroOrm
             return AdoDbCommand.CreateParameter();
         }
 
-        /// <summary>
-        /// Exécute CommandText par rapport à Connection, et retourne un DbDataReader.
-        /// </summary>
-        /// <param name="behavior_"></param>
-        /// <returns></returns>
-        internal DbDataReader ExecuteReader(CommandBehavior behavior_)
-        {
-            return AdoDbCommand.ExecuteReader();
-        }
+        ///// <summary>
+        ///// Exécute CommandText par rapport à Connection, et retourne un DbDataReader.
+        ///// </summary>
+        ///// <param name="behavior_"></param>
+        ///// <returns></returns>
+        //internal DbDataReader ExecuteReader(CommandBehavior behavior_)
+        //{
+        //    return AdoDbCommand.ExecuteReader();
+        //}
 
-        /// <summary>
-        /// Version asynchrone de ExecuteReader, qui exécute CommandText par rapport à Connection et retourne DbDataReader.Appelle ExecuteDbDataReaderAsync avec CancellationToken.None.
-        /// </summary>
-        /// <returns></returns>
-        internal DbDataReader ExecuteReaderAsync()
-        {
-            return AdoDbCommand.ExecuteReader();
-        }
+        ///// <summary>
+        ///// Version asynchrone de ExecuteReader, qui exécute CommandText par rapport à Connection et retourne DbDataReader.Appelle ExecuteDbDataReaderAsync avec CancellationToken.None.
+        ///// </summary>
+        ///// <returns></returns>
+        //internal DbDataReader ExecuteReaderAsync()
+        //{
+        //    return AdoDbCommand.ExecuteReader();
+        //}
 
-        /// <summary>
-        /// Exécute une instruction SQL par rapport à un objet de connexion.
-        /// </summary>
-        /// <returns></returns>
-        internal int ExecuteNonQuery()
-        {
-            Console.WriteLine(AdoDbCommand.Connection.State);
-            return AdoDbCommand.ExecuteNonQuery();
-        }
+        ///// <summary>
+        ///// Exécute une instruction SQL par rapport à un objet de connexion.
+        ///// </summary>
+        ///// <returns></returns>
+        //internal int ExecuteNonQuery()
+        //{
+        //    Console.WriteLine(AdoDbCommand.Connection.State);
+        //    return AdoDbCommand.ExecuteNonQuery();
+        //}
 
-        /// <summary>
-        /// Version asynchrone de ExecuteNonQuery, qui exécute une instruction SQL par rapport à un objet de connexion.Appelle ExecuteNonQueryAsync avec CancellationToken.None.
-        /// </summary>
-        /// <returns></returns>
-        internal void ExecuteNonQueryAsync()
-        {
-            AdoDbCommand.ExecuteNonQueryAsync();
-        }
+        ///// <summary>
+        ///// Version asynchrone de ExecuteNonQuery, qui exécute une instruction SQL par rapport à un objet de connexion.Appelle ExecuteNonQueryAsync avec CancellationToken.None.
+        ///// </summary>
+        ///// <returns></returns>
+        //internal void ExecuteNonQueryAsync()
+        //{
+        //    AdoDbCommand.ExecuteNonQueryAsync();
+        //}
 
-        /// <summary>
-        /// Version asynchrone de ExecuteNonQuery, qui exécute une instruction SQL par rapport à un objet de connexion.
-        /// </summary>
-        /// <returns></returns>
-        internal void ExecuteNonQueryAsync(CancellationToken token_)
-        {
-            AdoDbCommand.ExecuteNonQueryAsync(token_);
-        }
+        ///// <summary>
+        ///// Version asynchrone de ExecuteNonQuery, qui exécute une instruction SQL par rapport à un objet de connexion.
+        ///// </summary>
+        ///// <returns></returns>
+        //internal void ExecuteNonQueryAsync(CancellationToken token_)
+        //{
+        //    AdoDbCommand.ExecuteNonQueryAsync(token_);
+        //}
 
-        /// <summary>
-        /// Exécute la requête et retourne la première colonne de la première ligne du jeu de résultats retourné par la requête. Toutes les autres colonnes et lignes sont ignorées.
-        /// </summary>
-        /// <returns></returns>
-        internal object ExecuteScalar()
-        {
-            return AdoDbCommand.ExecuteScalar();
-        }
+        ///// <summary>
+        ///// Exécute la requête et retourne la première colonne de la première ligne du jeu de résultats retourné par la requête. Toutes les autres colonnes et lignes sont ignorées.
+        ///// </summary>
+        ///// <returns></returns>
+        //internal object ExecuteScalar()
+        //{
+        //    return AdoDbCommand.ExecuteScalar();
+        //}
 
-        /// <summary>
-        /// Version asynchrone de ExecuteScalar, qui exécute la requête et retourne la première colonne de la première ligne du jeu de résultats retourné par la requête. Toutes les autres colonnes et lignes sont ignorées. Appelle ExecuteScalarAsync avec CancellationToken.None.
-        /// </summary>
-        /// <returns></returns>
-        internal void ExecuteScalarAsync()
-        {
-            AdoDbCommand.ExecuteScalarAsync();
-        }
+        ///// <summary>
+        ///// Version asynchrone de ExecuteScalar, qui exécute la requête et retourne la première colonne de la première ligne du jeu de résultats retourné par la requête. Toutes les autres colonnes et lignes sont ignorées. Appelle ExecuteScalarAsync avec CancellationToken.None.
+        ///// </summary>
+        ///// <returns></returns>
+        //internal void ExecuteScalarAsync()
+        //{
+        //    AdoDbCommand.ExecuteScalarAsync();
+        //}
 
-        /// <summary>
-        /// Version asynchrone de ExecuteScalar, qui exécute la requête et retourne la première colonne de la première ligne du jeu de résultats retourné par la requête. Toutes les autres colonnes et lignes sont ignorées.
-        /// </summary>
-        /// <returns></returns>
-        internal void ExecuteScalarAsync(CancellationToken token_)
-        {
-            AdoDbCommand.ExecuteScalarAsync(token_);
-        }
+        ///// <summary>
+        ///// Version asynchrone de ExecuteScalar, qui exécute la requête et retourne la première colonne de la première ligne du jeu de résultats retourné par la requête. Toutes les autres colonnes et lignes sont ignorées.
+        ///// </summary>
+        ///// <returns></returns>
+        //internal void ExecuteScalarAsync(CancellationToken token_)
+        //{
+        //    AdoDbCommand.ExecuteScalarAsync(token_);
+        //}
 
-        /// <summary>
-        /// Libération des ressources utilisées.
-        /// </summary>
-        public void Dispose()
-        {
-            AdoDbCommand.Dispose();
-        }
+        ///// <summary>
+        ///// Libération des ressources utilisées.
+        ///// </summary>
+        //public void Dispose()
+        //{
+        //    AdoDbCommand.Dispose();
+        //}
 
-        #endregion
+        //#endregion
 
         #region CreateDbParameters
 

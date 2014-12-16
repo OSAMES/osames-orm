@@ -112,12 +112,12 @@ namespace TestOsamesMicroOrmSqlite
                 long lastInsertedRowId;
                 using (OOrmDbConnectionWrapper conn1 = new OOrmDbConnectionWrapper(DbManager.Instance.DbProviderFactory.CreateConnection(), true))
                 {
-                    conn1.ConnectionString = DbManager.ConnectionString;
-                    conn1.Open();
+                    conn1.AdoDbConnection.ConnectionString = DbManager.ConnectionString;
+                    conn1.AdoDbConnection.Open();
                     using (OOrmDbConnectionWrapper conn2 = new OOrmDbConnectionWrapper(DbManager.Instance.DbProviderFactory.CreateConnection(), false))
                     {
-                        conn2.ConnectionString = DbManager.ConnectionString;
-                        conn2.Open();
+                        conn2.AdoDbConnection.ConnectionString = DbManager.ConnectionString;
+                        conn2.AdoDbConnection.Open();
                         int affectedRecordsCount = DbManager.Instance.ExecuteNonQuery(conn2, CommandType.Text, "INSERT INTO Customer (LastName, FirstName, Email) VALUES (@lastname, @firstname, @email)", parameters.ToArray(), out lastInsertedRowId);
                         Assert.AreEqual(1, affectedRecordsCount, "Expected 1 record affected by INSERT operation");
                         Console.WriteLine("New record ID: {0}, expected number > 1", lastInsertedRowId);
