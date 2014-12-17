@@ -286,7 +286,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="transaction_">Transaction to manage</param>
         /// <param name="closeConnexion_">Si true ferme la connexion</param>
-        public void RollbackTransaction(OOrmDbTransactionWrapper transaction_, bool closeConnexion_ = true)
+        public void RollbackTransaction(OOrmDbTransactionWrapper transaction_, bool closeConnexion_ = false)
         {
             try
             {
