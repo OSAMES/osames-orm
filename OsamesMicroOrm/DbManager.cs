@@ -294,7 +294,8 @@ namespace OsamesMicroOrm
 
                 transaction_.AdoDbTransaction.Rollback();
                 if (closeConnexion_)
-                    transaction_.AdoDbTransaction.Connection.Close();
+                    transaction_.ConnectionWrapper.AdoDbConnection.Close();
+                    //transaction_.AdoDbTransaction.Connection.Close();
             }
             catch (InvalidOperationException ex)
             {
