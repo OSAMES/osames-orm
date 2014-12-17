@@ -224,15 +224,16 @@ namespace OsamesMicroOrm
         //{
         //    return new OOrmDbCommandWrapper(this, null, AdoDbConnection.CreateCommand());
         //}
-
-        ///// <summary>
-        ///// Chaîne représentative de l'objet courant.
-        ///// </summary>
-        ///// <returns></returns>
-        //public override string ToString()
-        //{
-        //    return IsBackup ? "[BACKUP]" : "[POOLED]" + AdoDbConnection;
-        //}
         //#endregion
+
+        /// <summary>
+        /// Chaîne représentative de l'objet courant.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return IsBackup ? "[BACKUP]" : "[POOLED]" + AdoDbConnection;
+        }
+
     }
 }
