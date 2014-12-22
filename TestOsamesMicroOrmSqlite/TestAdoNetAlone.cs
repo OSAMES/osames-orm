@@ -98,7 +98,7 @@ namespace TestOsamesMicroOrmSqlite
         [TestCategory("SqLite")]
         [TestCategory("ADO.NET Insert")]
         [TestCategory("No Transaction")]
-        public void TestInsertUsingSqliteWithoutTransaction()
+        public void TestInsertSqliteWithoutTransaction()
         {
             List<OOrmDbParameter> parameters = new List<OOrmDbParameter>
                 {

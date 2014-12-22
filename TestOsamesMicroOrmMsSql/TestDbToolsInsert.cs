@@ -6,17 +6,17 @@ using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.DbTools;
 using SampleDbEntities.Chinook;
 
-namespace TestOsamesMicroOrmSqlite
+namespace TestOsamesMicroOrmMsSql
 {
     [TestClass]
     [ExcludeFromCodeCoverage]
-    public class TestDbToolsInsert : OsamesMicroOrmSqliteTest
+    public class TestDbToolsInsert : OsamesMicroOrmMsSqlTest
     {
         [TestMethod]
-        [TestCategory("SqLite")]
+        [TestCategory("MsSql")]
         [TestCategory("Insert")]
         [Owner("Benjamin Nolmans")]
-        public void TestInsertSqliteWithTransaction()
+        public void TestInsertMsSqlWithTransaction()
         {
             _config = ConfigurationLoader.Instance;
 
@@ -37,11 +37,11 @@ namespace TestOsamesMicroOrmSqlite
         }
 
         [TestMethod]
-        [TestCategory("SqLite")]
+        [TestCategory("MsSql")]
         [TestCategory("Insert")]
         [TestCategory("No Transaction")]
         [Owner("Benjamin Nolmans")]
-        public void TestInsertSqliteWithoutTransaction()
+        public void TestInsertMsSqlWithoutTransaction()
         {
             _config = ConfigurationLoader.Instance;
 
