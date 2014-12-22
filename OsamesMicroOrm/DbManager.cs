@@ -22,7 +22,6 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using OsamesMicroOrm.Logging;
-using OsamesMicroOrm.Utilities;
 
 namespace OsamesMicroOrm
 {
@@ -329,7 +328,8 @@ namespace OsamesMicroOrm
         #region avec sortie d'un ID d'enregistrement (INSERT)
 
         /// <summary>
-        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// Exécution de System.Data.Common.DbCommand.ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// Attention : cmdText_ ne doit contenir qu'un seul insert car on n'est en mesure de récupérer qu'un seul ID après insertion.
         /// </summary>
         /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : object[,] (peut être null)</param>
@@ -339,19 +339,12 @@ namespace OsamesMicroOrm
         /// <returns>Nombre de lignes affectées</returns>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
-            int iNbAffectedRows;
-
             if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                    {
-                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
-                    }
-
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (object[,])null))
+                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                     {
                         object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -362,23 +355,19 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                {
-                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
-                }
-
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (object[,])null))
+                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                 {
                     object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                 }
             }
-            return iNbAffectedRows;
+            return 1;
         }
 
         /// <summary>
-        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// Exécution de System.Data.Common.DbCommand.ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// Attention : cmdText_ ne doit contenir qu'un seul insert car on n'est en mesure de récupérer qu'un seul ID après insertion.
         /// </summary>
         /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;OrmDbParameter&gt; (peut être null)</param>
@@ -388,46 +377,37 @@ namespace OsamesMicroOrm
         /// <returns>Nombre de lignes affectées</returns>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, out long lastInsertedRowId_)
         {
-            int iNbAffectedRows;
-
             if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                    {
-                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
-                    }
-
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<OOrmDbParameter>)null))
+                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                     {
                         object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                     }
+
                 }
             }
             else
             {
                 // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                {
-                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
-                }
-
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, SelectLastInsertIdCommandText, (IEnumerable<OOrmDbParameter>)null))
+                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                 {
                     object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                 }
+
             }
-            return iNbAffectedRows;
+            return 1;
         }
 
         /// <summary>
-        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// Exécution de System.Data.Common.DbCommand.ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// Attention : cmdText_ ne doit contenir qu'un seul insert car on n'est en mesure de récupérer qu'un seul ID après insertion.
         /// </summary>
         /// <param name="connection_">Connexion (sans transaction)</param>
         /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;KeyValuePair&lt;string, object&gt;&gt; (peut être null)</param>
@@ -465,7 +445,8 @@ namespace OsamesMicroOrm
         }
 
         /// <summary>
-        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// Exécution de System.Data.Common.DbCommand.ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// Attention : cmdText_ ne doit contenir qu'un seul insert car on n'est en mesure de récupérer qu'un seul ID après insertion.
         /// </summary>
         /// <param name="transaction_">Transaction avec une connexion associée</param>
         /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : object[,] (peut être null)</param>
@@ -475,35 +456,24 @@ namespace OsamesMicroOrm
         /// <returns>Nombre de lignes affectées</returns>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
-            int iNbAffectedRows;
-
             if (transaction_.ConnectionWrapper.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                    {
-                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
-                    }
-
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, SelectLastInsertIdCommandText, (object[,])null))
+                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                     {
                         object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
                     }
+
                 }
             }
             else
             {
                 // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                {
-                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
-                }
-
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, SelectLastInsertIdCommandText, (object[,])null))
+                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                 {
                     object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -511,11 +481,12 @@ namespace OsamesMicroOrm
                 }
             }
 
-            return iNbAffectedRows;
+            return 1;
         }
 
         /// <summary>
-        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// Exécution de System.Data.Common.DbCommand.ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// Attention : cmdText_ ne doit contenir qu'un seul insert car on n'est en mesure de récupérer qu'un seul ID après insertion.
         /// </summary>
         /// <param name="transaction_">Transaction avec sa connexion associée</param>
         /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;OrmDbParameter&gt; (peut être null)</param>
@@ -525,19 +496,12 @@ namespace OsamesMicroOrm
         /// <returns>Nombre de lignes affectées</returns>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, out long lastInsertedRowId_)
         {
-            int iNbAffectedRows;
-
             if (transaction_.ConnectionWrapper.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                    {
-                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
-                    }
-
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, SelectLastInsertIdCommandText, (IEnumerable<OOrmDbParameter>)null))
+                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                     {
                         object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -548,12 +512,7 @@ namespace OsamesMicroOrm
             else
             {
                 // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                {
-                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
-                }
-
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, SelectLastInsertIdCommandText, (IEnumerable<OOrmDbParameter>)null))
+                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                 {
                     object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
@@ -561,11 +520,12 @@ namespace OsamesMicroOrm
                 }
             }
 
-            return iNbAffectedRows;
+            return 1;
         }
 
         /// <summary>
-        /// Exécution de System.Data.Common.DbCommand.ExecuteNonQuery() puis ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// Exécution de System.Data.Common.DbCommand.ExecuteScalar() pour exécuter une requête de type INSERT et obtenir l'ID de la ligne insérée.
+        /// Attention : cmdText_ ne doit contenir qu'un seul insert car on n'est en mesure de récupérer qu'un seul ID après insertion.
         /// </summary>
         /// <param name="transaction_">Transaction avec connexion associée</param>
         /// <param name="cmdParams_">Une des implémentations retenues pour les paramètres ADO.NET : IEnumerable&lt;KeyValuePair&lt;string, object&gt;&gt; (peut être null)</param>
