@@ -18,16 +18,22 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Windows.Forms;
 
 namespace OsamesMicroOrm.Utilities
 {
+    /// <summary>
+    /// Boîte à outils pour la gestion des messages d'erreurs.
+    /// </summary>
     internal static class OOrmErrorsHandler
     {
+        // TODO ce n'est pas bon d'avoir cette variable static (usage concurrent).
         private static KeyValuePair<ErrorType, string> ErrorMsg;
+
+        /// <summary>
+        /// Dictionnaire interne des erreurs au format à préciser - TODO
+        /// </summary>
         internal static Dictionary<string, KeyValuePair<string, string>> HResultCode = new Dictionary<string, KeyValuePair<string, string>>();
 
         /// <summary>
@@ -91,12 +97,14 @@ namespace OsamesMicroOrm.Utilities
         /// <param name="message_"></param>
         internal static void AddErrorMessage(ErrorType errorType, string message_)
         {
+            // TODO à mon avis supprimer.
             ErrorMsg = new KeyValuePair<ErrorType, string>(errorType, DateTime.Now + " :: " + message_);
         }
 
         internal static void DisplayErrorMessageWinforms()
         {
             System.Windows.Forms.MessageBoxIcon errorBoxIcon;
+             // TODO ne plus utiliser la variable static ErroMsg mais utiliser un paramètre.
             switch (ErrorMsg.Key)
             {
                     case ErrorType.CRITICAL: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Stop; break;
