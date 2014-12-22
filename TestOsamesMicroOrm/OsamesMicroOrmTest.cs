@@ -60,6 +60,7 @@ namespace TestOsamesMicroOrm
             // Libération des ressources
             DbManager.Instance.RollbackTransaction(_transaction);
             DbManager.Instance.DisposeConnection(connection);
+            _transaction = null;
         }
 
         /// <summary>
