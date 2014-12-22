@@ -240,6 +240,7 @@ namespace TestOsamesMicroOrmMsSql
                     {
                         conn2.AdoDbConnection.ConnectionString = DbManager.ConnectionString;
                         conn2.AdoDbConnection.Open();
+                        // Ce TU ne passe pas tant que le correctif d'utiliser une seule commande n'est pas appliqué à la méthode avec paramètres sous la forme d'un tableau do'objets Parameter.
                         int affectedRecordsCount = DbManager.Instance.ExecuteNonQuery(conn2, CommandType.Text, "INSERT INTO Customer (LastName, FirstName, Email) VALUES (@lastname, @firstname, @email)", parameters.ToArray(), out lastInsertedRowId);
                         Assert.AreEqual(1, affectedRecordsCount, "Expected 1 record affected by INSERT operation");
                         Console.WriteLine("New record ID: {0}, expected number > 1", lastInsertedRowId);
@@ -274,7 +275,7 @@ namespace TestOsamesMicroOrmMsSql
                     conn1.Open();
                     using (DbCommand comm = DbManager.Instance.DbProviderFactory.CreateCommand())
                     {
-                        comm.CommandText = "INSERT INTO Customer (LastName, FirstName, Email) VALUES (@lastname, @firstname, @email)";
+                        comm.CommandText = "INSERT INTO Customer (LastName, FirstName, Email) VALUES (@lastname, @firstname, @email); select scope_identity()";
                         comm.CommandType = CommandType.Text;
                         comm.Connection = conn1;
                         
@@ -296,10 +297,6 @@ namespace TestOsamesMicroOrmMsSql
                         param3.Value = "Paul@Grey.com";
                         comm.Parameters.Add(param3);
 
-                        int affectedRecordsCount = comm.ExecuteNonQuery();
-                        Assert.AreEqual(1, affectedRecordsCount, "Expected 1 record affected by INSERT operation");
-
-                        comm.CommandText = "select scope_identity()";
                         object lastInsertedRowId = comm.ExecuteScalar();
                         
                         Console.WriteLine("New record ID: {0}, expected number > 1", lastInsertedRowId);
