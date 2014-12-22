@@ -95,27 +95,6 @@ namespace OsamesMicroOrm
             this.AdoDbCommand.Dispose();
         }
 
-        //#region reprise des mêmes propriétés publiques que System.Data.Common.DbCommand
-        ///// <summary>
-        ///// Obtient ou définit la commande de texte à exécuter par rapport à la source de données.
-        ///// </summary>
-        //internal string CommandText { get { return AdoDbCommand.CommandText; } set { AdoDbCommand.CommandText = value; } }
-
-        ///// <summary>
-        ///// Obtient ou définit la durée d'attente qui précède le moment où il est mis fin à une tentative d'exécution d'une commande et où une erreur est générée.
-        ///// </summary>
-        //internal int CommandTimeout { get { return AdoDbCommand.CommandTimeout; } set { AdoDbCommand.CommandTimeout = value; } }
-
-        ///// <summary>
-        ///// Indique ou spécifie la manière dont la propriété CommandText doit être interprétée.
-        ///// </summary>
-        //internal CommandType CommandType { get { return AdoDbCommand.CommandType; } set { AdoDbCommand.CommandType = value; } }
-
-        ///// <summary>
-        ///// Obtient ou définit la manière dont les résultats des commandes sont appliqués à DataRow lorsqu'ils sont utilisés par la méthode Update de DbDataAdapter.
-        ///// </summary>
-        //internal UpdateRowSource UpdatedRowSource { get { return AdoDbCommand.UpdatedRowSource; } set { AdoDbCommand.UpdatedRowSource = value; } }
-
         /// <summary>
         /// Obtient la collection d'objets DbParameter. 
         /// </summary>

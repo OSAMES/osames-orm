@@ -266,7 +266,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <param name="sqlCommand_">Texte final de la requête SQL</param>
         /// <param name="adoParameters_">Représentation des paramètres ADO.NET (nom et valeur)</param>
-        private static T GetDataObject<T>(OOrmDbTransactionWrapper transaction_, string sqlCommand_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_, IEnumerable<KeyValuePair<string, object>> adoParameters_) where T:new()
+        private static T GetDataObject<T>(OOrmDbTransactionWrapper transaction_, string sqlCommand_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_, IEnumerable<KeyValuePair<string, object>> adoParameters_) where T : new()
         {
             T dataObject = new T();
             // Transaction
@@ -282,9 +282,11 @@ namespace OsamesMicroOrm.DbTools
                 return dataObject;
             }
             // Pas de transaction
-            using (OOrmDbConnectionWrapper connection = DbManager.Instance.CreateConnection())
+            OOrmDbConnectionWrapper conn = null;
+            try
             {
-                using (IDataReader reader = DbManager.Instance.ExecuteReader(connection, sqlCommand_, adoParameters_))
+                conn = DbManager.Instance.CreateConnection();
+                using (IDataReader reader = DbManager.Instance.ExecuteReader(conn, sqlCommand_, adoParameters_))
                 {
                     if (reader.Read())
                     {
@@ -292,6 +294,12 @@ namespace OsamesMicroOrm.DbTools
                     }
                 }
                 return dataObject;
+            }
+            finally
+            {
+                // Si c'est la connexion de backup alors on ne la dipose pas pour usage ultérieur.
+                if (!conn.IsBackup)
+                    conn.Dispose();
             }
         }
 
@@ -322,9 +330,11 @@ namespace OsamesMicroOrm.DbTools
                 return dataObjects;
             }
             // Pas de transaction
-            using (OOrmDbConnectionWrapper connection = DbManager.Instance.CreateConnection())
+            OOrmDbConnectionWrapper conn = null;
+            try
             {
-                using (IDataReader reader = DbManager.Instance.ExecuteReader(connection, sqlCommand_, adoParameters_))
+                conn = DbManager.Instance.CreateConnection();
+                using (IDataReader reader = DbManager.Instance.ExecuteReader(conn, sqlCommand_, adoParameters_))
                 {
                     while (reader.Read())
                     {
@@ -333,8 +343,14 @@ namespace OsamesMicroOrm.DbTools
                         FillDataObjectFromDataReader(dataObject, reader, lstDbColumnNames_, lstPropertiesNames_);
                     }
                 }
-                return dataObjects;
             }
+            finally
+            {
+                // Si c'est la connexion de backup alors on ne la dipose pas pour usage ultérieur.
+                if (!conn.IsBackup)
+                    conn.Dispose();
+            }
+            return dataObjects;
         }
     }
 }

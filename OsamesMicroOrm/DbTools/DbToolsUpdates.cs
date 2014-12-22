@@ -121,14 +121,22 @@ namespace OsamesMicroOrm.DbTools
             }
 
             // Pas de transaction
-            using (OOrmDbConnectionWrapper conn = DbManager.Instance.CreateConnection())
+            OOrmDbConnectionWrapper conn = null;
+            try
             {
+                conn = DbManager.Instance.CreateConnection();
                 if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) == 0)
                     Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
                 else
                     nbRowsAffected++;
 
                 return nbRowsAffected;
+            }
+            finally
+            {
+                // Si c'est la connexion de backup alors on ne la dipose pas pour usage ultérieur.
+                if (!conn.IsBackup)
+                    conn.Dispose();
             }
         }
 
@@ -180,12 +188,20 @@ namespace OsamesMicroOrm.DbTools
                 }
 
                 // Pas de transaction
-                using (OOrmDbConnectionWrapper conn = DbManager.Instance.CreateConnection())
+                OOrmDbConnectionWrapper conn = null;
+                try
                 {
+                    conn = DbManager.Instance.CreateConnection();
                     if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) == 0)
                         Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
                     else
                         nbRowsAffected++;
+                }
+                finally
+                {
+                    // Si c'est la connexion de backup alors on ne la dipose pas pour usage ultérieur.
+                    if (!conn.IsBackup)
+                        conn.Dispose();
                 }
             }
 

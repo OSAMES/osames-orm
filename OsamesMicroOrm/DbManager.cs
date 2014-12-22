@@ -57,6 +57,11 @@ namespace OsamesMicroOrm
         private static string SelectLastInsertIdCommandTextField;
 
         /// <summary>
+        /// Indicator set to true when connection string contains "pooling = false" indication.
+        /// </summary>
+        private static bool DisableConnexionPooling;
+
+        /// <summary>
         /// Singleton.
         /// </summary>
         private static DbManager Singleton;
@@ -99,7 +104,13 @@ namespace OsamesMicroOrm
                 }
                 return ConnectionStringField;
             }
-            set { ConnectionStringField = value; }
+            set
+            {
+                ConnectionStringField = value;
+                DisableConnexionPooling = ConnectionStringField.Replace(" ", "").ToLowerInvariant().Contains("pooling=false");
+                Logger.Log(TraceEventType.Information, "Connection pooling " + (DisableConnexionPooling ? "disabled" : "enabled"));
+
+            }
         }
 
         /// <summary>
@@ -182,6 +193,10 @@ namespace OsamesMicroOrm
         {
             try
             {
+
+                if (DisableConnexionPooling && BackupConnection != null)
+                    return BackupConnection;
+
                 System.Data.Common.DbConnection adoConnection = DbProviderFactory.CreateConnection();
                 // ReSharper disable PossibleNullReferenceException
                 adoConnection.ConnectionString = ConnectionString;
@@ -193,8 +208,10 @@ namespace OsamesMicroOrm
                     // we just opened our first connection!
                     // Keep a reference to it and keep this backup connexion unused for now
                     BackupConnection = new OOrmDbConnectionWrapper(adoConnection, true);
-                    // Try to get a second connection and return it
-                    return CreateConnection();
+
+                    // When connection pooling is active, try to get a second connection and return it
+                    // when it's disabled, return backup connexion
+                    return DisableConnexionPooling ? BackupConnection : CreateConnection();
                 }
                 // Not the first connection
                 OOrmDbConnectionWrapper pooledConnection = new OOrmDbConnectionWrapper(adoConnection, false);
@@ -284,22 +301,17 @@ namespace OsamesMicroOrm
         /// Rollbacks and closes a transaction.
         /// </summary>
         /// <param name="transaction_">Transaction to manage</param>
-        /// <param name="closeConnexion_">Si true ferme la connexion</param>
-        public void RollbackTransaction(OOrmDbTransactionWrapper transaction_, bool closeConnexion_ = false)
+        public void RollbackTransaction(OOrmDbTransactionWrapper transaction_)
         {
             try
             {
                 if (transaction_ == null) return;
-
                 transaction_.AdoDbTransaction.Rollback();
-                if (closeConnexion_)
-                    transaction_.ConnectionWrapper.AdoDbConnection.Close();
-                //transaction_.AdoDbTransaction.Connection.Close();
             }
             catch (InvalidOperationException ex)
             {
                 Logger.Log(TraceEventType.Critical, ex.ToString());
-                throw new Exception("@HandleTransaction - " + ex.Message);
+                throw new Exception("@RollbackTransaction - " + ex.Message);
             }
         }
 
@@ -317,7 +329,7 @@ namespace OsamesMicroOrm
             catch (InvalidOperationException ex)
             {
                 Logger.Log(TraceEventType.Critical, ex.ToString());
-                throw new Exception("beginTransaction - " + ex.Message);
+                throw new Exception("BeginTransaction - " + ex.Message);
             }
         }
 

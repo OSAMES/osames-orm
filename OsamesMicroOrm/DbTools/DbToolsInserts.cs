@@ -54,7 +54,7 @@ namespace OsamesMicroOrm.DbTools
             // 1. détermine les champs à mettre à jour et remplit la stringbuilder sbFieldsToInsert
             DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(dataObject_, mappingDictionariesContainerKey_, lstDataObjectColumnNames_, out lstDbColumnNames, out lstAdoParameters_);
 
-            int iCountMinusOne = lstDbColumnNames.Count -1;
+            int iCountMinusOne = lstDbColumnNames.Count - 1;
             for (int i = 0; i < iCountMinusOne; i++)
             {
                 sbFieldsToInsert.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(", ");
@@ -87,32 +87,34 @@ namespace OsamesMicroOrm.DbTools
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             long newRecordId_ = 0;
+
+            FormatSqlForInsert(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, out sqlCommand, out adoParameters, out strErrorMsg_);
+
+            if (transaction_ != null)
+            {
+                // Présence d'une transaction
+                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters, out newRecordId_) == 0)
+                    Logger.Log(TraceEventType.Warning, "Query didn't insert any row: " + sqlCommand);
+                return newRecordId_;
+            }
+
+            // Pas de transaction
+            OOrmDbConnectionWrapper conn = null;
             try
             {
-                FormatSqlForInsert(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, out sqlCommand, out adoParameters, out strErrorMsg_);
+                conn = DbManager.Instance.CreateConnection();
 
-                if (transaction_ != null)
-                {
-                    // Présence d'une transaction
-                    if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters, out newRecordId_) == 0)
-                        Logger.Log(TraceEventType.Warning, "Query didn't insert any row: " + sqlCommand);
-                    return newRecordId_;
-                }
-
-                // Pas de transaction
-                using (OOrmDbConnectionWrapper conn = DbManager.Instance.CreateConnection())
-                {
-                    if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters, out newRecordId_) == 0)
-                        Logger.Log(TraceEventType.Warning, "Query didn't insert any row: " + sqlCommand);
-                    return newRecordId_;
-                }
+                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters, out newRecordId_) == 0)
+                    Logger.Log(TraceEventType.Warning, "Query didn't insert any row: " + sqlCommand);
+                return newRecordId_;
             }
-            catch (Exception ex)
+            finally
             {
-                
-                throw;
+                // Si c'est la connexion de backup alors on ne la dipose pas pour usage ultérieur.
+                if (!conn.IsBackup)
+                    conn.Dispose();
             }
-            
+
         }
     }
 }

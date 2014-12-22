@@ -56,10 +56,10 @@ namespace TestOsamesMicroOrm
                 return;
 
             // Connexion associée
-            OOrmDbConnectionWrapper connection = _transaction.ConnectionWrapper;
+            //OOrmDbConnectionWrapper connection = _transaction.ConnectionWrapper;
             // Libération des ressources
             DbManager.Instance.RollbackTransaction(_transaction);
-            DbManager.Instance.DisposeConnection(connection);
+            //DbManager.Instance.DisposeConnection(connection);
             _transaction = null;
         }
 
