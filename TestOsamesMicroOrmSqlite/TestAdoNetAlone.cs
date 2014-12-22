@@ -132,5 +132,62 @@ namespace TestOsamesMicroOrmSqlite
                 throw;
             }
         }
+
+        /// <summary>
+        /// Test de bas niveau du Insert n'utilisant que ADO.NET.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Benjamin Nolmans")]
+        [TestCategory("MsSql")]
+        [TestCategory("ADO.NET Insert")]
+        [TestCategory("No Transaction")]
+        public void TestInsertSqLitePureAdoNetWithoutTransaction()
+        {
+            try
+            {
+                using (var conn1 = DbManager.Instance.DbProviderFactory.CreateConnection())
+                {
+                    conn1.ConnectionString = DbManager.ConnectionString;
+                    conn1.Open();
+                    using (DbCommand comm = DbManager.Instance.DbProviderFactory.CreateCommand())
+                    {
+                        comm.CommandText = "INSERT INTO Customer (LastName, FirstName, Email) VALUES (@lastname, @firstname, @email); select last_insert_rowid();";
+                        comm.CommandType = CommandType.Text;
+                        comm.Connection = conn1;
+
+                        DbParameter param1 = comm.CreateParameter();
+                        param1.Direction = ParameterDirection.Input;
+                        param1.ParameterName = "@lastname";
+                        param1.Value = "Grey";
+                        comm.Parameters.Add(param1);
+
+                        DbParameter param2 = comm.CreateParameter();
+                        param2.Direction = ParameterDirection.Input;
+                        param2.ParameterName = "@firstname";
+                        param2.Value = "Paul";
+                        comm.Parameters.Add(param2);
+
+                        DbParameter param3 = comm.CreateParameter();
+                        param3.Direction = ParameterDirection.Input;
+                        param3.ParameterName = "@email";
+                        param3.Value = "Paul@Grey.com";
+                        comm.Parameters.Add(param3);
+
+                        object lastInsertedRowId = comm.ExecuteScalar();
+
+                        Console.WriteLine("New record ID: {0}, expected number > 1", lastInsertedRowId);
+                        Assert.AreNotEqual("", lastInsertedRowId.ToString());
+                        Assert.AreNotEqual("0", lastInsertedRowId.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                // relancer l'exception telle que catchée comme ça le test est correctement en erreur
+                throw;
+            }
+        }
     }
 }
