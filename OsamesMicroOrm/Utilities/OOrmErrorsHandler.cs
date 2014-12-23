@@ -26,15 +26,15 @@ namespace OsamesMicroOrm.Utilities
     /// <summary>
     /// Boîte à outils pour la gestion des messages d'erreurs.
     /// </summary>
-    internal static class OOrmErrorsHandler
+    public static class OOrmErrorsHandler
     {
         // TODO ce n'est pas bon d'avoir cette variable static (usage concurrent).
         private static KeyValuePair<ErrorType, string> ErrorMsg;
 
         /// <summary>
-        /// Dictionnaire interne des erreurs au format à préciser - TODO
+        /// Dictionnaire interne des erreurs au format suivant : clé : code d'erreur "E_XXX". Valeur : code HRESULT "0x1234" et texte.
         /// </summary>
-        internal static Dictionary<string, KeyValuePair<string, string>> HResultCode = new Dictionary<string, KeyValuePair<string, string>>();
+        public static readonly Dictionary<string, KeyValuePair<string, string>> HResultCode = new Dictionary<string, KeyValuePair<string, string>>();
 
         /// <summary>
         /// Cosntructor
@@ -46,15 +46,12 @@ namespace OsamesMicroOrm.Utilities
 
         private static void ReadHResultCodesFromResources(string resource_, out Dictionary<string, KeyValuePair<string, string>> hresultCodes_)
         {
-            hresultCodes_ = new Dictionary<string, KeyValuePair<string, string>>();
-
             using (Stream str = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(OOrmErrorsHandler).Assembly.GetName().Name + ".Resources." + resource_))
             {
+                hresultCodes_ = new Dictionary<string, KeyValuePair<string, string>>();
                 //null if resource doesn't exist
                 if (str == null)
                     return;
-
-                string[] row = new string[2];
 
                 using (StreamReader sr = new StreamReader(str))
                 {
@@ -67,26 +64,28 @@ namespace OsamesMicroOrm.Utilities
                     while ((currentLine = sr.ReadLine()) != null)
                     {
                         //Insert to kvp
-                        row = currentLine.Split(';');
-                        if (string.IsNullOrWhiteSpace(row[1].Substring(1, row[1].Length - 2)) || string.IsNullOrWhiteSpace(row[0].Substring(1, row[0].Length - 2)))
+                        string[] row = currentLine.Split(';');
+                        if(row.Length > 0 && row.Length < 2)
+                            throw new Exception("Incorrect line : needs at least E_CODE and HRESULT hexa code");
+                        string eCode = row[1].Substring(1, row[1].Length - 2);
+                        string hexCode = row[0].Substring(1, row[0].Length - 2);
+                        if (string.IsNullOrWhiteSpace(eCode) || string.IsNullOrWhiteSpace(hexCode))
                             continue;
-                        hresultCodes_.Add(row[1].Substring(1, row[1].Length - 2), new KeyValuePair<string, string>(row[0].Substring(1, row[0].Length - 2), row[2].Substring(1, row[2].Length - 2)));
+                        hresultCodes_.Add(eCode, new KeyValuePair<string, string>(hexCode, row[2].Substring(1, row[2].Length - 2)));
                     }
                 }
             }
         }
 
         /// <summary>
-        /// return a key value pair with hresult name and description
+        /// return a key value pair with hresult hexa code and description
         /// </summary>
         /// <param name="code_"></param>
         /// <returns></returns>
         internal static string FindHResultByCode(string code_)
         {
-            //int temporyvar = (int) new System.ComponentModel.Int32Converter().ConvertFromString(code_);
-            if (HResultCode.ContainsKey(code_))
-                return string.Format("{0} ({1})", HResultCode[code_].Value, HResultCode[code_].Key);
-            return string.Format("No code {0} found.", code_);
+            return HResultCode.ContainsKey(code_) ? string.Format("{0} ({1})", HResultCode[code_].Value, HResultCode[code_].Key) 
+                                                  : string.Format("No code {0} found.", code_);
         }
 
 
