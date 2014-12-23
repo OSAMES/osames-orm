@@ -28,7 +28,7 @@ namespace OsamesMicroOrm
     /// <summary>
     /// Generic ADO.NET level, multi thread class, that deals with database providers and database query execution.
     /// </summary>
-    public sealed class DbManager
+    public sealed class DbManager : IDisposable
     {
 
         #region DECLARATIONS
@@ -165,19 +165,30 @@ namespace OsamesMicroOrm
         #region DESTRUCTOR
 
         /// <summary>
-        /// Destructor. Sets internal static variables that could be linked to unmanaged resources to null.
+        /// Destructor. Calls Dispose().
         /// </summary>
         ~DbManager()
+        {
+           Dispose();
+        }
+
+        /// <summary>
+        /// Closes backup connection that is managed by DbManager, if case applies.
+        /// Sets singleton to null.
+        /// </summary>
+        public void Dispose()
         {
             try
             {
                 if (BackupConnection != null && BackupConnection.AdoDbConnection.State == ConnectionState.Open)
                     BackupConnection.AdoDbConnection.Close();
             }
-            catch (ObjectDisposedException)
+            catch (InvalidOperationException)
             {
+                // ObjectDisposedException etc
             }
-            DbProviderFactory = null;
+
+            Singleton = null;
         }
 
         #endregion
@@ -229,29 +240,9 @@ namespace OsamesMicroOrm
                 }
                 // could not get a second connection
                 // use backup connection
-                // We may have to reopen it because we waited a long time before using it
-                if (BackupConnection.AdoDbConnection.State != ConnectionState.Open)
-                {
-                    BackupConnection.AdoDbConnection.ConnectionString = ConnectionString;
-                    BackupConnection.AdoDbConnection.Open();
-                }
-
                 return BackupConnection;
             }
 
-        }
-
-        /// <summary>
-        /// Fermeture d'une connexion et dispose/mise à null de l'objet.
-        /// </summary>
-        /// <param name="connexion_">connexion</param>
-        /// <returns>Ne renvoie rien</returns>
-        internal void DisposeConnection(OOrmDbConnectionWrapper connexion_)
-        {
-            if (connexion_ == null) return;
-
-            connexion_.AdoDbConnection.Close();
-            connexion_ = null;
         }
 
         #endregion
@@ -328,9 +319,11 @@ namespace OsamesMicroOrm
             }
             catch (InvalidOperationException ex)
             {
-                Logger.Log(TraceEventType.Critical, ex.ToString());
+                // this also catches ObjectDisposedException
+                Logger.Log(TraceEventType.Stop, ex.ToString());
                 throw new Exception("BeginTransaction - " + ex.Message);
             }
+            
         }
 
         #endregion

@@ -52,22 +52,25 @@ namespace TestOsamesMicroOrm
         [TestCleanup]
         public virtual void TestCleanup()
         {
-            if(_transaction == null)
-                return;
+            if (_transaction != null)
+            {
+                // Connexion associée
+                OOrmDbConnectionWrapper connection = _transaction.ConnectionWrapper;
+                // Rollback de la transaction et fermeture de sa connexion
+                DbManager.Instance.RollbackTransaction(_transaction);
+                connection.AdoDbConnection.Close();
+                _transaction = null;
+            }
 
-            // Connexion associée
-            //OOrmDbConnectionWrapper connection = _transaction.ConnectionWrapper;
-            // Libération des ressources
-            DbManager.Instance.RollbackTransaction(_transaction);
-            //DbManager.Instance.DisposeConnection(connection);
-            _transaction = null;
+            // Cleanup complet pour que le prochain test initialise de nouveau le pool : fermeture aussi de la connexion de backup
+            DbManager.Instance.Dispose();
         }
 
         /// <summary>
         /// Initialisation de la connexion et ouverture d'une transaction.
         /// Ne doit pas être appelé si la base de données n'est pas copiée en post-deployment item.
         /// </summary>
-        public virtual void InitializeDbConnexion()
+        public void InitializeDbConnexion()
         {
             _transaction = DbManager.Instance.BeginTransaction();
         }
