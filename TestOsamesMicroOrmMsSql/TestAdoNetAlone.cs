@@ -126,7 +126,7 @@ namespace TestOsamesMicroOrmMsSql
         /// Pool de connexions de 10 connexions.
         /// On doit tomber sur la connexion de secours et l'utiliser.
         /// 
-        /// /!\ TU OK (lancé seul ou à plusieurs) mais ignoré car met 30s à s'exécuter.
+        /// /!\ TU OK mais pas toujours (lancé seul ou à plusieurs) et ignoré car met 15s à s'exécuter.
         /// </summary>
         [TestMethod]
         [TestCategory("MsSql")]
@@ -143,8 +143,7 @@ namespace TestOsamesMicroOrmMsSql
         /// Pool de connexions de 1 connexion.
         /// On doit tomber sur la connexion de secours et l'utiliser.
         /// 
-        /// /!\ Ce TU met 10 secondes pour s'exécuter et ne fonctionne pas si on lance tous les TUs, dans ce cas une connexion de secours a déjà 
-        /// été initialisée avant d'arriver à ce TU. Pourquoi a t-on une exception mal gérée ??
+        /// /!\ TU OK (lancé seul ou à plusieurs) mais ignoré car met 12s à s'exécuter.
         /// </summary>
         [TestMethod]
         [TestCategory("MsSql")]
@@ -167,19 +166,21 @@ namespace TestOsamesMicroOrmMsSql
             try
             {
                 // Pool de N connexions.
-                // en plus, réduction du temps d'exécution du TU par un petit timeout de 5s
+                // en plus, réduction du temps d'exécution du TU par un petit timeout de 3s
                 string cs = DbManager.ConnectionString;
-                ConfigurePool(ref cs, testPoolSize_, 5);
+                ConfigurePool(ref cs, testPoolSize_, 3);
                 // On réassigne à DbManager.
                 DbManager.ConnectionString = cs;
-                for (int i = 0; i < testPoolSize_ + 5; i++)
+                const int iAdditionalConnectionsAskedFor = 3;
+                for (int i = 0; i < testPoolSize_ + iAdditionalConnectionsAskedFor; i++)
                 {
                     // 1ère boucle : ouverture de toutes les connexions
                     lstConnections.Add(DbManager.Instance.CreateConnection());
 
                 }
-                for (int i = 0; i < testPoolSize_ + 5; i++)
+                for (int i = 0; i < testPoolSize_ + iAdditionalConnectionsAskedFor; i++)
                 {
+                    Console.WriteLine("[" + i + "]" + lstConnections[i]);
                     // 2e boucle : vérification du booléen sur chaque connexion
                     if (i < backupConnexionExpectedIndex_)
                     {
