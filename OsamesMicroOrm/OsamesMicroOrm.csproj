@@ -58,15 +58,17 @@
     <Compile Include="DbTools\DbToolsUpdates.cs" />
     <Compile Include="OOrmDbTransactionWrapper.cs" />
     <Compile Include="Logging\Logger.cs" />
+    <Compile Include="OOrmHandledException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\Common.cs" />
+    <Compile Include="Utilities\HresultEnum.cs" />
     <Compile Include="Utilities\MappingTools.cs" />
     <Compile Include="Utilities\OOrmErrorsHandler.cs" />
     <Compile Include="Utilities\XmlTools.cs" />
     <Compile Include="Utilities\XmlValidator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
+    <None Include="OsamesMicroOrmClassDiagram.cd" />
     <None Include="Config\OsamesOrmDbConnexions.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -98,6 +100,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
