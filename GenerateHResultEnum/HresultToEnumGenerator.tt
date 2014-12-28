@@ -1,5 +1,4 @@
 ﻿<#@ template language="C#" debug="true" hostSpecific="true" #>
-<#@ include file="T4Toolbox.tt" #>
 <#@ output extension=".cs" encoding="utf-8"#>
 <#@ Assembly Name="$(SolutionDir)OsamesMicroOrm\$(OutDir)OsamesMicroOrm.dll" #>
 <#@ import namespace="System.Diagnostics" #>
@@ -7,10 +6,7 @@
 <#@ import namespace="System.Text.RegularExpressions" #>
 <#@ import namespace="OsamesMicroOrm.Utilities" #>
 <#
-	SampleTemplate template = new SampleTemplate();
-    template.Output.File = @"Utilities\HresultEnum.cs";
-    template.Output.Project = @"..\OsamesMicroOrm\OsamesMicroOrm.csproj";
-    template.Render();
+
 #>
 using System.CodeDom.Compiler;
 
@@ -34,23 +30,9 @@ namespace GenerateHResultEnum : Template
 }
 
 <#+
-      private string Pascalize(object value)
+    private string Pascalize(object value)
     {
         Regex rx = new Regex(@"(?:[^a-zA-Z0-9]*)(?<first>[a-zA-Z0-9])(?<reminder>[a-zA-Z0-9]*)(?:[^a-zA-Z0-9]*)");
         return rx.Replace(value.ToString(), m => m.Groups["first"].ToString().ToUpper() + m.Groups["reminder"].ToString().ToLower());
-    }
-
-	 public class SampleTemplate : Template
-    {
-        public override string TransformText()
-        {
-           foreach (var eCode in OOrmErrorsHandler.HResultCode.Keys)
-		{
-#>
-			<#= Pascalize(eCode) + ",\r\n" #>			
-<#
-		}
-            return this.GenerationEnvironment.ToString();
-        }
     }
 #>
