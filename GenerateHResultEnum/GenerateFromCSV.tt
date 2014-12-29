@@ -32,11 +32,9 @@ namespace OsamesMicroOrm
                 string[] keyValue = line.Split(';');
                 string hresulthexa = keyValue[0];
                 string hresultcode = keyValue[1];
-#>
-<#
-                if (hresultcode == "\"\"" )
-                    hresultcode = "";
-                else {
+
+                if (hresultcode != "\"\"" )
+                {
 #>
         <#=  Pascalize(hresultcode) + ",\r\n" #>	
 <#
