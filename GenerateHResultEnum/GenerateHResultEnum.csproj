@@ -63,7 +63,7 @@
   <ItemGroup>
     <Content Include="GenerateFromCSV.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>GenerateFromCSV.cs</LastGenOutput>
+      <LastGenOutput>..\OsamesMicroOrm\Utilities\HresultEnum.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
