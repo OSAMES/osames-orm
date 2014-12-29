@@ -75,18 +75,6 @@ namespace OsamesMicroOrm.Utilities
                 }
             }
         }
-
-        /// <summary>
-        /// return a key value pair with hresult hexa code and description
-        /// </summary>
-        /// <param name="codeFromEnum_"></param>
-        /// <returns></returns>
-        [Obsolete("à remplacer par l'appel de la fonction FindHResultByCode avec HResultEnum code_")]
-        internal static string FindHResultByCode(string codeFromEnum_)
-        {
-            return HResultCode.ContainsKey(codeFromEnum_) ? string.Format("{0} ({1})", HResultCode[codeFromEnum_].Value, HResultCode[codeFromEnum_].Key)
-                                                  : string.Format("No code {0} found.", codeFromEnum_);
-        }
         /// <summary>
         /// return a key value pair with hresult hexa code and description
         /// </summary>

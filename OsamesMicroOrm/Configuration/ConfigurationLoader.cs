@@ -133,10 +133,10 @@ namespace OsamesMicroOrm.Configuration
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEY")+ "["+mappingDictionaryName_ + "]");
+                throw new Exception(OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_Nomappingkey) + "["+mappingDictionaryName_ + "]");
             mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
             if (mappingObjectSet == null)
-                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEYANDPROPERTY") + "[No property "+ propertyName_ +" in dictionary "+ mappingDictionaryName_ +"]" );
+                throw new Exception(OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_Nomappingkeyandproperty) + "[No property "+ propertyName_ +" in dictionary "+ mappingDictionaryName_ +"]" );
 
             return resultColumnName;
         }
@@ -153,11 +153,11 @@ namespace OsamesMicroOrm.Configuration
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEY") + "[" + mappingDictionaryName_ + "]");
+                throw new Exception(OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_Nomappingkey) + "[" + mappingDictionaryName_ + "]");
             string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
 
             if (resultPropertyName == null)
-                throw new Exception(OOrmErrorsHandler.FindHResultByCode("E_NOMAPPINGKEY") + "[key: "+ mappingDictionaryName_ + ", Col.: " + dbColumnName_ +"]");
+                throw new Exception(OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_Nomappingkey) + "[key: " + mappingDictionaryName_ + ", Col.: " + dbColumnName_ + "]");
 
             return resultPropertyName;
         }
