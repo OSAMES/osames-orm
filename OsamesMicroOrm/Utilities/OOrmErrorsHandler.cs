@@ -26,10 +26,9 @@ namespace OsamesMicroOrm.Utilities
     /// <summary>
     /// Boîte à outils pour la gestion des messages d'erreurs.
     /// </summary>
-    public static class OOrmErrorsHandler
+    public class OOrmErrorsHandler
     {
-        // TODO ce n'est pas bon d'avoir cette variable static (usage concurrent).
-        private static KeyValuePair<ErrorType, string> ErrorMsg;
+        private KeyValuePair<ErrorType, string> ErrorMsg;
 
         /// <summary>
         /// Dictionnaire interne des erreurs au format suivant : clé : code d'erreur "E_XXX". Valeur : code HRESULT "0x1234" et texte.
@@ -82,9 +81,10 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <param name="code_"></param>
         /// <returns></returns>
-        internal static string FindHResultByCode(string code_)
+        internal static string FindHResultByCode(HResultEnum code_)
         {
-            return HResultCode.ContainsKey(code_) ? string.Format("{0} ({1})", HResultCode[code_].Value, HResultCode[code_].Key) 
+            string code = code_.ToString();
+            return HResultCode.ContainsKey(code) ? string.Format("{0} ({1})", HResultCode[code].Value, HResultCode[code].Key) 
                                                   : string.Format("No code {0} found.", code_);
         }
 
@@ -94,13 +94,13 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <param name="errorType"></param>
         /// <param name="message_"></param>
-        internal static void AddErrorMessage(ErrorType errorType, string message_)
+        internal  void AddErrorMessage(ErrorType errorType, string message_)
         {
             // TODO à mon avis supprimer.
             ErrorMsg = new KeyValuePair<ErrorType, string>(errorType, DateTime.Now + " :: " + message_);
         }
 
-        internal static void DisplayErrorMessageWinforms()
+        internal void DisplayErrorMessageWinforms()
         {
             System.Windows.Forms.MessageBoxIcon errorBoxIcon;
              // TODO ne plus utiliser la variable static ErroMsg mais utiliser un paramètre.
