@@ -26,7 +26,7 @@ namespace TestOsamesMicroOrm.Utilities
         {
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
-            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_Columndoesnotexist);
+            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_COLUMNDOESNOTEXIST);
             Console.WriteLine(result);
             Assert.IsNotNull(result);
         }

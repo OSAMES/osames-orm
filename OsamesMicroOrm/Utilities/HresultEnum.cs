@@ -11,73 +11,75 @@ using System.CodeDom.Compiler;
 namespace OsamesMicroOrm
 {
     /// <summary>
-	/// Auto generated date: 12/29/2014 14:38:29
+	/// Auto generated date: 12/29/2014 17:17:20
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
     public enum HResultEnum
     {
-        E_Begintransactionfail,
-	
-        E_Committransactionfailed,
-	
-        E_Rollbacktransactionfailed,
-	
-        E_Executereaderfail,
-	
-        E_Createdataadapterfailed,
-	
-        E_Columndoesnotexist,
-	
-        E_Norowupdated,
-	
-        E_Typenotdefinedbmappingattribute,
-	
-        E_Typedefinesdbmappingattributemoreonetime,
-	
-        E_Typedefinesemptydbmappingattribute,
-	
-        E_Xmlvalidationerrors,
-	
-        E_Namespacesschemascountmismatch,
-	
-        E_Nonamespaceinschema,
-	
-        E_Nullvalue,
-	
-        E_Norulesforgivenparameter,
-	
-        E_Xmlnameattributemorethanonetime,
-	
-        E_Filltemplatesdictionnaryerror,
-	
-        E_Noactiveconnectiondefined,
-	
-        E_Noactiveconnectionfound,
-	
-        E_Noactiveconnectionprovidername,
-	
-        E_Providermissing,
-	
-        E_Providernotmatch,
-	
-        E_Loadconfiguration,
-	
-        E_Activeconnectionnotfoundinactivecostring,
-	
-        E_Noprovidernameforconnectionname,
-	
-        E_Providernotinstalled,
-	
-        E_Noconnexionstringdefined,
-	
-        E_Nomappingkeyandcolumn,
-	
-        E_Nomappingkey,
-	
-        E_Templateanalysiserror,
-	
-        E_Nomappingkeyandproperty,
-	
+        // ReSharper disable InconsistentNaming
+        E_BEGINTRANSACTIONFAIL,
+	                    
+        E_COMMITTRANSACTIONFAILED,
+	                    
+        E_ROLLBACKTRANSACTIONFAILED,
+	                    
+        E_EXECUTEREADERFAIL,
+	                    
+        E_CREATEDATAADAPTERFAILED,
+	                    
+        E_COLUMNDOESNOTEXIST,
+	                    
+        E_NOROWUPDATED,
+	                    
+        E_TYPENOTDEFINEDBMAPPINGATTRIBUTE,
+	                    
+        E_TYPEDEFINESDBMAPPINGATTRIBUTEMOREONETIME,
+	                    
+        E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE,
+	                    
+        E_XMLVALIDATIONERRORS,
+	                    
+        E_NAMESPACESSCHEMASCOUNTMISMATCH,
+	                    
+        E_NONAMESPACEINSCHEMA,
+	                    
+        E_NULLVALUE,
+	                    
+        E_NORULESFORGIVENPARAMETER,
+	                    
+        E_XMLNAMEATTRIBUTEMORETHANONETIME,
+	                    
+        E_FILLTEMPLATESDICTIONNARYERROR,
+	                    
+        E_NOACTIVECONNECTIONDEFINED,
+	                    
+        E_NOACTIVECONNECTIONFOUND,
+	                    
+        E_NOACTIVECONNECTIONPROVIDERNAME,
+	                    
+        E_PROVIDERMISSING,
+	                    
+        E_PROVIDERNOTMATCH,
+	                    
+        E_LOADCONFIGURATION,
+	                    
+        E_ACTIVECONNECTIONNOTFOUNDINACTIVECOSTRING,
+	                    
+        E_NOPROVIDERNAMEFORCONNECTIONNAME,
+	                    
+        E_PROVIDERNOTINSTALLED,
+	                    
+        E_NOCONNEXIONSTRINGDEFINED,
+	                    
+        E_NOMAPPINGKEYANDCOLUMN,
+	                    
+        E_NOMAPPINGKEY,
+	                    
+        E_TEMPLATEANALYSISERROR,
+	                    
+        E_NOMAPPINGKEYANDPROPERTY,
+	                    
+        // ReSharper disable InconsistentNaming
     }
 } 
 

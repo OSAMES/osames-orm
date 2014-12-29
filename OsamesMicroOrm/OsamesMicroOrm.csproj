@@ -60,11 +60,6 @@
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="OOrmHandledException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="T4 templates\..\Utilities\HresultEnum.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GenerateFromCSV.tt</DependentUpon>
-    </Compile>
     <Compile Include="Utilities\Common.cs" />
     <Compile Include="Utilities\HresultEnum.cs" />
     <Compile Include="Utilities\MappingTools.cs" />
