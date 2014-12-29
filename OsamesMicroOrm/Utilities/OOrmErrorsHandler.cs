@@ -70,7 +70,7 @@ namespace OsamesMicroOrm.Utilities
                         string hexCode = row[0].Substring(1, row[0].Length - 2);
                         if (string.IsNullOrWhiteSpace(eCode) || string.IsNullOrWhiteSpace(hexCode))
                             continue;
-                        hresultCodes_.Add(eCode, new KeyValuePair<string, string>(hexCode, row[2].Substring(1, row[2].Length - 2)));
+                        hresultCodes_.Add(eCode.ToUpperInvariant(), new KeyValuePair<string, string>(hexCode, row[2].Substring(1, row[2].Length - 2)));
                     }
                 }
             }
@@ -79,11 +79,22 @@ namespace OsamesMicroOrm.Utilities
         /// <summary>
         /// return a key value pair with hresult hexa code and description
         /// </summary>
+        /// <param name="codeFromEnum_"></param>
+        /// <returns></returns>
+        [Obsolete("à remplacer par l'appel de la fonction FindHResultByCode avec HResultEnum code_")]
+        internal static string FindHResultByCode(string codeFromEnum_)
+        {
+            return HResultCode.ContainsKey(codeFromEnum_) ? string.Format("{0} ({1})", HResultCode[codeFromEnum_].Value, HResultCode[codeFromEnum_].Key)
+                                                  : string.Format("No code {0} found.", codeFromEnum_);
+        }
+        /// <summary>
+        /// return a key value pair with hresult hexa code and description
+        /// </summary>
         /// <param name="code_"></param>
         /// <returns></returns>
         internal static string FindHResultByCode(HResultEnum code_)
         {
-            string code = code_.ToString();
+            string code = code_.ToString().ToUpperInvariant();
             return HResultCode.ContainsKey(code) ? string.Format("{0} ({1})", HResultCode[code].Value, HResultCode[code].Key) 
                                                   : string.Format("No code {0} found.", code_);
         }
