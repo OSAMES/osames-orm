@@ -1,0 +1,1 @@
+TextTransform.exe -out ..\OsamesMicroOrm\Utilities\HresultEnum.cs ..\GenerateHResultEnum\GenerateFromCSV.tt

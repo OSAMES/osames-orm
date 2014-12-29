@@ -37,7 +37,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GenerateFromCSV.cs">
+    <Compile Include="..\OsamesMicroOrm\Utilities\HresultEnum.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>GenerateFromCSV.tt</DependentUpon>
