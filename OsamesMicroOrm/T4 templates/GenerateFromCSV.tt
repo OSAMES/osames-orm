@@ -22,7 +22,7 @@ namespace OsamesMicroOrm
     {
 <#
         var path = Host.ResolvePath(string.Empty);
-        var file = Path.Combine(path, @"..\OsamesMicroOrm\Resources\HResult Orm.csv");
+        var file = Path.Combine(path, @"..\Resources\HResult Orm.csv");
         using (StreamReader reader = new StreamReader(file))
         {
             reader.ReadLine();
