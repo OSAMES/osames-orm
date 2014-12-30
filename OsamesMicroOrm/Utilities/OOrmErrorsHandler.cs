@@ -43,6 +43,11 @@ namespace OsamesMicroOrm.Utilities
             ReadHResultCodesFromResources("HResult Orm.csv", out HResultCode);
         }
 
+        /// <summary>
+        /// Lis les hresult dans la resource embarquée de l'ORM et places ces données dans un dictionnaire.
+        /// </summary>
+        /// <param name="resource_"></param>
+        /// <param name="hresultCodes_"></param>
         private static void ReadHResultCodesFromResources(string resource_, out Dictionary<string, KeyValuePair<string, string>> hresultCodes_)
         {
             using (Stream str = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(OOrmErrorsHandler).Assembly.GetName().Name + ".Resources." + resource_))
@@ -89,7 +94,8 @@ namespace OsamesMicroOrm.Utilities
 
 
         /// <summary>
-        /// 
+        /// Ajoute dans une liste de type dictionnaire une erreur.
+        /// Cette fonction crée un listing des erreurs mais dans un dictionnaire.
         /// </summary>
         /// <param name="errorType"></param>
         /// <param name="message_"></param>
@@ -99,17 +105,20 @@ namespace OsamesMicroOrm.Utilities
             ErrorMsg = new KeyValuePair<ErrorType, string>(errorType, DateTime.Now + " :: " + message_);
         }
 
-        internal void DisplayErrorMessageWinforms()
+        /// <summary>
+        /// Permet d'affficher les erreurs pour un contexte de type winform ou wpf
+        /// </summary>
+        internal void DisplayErrorMessageWinforms(ErrorType errorType_)
         {
             System.Windows.Forms.MessageBoxIcon errorBoxIcon;
-             // TODO ne plus utiliser la variable static ErroMsg mais utiliser un paramètre.
-            switch (ErrorMsg.Key)
+            switch (errorType_)
             {
                     case ErrorType.CRITICAL: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Stop; break;
                     case ErrorType.ERROR: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Error; break;
                     case ErrorType.WARNING: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Warning; break;
                     default: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.None; break;
             }
+            //TODO à voir si on utilise tjr le kvp ErrorMsg ou bien si on passe via paramètre un message formaté en amont
             System.Windows.Forms.MessageBox.Show(ErrorMsg.Value, "ORM Message", System.Windows.Forms.MessageBoxButtons.OK, errorBoxIcon);
         }
     }
