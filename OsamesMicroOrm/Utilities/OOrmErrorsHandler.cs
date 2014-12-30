@@ -92,7 +92,6 @@ namespace OsamesMicroOrm.Utilities
                                                   : string.Format("No code {0} found.", code_);
         }
 
-
         /// <summary>
         /// Ajoute dans une liste de type dictionnaire une erreur.
         /// Cette fonction crée un listing des erreurs mais dans un dictionnaire.
@@ -120,6 +119,28 @@ namespace OsamesMicroOrm.Utilities
             }
             //TODO à voir si on utilise tjr le kvp ErrorMsg ou bien si on passe via paramètre un message formaté en amont
             System.Windows.Forms.MessageBox.Show(ErrorMsg.Value, "ORM Message", System.Windows.Forms.MessageBoxButtons.OK, errorBoxIcon);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hresulterror_"></param>
+        /// <param name="extendErrorMsg_"></param>
+        /// <returns></returns>
+        internal static string FormatCustomerError(string hresulterror_, string extendErrorMsg_ = null)
+        {
+            return string.Format(DateTime.Now + " :: {0} : {1}", hresulterror_, extendErrorMsg_);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="errorCode_"></param>
+        /// <param name="extendErrorMsg_"></param>
+        /// <returns></returns>
+        public static string ProcessOrmException(HResultEnum errorCode_, string extendErrorMsg_ = null)
+        {
+            return FormatCustomerError(FindHResultByCode(errorCode_), extendErrorMsg_);
         }
     }
 
