@@ -51,7 +51,7 @@ namespace TestOsamesMicroOrm.Utilities
         {
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
-            OsamesMicroOrm.Utilities.OOrmErrorsHandler.WriteToWindowsEventLog(HResultEnum.E_NOACTIVECONNECTIONDEFINED, new EventLogEntryType(), "Custom message");
+            OsamesMicroOrm.Utilities.OOrmErrorsHandler.WriteToWindowsEventLog(HResultEnum.E_NOACTIVECONNECTIONDEFINED, EventLogEntryType.Error, "Custom message");
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace TestOsamesMicroOrm.Utilities
         {
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
-            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, new EventLogEntryType(), "Custom message");
+            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, EventLogEntryType.Error, "Custom message");
             Console.WriteLine(result);
             Assert.IsNotNull(result);
         }

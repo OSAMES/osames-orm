@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
+using System.Security;
 
 namespace OsamesMicroOrm.Utilities
 {
@@ -32,7 +33,7 @@ namespace OsamesMicroOrm.Utilities
         private KeyValuePair<ErrorType, string> ErrorMsg;
 
         const string SSource = "OsamesORM";
-        string SLog = "Application";
+        const string SLog = "Application";
         string sEvent;
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace OsamesMicroOrm.Utilities
                     {
                         //Insert to kvp
                         string[] row = currentLine.Split(';');
-                        if(row.Length > 0 && row.Length < 2)
+                        if (row.Length > 0 && row.Length < 2)
                             throw new Exception("Incorrect line : needs at least E_CODE and HRESULT hexa code");
                         string eCode = row[1].Substring(1, row[1].Length - 2);
                         string hexCode = row[0].Substring(1, row[0].Length - 2);
@@ -93,7 +94,7 @@ namespace OsamesMicroOrm.Utilities
         internal static string FindHResultByCode(HResultEnum code_)
         {
             string code = code_.ToString().ToUpperInvariant();
-            return HResultCode.ContainsKey(code) ? string.Format("{0} ({1})", HResultCode[code].Value, HResultCode[code].Key) 
+            return HResultCode.ContainsKey(code) ? string.Format("{0} ({1})", HResultCode[code].Value, HResultCode[code].Key)
                                                   : string.Format("No code {0} found.", code_);
         }
 
@@ -103,7 +104,7 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <param name="errorType"></param>
         /// <param name="message_"></param>
-        internal  void AddErrorMessage(ErrorType errorType, string message_)
+        internal void AddErrorMessage(ErrorType errorType, string message_)
         {
             // TODO à mon avis supprimer.
             ErrorMsg = new KeyValuePair<ErrorType, string>(errorType, DateTime.Now + " :: " + message_);
@@ -117,10 +118,10 @@ namespace OsamesMicroOrm.Utilities
             System.Windows.Forms.MessageBoxIcon errorBoxIcon;
             switch (errorType_)
             {
-                    case ErrorType.CRITICAL: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Stop; break;
-                    case ErrorType.ERROR: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Error; break;
-                    case ErrorType.WARNING: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Warning; break;
-                    default: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.None; break;
+                case ErrorType.CRITICAL: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Stop; break;
+                case ErrorType.ERROR: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Error; break;
+                case ErrorType.WARNING: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Warning; break;
+                default: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.None; break;
             }
             //TODO à voir si on utilise tjr le kvp ErrorMsg ou bien si on passe via paramètre un message formaté en amont
             System.Windows.Forms.MessageBox.Show(ErrorMsg.Value, "ORM Message", System.Windows.Forms.MessageBoxButtons.OK, errorBoxIcon);
@@ -151,11 +152,44 @@ namespace OsamesMicroOrm.Utilities
                 : new KeyValuePair<string, string>("n/a", "n/a");
             string errorMessage = hresultPair.Value + extendErrorMsg_;
 
-            if (!EventLog.SourceExists(SSource))
-                EventLog.CreateEventSource(SSource, errorMessage);
+
+            if (new System.Security.Principal.WindowsPrincipal(System.Security.Principal.WindowsIdentity.GetCurrent()).IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator))
+            {
+                // Privilèges admin : l'appel à SourceExists() ne lance pas de System.SecurityException et renvoie vrai/faux comme attendu.
+                if (!EventLog.SourceExists(SSource))
+                    EventLog.CreateEventSource(SSource, SLog);
+            }
+            else
+            {
+                // Pas de privilèges admin : l'appel à Exists() ne renvoie pas vrai/faux comme attendu, renvoie faux.
+                // Créer la source directement lance une SecurityException parce que pas d'accès au log Security
+                Logging.Logger.Log(TraceEventType.Warning, "Not admin privileges, using workaround to achieve logging to Windows event log.");
+
+                // Workaround : créer une clé de registre si n'existe pas
+
+                // Check whether registry key for source exists
+                string keyName = @"SYSTEM\CurrentControlSet\Services\EventLog\" + SLog + @"\" + SSource;
+                Microsoft.Win32.RegistryKey rkEventSource = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(keyName);
+                // Check whether keys exists
+                if (rkEventSource == null)
+                {
+                    // Key doesnt exist. Create key which represents source
+                    Process Proc = new Process();
+                    ProcessStartInfo ProcStartInfo = new ProcessStartInfo("Reg.exe");
+                    ProcStartInfo.Arguments = @"add HKLM\" + keyName;
+                    ProcStartInfo.UseShellExecute = true;
+                    ProcStartInfo.Verb = "runas";
+                    Proc.StartInfo = ProcStartInfo;
+                    Proc.Start();
+
+                    // Etat actuel : on pète à la ligne suivante si c'est le 1er appel sur une source donnée, donc code ci-dessus un peu NOK pour une raison ou une autre.
+                    // A tester : http://stackoverflow.com/questions/22355810/createeventsource-generates-exception-even-under-admin-account
+                    EventLog.CreateEventSource(SSource, SLog);
+                }
+            }
 
             //EventLog.WriteEntry(SSource, errorMessage);
-            EventLog.WriteEntry(SSource, errorMessage, errorType_, 135445);
+            EventLog.WriteEntry(SSource, errorMessage, errorType_, 13544);
         }
 
         /// <summary>
