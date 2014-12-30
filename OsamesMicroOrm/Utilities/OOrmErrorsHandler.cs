@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace OsamesMicroOrm.Utilities
 {
@@ -29,6 +30,10 @@ namespace OsamesMicroOrm.Utilities
     public class OOrmErrorsHandler
     {
         private KeyValuePair<ErrorType, string> ErrorMsg;
+
+        const string SSource = "OsamesORM";
+        string SLog = "Application";
+        string sEvent;
 
         /// <summary>
         /// Dictionnaire interne des erreurs au format suivant : clé : code d'erreur "E_XXX". Valeur : code HRESULT "0x1234" et texte.
@@ -135,11 +140,36 @@ namespace OsamesMicroOrm.Utilities
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="hresultCode_"></param>
+        /// <param name="errorType_"></param>
+        /// <param name="extendErrorMsg_"></param>
+        internal static void WriteToWindowsEventLog(HResultEnum hresultCode_, EventLogEntryType errorType_, string extendErrorMsg_ = null)
+        {
+            string code = hresultCode_.ToString().ToUpperInvariant();
+            KeyValuePair<string, string> hresultPair = HResultCode.ContainsKey(code)
+                ? HResultCode[code]
+                : new KeyValuePair<string, string>("n/a", "n/a");
+            string errorMessage = hresultPair.Value + extendErrorMsg_;
+
+            if (!EventLog.SourceExists(SSource))
+                EventLog.CreateEventSource(SSource, errorMessage);
+
+            //EventLog.WriteEntry(SSource, errorMessage);
+            EventLog.WriteEntry(SSource, errorMessage, errorType_, 135445);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="errorCode_"></param>
         /// <param name="extendErrorMsg_"></param>
+        /// <param name="writeToWindowsEventLog_"></param>
+        /// <param name="errorType_"></param>
         /// <returns></returns>
-        public static string ProcessOrmException(HResultEnum errorCode_, string extendErrorMsg_ = null)
+        public static string ProcessOrmException(HResultEnum errorCode_, EventLogEntryType errorType_, string extendErrorMsg_ = null, bool writeToWindowsEventLog_ = false)
         {
+            if (writeToWindowsEventLog_)
+                WriteToWindowsEventLog(errorCode_, errorType_, extendErrorMsg_);
             return FormatCustomerError(FindHResultByCode(errorCode_), extendErrorMsg_);
         }
     }

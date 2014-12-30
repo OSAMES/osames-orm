@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
@@ -46,11 +47,21 @@ namespace TestOsamesMicroOrm.Utilities
         [TestMethod]
         [TestCategory("Error handling")]
         [Owner("Benjamin Nolmans)")]
+        public void TestWriteToWindowsEventLog()
+        {
+            Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
+            Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
+            OsamesMicroOrm.Utilities.OOrmErrorsHandler.WriteToWindowsEventLog(HResultEnum.E_NOACTIVECONNECTIONDEFINED, new EventLogEntryType(), "Custom message");
+        }
+
+        [TestMethod]
+        [TestCategory("Error handling")]
+        [Owner("Benjamin Nolmans)")]
         public void TestProcessOrmException()
         {
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
-            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, "Custom message");
+            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, new EventLogEntryType(), "Custom message");
             Console.WriteLine(result);
             Assert.IsNotNull(result);
         }
