@@ -36,6 +36,8 @@ namespace OsamesMicroOrm.Utilities
         const string SLog = "Application";
         string sEvent;
 
+        private static bool HasAdminPrivileges;
+
         /// <summary>
         /// Dictionnaire interne des erreurs au format suivant : clé : code d'erreur "E_XXX". Valeur : code HRESULT "0x1234" et texte.
         /// </summary>
@@ -46,6 +48,7 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         static OOrmErrorsHandler()
         {
+            HasAdminPrivileges = new System.Security.Principal.WindowsPrincipal(System.Security.Principal.WindowsIdentity.GetCurrent()).IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
             ReadHResultCodesFromResources("HResult Orm.csv", out HResultCode);
         }
 
@@ -152,44 +155,21 @@ namespace OsamesMicroOrm.Utilities
                 : new KeyValuePair<string, string>("n/a", "n/a");
             string errorMessage = hresultPair.Value + extendErrorMsg_;
 
+            System.Security.Principal.WindowsImpersonationContext wic = null;
 
-            if (new System.Security.Principal.WindowsPrincipal(System.Security.Principal.WindowsIdentity.GetCurrent()).IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator))
+            if (!HasAdminPrivileges)
             {
-                // Privilèges admin : l'appel à SourceExists() ne lance pas de System.SecurityException et renvoie vrai/faux comme attendu.
-                if (!EventLog.SourceExists(SSource))
-                    EventLog.CreateEventSource(SSource, SLog);
+                // Impersonation pour élever les privilèges
+                wic = System.Security.Principal.WindowsIdentity.Impersonate(IntPtr.Zero);
             }
-            else
-            {
-                // Pas de privilèges admin : l'appel à Exists() ne renvoie pas vrai/faux comme attendu, renvoie faux.
-                // Créer la source directement lance une SecurityException parce que pas d'accès au log Security
-                Logging.Logger.Log(TraceEventType.Warning, "Not admin privileges, using workaround to achieve logging to Windows event log.");
+            // Privilèges admin : l'appel à SourceExists() ne lance pas de System.SecurityException et renvoie vrai/faux comme attendu.
+            if (!EventLog.SourceExists(SSource))
+                EventLog.CreateEventSource(SSource, SLog);
 
-                // Workaround : créer une clé de registre si n'existe pas
+            EventLog.WriteEntry(SSource, errorMessage, errorType_);
 
-                // Check whether registry key for source exists
-                string keyName = @"SYSTEM\CurrentControlSet\Services\EventLog\" + SLog + @"\" + SSource;
-                Microsoft.Win32.RegistryKey rkEventSource = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(keyName);
-                // Check whether keys exists
-                if (rkEventSource == null)
-                {
-                    // Key doesnt exist. Create key which represents source
-                    Process Proc = new Process();
-                    ProcessStartInfo ProcStartInfo = new ProcessStartInfo("Reg.exe");
-                    ProcStartInfo.Arguments = @"add HKLM\" + keyName;
-                    ProcStartInfo.UseShellExecute = true;
-                    ProcStartInfo.Verb = "runas";
-                    Proc.StartInfo = ProcStartInfo;
-                    Proc.Start();
-
-                    // Etat actuel : on pète à la ligne suivante si c'est le 1er appel sur une source donnée, donc code ci-dessus un peu NOK pour une raison ou une autre.
-                    // A tester : http://stackoverflow.com/questions/22355810/createeventsource-generates-exception-even-under-admin-account
-                    EventLog.CreateEventSource(SSource, SLog);
-                }
-            }
-
-            //EventLog.WriteEntry(SSource, errorMessage);
-            EventLog.WriteEntry(SSource, errorMessage, errorType_, 13544);
+            if (!HasAdminPrivileges)
+                wic.Undo();
         }
 
         /// <summary>
