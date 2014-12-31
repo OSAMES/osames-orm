@@ -30,13 +30,13 @@ namespace OsamesMicroOrm.Utilities
     /// </summary>
     public class OOrmErrorsHandler
     {
-        private KeyValuePair<ErrorType, string> ErrorMsg;
-
-        const string SSource = "OsamesORM";
-        const string SLog = "Application";
+        private const string SSource = "OsamesORM";
+        private const string SNetRuntimeSource = "Application Error"; //".NET Runtime";
+        private const string SLog = "Application";
         string sEvent;
 
         private static bool HasAdminPrivileges;
+        private static string SActiveSource;
 
         /// <summary>
         /// Dictionnaire interne des erreurs au format suivant : clé : code d'erreur "E_XXX". Valeur : code HRESULT "0x1234" et texte.
@@ -49,6 +49,9 @@ namespace OsamesMicroOrm.Utilities
         static OOrmErrorsHandler()
         {
             HasAdminPrivileges = new System.Security.Principal.WindowsPrincipal(System.Security.Principal.WindowsIdentity.GetCurrent()).IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+            // Source active : si admin, source custom, sinon une source existante.
+            SActiveSource = HasAdminPrivileges ? SSource : SNetRuntimeSource;
+            Logging.Logger.Log(TraceEventType.Information, "If logging to event log is enabled (see configuration), used souce will be: " + SActiveSource);
             ReadHResultCodesFromResources("HResult Orm.csv", out HResultCode);
         }
 
@@ -102,21 +105,9 @@ namespace OsamesMicroOrm.Utilities
         }
 
         /// <summary>
-        /// Ajoute dans une liste de type dictionnaire une erreur.
-        /// Cette fonction crée un listing des erreurs mais dans un dictionnaire.
-        /// </summary>
-        /// <param name="errorType"></param>
-        /// <param name="message_"></param>
-        internal void AddErrorMessage(ErrorType errorType, string message_)
-        {
-            // TODO à mon avis supprimer.
-            ErrorMsg = new KeyValuePair<ErrorType, string>(errorType, DateTime.Now + " :: " + message_);
-        }
-
-        /// <summary>
         /// Permet d'affficher les erreurs pour un contexte de type winform ou wpf
         /// </summary>
-        internal void DisplayErrorMessageWinforms(ErrorType errorType_)
+        internal void DisplayErrorMessageWinforms(ErrorType errorType_, string errorMessage_)
         {
             System.Windows.Forms.MessageBoxIcon errorBoxIcon;
             switch (errorType_)
@@ -126,8 +117,7 @@ namespace OsamesMicroOrm.Utilities
                 case ErrorType.WARNING: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Warning; break;
                 default: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.None; break;
             }
-            //TODO à voir si on utilise tjr le kvp ErrorMsg ou bien si on passe via paramètre un message formaté en amont
-            System.Windows.Forms.MessageBox.Show(ErrorMsg.Value, "ORM Message", System.Windows.Forms.MessageBoxButtons.OK, errorBoxIcon);
+            System.Windows.Forms.MessageBox.Show(errorMessage_, "ORM Message", System.Windows.Forms.MessageBoxButtons.OK, errorBoxIcon);
         }
 
         /// <summary>
@@ -162,11 +152,14 @@ namespace OsamesMicroOrm.Utilities
                 // Impersonation pour élever les privilèges
                 wic = System.Security.Principal.WindowsIdentity.Impersonate(IntPtr.Zero);
             }
-            // Privilèges admin : l'appel à SourceExists() ne lance pas de System.SecurityException et renvoie vrai/faux comme attendu.
-            if (!EventLog.SourceExists(SSource))
-                EventLog.CreateEventSource(SSource, SLog);
+            else
+            {
+                // En admin réel nous pouvons créer une source, avec l'impersonation nous ne le pouvons pas.
+                if (!EventLog.SourceExists(SActiveSource))
+                    EventLog.CreateEventSource(SActiveSource, SLog);
+            }
 
-            EventLog.WriteEntry(SSource, errorMessage, errorType_);
+            EventLog.WriteEntry(SActiveSource, errorMessage, errorType_, 1);
 
             if (!HasAdminPrivileges)
                 wic.Undo();
