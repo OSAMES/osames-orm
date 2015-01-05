@@ -113,7 +113,7 @@ namespace OsamesMicroOrm.Utilities
         /// <summary>
         /// Permet d'affficher les erreurs pour un contexte de type winform ou wpf
         /// </summary>
-        internal void DisplayErrorMessageWinforms(ErrorType errorType_, string errorMessage_)
+        internal static void DisplayErrorMessageWinforms(ErrorType errorType_, string errorMessage_)
         {
             MessageBoxIcon errorBoxIcon;
             switch (errorType_)
@@ -174,6 +174,7 @@ namespace OsamesMicroOrm.Utilities
         /// <summary>
         /// </summary>
         /// <param name="errorCode_"></param>
+        /// <param name="winforErrorType_"></param>
         /// <param name="extendErrorMsg_"></param>
         /// <param name="writeToWindowsEventLog_"></param>
         /// <param name="errorType_"></param>
@@ -181,7 +182,7 @@ namespace OsamesMicroOrm.Utilities
         /// <exception cref="IOException">An I/O error occurred. </exception>
         /// <exception cref="ArgumentNullException"><paramref name="format" /> is null. </exception>
         /// <exception cref="FormatException">The format specification in <paramref name="format" /> is invalid. </exception>
-        public static string ProcessOrmException(HResultEnum errorCode_, EventLogEntryType errorType_, string extendErrorMsg_ = null, bool writeToWindowsEventLog_ = false)
+        public static string ProcessOrmException(HResultEnum errorCode_, EventLogEntryType errorType_, string extendErrorMsg_ = null, ErrorType winformErrorType_ = ErrorType.WARNING, bool writeToWindowsEventLog_ = false)
         {
             //disabling write to windows log
             //if (writeToWindowsEventLog_)
@@ -191,7 +192,8 @@ namespace OsamesMicroOrm.Utilities
                 case 0:
                     Console.WriteLine(FindHResultByCode(errorCode_), extendErrorMsg_);
                     break;
-                case 1: //TODO recherche dans le code de l'orm, le code pour afficher des messages box interne à windows. Si n'existe pas le faire.
+                case 1:
+                    DisplayErrorMessageWinforms(winformErrorType_, string.Format("{0}\r\nAdditionnal information: {1}", FindHResultByCode(errorCode_), extendErrorMsg_));
                     break;
                 case 2: //TODO faire le code pour retourner l'erreur via webservice c#
                     break;
@@ -203,7 +205,10 @@ namespace OsamesMicroOrm.Utilities
         }
     }
 
-    internal enum ErrorType
+    /// <summary>
+    /// 
+    /// </summary>
+    public enum ErrorType
     {
         // ReSharper disable InconsistentNaming
         CRITICAL,
