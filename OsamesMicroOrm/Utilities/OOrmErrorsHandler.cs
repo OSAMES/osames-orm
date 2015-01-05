@@ -18,10 +18,13 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Diagnostics;
-using System.Security;
+using System.Security.Principal;
+using System.Windows.Forms;
+using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Logging;
 
 namespace OsamesMicroOrm.Utilities
 {
@@ -48,10 +51,10 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         static OOrmErrorsHandler()
         {
-            HasAdminPrivileges = new System.Security.Principal.WindowsPrincipal(System.Security.Principal.WindowsIdentity.GetCurrent()).IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+            HasAdminPrivileges = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
             // Source active : si admin, source custom, sinon une source existante.
             SActiveSource = HasAdminPrivileges ? SSource : SNetRuntimeSource;
-            Logging.Logger.Log(TraceEventType.Information, "If logging to event log is enabled (see configuration), used souce will be: " + SActiveSource);
+            Logger.Log(TraceEventType.Information, "If logging to event log is enabled (see configuration), used souce will be: " + SActiveSource);
             ReadHResultCodesFromResources("HResult Orm.csv", out HResultCode);
         }
 
@@ -60,6 +63,7 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <param name="resource_"></param>
         /// <param name="hresultCodes_"></param>
+        /// <exception cref="Exception"></exception>
         private static void ReadHResultCodesFromResources(string resource_, out Dictionary<string, KeyValuePair<string, string>> hresultCodes_)
         {
             using (Stream str = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(OOrmErrorsHandler).Assembly.GetName().Name + ".Resources." + resource_))
@@ -75,14 +79,16 @@ namespace OsamesMicroOrm.Utilities
                     sr.ReadLine();
 
                     string currentLine;
+                    int currentLineNumber = 0;
                     // currentLine will be null when the StreamReader reaches the end of file
 
                     while ((currentLine = sr.ReadLine()) != null)
                     {
+                        currentLineNumber++;
                         //Insert to kvp
                         string[] row = currentLine.Split(';');
                         if (row.Length > 0 && row.Length < 2)
-                            throw new Exception("Incorrect line : needs at least E_CODE and HRESULT hexa code");
+                            throw new Exception(string.Format("Incorrect line ({0}) : needs at least E_CODE and HRESULT hexa code", currentLineNumber));
                         string eCode = row[1].Substring(1, row[1].Length - 2);
                         string hexCode = row[0].Substring(1, row[0].Length - 2);
                         if (string.IsNullOrWhiteSpace(eCode) || string.IsNullOrWhiteSpace(hexCode))
@@ -109,15 +115,15 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         internal void DisplayErrorMessageWinforms(ErrorType errorType_, string errorMessage_)
         {
-            System.Windows.Forms.MessageBoxIcon errorBoxIcon;
+            MessageBoxIcon errorBoxIcon;
             switch (errorType_)
             {
-                case ErrorType.CRITICAL: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Stop; break;
-                case ErrorType.ERROR: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Error; break;
-                case ErrorType.WARNING: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.Warning; break;
-                default: errorBoxIcon = System.Windows.Forms.MessageBoxIcon.None; break;
+                case ErrorType.CRITICAL: errorBoxIcon = MessageBoxIcon.Stop; break;
+                case ErrorType.ERROR: errorBoxIcon = MessageBoxIcon.Error; break;
+                case ErrorType.WARNING: errorBoxIcon = MessageBoxIcon.Warning; break;
+                default: errorBoxIcon = MessageBoxIcon.None; break;
             }
-            System.Windows.Forms.MessageBox.Show(errorMessage_, "ORM Message", System.Windows.Forms.MessageBoxButtons.OK, errorBoxIcon);
+            MessageBox.Show(errorMessage_, "ORM Message", MessageBoxButtons.OK, errorBoxIcon);
         }
 
         /// <summary>
@@ -145,12 +151,12 @@ namespace OsamesMicroOrm.Utilities
                 : new KeyValuePair<string, string>("n/a", "n/a");
             string errorMessage = hresultPair.Value + extendErrorMsg_;
 
-            System.Security.Principal.WindowsImpersonationContext wic = null;
+            WindowsImpersonationContext wic = null;
 
             if (!HasAdminPrivileges)
             {
                 // Impersonation pour élever les privilèges
-                wic = System.Security.Principal.WindowsIdentity.Impersonate(IntPtr.Zero);
+                wic = WindowsIdentity.Impersonate(IntPtr.Zero);
             }
             else
             {
@@ -166,17 +172,33 @@ namespace OsamesMicroOrm.Utilities
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="errorCode_"></param>
         /// <param name="extendErrorMsg_"></param>
         /// <param name="writeToWindowsEventLog_"></param>
         /// <param name="errorType_"></param>
         /// <returns></returns>
+        /// <exception cref="IOException">An I/O error occurred. </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="format" /> is null. </exception>
+        /// <exception cref="FormatException">The format specification in <paramref name="format" /> is invalid. </exception>
         public static string ProcessOrmException(HResultEnum errorCode_, EventLogEntryType errorType_, string extendErrorMsg_ = null, bool writeToWindowsEventLog_ = false)
         {
-            if (writeToWindowsEventLog_)
-                WriteToWindowsEventLog(errorCode_, errorType_, extendErrorMsg_);
+            //disabling write to windows log
+            //if (writeToWindowsEventLog_)
+            //    WriteToWindowsEventLog(errorCode_, errorType_, extendErrorMsg_);
+            switch (ConfigurationLoader.GetOrmContext)
+            {
+                case 0:
+                    Console.WriteLine(FindHResultByCode(errorCode_), extendErrorMsg_);
+                    break;
+                case 1: //TODO recherche dans le code de l'orm, le code pour afficher des messages box interne à windows. Si n'existe pas le faire.
+                    break;
+                case 2: //TODO faire le code pour retourner l'erreur via webservice c#
+                    break;
+                default:
+                    Console.WriteLine(FindHResultByCode(errorCode_), extendErrorMsg_);
+                    break;
+            }
             return FormatCustomerError(FindHResultByCode(errorCode_), extendErrorMsg_);
         }
     }

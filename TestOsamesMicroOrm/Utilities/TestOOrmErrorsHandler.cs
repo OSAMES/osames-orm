@@ -47,8 +47,10 @@ namespace TestOsamesMicroOrm.Utilities
         [TestMethod]
         [TestCategory("Error handling")]
         [Owner("Benjamin Nolmans)")]
+        [Ignore]
         public void TestWriteToWindowsEventLog()
         {
+            //TU en ignore car il faut une elevation de privilèges pour ecrire dans le log
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
             OsamesMicroOrm.Utilities.OOrmErrorsHandler.WriteToWindowsEventLog(HResultEnum.E_NOACTIVECONNECTIONDEFINED, EventLogEntryType.Error, "Custom message");

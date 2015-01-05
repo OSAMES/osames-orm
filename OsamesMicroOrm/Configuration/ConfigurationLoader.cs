@@ -107,6 +107,21 @@ namespace OsamesMicroOrm.Configuration
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <exception cref="OverflowException"><paramref name="value" /> represents a number that is less than <see cref="F:System.Int32.MinValue" /> or greater than <see cref="F:System.Int32.MaxValue" />. </exception>
+        public static int GetOrmContext
+        {
+            get
+            {
+                int context;
+                if (Int32.TryParse(ConfigurationManager.AppSettings["context"], out context))
+                    return context;
+                return 0;
+            }
+        } 
+
+        /// <summary>
         /// Clears internal singleton, forcing reload to next call to "Instance".
         /// Useful for unit tests.
         /// </summary>
