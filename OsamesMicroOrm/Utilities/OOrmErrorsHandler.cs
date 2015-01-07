@@ -121,12 +121,12 @@ namespace OsamesMicroOrm.Utilities
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="hresulterror_"></param>
-        /// <param name="extendErrorMsg_"></param>
+        /// <param name="errorMessage_"></param>
+        /// <param name="additionalErrorMsg_"></param>
         /// <returns></returns>
-        internal static string FormatCustomerError(string hresulterror_, string extendErrorMsg_ = null)
+        internal static string FormatCustomerError(string errorMessage_, string additionalErrorMsg_ = null)
         {
-            return string.Format(DateTime.Now + " :: {0} : {1}", hresulterror_, string.IsNullOrWhiteSpace(extendErrorMsg_) ? "No additional information" : extendErrorMsg_);
+            return string.Format(DateTime.Now + " :: {0} : {1}", errorMessage_, string.IsNullOrWhiteSpace(additionalErrorMsg_) ? "No additional information" : additionalErrorMsg_);
         }
 
         /// <summary>
@@ -134,14 +134,14 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <param name="hresultCode_"></param>
         /// <param name="errorType_"></param>
-        /// <param name="extendErrorMsg_"></param>
-        internal static void WriteToWindowsEventLog(HResultEnum hresultCode_, EventLogEntryType errorType_, string extendErrorMsg_ = null)
+        /// <param name="additionalErrorMsg_"></param>
+        internal static void WriteToWindowsEventLog(HResultEnum hresultCode_, EventLogEntryType errorType_, string additionalErrorMsg_ = null)
         {
             string code = hresultCode_.ToString().ToUpperInvariant();
             KeyValuePair<string, string> hresultPair = HResultCode.ContainsKey(code)
                 ? HResultCode[code]
                 : new KeyValuePair<string, string>("n/a", "n/a");
-            string errorMessage = hresultPair.Value + extendErrorMsg_;
+            string errorMessage = hresultPair.Value + additionalErrorMsg_;
 
             WindowsImpersonationContext wic = null;
 
@@ -166,35 +166,36 @@ namespace OsamesMicroOrm.Utilities
         /// <summary>
         /// </summary>
         /// <param name="hresultCode_"></param>
-        /// <param name="extendErrorMsg_"></param>
-        /// <param name="winformErrorType_"></param>
-        /// <param name="writeToWindowsEventLog_"></param>
+        /// <param name="additionalErrorMsg_"></param>
         /// <param name="errorType_"></param>
         /// <returns></returns>
         /// <exception cref="IOException">An I/O error occurred. </exception>
         /// <exception cref="ArgumentNullException"><paramref name="format" /> is null. </exception>
         /// <exception cref="FormatException">The format specification in <paramref name="format" /> is invalid. </exception>
-        public static string ProcessOrmException(HResultEnum hresultCode_, EventLogEntryType errorType_, string extendErrorMsg_ = null, ErrorType winformErrorType_ = ErrorType.WARNING, bool writeToWindowsEventLog_ = false)
+        public static string ProcessOrmException(HResultEnum hresultCode_, ErrorType errorType_ = ErrorType.ERROR, string additionalErrorMsg_ = null)
         {
+            // Ecrire dans event log n'est possible qu'en admin sinon on utilisera le log classique uniquement.
+            // Le test d'être admin doit être fait à l'initialisation de l'ORM.
+
             //disabling write to windows log
             //if (writeToWindowsEventLog_)
-            //    WriteToWindowsEventLog(errorCode_, errorType_, extendErrorMsg_);
+            //    WriteToWindowsEventLog(errorCode_, errorType_, additionalErrorMsg_);
 
-            Logger.Log((TraceEventType)winformErrorType_, FormatCustomerError(FindHResultByCode(hresultCode_), extendErrorMsg_));
+            Logger.Log((TraceEventType)errorType_, FormatCustomerError(FindHResultByCode(hresultCode_), additionalErrorMsg_));
 
             switch (ConfigurationLoader.GetOrmContext)
             {
                 case 1:  // console
-                    Console.WriteLine(FindHResultByCode(hresultCode_), extendErrorMsg_);
+                    Console.WriteLine(FindHResultByCode(hresultCode_), additionalErrorMsg_);
                     break;
                 case 2: // winform - wpf
-                    DisplayErrorMessageWinforms(winformErrorType_, string.Format("{0}\r\nAdditionnal information: {1}", FindHResultByCode(hresultCode_), extendErrorMsg_));
+                    DisplayErrorMessageWinforms(errorType_, string.Format("{0}\r\nAdditionnal information: {1}", FindHResultByCode(hresultCode_), additionalErrorMsg_));
                     break;
                 case 3: //TODO faire le code pour retourner l'erreur via webservice c#
                     break;
             }           
 
-            return FormatCustomerError(FindHResultByCode(hresultCode_), extendErrorMsg_);
+            return FormatCustomerError(FindHResultByCode(hresultCode_), additionalErrorMsg_);
         }
     }
 
