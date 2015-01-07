@@ -115,15 +115,7 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         internal static void DisplayErrorMessageWinforms(ErrorType errorType_, string errorMessage_)
         {
-            MessageBoxIcon errorBoxIcon;
-            switch (errorType_)
-            {
-                case ErrorType.CRITICAL: errorBoxIcon = MessageBoxIcon.Stop; break;
-                case ErrorType.ERROR: errorBoxIcon = MessageBoxIcon.Error; break;
-                case ErrorType.WARNING: errorBoxIcon = MessageBoxIcon.Warning; break;
-                default: errorBoxIcon = MessageBoxIcon.None; break;
-            }
-            MessageBox.Show(errorMessage_, "ORM Message", MessageBoxButtons.OK, errorBoxIcon);
+            MessageBox.Show(errorMessage_, "ORM Message", MessageBoxButtons.OK, (MessageBoxIcon) errorType_);
         }
 
         /// <summary>
@@ -134,7 +126,7 @@ namespace OsamesMicroOrm.Utilities
         /// <returns></returns>
         internal static string FormatCustomerError(string hresulterror_, string extendErrorMsg_ = null)
         {
-            return string.Format(DateTime.Now + " :: {0} : {1}", hresulterror_, extendErrorMsg_);
+            return string.Format(DateTime.Now + " :: {0} : {1}", hresulterror_, string.IsNullOrWhiteSpace(extendErrorMsg_) ? "No additional information" : extendErrorMsg_);
         }
 
         /// <summary>
@@ -173,35 +165,36 @@ namespace OsamesMicroOrm.Utilities
 
         /// <summary>
         /// </summary>
-        /// <param name="errorCode_"></param>
-        /// <param name="winforErrorType_"></param>
+        /// <param name="hresultCode_"></param>
         /// <param name="extendErrorMsg_"></param>
+        /// <param name="winformErrorType_"></param>
         /// <param name="writeToWindowsEventLog_"></param>
         /// <param name="errorType_"></param>
         /// <returns></returns>
         /// <exception cref="IOException">An I/O error occurred. </exception>
         /// <exception cref="ArgumentNullException"><paramref name="format" /> is null. </exception>
         /// <exception cref="FormatException">The format specification in <paramref name="format" /> is invalid. </exception>
-        public static string ProcessOrmException(HResultEnum errorCode_, EventLogEntryType errorType_, string extendErrorMsg_ = null, ErrorType winformErrorType_ = ErrorType.WARNING, bool writeToWindowsEventLog_ = false)
+        public static string ProcessOrmException(HResultEnum hresultCode_, EventLogEntryType errorType_, string extendErrorMsg_ = null, ErrorType winformErrorType_ = ErrorType.WARNING, bool writeToWindowsEventLog_ = false)
         {
             //disabling write to windows log
             //if (writeToWindowsEventLog_)
             //    WriteToWindowsEventLog(errorCode_, errorType_, extendErrorMsg_);
+
+            Logger.Log((TraceEventType)winformErrorType_, FormatCustomerError(FindHResultByCode(hresultCode_), extendErrorMsg_));
+
             switch (ConfigurationLoader.GetOrmContext)
             {
-                case 0:
-                    Console.WriteLine(FindHResultByCode(errorCode_), extendErrorMsg_);
+                case 1:  // console
+                    Console.WriteLine(FindHResultByCode(hresultCode_), extendErrorMsg_);
                     break;
-                case 1:
-                    DisplayErrorMessageWinforms(winformErrorType_, string.Format("{0}\r\nAdditionnal information: {1}", FindHResultByCode(errorCode_), extendErrorMsg_));
+                case 2: // winform - wpf
+                    DisplayErrorMessageWinforms(winformErrorType_, string.Format("{0}\r\nAdditionnal information: {1}", FindHResultByCode(hresultCode_), extendErrorMsg_));
                     break;
-                case 2: //TODO faire le code pour retourner l'erreur via webservice c#
+                case 3: //TODO faire le code pour retourner l'erreur via webservice c#
                     break;
-                default:
-                    Console.WriteLine(FindHResultByCode(errorCode_), extendErrorMsg_);
-                    break;
-            }
-            return FormatCustomerError(FindHResultByCode(errorCode_), extendErrorMsg_);
+            }           
+
+            return FormatCustomerError(FindHResultByCode(hresultCode_), extendErrorMsg_);
         }
     }
 
@@ -211,9 +204,10 @@ namespace OsamesMicroOrm.Utilities
     public enum ErrorType
     {
         // ReSharper disable InconsistentNaming
-        CRITICAL,
-        ERROR,
-        WARNING,
+        CRITICAL = MessageBoxIcon.Stop,  // for MessageBoxIcon it's MessageBoxIcon.Stop
+        ERROR = MessageBoxIcon.Error,
+        WARNING = MessageBoxIcon.Warning,
+        INFORMATION = MessageBoxIcon.Information,
         // ReSharper enable InconsistentNaming
     }
 }

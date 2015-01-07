@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
+using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Configuration.Tweak;
 
 namespace TestOsamesMicroOrm.Utilities
 {
@@ -61,6 +63,22 @@ namespace TestOsamesMicroOrm.Utilities
         [Owner("Benjamin Nolmans)")]
         public void TestProcessOrmException()
         {
+            Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
+            Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
+            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, EventLogEntryType.Error, "Custom message");
+            Console.WriteLine(result);
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        [TestCategory("Error handling")]
+        [Owner("Benjamin Nolmans)")]
+        public void TestProcessOrmExceptionForWinForm()
+        {
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.context.ToString(), "2");
+
+            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
             string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, EventLogEntryType.Error, "Custom message");

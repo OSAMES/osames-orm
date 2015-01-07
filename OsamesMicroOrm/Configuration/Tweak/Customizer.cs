@@ -160,7 +160,9 @@ namespace OsamesMicroOrm.Configuration.Tweak
             /// <summary>
             /// Dossier contenant les schemas xml de l'orm
             /// </summary>
-            xmlSchemasFolder
+            xmlSchemasFolder,
+
+            context
             // ReSharper restore InconsistentNaming
         }
     }
