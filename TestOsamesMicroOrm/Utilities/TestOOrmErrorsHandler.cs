@@ -74,6 +74,22 @@ namespace TestOsamesMicroOrm.Utilities
         [TestMethod]
         [TestCategory("Error handling")]
         [Owner("Benjamin Nolmans)")]
+        public void TestProcessOrmExceptionForConsoleMode()
+        {
+            Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.context.ToString(), "1");
+
+            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+
+            Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
+            Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
+            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, ErrorType.ERROR, "Custom message");
+            Console.WriteLine(result);
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        [TestCategory("Error handling")]
+        [Owner("Benjamin Nolmans)")]
         public void TestProcessOrmExceptionForWinForm()
         {
             Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.context.ToString(), "2");
