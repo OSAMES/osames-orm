@@ -91,15 +91,17 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstAdoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB à sélectionner. Sera utilisé pour le data reader</param>
         /// <param name="lstPropertiesNames_">Sortie : liste de noms de propriétés d'objet Db Entité à sélectionner. Sera utilisé pour le data reader</param>
+        /// <param name="skipAutoDetermine_">Si a vrai alors on ne fait pas d'auto détermination.</param>
         /// <returns>Ne renvoie rien</returns>
         /// <throws>Lève une exception en cas d'erreur</throws>
-        internal static void FormatSqlForSelectAutoDetermineSelectedFields(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out  List<string> lstPropertiesNames_, out List<string> lstDbColumnNames_)
+        internal static void FormatSqlForSelectAutoDetermineSelectedFields(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out  List<string> lstPropertiesNames_, out List<string> lstDbColumnNames_, bool skipAutoDetermine_ = false)
         {
             lstAdoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
             lstDbColumnNames_ = new List<string>(); // Noms des colonnes DB, à construire
             lstPropertiesNames_ = new List<string>(); // Propriétés de l'objet de données, à construire
 
-            DbToolsCommon.DetermineDatabaseColumnNamesAndDataObjectPropertyNames(mappingDictionariesContainerKey_, out lstDbColumnNames_, out lstPropertiesNames_);
+            if (!skipAutoDetermine_)
+                DbToolsCommon.DetermineDatabaseColumnNamesAndDataObjectPropertyNames(mappingDictionariesContainerKey_, out lstDbColumnNames_, out lstPropertiesNames_);
 
             // 1. Positionne le premier placeholder
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
@@ -255,6 +257,49 @@ namespace OsamesMicroOrm.DbTools
             FormatSqlForSelectAutoDetermineSelectedFields(refSqlTemplate_, mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters, out lstPropertiesNames, out lstDbColumnNames);
 
             return GetListDataObject<T>(transaction_, sqlCommand, lstDbColumnNames, lstPropertiesNames, adoParameters);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="refSqlTemplate_"></param>
+        /// <param name="mappingDictionariesContainerKey_"></param>
+        /// <param name="lstWhereMetaNames_"></param>
+        /// <param name="lstWhereValues_"></param>
+        /// <param name="transaction_"></param>
+        /// <returns></returns>
+        public static long Count(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) 
+        {
+            string sqlCommand;
+            List<KeyValuePair<string, object>> adoParameters;
+            List<string> lstDbColumnNames;
+            List<string> lstPropertiesNames;
+            long count;
+
+            FormatSqlForSelectAutoDetermineSelectedFields(refSqlTemplate_, mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, 
+                out adoParameters, out lstPropertiesNames, out lstDbColumnNames, true);
+
+            // Transaction
+            if (transaction_ != null)
+            {
+                long.TryParse(DbManager.Instance.ExecuteScalar(transaction_, sqlCommand, adoParameters).ToString(), out count);
+                return count;
+
+            }
+            // Pas de transaction
+            OOrmDbConnectionWrapper conn = null;
+            try
+            {
+                conn = DbManager.Instance.CreateConnection();
+                long.TryParse(DbManager.Instance.ExecuteScalar(conn, sqlCommand, adoParameters).ToString(), out count);
+                return count;
+            }
+            finally
+            {
+                // Si c'est la connexion de backup alors on ne la dipose pas pour usage ultérieur.
+                if (!conn.IsBackup)
+                    conn.Dispose();
+            }
         }
 
         /// <summary>

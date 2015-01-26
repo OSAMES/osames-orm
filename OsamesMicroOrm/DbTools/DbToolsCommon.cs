@@ -73,6 +73,9 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Chaîne de texte. Ex: "[FirstName], [LastName]..."</returns>
         internal static string GenerateCommaSeparatedDbFieldsString(List<string> lstDbColumnNames_)
         {
+            if (lstDbColumnNames_.Count == 0)
+                return string.Empty;
+
             StringBuilder sb = new StringBuilder();
 
             int iCount = lstDbColumnNames_.Count;
