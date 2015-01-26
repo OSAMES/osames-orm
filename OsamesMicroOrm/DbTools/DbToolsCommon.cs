@@ -83,7 +83,8 @@ namespace OsamesMicroOrm.DbTools
             {
                 sb.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames_[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(", ");
             }
-            sb.Remove(sb.Length - 2, 2);
+            if (!string.IsNullOrEmpty(sb.ToString()))
+                sb.Remove(sb.Length - 2, 2);
             return sb.ToString();
         }
 
