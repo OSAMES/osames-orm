@@ -179,5 +179,15 @@ namespace TestOsamesMicroOrmSqlite
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.mappingFileName.ToString());
             }
         }
+
+        [TestMethod]
+        [TestCategory("Meta name")]
+        [Owner("Benjamin Nolmans")]
+        public void TestCount()
+        {
+            _config = ConfigurationLoader.Instance;
+            long count = DbToolsSelects.Count("Count", "Customer");
+            Console.WriteLine(count.ToString());
+        }
     }
 }
