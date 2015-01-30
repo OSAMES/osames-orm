@@ -268,7 +268,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereValues_"></param>
         /// <param name="transaction_"></param>
         /// <returns></returns>
-        public static long Count(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) 
+        public static long Count(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null)
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
@@ -276,7 +276,7 @@ namespace OsamesMicroOrm.DbTools
             List<string> lstPropertiesNames;
             long count;
 
-            FormatSqlForSelectAutoDetermineSelectedFields(refSqlTemplate_, mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, 
+            FormatSqlForSelectAutoDetermineSelectedFields(refSqlTemplate_, mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand,
                 out adoParameters, out lstPropertiesNames, out lstDbColumnNames, true);
 
             // Transaction

@@ -129,8 +129,9 @@ namespace TestOsamesMicroOrmSqlite
                 List<string> lstSyntaxticallyCorrectMetaNamesToProcess = new List<string> { "IdCustomer", "#", "@customValue", "#", "%chaine", "%chaine#{", "%chaine,", "%ma chaine", "FirstName", "LastName", "PostalCode", "Customer:IdCustomer", "Track:TrackId" };
                 List<string> lstSyntaxticallyIncorrectMetaNamesToProcess = new List<string> { null, "Customer::IdCustomer", "Customer:TrackId" };
 
+                bool unprotectedLiteral;
 
-                List<string> lstResult = lstSyntaxticallyCorrectMetaNamesToProcess.Select(metaName_ => DbToolsCommon.DeterminePlaceholderType(metaName_, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex)).ToList();
+                List<string> lstResult = lstSyntaxticallyCorrectMetaNamesToProcess.Select(metaName_ => DbToolsCommon.DeterminePlaceholderType(metaName_, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex, out unprotectedLiteral)).ToList();
 
                 Assert.AreEqual(lstSyntaxticallyCorrectMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments");
 
@@ -158,7 +159,7 @@ namespace TestOsamesMicroOrmSqlite
                     bool exception = false;
                     try
                     {
-                        DbToolsCommon.DeterminePlaceholderType(metaName, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex);
+                        DbToolsCommon.DeterminePlaceholderType(metaName, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex, out unprotectedLiteral);
                     }
                     catch (Exception ex)
                     {
