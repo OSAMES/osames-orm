@@ -169,6 +169,7 @@ namespace OsamesMicroOrm.Configuration
             Dictionary<string, string> mappingObjectSet;
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
+            // TODO faire comme ci-dessus, lancer des OOrmHandledException et vérifier les TUs, les créer ou les adapter.
             if (mappingObjectSet == null)
                 throw new Exception(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY) + "[" + mappingDictionaryName_ + "]");
             string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();

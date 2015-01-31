@@ -251,10 +251,12 @@ namespace OsamesMicroOrm.DbTools
         {
             unprotectedLiteral = false;
 
+            if (string.IsNullOrWhiteSpace(value_) || value_.ToUpperInvariant().StartsWith("%UL%"))
             {
                 unprotectedLiteral = true;
                 return value_;
             }
+
             string returnValue;
             char[] valueAsCharArray;
 
