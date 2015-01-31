@@ -126,8 +126,8 @@ namespace TestOsamesMicroOrmSqlite
                 int parameterIndex = -1;
                 int parameterAutomaticNameIndex = -1;
 
-                List<string> lstSyntaxticallyCorrectMetaNamesToProcess = new List<string> { "IdCustomer", "#", "@customValue", "#", "%chaine", "%chaine#{", "%chaine,", "%ma chaine", "FirstName", "LastName", "PostalCode", "Customer:IdCustomer", "Track:TrackId" };
-                List<string> lstSyntaxticallyIncorrectMetaNamesToProcess = new List<string> { null, "Customer::IdCustomer", "Customer:TrackId" };
+                List<string> lstSyntaxticallyCorrectMetaNamesToProcess = new List<string> { "IdCustomer", "#", "@customValue", "#", "%chaine", "%chaine#{", "%chaine,", "%ma chaine", "FirstName", "LastName", "PostalCode", "Customer:IdCustomer", "Track:TrackId", null, "%UL%order by" };
+                List<string> lstSyntaxticallyIncorrectMetaNamesToProcess = new List<string> { "Customer::IdCustomer", "Customer:TrackId" };
 
                 bool unprotectedLiteral;
 
@@ -140,7 +140,7 @@ namespace TestOsamesMicroOrmSqlite
                 // - "FirstName" gives "FirstName, 'FirstName'" which will give "FirstName FirstName"
                 // - "LastName" gives "Last_Name" which will give "Last_Name"
                 // - "PostalCode" gives "Postal-Code" which will give "PostalCode"
-                List<string> lstExpected = new List<string> { "CustomerId", "@p0", "@customvalue", "@p1", "chaine", "chaine", "chaine", "ma chaine", "FirstName FirstName", "Last_Name", "PostalCode", "Customer.CustomerId", "Track.TrackId" };
+                List<string> lstExpected = new List<string> { "CustomerId", "@p0", "@customvalue", "@p1", "chaine", "chaine", "chaine", "ma chaine", "FirstName FirstName", "Last_Name", "PostalCode", "Customer.CustomerId", "Track.TrackId", null, "%UL%order by" };
 
                 try
                 {

@@ -148,10 +148,12 @@ namespace OsamesMicroOrm.Configuration
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception(OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_NOMAPPINGKEY) + "["+mappingDictionaryName_ + "]");
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
+                //throw new Exception(OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_NOMAPPINGKEY) + "["+mappingDictionaryName_ + "]");
             mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
-            if (mappingObjectSet == null)
-                throw new Exception(OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_NOMAPPINGKEYANDPROPERTY) + "[No property "+ propertyName_ +" in dictionary "+ mappingDictionaryName_ +"]" );
+            if (resultColumnName == null)
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDPROPERTY, null, "[No property " + propertyName_ + " in dictionary " + mappingDictionaryName_ + "]");
+                //throw new Exception(OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_NOMAPPINGKEYANDPROPERTY) + "[No property "+ propertyName_ +" in dictionary "+ mappingDictionaryName_ +"]" );
 
             return resultColumnName;
         }
@@ -168,11 +170,11 @@ namespace OsamesMicroOrm.Configuration
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception(OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_NOMAPPINGKEY) + "[" + mappingDictionaryName_ + "]");
+                throw new Exception(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY) + "[" + mappingDictionaryName_ + "]");
             string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
 
             if (resultPropertyName == null)
-                throw new Exception(OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_NOMAPPINGKEY) + "[key: " + mappingDictionaryName_ + ", Col.: " + dbColumnName_ + "]");
+                throw new Exception(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEYANDCOLUMN) + "[key: " + mappingDictionaryName_ + ", Col.: " + dbColumnName_ + "]");
 
             return resultPropertyName;
         }
