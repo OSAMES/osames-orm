@@ -91,15 +91,17 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstAdoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB à sélectionner. Sera utilisé pour le data reader</param>
         /// <param name="lstPropertiesNames_">Sortie : liste de noms de propriétés d'objet Db Entité à sélectionner. Sera utilisé pour le data reader</param>
+        /// <param name="skipAutoDetermine_">Si a vrai alors on ne fait pas d'auto détermination.</param>
         /// <returns>Ne renvoie rien</returns>
         /// <throws>Lève une exception en cas d'erreur</throws>
-        internal static void FormatSqlForSelectAutoDetermineSelectedFields(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out  List<string> lstPropertiesNames_, out List<string> lstDbColumnNames_)
+        internal static void FormatSqlForSelectAutoDetermineSelectedFields(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out  List<string> lstPropertiesNames_, out List<string> lstDbColumnNames_, bool skipAutoDetermine_ = false)
         {
             lstAdoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
             lstDbColumnNames_ = new List<string>(); // Noms des colonnes DB, à construire
             lstPropertiesNames_ = new List<string>(); // Propriétés de l'objet de données, à construire
 
-            DbToolsCommon.DetermineDatabaseColumnNamesAndDataObjectPropertyNames(mappingDictionariesContainerKey_, out lstDbColumnNames_, out lstPropertiesNames_);
+            if (!skipAutoDetermine_)
+                DbToolsCommon.DetermineDatabaseColumnNamesAndDataObjectPropertyNames(mappingDictionariesContainerKey_, out lstDbColumnNames_, out lstPropertiesNames_);
 
             // 1. Positionne le premier placeholder
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
@@ -166,7 +168,7 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Retourne un objet du type T avec les données rendues par une requete SELECT dont on ne s'intéresse qu'au premier résultat retourné.
+        /// Retourne un objet du type T avec les données rendues par une requete SELECT dont on ne s'intéresse qu'au premier résultat retourné. Si pas de résultat retourne null.
         /// <para>Le template sera du type <c>"SELECT {0} FROM {1} WHERE ..."</c></para>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
@@ -176,8 +178,8 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
-        /// <returns>Retourne un objet de type T rempli par les donnnées du DataReader.</returns>
-        public static T SelectSingle<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) where T : new()
+        /// <returns>Retourne un objet de type T rempli par les donnnées du DataReader, ou null.</returns>
+        public static T SelectSingle<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) where T : class, new()
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
@@ -189,7 +191,7 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Retourne un objet du type T avec les données rendues par une requete SELECT dont on ne s'intéresse qu'au premier résultat retourné.
+        /// Retourne un objet du type T avec les données rendues par une requete SELECT dont on ne s'intéresse qu'au premier résultat retourné. Si pas de résultat retourne null.
         /// <para>Le template sera du type <c>"SELECT * FROM {0} WHERE ..."</c></para>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
@@ -198,8 +200,8 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
-        /// <returns>Retourne un objet de type T</returns>
-        public static T SelectSingleAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) where T : new()
+        /// <returns>Retourne un objet de type T rempli par les donnnées du DataReader, ou null</returns>
+        public static T SelectSingleAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) where T : class, new()
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
@@ -212,7 +214,7 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Retourne une liste d'objets du type T avec les données rendues par une requete SELECT.
+        /// Retourne une liste d'objets du type T avec les données rendues par une requete SELECT. Si pas de résultat retourne une liste vide.
         /// <para>Le template sera du type <c>"SELECT {0} FROM {1} WHERE ..."</c></para>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
@@ -223,7 +225,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne une liste composée d'objets de type T</returns>
-        public static List<T> Select<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) where T : new()
+        public static List<T> Select<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) where T : class, new()
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
@@ -235,7 +237,7 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Retourne une liste d'objets du type T avec les données rendues par une requete SELECT.
+        /// Retourne une liste d'objets du type T avec les données rendues par une requete SELECT. Si pas de résultat retourne une liste vide.
         /// <para>Le template sera du type <c>"SELECT * FROM {0} WHERE ..."</c></para>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
@@ -245,7 +247,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne une liste composée d'objets de type T</returns>
-        public static List<T> SelectAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) where T : new()
+        public static List<T> SelectAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) where T : class, new()
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
@@ -258,7 +260,50 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Retourne un objet du type T avec les données rendues par une requete SELECT.
+        /// 
+        /// </summary>
+        /// <param name="refSqlTemplate_"></param>
+        /// <param name="mappingDictionariesContainerKey_"></param>
+        /// <param name="lstWhereMetaNames_"></param>
+        /// <param name="lstWhereValues_"></param>
+        /// <param name="transaction_"></param>
+        /// <returns></returns>
+        public static long Count(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null)
+        {
+            string sqlCommand;
+            List<KeyValuePair<string, object>> adoParameters;
+            List<string> lstDbColumnNames;
+            List<string> lstPropertiesNames;
+            long count;
+
+            FormatSqlForSelectAutoDetermineSelectedFields(refSqlTemplate_, mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand,
+                out adoParameters, out lstPropertiesNames, out lstDbColumnNames, true);
+
+            // Transaction
+            if (transaction_ != null)
+            {
+                long.TryParse(DbManager.Instance.ExecuteScalar(transaction_, sqlCommand, adoParameters).ToString(), out count);
+                return count;
+
+            }
+            // Pas de transaction
+            OOrmDbConnectionWrapper conn = null;
+            try
+            {
+                conn = DbManager.Instance.CreateConnection();
+                long.TryParse(DbManager.Instance.ExecuteScalar(conn, sqlCommand, adoParameters).ToString(), out count);
+                return count;
+            }
+            finally
+            {
+                // Si c'est la connexion de backup alors on ne la dipose pas pour usage ultérieur.
+                if (!conn.IsBackup)
+                    conn.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Retourne un objet du type T avec les données rendues par une requete SELECT. Si pas de résultat retourne null.
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="lstDbColumnNames_">Colonnes DB à utiliser pour les champs à sélectionner</param>
@@ -266,7 +311,8 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <param name="sqlCommand_">Texte final de la requête SQL</param>
         /// <param name="adoParameters_">Représentation des paramètres ADO.NET (nom et valeur)</param>
-        private static T GetDataObject<T>(OOrmDbTransactionWrapper transaction_, string sqlCommand_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_, IEnumerable<KeyValuePair<string, object>> adoParameters_) where T : new()
+        /// <returns>Retourne un objet de type T rempli par les donnnées du DataReader, ou null</returns>
+        private static T GetDataObject<T>(OOrmDbTransactionWrapper transaction_, string sqlCommand_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_, IEnumerable<KeyValuePair<string, object>> adoParameters_) where T : class, new()
         {
             T dataObject = new T();
             // Transaction
@@ -277,6 +323,10 @@ namespace OsamesMicroOrm.DbTools
                     if (reader.Read())
                     {
                         FillDataObjectFromDataReader(dataObject, reader, lstDbColumnNames_, lstPropertiesNames_);
+                    }
+                    else
+                    {
+                        return null;
                     }
                 }
                 return dataObject;
@@ -292,6 +342,10 @@ namespace OsamesMicroOrm.DbTools
                     {
                         FillDataObjectFromDataReader(dataObject, reader, lstDbColumnNames_, lstPropertiesNames_);
                     }
+                    else
+                    {
+                        return null;
+                    }
                 }
                 return dataObject;
             }
@@ -304,7 +358,7 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Retourne une liste d'objets du type T avec les données rendues par une requete SELECT.
+        /// Retourne une liste d'objets du type T avec les données rendues par une requete SELECT. Si pas de résultat retourne une liste vide.
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="lstDbColumnNames_">Colonnes DB à utiliser pour les champs à sélectionner</param>
@@ -312,7 +366,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <param name="sqlCommand_">Texte final de la requête SQL</param>
         /// <param name="adoParameters_">Représentation des paramètres ADO.NET (nom et valeur)</param>
-        private static List<T> GetListDataObject<T>(OOrmDbTransactionWrapper transaction_, string sqlCommand_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_, IEnumerable<KeyValuePair<string, object>> adoParameters_) where T : new()
+        private static List<T> GetListDataObject<T>(OOrmDbTransactionWrapper transaction_, string sqlCommand_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_, IEnumerable<KeyValuePair<string, object>> adoParameters_) where T : class, new()
         {
             List<T> dataObjects = new List<T>();
             // Transaction

@@ -72,7 +72,7 @@
     <Compile Include="TestConfigurationLoader.cs" />
     <Compile Include="TestDbManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestDbTools.cs" />
+    <Compile Include="TestDbToolsSelects.cs" />
     <Compile Include="TestDbToolsInsert.cs" />
     <Compile Include="TestDbToolsUpdates.cs" />
     <Compile Include="Tools\CommonSqlite.cs" />

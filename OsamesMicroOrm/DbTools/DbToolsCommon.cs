@@ -73,6 +73,9 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Chaîne de texte. Ex: "[FirstName], [LastName]..."</returns>
         internal static string GenerateCommaSeparatedDbFieldsString(List<string> lstDbColumnNames_)
         {
+            if (lstDbColumnNames_.Count == 0)
+                return string.Empty;
+
             StringBuilder sb = new StringBuilder();
 
             int iCount = lstDbColumnNames_.Count;
@@ -80,7 +83,8 @@ namespace OsamesMicroOrm.DbTools
             {
                 sb.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames_[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(", ");
             }
-            sb.Remove(sb.Length - 2, 2);
+            if (!string.IsNullOrEmpty(sb.ToString()))
+                sb.Remove(sb.Length - 2, 2);
             return sb.ToString();
         }
 
@@ -242,8 +246,16 @@ namespace OsamesMicroOrm.DbTools
         /// Sert aussi pour le nom du paramètre dynamique si on avait passé "#".</param>
         /// <returns>Nom de colonne DB</returns>
         /// <throws>ArgumentException when value_ parameter is null</throws>
-        internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_)
+        internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_, out bool unprotectedLiteral)
         {
+            unprotectedLiteral = false;
+
+            if (value_.ToUpperInvariant().StartsWith("%UL%") || string.IsNullOrWhiteSpace(value_))
+            {
+                unprotectedLiteral = true;
+                return value_;
+            }
+            
             string returnValue;
             string strErrorMsg;
             char[] valueAsCharArray;
@@ -344,8 +356,16 @@ namespace OsamesMicroOrm.DbTools
             int parameterAutomaticNameIndex = -1;
             for (int i = 0; i < iCount; i++)
             {
+
+                bool unprotectedLiteral;
                 //Analyse la chaine courante de strColumnNames_ et retoure soit un @pN ou alors @nomcolonne
-                string paramName = DeterminePlaceholderType(lstColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex);
+                string paramName = DeterminePlaceholderType(lstColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex, out unprotectedLiteral);
+
+                if (paramName.StartsWith("%UL%"))
+                {
+                    lstSqlPlaceholders_.Add(paramName.Remove(paramName.IndexOf("%"), (paramName.IndexOf("%", paramName.IndexOf("%") + 2)) - paramName.IndexOf("%") + 1));
+                    continue;
+                }
 
                 // Ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ.
                 if (paramName.StartsWith("@"))
