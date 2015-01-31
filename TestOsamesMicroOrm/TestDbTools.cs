@@ -6,6 +6,8 @@ using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
 using SampleDbEntities.Chinook;
 using OsamesMicroOrm.DbTools;
+using OsamesMicroOrm;
+using OsamesMicroOrm.Utilities;
 
 namespace TestOsamesMicroOrm
 {
@@ -267,7 +269,7 @@ namespace TestOsamesMicroOrm
             // cette liste va être créée par la méthode testée
             List<string> lstDbEntityPropertyNames;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("BaseReadAllWhere", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 },  out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
+            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("BaseReadAllWhere", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
 
             Assert.AreEqual("SELECT * FROM [Employee] WHERE [EmployeeId] = @p0;", sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
@@ -373,9 +375,8 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping")]
         public void TestDetermineDatabaseColumnName()
         {
-            string columnName, strErrorMsg_;
-            DbToolsCommon.DetermineDatabaseColumnName("Customer", "LastName", out columnName, out strErrorMsg_);
-            // TODO cette méthode est à modifier pour renvoyer ici true (ajouter un assert) #ORM-85
+            string columnName;
+            DbToolsCommon.DetermineDatabaseColumnName("Customer", "LastName", out columnName);
             Assert.AreEqual("LastName", columnName);
         }
 
@@ -406,12 +407,21 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         [TestCategory("Mapping")]
         [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestDetermineDatabaseColumnNameWrongDictionaryName()
         {
-            string columnName, strErrorMsg_;
-            bool result = DbToolsCommon.DetermineDatabaseColumnName("NotACustomer", "LastName", out columnName, out strErrorMsg_);
+            string columnName;
+            try
+            {
+                DbToolsCommon.DetermineDatabaseColumnName("NotACustomer", "LastName", out columnName);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                throw;
+            }
 
-            Assert.IsFalse(result);
+            
         }
 
         /// <summary>

@@ -244,6 +244,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="parameterAutomaticNameIndex_">Index incrémenté à chaque fois qu'on génère un nom de paramètre "@p..."</param>
         /// <param name="parameterIndex_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
         /// Sert aussi pour le nom du paramètre dynamique si on avait passé "#".</param>
+        /// <param name="unprotectedLiteral">Si retourné à vrai, signifie que value_ était null, empty, ou un litéral à ne pas protéger</param>
         /// <returns>Nom de colonne DB</returns>
         /// <throws>ArgumentException when value_ parameter is null</throws>
         internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_, out bool unprotectedLiteral)
@@ -257,7 +258,6 @@ namespace OsamesMicroOrm.DbTools
             }
 
             string returnValue;
-            string strErrorMsg;
             char[] valueAsCharArray;
 
             if (value_ == null)
@@ -317,7 +317,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
                 // On peut avoir des espaces dans le nom de la colonne ainsi que "_" mais pas "-" (norme SQL).
-                DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName, out strErrorMsg);
+                DetermineDatabaseColumnName(mappingDictionariesContainerKey_, value_, out columnName);
                 valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                            char.IsWhiteSpace(c_) ||
                                                            c_ == '_')).ToArray();
@@ -326,7 +326,7 @@ namespace OsamesMicroOrm.DbTools
 
             // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
             // On peut avoir des espaces dans le nom de la colonne ainsi que "_" mais pas "-" (norme SQL).
-            DetermineDatabaseColumnName(temp[0], temp[1], out columnName, out strErrorMsg);
+            DetermineDatabaseColumnName(temp[0], temp[1], out columnName);
             valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                        char.IsWhiteSpace(c_) ||
                                                        c_ == '_')).ToArray();
@@ -386,23 +386,11 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet dataObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
-        /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static bool DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out string strErrorMsg_)
+        /// <exception cref="OOrmHandledException">Erreur quand l'information demandée ne peut être trouvée das les données de maping</exception>
+        internal static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_)
         {
-            dbColumnName_ = null;
-            strErrorMsg_ = null;
-            try
-            {
-                dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Log(TraceEventType.Critical, e.Message);
-                strErrorMsg_ = e.Message;
-                return false;
-            }
+            dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
         }
 
         #endregion

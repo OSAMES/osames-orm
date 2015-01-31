@@ -98,16 +98,27 @@ namespace OsamesMicroOrm.Utilities
                 }
             }
         }
+
         /// <summary>
-        /// return a key value pair with hresult hexa code and description
+        /// Retourne une KeyValuePair avec : comme clé, le code hresult au format int au lieu de chaîne hexadécimale, comme valeur : le descriptif assocé au code.
         /// </summary>
         /// <param name="code_"></param>
         /// <returns></returns>
-        internal static string FindHResultByCode(HResultEnum code_)
+        internal static KeyValuePair<int, string> FindHResultAndDescriptionByCode(HResultEnum code_)
         {
             string code = code_.ToString().ToUpperInvariant();
-            return HResultCode.ContainsKey(code) ? string.Format("{0} ({1})", HResultCode[code].Value, HResultCode[code].Key)
-                                                  : string.Format("No code {0} found.", code_);
+
+            int hexaCode = -1;
+            string description = string.Format("No code {0} found.", code_);
+
+            if (HResultCode.ContainsKey(code))
+            {
+                // On enlève le "0x" en début de chaîne et ceci est la bonne façon de convertir
+                hexaCode = Int32.Parse(HResultCode[code].Key.Substring(2), System.Globalization.NumberStyles.HexNumber);
+                description = string.Format("{0} ({1})", HResultCode[code].Value, HResultCode[code].Key);
+            }
+
+            return new KeyValuePair<int, string>(hexaCode, description);
         }
 
         /// <summary>
@@ -115,7 +126,7 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         internal static void DisplayErrorMessageWinforms(ErrorType errorType_, string errorMessage_)
         {
-            MessageBox.Show(errorMessage_, "ORM Message", MessageBoxButtons.OK, (MessageBoxIcon) errorType_);
+            MessageBox.Show(errorMessage_, "ORM Message", MessageBoxButtons.OK, (MessageBoxIcon)errorType_);
         }
 
         /// <summary>
@@ -168,11 +179,11 @@ namespace OsamesMicroOrm.Utilities
         /// <param name="hresultCode_"></param>
         /// <param name="additionalErrorMsg_"></param>
         /// <param name="errorType_"></param>
-        /// <returns></returns>
+        /// <returns>KeyValuePair avec pour la clé le code hresult au format int au lieu de chaîne hexa "0xNNNN" et pour la valeur le message d'erreur complètement formaté à retourner à l'utilisateur</returns>
         /// <exception cref="IOException">An I/O error occurred. </exception>
         /// <exception cref="ArgumentNullException"><paramref name="format" /> is null. </exception>
         /// <exception cref="FormatException">The format specification in <paramref name="format" /> is invalid. </exception>
-        public static string ProcessOrmException(HResultEnum hresultCode_, ErrorType errorType_ = ErrorType.ERROR, string additionalErrorMsg_ = null)
+        public static KeyValuePair<int, string> ProcessOrmException(HResultEnum hresultCode_, ErrorType errorType_ = ErrorType.ERROR, string additionalErrorMsg_ = null)
         {
             // Ecrire dans event log n'est possible qu'en admin sinon on utilisera le log classique uniquement.
             // Le test d'être admin doit être fait à l'initialisation de l'ORM.
@@ -181,21 +192,23 @@ namespace OsamesMicroOrm.Utilities
             //if (writeToWindowsEventLog_)
             //    WriteToWindowsEventLog(errorCode_, errorType_, additionalErrorMsg_);
 
-            Logger.Log((TraceEventType)errorType_, FormatCustomerError(FindHResultByCode(hresultCode_), additionalErrorMsg_));
+            KeyValuePair<int, string> hresultCodeHexaAndDescription = FindHResultAndDescriptionByCode(hresultCode_);
+            string errorDescription = hresultCodeHexaAndDescription.Value;
+
+            Logger.Log((TraceEventType)errorType_, FormatCustomerError(errorDescription, additionalErrorMsg_));
 
             switch (ConfigurationLoader.GetOrmContext)
             {
                 case 1:  // console
-                    Console.WriteLine(FindHResultByCode(hresultCode_), additionalErrorMsg_);
+                    Console.WriteLine(errorDescription, additionalErrorMsg_);
                     break;
                 case 2: // winform - wpf
-                    DisplayErrorMessageWinforms(errorType_, string.Format("{0}\r\nAdditionnal information: {1}", FindHResultByCode(hresultCode_), additionalErrorMsg_));
+                    DisplayErrorMessageWinforms(errorType_, string.Format("{0}\r\nAdditionnal information: {1}", errorDescription, additionalErrorMsg_));
                     break;
                 case 3: //TODO faire le code pour retourner l'erreur via webservice c#
                     break;
-            }           
-
-            return FormatCustomerError(FindHResultByCode(hresultCode_), additionalErrorMsg_);
+            }
+            return new KeyValuePair<int, string>(hresultCodeHexaAndDescription.Key, FormatCustomerError(errorDescription, additionalErrorMsg_));
         }
     }
 

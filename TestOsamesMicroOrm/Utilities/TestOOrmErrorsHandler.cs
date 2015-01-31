@@ -30,9 +30,9 @@ namespace TestOsamesMicroOrm.Utilities
         {
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
-            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_COLUMNDOESNOTEXIST);
-            Console.WriteLine(result);
-            Assert.IsNotNull(result);
+            KeyValuePair<int, string> result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_COLUMNDOESNOTEXIST);
+            Console.WriteLine(result.Value);
+            Assert.IsNotNull(result.Value);
         }
 
         [TestMethod]
@@ -42,7 +42,7 @@ namespace TestOsamesMicroOrm.Utilities
         {
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
-            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.FormatCustomerError(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_COMMITTRANSACTIONFAILED), "Custom message");
+            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.FormatCustomerError(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_COMMITTRANSACTIONFAILED).Value, "Custom message");
             Console.WriteLine(result);
             Assert.IsNotNull(result);
         }
@@ -66,9 +66,9 @@ namespace TestOsamesMicroOrm.Utilities
         {
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
-            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, ErrorType.ERROR, "Custom message");
-            Console.WriteLine(result);
-            Assert.IsNotNull(result);
+            KeyValuePair<int, string> result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, ErrorType.ERROR, "Custom message");
+            Console.WriteLine(result.Value);
+            Assert.IsNotNull(result.Value);
         }
 
         [TestMethod]
@@ -82,9 +82,9 @@ namespace TestOsamesMicroOrm.Utilities
 
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
-            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, ErrorType.ERROR, "Custom message");
-            Console.WriteLine(result);
-            Assert.IsNotNull(result);
+            KeyValuePair<int, string> result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, ErrorType.ERROR, "Custom message");
+            Console.WriteLine(result.Value);
+            Assert.IsNotNull(result.Value);
         }
 
         [TestMethod]
@@ -98,9 +98,9 @@ namespace TestOsamesMicroOrm.Utilities
 
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
-            string result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, ErrorType.ERROR, "Custom message");
-            Console.WriteLine(result);
-            Assert.IsNotNull(result);
+            KeyValuePair<int, string> result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, ErrorType.ERROR, "Custom message");
+            Console.WriteLine(result.Value);
+            Assert.IsNotNull(result.Value);
         }
     }
 }
