@@ -250,12 +250,12 @@ namespace OsamesMicroOrm.DbTools
         {
             unprotectedLiteral = false;
 
-            if (value_.ToUpperInvariant().StartsWith("%UL%") || string.IsNullOrWhiteSpace(value_))
+            if (string.IsNullOrWhiteSpace(value_) || value_.ToUpperInvariant().StartsWith("%UL%"))
             {
                 unprotectedLiteral = true;
                 return value_;
             }
-            
+
             string returnValue;
             string strErrorMsg;
             char[] valueAsCharArray;
@@ -293,10 +293,10 @@ namespace OsamesMicroOrm.DbTools
             {
                 // C'est un littéral.
                 // Dans un literal on permet les espaces.
-                
+
                 parameterIndex_++;
 
-                
+
                 valueAsCharArray = value_.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                              char.IsWhiteSpace(c_) ||
                                                              c_ == '_' ||
@@ -304,7 +304,7 @@ namespace OsamesMicroOrm.DbTools
 
                 returnValue = new string(valueAsCharArray);
 
-                return returnValue; 
+                return returnValue;
             }
 
             if (value_.Count(c_ => c_ == ':') > 1)
