@@ -244,6 +244,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="parameterAutomaticNameIndex_">Index incrémenté à chaque fois qu'on génère un nom de paramètre "@p..."</param>
         /// <param name="parameterIndex_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
         /// Sert aussi pour le nom du paramètre dynamique si on avait passé "#".</param>
+        /// <param name="unprotectedLiteral">Indique si le littéral doit être protégé avec les fields encloser. Vrai pour non protégé. Gère aussi le fait d'avoir une valeur null ou whitespace</param>
         /// <returns>Nom de colonne DB</returns>
         /// <throws>ArgumentException when value_ parameter is null</throws>
         internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_, out bool unprotectedLiteral)
