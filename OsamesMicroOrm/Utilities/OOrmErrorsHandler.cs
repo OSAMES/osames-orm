@@ -31,7 +31,7 @@ namespace OsamesMicroOrm.Utilities
     /// <summary>
     /// Boîte à outils pour la gestion des messages d'erreurs.
     /// </summary>
-    public class OOrmErrorsHandler
+    internal class OOrmErrorsHandler
     {
         private const string SSource = "OsamesORM";
         private const string SNetRuntimeSource = "Application Error"; //".NET Runtime";
@@ -44,7 +44,7 @@ namespace OsamesMicroOrm.Utilities
         /// <summary>
         /// Dictionnaire interne des erreurs au format suivant : clé : code d'erreur "E_XXX". Valeur : code HRESULT "0x1234" et texte.
         /// </summary>
-        public static readonly Dictionary<string, KeyValuePair<string, string>> HResultCode = new Dictionary<string, KeyValuePair<string, string>>();
+        internal static readonly Dictionary<string, KeyValuePair<string, string>> HResultCode = new Dictionary<string, KeyValuePair<string, string>>();
 
         /// <summary>
         /// Cosntructor
@@ -183,10 +183,11 @@ namespace OsamesMicroOrm.Utilities
         /// <exception cref="IOException">An I/O error occurred. </exception>
         /// <exception cref="ArgumentNullException"><paramref name="format" /> is null. </exception>
         /// <exception cref="FormatException">The format specification in <paramref name="format" /> is invalid. </exception>
-        public static KeyValuePair<int, string> ProcessOrmException(HResultEnum hresultCode_, ErrorType errorType_ = ErrorType.ERROR, string additionalErrorMsg_ = null)
+        internal static KeyValuePair<int, string> ProcessOrmException(HResultEnum hresultCode_, ErrorType errorType_ = ErrorType.ERROR, string additionalErrorMsg_ = null)
         {
             // Ecrire dans event log n'est possible qu'en admin sinon on utilisera le log classique uniquement.
             // Le test d'être admin doit être fait à l'initialisation de l'ORM.
+            //TODO si un jour on décide de faire exécuter en mode admin l'orm, mais il faut de toute manière créer une clé dans le registre pour la catégorie dans le eventlog de windows.
 
             //disabling write to windows log
             //if (writeToWindowsEventLog_)
@@ -205,8 +206,6 @@ namespace OsamesMicroOrm.Utilities
                 case 2: // winform - wpf
                     DisplayErrorMessageWinforms(errorType_, string.Format("{0}\r\nAdditionnal information: {1}", errorDescription, additionalErrorMsg_));
                     break;
-                case 3: //TODO faire le code pour retourner l'erreur via webservice c#
-                    break;
             }
             return new KeyValuePair<int, string>(hresultCodeHexaAndDescription.Key, FormatCustomerError(errorDescription, additionalErrorMsg_));
         }
@@ -215,7 +214,7 @@ namespace OsamesMicroOrm.Utilities
     /// <summary>
     /// 
     /// </summary>
-    public enum ErrorType
+    internal enum ErrorType
     {
         // ReSharper disable InconsistentNaming
         CRITICAL = MessageBoxIcon.Stop,  // for MessageBoxIcon it's MessageBoxIcon.Stop

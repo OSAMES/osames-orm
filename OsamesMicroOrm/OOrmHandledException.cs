@@ -22,6 +22,8 @@ using System.Runtime.Serialization;
 namespace OsamesMicroOrm
 {
     /// <summary>
+    /// OOrmHandledException classe fille d'une Exception en nous permettant d'ajouter nos propre données.
+    /// C'est la seul classe de type Exception à utilier dans l'orm
     /// Exception crée lorsqu'une exception non gérée se produit.
     /// Cette exception encapsule l'exception initiale et assure son traçage dans le log et le cas échéant d'autres traitements.
     /// C'est la seule exception en sortie de l'ORM vers l'application cliente.
@@ -30,6 +32,8 @@ namespace OsamesMicroOrm
     public class OOrmHandledException : Exception
     {
         string FormattedMessage;
+
+        internal Exception EInnerException;
 
         /// <summary>
         /// Comme on ne peut pas positionner Message qui n'a qu'un getter dans la classe Exception, on surcharge cet getter pour renvoyer une chaîne que nous avons formatée.
@@ -42,12 +46,21 @@ namespace OsamesMicroOrm
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public new Exception InnerException
+        {
+            get
+            {
+                return EInnerException;
+            }
+        }
 
         /// <summary>
         /// Constructor
         /// </summary>
         protected OOrmHandledException()
-            : base()
         {
             // Nous n'avons pas précisé de message formaté donc reprenons celui de la classe Exception.
             FormattedMessage = base.Message;
@@ -69,26 +82,29 @@ namespace OsamesMicroOrm
         /// Constructor
         /// </summary>
         public OOrmHandledException(HResultEnum errorCode_, Exception innerException_)
-            : base()
         {
             System.Collections.Generic.KeyValuePair<int, string> errorHresultCodeAndDetailedMessageWithLogging = Utilities.OOrmErrorsHandler.ProcessOrmException(errorCode_, Utilities.ErrorType.ERROR, null);
             // positionnement de notre message formaté
             FormattedMessage = errorHresultCodeAndDetailedMessageWithLogging.Value;
             // transformation de la chaîne "0X1234" en integer
             HResult = errorHresultCodeAndDetailedMessageWithLogging.Key;
+
+            EInnerException = innerException_;
+
         }
 
         /// <summary>
         /// Constructor
         /// </summary>
         public OOrmHandledException(HResultEnum errorCode_, Exception innerException_, string additionalMessage_)
-            : base()
         {
             System.Collections.Generic.KeyValuePair<int, string> errorHresultCodeAndDetailedMessageWithLogging = Utilities.OOrmErrorsHandler.ProcessOrmException(errorCode_, Utilities.ErrorType.ERROR, additionalMessage_);
             // positionnement de notre message formaté
             FormattedMessage = errorHresultCodeAndDetailedMessageWithLogging.Value;
             // transformation de la chaîne "0X1234" en integer
             HResult = errorHresultCodeAndDetailedMessageWithLogging.Key;
+
+            EInnerException = innerException_;
         }
 
 
