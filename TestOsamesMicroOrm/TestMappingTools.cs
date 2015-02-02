@@ -7,6 +7,7 @@ using OsamesMicroOrm.Logging;
 using OsamesMicroOrm.Utilities;
 using SampleDbEntities.Chinook;
 using TestOsamesMicroOrm.TestDbEntities;
+using OsamesMicroOrm;
 
 namespace TestOsamesMicroOrm
 {
@@ -98,21 +99,19 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping NOK")]
         [Owner("Barbara Post")]
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestGetDbEntityDictionnaryMappingKeyWrongValueMappingAttribute()
         {
             TestWrongMappingEntity entity = new TestWrongMappingEntity();
             try
             {
                 string test = MappingTools.GetDbEntityDictionnaryMappingKey(entity);
-                Assert.Fail("Test didn't fail");
             }
-            catch (Exception ex)
+            catch (OOrmHandledException ex)
             {
-                Logger.Log(TraceEventType.Information, ex.Message);
+                Assert.AreEqual(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
                 throw;
             }
-
-        }
+                                }
     }
 }

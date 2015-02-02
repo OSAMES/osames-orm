@@ -240,7 +240,32 @@ namespace TestOsamesMicroOrm
             }
         }
 
-        // TODO les TU dans l'autre sens, GetDbEntityPropertyNameFromMappingDictionary, les 3 cas (OK, pas de match sur clé de mapping, pas de match sur nom de colonne)
+        /// <summary>
+        /// ConfigurationLoader internal dictionary is populated. Test of GetDbEntityPropertyNameFromMappingDictionary : case where mapping is not found (key).
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("Mapping")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestGetDbEntityPropertyNameWrongColumnName()
+        {
+            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
+            Assert.IsFalse(ConfigurationLoader.MappingDictionnary.ContainsKey("foobar"), "Expected not to find 'foobar' key");
+            try
+            {
+                ConfigurationLoader.Instance.GetDbEntityPropertyNameFromMappingDictionary("foobar", "Email");
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                throw;
+            }
+        }
+
+        // TODO ajouter des TU TestGetDbEntityPropertyNameWrongColumnName..., encore 2 cas (cas OK, cas pas de match sur nom de colonne)
 
         /// <summary>
         /// After test run, ConfigurationLoader internal dictionary should be populated.

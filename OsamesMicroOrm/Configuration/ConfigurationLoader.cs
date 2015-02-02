@@ -78,7 +78,7 @@ namespace OsamesMicroOrm.Configuration
         /// </summary>
         internal static string EndFieldEncloser;
 
- 
+
         /// <summary>
         /// Private constructor for singleton.
         /// </summary>
@@ -119,7 +119,7 @@ namespace OsamesMicroOrm.Configuration
                     return context;
                 return 0;
             }
-        } 
+        }
 
         /// <summary>
         /// Clears internal singleton, forcing reload to next call to "Instance".
@@ -149,11 +149,9 @@ namespace OsamesMicroOrm.Configuration
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
                 throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
-                //throw new Exception(OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_NOMAPPINGKEY) + "["+mappingDictionaryName_ + "]");
             mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
             if (resultColumnName == null)
                 throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDPROPERTY, null, "[No property " + propertyName_ + " in dictionary " + mappingDictionaryName_ + "]");
-                //throw new Exception(OOrmErrorsHandler.FindHResultByCode(HResultEnum.E_NOMAPPINGKEYANDPROPERTY) + "[No property "+ propertyName_ +" in dictionary "+ mappingDictionaryName_ +"]" );
 
             return resultColumnName;
         }
@@ -169,11 +167,11 @@ namespace OsamesMicroOrm.Configuration
             Dictionary<string, string> mappingObjectSet;
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
-            // TODO faire comme ci-dessus, lancer des OOrmHandledException et vérifier les TUs, les créer ou les adapter.
-            if (mappingObjectSet == null)
-                throw new Exception(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY) + "[" + mappingDictionaryName_ + "]");
-            string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
 
+            if (mappingObjectSet == null)
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
+            string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
+            // TODO faire comme ci-dessus, lancer des OOrmHandledException et vérifier les TUs, les créer ou les adapter.
             if (resultPropertyName == null)
                 throw new Exception(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEYANDCOLUMN) + "[key: " + mappingDictionaryName_ + ", Col.: " + dbColumnName_ + "]");
 
@@ -191,7 +189,7 @@ namespace OsamesMicroOrm.Configuration
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
             return mappingObjectSet;
         }
 
@@ -203,7 +201,7 @@ namespace OsamesMicroOrm.Configuration
         /// </summary>
         /// <returns>false when configuration is wrong</returns>
         internal bool CheckDatabaseConfiguration()
-        {  
+        {
             // 1. AppSettings : doit définir une connexion DB active
             string dbConnexion = ConfigurationManager.AppSettings["activeDbConnection"];
             if (string.IsNullOrWhiteSpace(dbConnexion))
@@ -219,7 +217,7 @@ namespace OsamesMicroOrm.Configuration
                 Logger.Log(TraceEventType.Critical, "Active connection not found in available connection strings (key : '" + dbConnexion + "'");
                 return false;
             }
-          
+
             // 3. Un provider doit être défini (attribut "ProviderName")
             string provider = activeConnection.ProviderName;
             if (string.IsNullOrWhiteSpace(provider))
@@ -231,7 +229,7 @@ namespace OsamesMicroOrm.Configuration
             // 4. ce provider doit exister sur le système
             if (!FindInProviderFactoryClasses(provider))
             {
-                Logger.Log(TraceEventType.Critical, "Provider with name '" + provider +"' is not installed '");
+                Logger.Log(TraceEventType.Critical, "Provider with name '" + provider + "' is not installed '");
                 return false;
             }
             // 5. Une chaîne de connexion doit être définie (attribut "ConnectionString")
@@ -241,9 +239,9 @@ namespace OsamesMicroOrm.Configuration
                 Logger.Log(TraceEventType.Critical, "No connection string value defined in connection strings configuration for connection with name '" + dbConnexion + "'");
                 return false;
             }
-            
+
             Logger.Log(TraceEventType.Information, "Using DB connection string: " + conn);
-            
+
             // Now pass information to DbHelper
             DbManager.ConnectionString = conn;
             DbManager.ProviderName = provider;
@@ -342,7 +340,7 @@ namespace OsamesMicroOrm.Configuration
             string conn = activeConnection.Name;
             if (string.IsNullOrWhiteSpace(conn))
             {
-                Logger.Log(TraceEventType.Critical, "No active connection name defined in appSettings for active connection '" + activeDbConnectionName_+ "'");
+                Logger.Log(TraceEventType.Critical, "No active connection name defined in appSettings for active connection '" + activeDbConnectionName_ + "'");
                 return;
             }
             string providerInvariantName = activeConnection.ProviderName;

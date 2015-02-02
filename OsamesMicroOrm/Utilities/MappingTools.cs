@@ -48,7 +48,7 @@ namespace OsamesMicroOrm.Utilities
 
             // Check that value exists in mapping
             if(!Configuration.ConfigurationLoader.MappingDictionnary.ContainsKey(dbTableName))
-                throw new Exception("Key '" + dbTableName + "' not found in mapping configuration");
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + dbTableName + "]");
 
             return dbTableName;
 
