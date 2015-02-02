@@ -210,15 +210,13 @@ namespace OsamesMicroOrm.Configuration
             // 2. Cette connexion DB doit être trouvée dans les ConnectionStrings définies dans la configuration (attribute "Name")
             var activeConnection = ConfigurationManager.ConnectionStrings[dbConnexion];
             if (activeConnection == null)
-                throw new OOrmHandledException(HResultEnum.E_ACTIVECONNECTIONNOTFOUNDINACTIVECOSTRING, null, "key : '" + dbConnexion + "'");
+                throw new OOrmHandledException(HResultEnum.E_ACTIVECONNECTIONNOTFOUNDINACTIVECOSTRING, null, "key: '" + dbConnexion + "'");
            
             // 3. Un provider doit être défini (attribut "ProviderName")
             string provider = activeConnection.ProviderName;
             if (string.IsNullOrWhiteSpace(provider))
-            {
-                Logger.Log(TraceEventType.Critical, "No provider name defined in connection strings configuration for connection with name '" + dbConnexion + "'");
-            }
-
+                throw new OOrmHandledException(HResultEnum.E_NOPROVIDERNAMEFORCONNECTIONNAME, null, "connection name: " + dbConnexion);
+           
             // 4. ce provider doit exister sur le système
             if (!FindInProviderFactoryClasses(provider))
             {
