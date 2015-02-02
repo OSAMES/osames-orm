@@ -9,7 +9,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
-using TestOsamesMicroOrm.Tools;
+using OsamesMicroOrm.Utilities;
+using Common = TestOsamesMicroOrm.Tools.Common;
 
 namespace TestOsamesMicroOrm
 {
@@ -33,6 +34,35 @@ namespace TestOsamesMicroOrm
             // Obligatoire car Resharper ne comprend pas qu'il faut initilaliser la classe mère.
             var tempo = ConfigurationLoader.Instance;
         }
+
+        #region configurations erronées dans les fichiers .config
+
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("Configuration")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestNoActiveConnectionDefinedAppSettings()
+        {
+            try
+            {
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "");
+                var test = ConfigurationLoader.Instance;
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOACTIVECONNECTIONDEFINED).Key, ex.HResult);
+                throw;
+            }
+            finally
+            {
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.activeDbConnection.ToString());
+                var test = ConfigurationLoader.Instance;
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Load of correct configuration file.

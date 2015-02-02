@@ -29,7 +29,7 @@ namespace TestOsamesMicroOrmSqlite
         /// </summary>
         [TestMethod]
         [TestCategory("SqLite")]
-        [TestCategory("Configuration NOK")]
+        [TestCategory("Mapping")]
         [TestCategory("Select")]
         public void TestSelectSingleAllColumnsIncorrectMapping()
         {

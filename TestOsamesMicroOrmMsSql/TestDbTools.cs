@@ -26,7 +26,7 @@ namespace TestOsamesMicroOrmMsSql
         [TestMethod]
         [TestCategory("MsSql")]
         [TestCategory("Select")]
-        [TestCategory("Configuration NOK")]
+        [TestCategory("Mapping")]
         public void TestExecuteReaderIncorrectMapping()
         {
             try

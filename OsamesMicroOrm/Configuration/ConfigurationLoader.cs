@@ -200,22 +200,18 @@ namespace OsamesMicroOrm.Configuration
         /// Positionne les valeurs de la connexion string et du nom du provider sur le singleton de DbManager.
         /// </summary>
         /// <returns>false when configuration is wrong</returns>
-        internal bool CheckDatabaseConfiguration()
+        internal void CheckDatabaseConfiguration()
         {
             // 1. AppSettings : doit définir une connexion DB active
             string dbConnexion = ConfigurationManager.AppSettings["activeDbConnection"];
             if (string.IsNullOrWhiteSpace(dbConnexion))
-            {
-                Logger.Log(TraceEventType.Critical, "No active connection name defined in appSettings ('activeDbConnection')");
-                return false;
-            }
+                throw new OOrmHandledException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, null);
 
             // 2. Cette connexion DB doit être trouvée dans les ConnectionStrings définies dans la configuration (attribute "Name")
             var activeConnection = ConfigurationManager.ConnectionStrings[dbConnexion];
             if (activeConnection == null)
             {
                 Logger.Log(TraceEventType.Critical, "Active connection not found in available connection strings (key : '" + dbConnexion + "'");
-                return false;
             }
 
             // 3. Un provider doit être défini (attribut "ProviderName")
@@ -223,21 +219,18 @@ namespace OsamesMicroOrm.Configuration
             if (string.IsNullOrWhiteSpace(provider))
             {
                 Logger.Log(TraceEventType.Critical, "No provider name defined in connection strings configuration for connection with name '" + dbConnexion + "'");
-                return false;
             }
 
             // 4. ce provider doit exister sur le système
             if (!FindInProviderFactoryClasses(provider))
             {
                 Logger.Log(TraceEventType.Critical, "Provider with name '" + provider + "' is not installed '");
-                return false;
             }
             // 5. Une chaîne de connexion doit être définie (attribut "ConnectionString")
             string conn = activeConnection.ConnectionString;
             if (string.IsNullOrWhiteSpace(conn))
             {
                 Logger.Log(TraceEventType.Critical, "No connection string value defined in connection strings configuration for connection with name '" + dbConnexion + "'");
-                return false;
             }
 
             Logger.Log(TraceEventType.Information, "Using DB connection string: " + conn);
@@ -245,8 +238,6 @@ namespace OsamesMicroOrm.Configuration
             // Now pass information to DbHelper
             DbManager.ConnectionString = conn;
             DbManager.ProviderName = provider;
-
-            return true;
 
         }
 

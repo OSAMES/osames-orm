@@ -25,7 +25,7 @@ namespace TestOsamesMicroOrm.Utilities
 
         [TestMethod]
         [TestCategory("Error handling")]
-        [Owner("Benjamin Nolmans)")]
+        [Owner("Benjamin Nolmans")]
         public void TestFindHResultByCode()
         {
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
@@ -37,7 +37,7 @@ namespace TestOsamesMicroOrm.Utilities
 
         [TestMethod]
         [TestCategory("Error handling")]
-        [Owner("Benjamin Nolmans)")]
+        [Owner("Benjamin Nolmans")]
         public void TestFormatCustomerError()
         {
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
@@ -49,7 +49,7 @@ namespace TestOsamesMicroOrm.Utilities
 
         [TestMethod]
         [TestCategory("Error handling")]
-        [Owner("Benjamin Nolmans)")]
+        [Owner("Benjamin Nolmans")]
         [Ignore]
         public void TestWriteToWindowsEventLog()
         {
@@ -61,7 +61,7 @@ namespace TestOsamesMicroOrm.Utilities
 
         [TestMethod]
         [TestCategory("Error handling")]
-        [Owner("Benjamin Nolmans)")]
+        [Owner("Benjamin Nolmans")]
         public void TestProcessOrmException()
         {
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
@@ -73,7 +73,7 @@ namespace TestOsamesMicroOrm.Utilities
 
         [TestMethod]
         [TestCategory("Error handling")]
-        [Owner("Benjamin Nolmans)")]
+        [Owner("Benjamin Nolmans")]
         public void TestProcessOrmExceptionForConsoleMode()
         {
             Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.context.ToString(), "1");
@@ -89,7 +89,7 @@ namespace TestOsamesMicroOrm.Utilities
 
         [TestMethod]
         [TestCategory("Error handling")]
-        [Owner("Benjamin Nolmans)")]
+        [Owner("Benjamin Nolmans")]
         public void TestProcessOrmExceptionForWinForm()
         {
             Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.context.ToString(), "2");
