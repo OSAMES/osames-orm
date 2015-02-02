@@ -178,7 +178,8 @@ namespace OsamesMicroOrm.Configuration
         }
 
         /// <summary>
-        /// Asks mapping dictionary for all mapping defined for a given table.
+        /// Retourne les informations de mapping pour une table donnée sous forme de dictionnaire :
+        /// clés : propriétés de la classe C# DbEntity, valeurs : noms des colonnes en bae de données.
         /// </summary>
         /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
         /// <returns>Mapping dictionary</returns>
