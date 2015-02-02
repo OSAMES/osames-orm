@@ -37,6 +37,9 @@ namespace TestOsamesMicroOrm
 
         #region configurations erronées dans les fichiers .config
 
+        /// <summary>
+        /// Pas de valeur pour la connexion active dans AppSettings.
+        /// </summary>
         [TestMethod]
         [ExcludeFromCodeCoverage]
         [Owner("Barbara Post")]
@@ -53,6 +56,34 @@ namespace TestOsamesMicroOrm
             {
                 Console.WriteLine(ex.Message);
                 Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOACTIVECONNECTIONDEFINED).Key, ex.HResult);
+                throw;
+            }
+            finally
+            {
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.activeDbConnection.ToString());
+                var test = ConfigurationLoader.Instance;
+            }
+        }
+
+        /// <summary>
+        /// La clé correspondant à la connexion active dans AppSettings n'a pas de correspondance dans le fichier des connexion strings.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("Configuration")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestActiveConnectionDefinedAppSettingsNotFoundAmongConnectionStrings()
+        {
+            try
+            {
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "no match");
+                var test = ConfigurationLoader.Instance;
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_ACTIVECONNECTIONNOTFOUNDINACTIVECOSTRING).Key, ex.HResult);
                 throw;
             }
             finally
