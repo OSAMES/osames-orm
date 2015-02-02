@@ -166,6 +166,7 @@ namespace TestOsamesMicroOrm
             Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
         }
 
+        #region cas de test de GetDbColumnNameFromMappingDictionary()
         /// <summary>
         /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is found.
         /// </summary>
@@ -240,6 +241,30 @@ namespace TestOsamesMicroOrm
             }
         }
 
+        #endregion
+
+        #region cas de test de GetDbEntityPropertyNameFromMappingDictionary()
+        /// <summary>
+        /// ConfigurationLoader internal dictionary is populated. Test of GetDbEntityPropertyNameFromMappingDictionary : case where mapping is found.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("Mapping")]
+        public void TestGetDbEntityPropertyName()
+        {
+            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
+            Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("Customer"), "Expected to find 'Customer' key");
+
+            // Inspect detail for a specific case
+            Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["Customer"];
+            Assert.IsTrue(mappings.ContainsValue("Email"), "Expected to find 'Email' value");
+            Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
+            Assert.AreEqual("Email", ConfigurationLoader.Instance.GetDbEntityPropertyNameFromMappingDictionary("Customer", "Email"));
+        }
+
         /// <summary>
         /// ConfigurationLoader internal dictionary is populated. Test of GetDbEntityPropertyNameFromMappingDictionary : case where mapping is not found (key).
         /// </summary>
@@ -250,7 +275,7 @@ namespace TestOsamesMicroOrm
         [TestCategory("Configuration")]
         [TestCategory("Mapping")]
         [ExpectedException(typeof(OOrmHandledException))]
-        public void TestGetDbEntityPropertyNameWrongColumnName()
+        public void TestGetDbEntityPropertyNameWrongKey()
         {
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
             Assert.IsFalse(ConfigurationLoader.MappingDictionnary.ContainsKey("foobar"), "Expected not to find 'foobar' key");
@@ -265,7 +290,33 @@ namespace TestOsamesMicroOrm
             }
         }
 
-        // TODO ajouter des TU TestGetDbEntityPropertyNameWrongColumnName..., encore 2 cas (cas OK, cas pas de match sur nom de colonne)
+        /// <summary>
+        /// ConfigurationLoader internal dictionary is populated. Test of GetDbEntityPropertyNameFromMappingDictionary : case where mapping is not found (column name).
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("Mapping")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestGetDbEntityPropertyNameWrongColumnName()
+        {
+            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
+            Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("Customer"), "Expected to find 'customer' key");
+            Assert.IsFalse(ConfigurationLoader.MappingDictionnary["Customer"].ContainsValue("foobar"), "Expected not to find 'foobar' value");
+            try
+            {
+                ConfigurationLoader.Instance.GetDbEntityPropertyNameFromMappingDictionary("Customer", "foobar");
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEYANDCOLUMN).Key, ex.HResult);
+                throw;
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// After test run, ConfigurationLoader internal dictionary should be populated.
