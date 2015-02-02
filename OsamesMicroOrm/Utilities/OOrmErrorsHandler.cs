@@ -93,6 +93,8 @@ namespace OsamesMicroOrm.Utilities
                         string hexCode = row[0].Substring(1, row[0].Length - 2);
                         if (string.IsNullOrWhiteSpace(eCode) || string.IsNullOrWhiteSpace(hexCode))
                             continue;
+                        if (hresultCodes_.ContainsKey(eCode.ToUpperInvariant()))
+                            throw new Exception("Code " + eCode.ToUpperInvariant() + "already defined!");
                         hresultCodes_.Add(eCode.ToUpperInvariant(), new KeyValuePair<string, string>(hexCode, row[2].Substring(1, row[2].Length - 2)));
                     }
                 }

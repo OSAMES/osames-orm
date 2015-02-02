@@ -93,6 +93,35 @@ namespace TestOsamesMicroOrm
             }
         }
 
+        /// <summary>
+        /// Dans les connexion strings, une connexion string ne définit pas de provider name.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("Configuration")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestConnectionStringMissingProviderName()
+        {
+            try
+            {
+                //ConfigurationManager.ConnectionStrings.Add(new ConnectionStringSettings(" ", "test"));
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "test");
+                var test = ConfigurationLoader.Instance;
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOPROVIDERNAMEFORCONNECTIONNAME).Key, ex.HResult);
+                throw;
+            }
+            finally
+            {
+                //ConfigurationManager.ConnectionStrings.Remove(" ");
+                var test = ConfigurationLoader.Instance;
+            }
+        }
+
         #endregion
 
         /// <summary>
