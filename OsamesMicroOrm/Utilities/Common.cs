@@ -15,11 +15,10 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-using OsamesMicroOrm.Logging;
 
 namespace OsamesMicroOrm.Utilities
 {
@@ -29,16 +28,15 @@ namespace OsamesMicroOrm.Utilities
     internal static class Common
     {
         /// <summary>
-        /// Checks that a file exists, else throws an ApplicativeException.
+        /// Checks that a file exists.
         /// </summary>
         /// <param name="fileFullPath_"></param>
-        /// <param name="context_"></param>
-        internal static void CheckFile(string fileFullPath_, string context_)
+        /// <exception cref="OOrmHandledException"></exception>
+        internal static void CheckFile(string fileFullPath_)
         {
             if (!File.Exists(fileFullPath_))
             {
-                OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_TEMPLATEANALYSISERROR, ErrorType.CRITICAL, "Throw message : " + fileFullPath_ + " : file " + context_ + " does not exist.");
-                //Logger.Log(TraceEventType.Critical, "ConfigurationLoader: XML templates definitions analysis error. Throw message : " + fileFullPath_ + " : file " + context_ + " does not exist.");  
+                throw new OOrmHandledException(HResultEnum.E_CONFIGFILENOTFOUND, null, fileFullPath_); 
             }
         }
 

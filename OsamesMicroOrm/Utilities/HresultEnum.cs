@@ -11,7 +11,7 @@ using System.CodeDom.Compiler;
 namespace OsamesMicroOrm
 {
     /// <summary>
-	/// Auto generated date: 02/03/2015 21:49:05
+	/// Auto generated date: 02/03/2015 22:19:53
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
     public enum HResultEnum
@@ -73,7 +73,7 @@ namespace OsamesMicroOrm
 	                    
         E_NOMAPPINGKEY,
 	                    
-        E_TEMPLATEANALYSISERROR,
+        E_CONFIGFILENOTFOUND,
 	                    
         E_FILL_MAPPINGDICTIONARY_ERROR,
 	                    

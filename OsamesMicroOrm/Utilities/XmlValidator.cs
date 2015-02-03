@@ -74,7 +74,7 @@ namespace OsamesMicroOrm.Utilities
             {
                 for (int i = 0; i < xmlSchemas_.Length; i++)
                 {
-                    Common.CheckFile(xmlSchemas_[i], "XmlValidator");
+                    Common.CheckFile(xmlSchemas_[i]);
                     Settings.Schemas.Add(xmlNamespaces_[i], xmlSchemas_[i]);
                 }
             }
@@ -89,7 +89,7 @@ namespace OsamesMicroOrm.Utilities
         /// <param name="xmlFile_">Xml file full path</param>
         internal void ValidateXml(string xmlFile_)
         {
-            Common.CheckFile(xmlFile_, "XmlValidator");
+            Common.CheckFile(xmlFile_);
             XmlReader xml = XmlReader.Create(xmlFile_, Settings);
             while (xml.Read()) { }
             if (Errors.Count == 0 && Warnings.Count == 0) return;
@@ -111,7 +111,7 @@ namespace OsamesMicroOrm.Utilities
             StringBuilder sb = new StringBuilder();
             foreach (string xmlFile in xmlFiles_)
             {
-                Common.CheckFile(xmlFile, "XmlValidator");
+                Common.CheckFile(xmlFile);
                 XmlReader xml = XmlReader.Create(xmlFile, Settings);
                 while (xml.Read())
                 {

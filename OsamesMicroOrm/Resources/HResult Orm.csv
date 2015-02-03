@@ -54,7 +54,7 @@
 "0xA0040321";"E_NOCONNEXIONSTRINGDEFINED";"[CONF] No connection string value defined in connection strings configuration for active connection";"";""
 "0xA0040322";"E_NOMAPPINGKEYANDCOLUMN";"[CONF] No mapping for key and DB column name";"";""
 "0xA0040323";"E_NOMAPPINGKEY";"[CONF] La table demandée, n'est pas contenue dans le dictionnaire de tables.";"";""
-"0xA0040324";"E_TEMPLATEANALYSISERROR";"[CONF] ConfigurationLoader: XML templates definitions analyzis error: "" + ex";"";"Vérifier et être plus précis dans le message, qu'est-ce qui est NOK au niveau du XML ?"
+"0xA0040324";"E_CONFIGFILENOTFOUND";"[CONF] Configuration file not found";"";"Vérifier et être plus précis dans le message, qu'est-ce qui est NOK au niveau du XML ?"
 "0xA0040325";"E_FILL_MAPPINGDICTIONARY_ERROR";"[CONF] XML data to mapping dictionary transfer error, see detailed log for analysis of error";"";""
 "0xA0040326";"E_NOMAPPINGKEYANDPROPERTY";"[CONF] La propriété de l'objet qui n'existe pas dans le dictionnaire de la table.";"""[No property ""+ propertyName_ +"" in dictionary ""+ mappingDictionaryName_ +""]""";""
 "0xA0040327";"";"";"";""
