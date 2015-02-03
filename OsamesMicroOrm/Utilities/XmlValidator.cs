@@ -87,6 +87,7 @@ namespace OsamesMicroOrm.Utilities
         /// XML validation.
         /// </summary>
         /// <param name="xmlFile_">Xml file full path</param>
+        /// <exception cref="OOrmHandledException">XML validation errors</exception>
         internal void ValidateXml(string xmlFile_)
         {
             Common.CheckFile(xmlFile_);
@@ -99,13 +100,14 @@ namespace OsamesMicroOrm.Utilities
             foreach (string err in Warnings)
                 sb.Append(err).Append(Environment.NewLine);
                 
-            throw new Exception("XML validation errors: " + sb);
+            throw new OOrmHandledException(HResultEnum.E_XMLVALIDATIONERRORS, null, sb.ToString());
         }
 
         /// <summary>
         /// XML validation, multiple XML files.
         /// </summary>
         /// <param name="xmlFiles_">Xml file full path</param>
+        /// <exception cref="OOrmHandledException">All XML validation errors</exception>
         internal void ValidateXml(string[] xmlFiles_)
         {
             StringBuilder sb = new StringBuilder();
@@ -126,7 +128,7 @@ namespace OsamesMicroOrm.Utilities
             foreach (string err in Warnings)
                 sb.Append(err).Append(Environment.NewLine);
 
-            throw new Exception("XML validation errors: " + sb);
+            throw new OOrmHandledException(HResultEnum.E_XMLVALIDATIONERRORS, null, sb.ToString());
         }
 
         /// <summary>

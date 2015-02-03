@@ -270,8 +270,8 @@ namespace OsamesMicroOrm.Configuration
                                  });
 
                 // Validate SQL Templates and Mapping
-                xmlvalidator.ValidateXml(new[] { sqlTemplatesFullPath, sqlMappingsFullPath });
-
+               xmlvalidator.ValidateXml(new[] {sqlTemplatesFullPath, sqlMappingsFullPath});
+               
                 Logger.Log(TraceEventType.Information, "Osames ORM Initialized.");
 
                 // 2. Load provider specific information
