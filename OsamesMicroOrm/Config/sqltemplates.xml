@@ -60,6 +60,9 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
     <!-- SQL Server Compact -->
     <orm:Provider xsi:type="orm:DoubleFE" name="### SQL Server Compact ###" StartFieldEncloser="" EndFieldEncloser="">
     </orm:Provider>
+    <!-- pour test unitaire de configuration NOK -->
+    <!--<orm:Provider xsi:type="orm:DoubleFE" name="not existing provider" StartFieldEncloser="" EndFieldEncloser="">
+    </orm:Provider>-->
   </orm:ProviderSpecific>
 </orm:QueryList>
 

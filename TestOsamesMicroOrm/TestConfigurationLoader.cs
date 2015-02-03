@@ -95,12 +95,14 @@ namespace TestOsamesMicroOrm
 
         /// <summary>
         /// Dans les connexion strings, une connexion string ne définit pas de provider name.
+        /// Pour que ce test passe il doit y avoir une configuration dans le fichier des connection strings pour ce provider "test", avec un nom de provider à blanc.
         /// </summary>
         [TestMethod]
         [ExcludeFromCodeCoverage]
         [Owner("Barbara Post")]
         [TestCategory("Configuration")]
         [ExpectedException(typeof(OOrmHandledException))]
+        [Ignore]
         public void TestConnectionStringMissingProviderName()
         {
             try
@@ -121,6 +123,37 @@ namespace TestOsamesMicroOrm
                 var test = ConfigurationLoader.Instance;
             }
         }
+
+        /// <summary>
+        /// Le provider défini dans le fichier des connexion strings (pour la connexion active) n'est pas installé sur le système.
+        /// Pour que ce test passe il doit y avoir une configuration dans le fichier des templates (orm:ProviderSpecific) pour ce provider "test".
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("Configuration")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        [Ignore]
+        public void TestNotInstalledProvider()
+        {
+            try
+            {
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "test");
+                var test = ConfigurationLoader.Instance;
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_PROVIDERNOTINSTALLED).Key, ex.HResult);
+                throw;
+            }
+            finally
+            {
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.activeDbConnection.ToString());
+                var test = ConfigurationLoader.Instance;
+            }
+        }
+
 
         #endregion
 

@@ -219,9 +219,8 @@ namespace OsamesMicroOrm.Configuration
            
             // 4. ce provider doit exister sur le système
             if (!FindInProviderFactoryClasses(provider))
-            {
-                Logger.Log(TraceEventType.Critical, "Provider with name '" + provider + "' is not installed '");
-            }
+                throw new OOrmHandledException(HResultEnum.E_PROVIDERNOTINSTALLED, null, "provider name: " + provider);
+
             // 5. Une chaîne de connexion doit être définie (attribut "ConnectionString")
             string conn = activeConnection.ConnectionString;
             if (string.IsNullOrWhiteSpace(conn))
@@ -342,7 +341,7 @@ namespace OsamesMicroOrm.Configuration
 
             XPathNodeIterator xPathNodeIteratorProviderNode = xPathNavigator_.Select(strXPathExpression, xmlNamespaceManager);
             if (!xPathNodeIteratorProviderNode.MoveNext())
-                throw new Exception("Provider with name '" + providerInvariantName + "' missing in XML");
+                throw new OOrmHandledException(HResultEnum.E_PROVIDERCONFIGMISSING, null, "provider name: " + providerInvariantName);
 
             // Sur ce noeud, attributs pour définir les field enclosers
             // Assignation aux variables de classe StartFieldEncloser et EndFieldEncloser

@@ -11,13 +11,13 @@ using System.CodeDom.Compiler;
 namespace OsamesMicroOrm
 {
     /// <summary>
-	/// Auto generated date: 12/29/2014 17:17:20
+	/// Auto generated date: 02/03/2015 21:49:05
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
     public enum HResultEnum
     {
         // ReSharper disable InconsistentNaming
-        E_BEGINTRANSACTIONFAIL,
+        E_BEGINTRANSACTIONFAILED,
 	                    
         E_COMMITTRANSACTIONFAILED,
 	                    
@@ -30,6 +30,8 @@ namespace OsamesMicroOrm
         E_COLUMNDOESNOTEXIST,
 	                    
         E_NOROWUPDATED,
+	                    
+        E_LASTINSERTIDNOTNUMBER,
 	                    
         E_TYPENOTDEFINEDBMAPPINGATTRIBUTE,
 	                    
@@ -49,17 +51,13 @@ namespace OsamesMicroOrm
 	                    
         E_XMLNAMEATTRIBUTEMORETHANONETIME,
 	                    
-        E_FILLTEMPLATESDICTIONNARYERROR,
+        E_FILL_TEMPLATESDICTIONARY_ERROR,
 	                    
         E_NOACTIVECONNECTIONDEFINED,
 	                    
         E_NOACTIVECONNECTIONFOUND,
 	                    
-        E_NOACTIVECONNECTIONPROVIDERNAME,
-	                    
-        E_PROVIDERMISSING,
-	                    
-        E_PROVIDERNOTMATCH,
+        E_PROVIDERCONFIGMISSING,
 	                    
         E_LOADCONFIGURATION,
 	                    
@@ -76,6 +74,8 @@ namespace OsamesMicroOrm
         E_NOMAPPINGKEY,
 	                    
         E_TEMPLATEANALYSISERROR,
+	                    
+        E_FILL_MAPPINGDICTIONARY_ERROR,
 	                    
         E_NOMAPPINGKEYANDPROPERTY,
 	                    
