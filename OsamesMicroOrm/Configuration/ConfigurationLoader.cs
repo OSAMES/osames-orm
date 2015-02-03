@@ -224,9 +224,7 @@ namespace OsamesMicroOrm.Configuration
             // 5. Une chaîne de connexion doit être définie (attribut "ConnectionString")
             string conn = activeConnection.ConnectionString;
             if (string.IsNullOrWhiteSpace(conn))
-            {
-                Logger.Log(TraceEventType.Critical, "No connection string value defined in connection strings configuration for connection with name '" + dbConnexion + "'");
-            }
+                throw new OOrmHandledException(HResultEnum.E_NOCONNEXIONSTRINGDEFINED, null, null);
 
             Logger.Log(TraceEventType.Information, "Using DB connection string: " + conn);
 
@@ -363,9 +361,8 @@ namespace OsamesMicroOrm.Configuration
                 DbManager.SelectLastInsertIdCommandText = xPathNodeIteratorSelectNode.Current.Value;
             }
             else
-            {
-                Logger.Log(TraceEventType.Critical, "ConfigurationLoader LoadProviderSpecificInformation, no value matching XPath '" + strXPathExpression + "' for the provider '" + providerInvariantName + "'");
-            }
+                throw new OOrmHandledException(HResultEnum.E_PROVIDERCONFIGMISSING, null, "provider name: " + providerInvariantName + " - missing information: Select[@name='getlastinsertid']");
+
         }
 
         /// <summary>

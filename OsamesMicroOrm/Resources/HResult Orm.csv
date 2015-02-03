@@ -51,7 +51,7 @@
 "0xA0040318";"E_ACTIVECONNECTIONNOTFOUNDINACTIVECOSTRING";"[CONF] Active connection not found in available connection strings";"";""
 "0xA0040319";"E_NOPROVIDERNAMEFORCONNECTIONNAME";"[CONF] No provider name defined in connection strings configuration for active connection";"";""
 "0xA0040320";"E_PROVIDERNOTINSTALLED";"[CONF] Provider defined is not installed";"";""
-"0xA0040321";"E_NOCONNEXIONSTRINGDEFINED";"[CONF] No connection string value defined in connection strings configuration for connection with name";"";""
+"0xA0040321";"E_NOCONNEXIONSTRINGDEFINED";"[CONF] No connection string value defined in connection strings configuration for active connection";"";""
 "0xA0040322";"E_NOMAPPINGKEYANDCOLUMN";"[CONF] No mapping for key and DB column name";"";""
 "0xA0040323";"E_NOMAPPINGKEY";"[CONF] La table demandée, n'est pas contenue dans le dictionnaire de tables.";"";""
 "0xA0040324";"E_TEMPLATEANALYSISERROR";"[CONF] ConfigurationLoader: XML templates definitions analyzis error: "" + ex";"";"Vérifier et être plus précis dans le message, qu'est-ce qui est NOK au niveau du XML ?"
