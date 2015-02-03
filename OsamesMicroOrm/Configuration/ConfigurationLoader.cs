@@ -276,6 +276,9 @@ namespace OsamesMicroOrm.Configuration
 
                 // 2. Load provider specific information
                 string dbConnexionName = ConfigurationManager.AppSettings["activeDbConnection"];
+                if(string.IsNullOrWhiteSpace(dbConnexionName))
+                    throw new OOrmHandledException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, null, null);
+
                 LoadProviderSpecificInformation(xmlTemplatesNavigator, xmlPrefix[0], xmlNamespaces[0], dbConnexionName);
 
                 // 3. Load SQL Templates
@@ -304,16 +307,10 @@ namespace OsamesMicroOrm.Configuration
         /// <param name="xmlRootTagPrefix_">Préfixe de tag</param>
         /// <param name="xmlRootTagNamespace_">Namespace racine</param>
         /// <param name="activeDbConnectionName_">Nom de la connexion DB active (AppSettings)</param>
-        internal static void LoadProviderSpecificInformation(XPathNavigator xPathNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_, string activeDbConnectionName_)
+        private static void LoadProviderSpecificInformation(XPathNavigator xPathNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_, string activeDbConnectionName_)
         {
             XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xPathNavigator_.NameTable);
             xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
-
-            if (string.IsNullOrWhiteSpace(activeDbConnectionName_))
-            {
-                Logger.Log(TraceEventType.Critical, "No active connection name defined in appSettings ('activeDbConnection')");
-                return;
-            }
 
             var activeConnection = ConfigurationManager.ConnectionStrings[activeDbConnectionName_];
             if (activeConnection == null)
