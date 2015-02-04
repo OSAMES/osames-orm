@@ -42,7 +42,7 @@
 "0xA0040307";"E_NONAMESPACEINSCHEMA";"[XML] Schema given but no namespaces";"";""
 "0xA0040308";"E_NULLVALUE";"[] value_ cannot be null";"";""
 "0xA0040309";"E_NORULESFORGIVENPARAMETER";"[] No matching rules for given parameter. See log file for details";"";""
-"0xA0040310";"E_XMLNAMEATTRIBUTEMORETHANONETIME";"[XML] A 'name' attribute with value '"" + name + ""' has been defined more than one time, XML is invalid";"";""
+"0xA0040310";"E_XMLNAMEATTRIBUTEMORETHANONCE";"[XML] Invalid XML, ""name"" attribute defines more than once the same value (template name in templates file)";"";""
 "0xA0040311";"E_FILL_TEMPLATESDICTIONARY_ERROR";"[CONF] XML data to SQL templates dictionary transfer error, see detailed log for analysis of error";"";""
 "0xA0040312";"E_NOACTIVECONNECTIONDEFINED";"[CONF] No active connection name defined in appSettings ('activeDbConnection')";"";""
 "0xA0040313";"E_NOACTIVECONNECTIONFOUND";"[CONF] Active connection not found in available connection strings";"";""

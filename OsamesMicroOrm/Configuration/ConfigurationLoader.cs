@@ -431,7 +431,7 @@ namespace OsamesMicroOrm.Configuration
         /// </summary>
         /// <param name="node_"></param>
         /// <param name="workDictionary_"></param>
-        internal static void FillSqlTemplateDictionary(XPathNodeIterator node_, Dictionary<string, string> workDictionary_ = null)
+        private static void FillSqlTemplateDictionary(XPathNodeIterator node_, Dictionary<string, string> workDictionary_ = null)
         {
             if (workDictionary_ == null) return;
 
@@ -443,7 +443,7 @@ namespace OsamesMicroOrm.Configuration
 
                 string name = node_.Current.GetAttribute("name", "");
                 if (workDictionary_.ContainsKey(name))
-                    throw new Exception("A 'name' attribute with value '" + name + "' has been defined more than one time, XML is invalid");
+                    throw new OOrmHandledException(HResultEnum.E_XMLNAMEATTRIBUTEMORETHANONCE, null, "value: " + name);
                 workDictionary_.Add(name, node_.Current.Value);
             } while (node_.Current.MoveToNext());
         }
