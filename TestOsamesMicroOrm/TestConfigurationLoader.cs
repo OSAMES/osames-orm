@@ -83,7 +83,7 @@ namespace TestOsamesMicroOrm
             catch (OOrmHandledException ex)
             {
                 Console.WriteLine(ex.Message);
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_ACTIVECONNECTIONNOTFOUNDINACTIVECOSTRING).Key, ex.HResult);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOACTIVECONNECTIONFOUND).Key, ex.HResult);
                 throw;
             }
             finally
