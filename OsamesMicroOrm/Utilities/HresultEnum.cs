@@ -11,7 +11,7 @@ using System.CodeDom.Compiler;
 namespace OsamesMicroOrm
 {
     /// <summary>
-	/// Auto generated date: 02/03/2015 22:19:53
+	/// Auto generated date: 02/04/2015 13:12:03
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
     public enum HResultEnum
@@ -60,8 +60,6 @@ namespace OsamesMicroOrm
         E_PROVIDERCONFIGMISSING,
 	                    
         E_LOADCONFIGURATION,
-	                    
-        E_ACTIVECONNECTIONNOTFOUNDINACTIVECOSTRING,
 	                    
         E_NOPROVIDERNAMEFORCONNECTIONNAME,
 	                    

@@ -48,7 +48,6 @@
 "0xA0040313";"E_NOACTIVECONNECTIONFOUND";"[CONF] Active connection not found in available connection strings";"";""
 "0xA0040315";"E_PROVIDERCONFIGMISSING";"[CONF] Provider configuration missing in orm:ProviderSpecific section of XML templates file";"";""
 "0xA0040317";"E_LOADCONFIGURATION";"[CONF] ConfigurationLoader LoadXmlConfiguration, see detailed log";"";"Trop générique, à mon avis on logguera plus détaillé que ça (on devrait !)"
-"0xA0040318";"E_ACTIVECONNECTIONNOTFOUNDINACTIVECOSTRING";"[CONF] Active connection not found in available connection strings";"";""
 "0xA0040319";"E_NOPROVIDERNAMEFORCONNECTIONNAME";"[CONF] No provider name defined in connection strings configuration for active connection";"";""
 "0xA0040320";"E_PROVIDERNOTINSTALLED";"[CONF] Provider defined is not installed";"";""
 "0xA0040321";"E_NOCONNEXIONSTRINGDEFINED";"[CONF] No connection string value defined in connection strings configuration for active connection";"";""
