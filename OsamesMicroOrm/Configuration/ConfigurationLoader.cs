@@ -314,10 +314,7 @@ namespace OsamesMicroOrm.Configuration
 
             var activeConnection = ConfigurationManager.ConnectionStrings[activeDbConnectionName_];
             if (activeConnection == null)
-            {
-                Logger.Log(TraceEventType.Critical, "Active connection not found in available connection strings (key : '" + activeDbConnectionName_ + "'");
-                return;
-            }
+                throw new OOrmHandledException(HResultEnum.E_NOACTIVECONNECTIONFOUND, null, "active connection name: " + activeDbConnectionName_);
             string conn = activeConnection.Name;
             if (string.IsNullOrWhiteSpace(conn))
             {
