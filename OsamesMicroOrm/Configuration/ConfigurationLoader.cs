@@ -89,6 +89,7 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Singleton access. Creates an empty object once.
         /// </summary>
+        /// <exception cref="OOrmHandledException"></exception>
         public static ConfigurationLoader Instance
         {
             get
@@ -200,6 +201,7 @@ namespace OsamesMicroOrm.Configuration
         /// Positionne les valeurs de la connexion string et du nom du provider sur le singleton de DbManager.
         /// </summary>
         /// <returns>false when configuration is wrong</returns>
+        /// <exception cref="OOrmHandledException"></exception>
         private void CheckDatabaseConfiguration()
         {
             // 1. AppSettings : doit définir une connexion DB active
@@ -237,6 +239,7 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Reads configuration from appSettings then load specific configuration files to internal dictionaries.
         /// </summary>
+        /// <exception cref="OOrmHandledException"></exception>
         private void LoadXmlConfiguration()
         {
             // 1. Load ORM Configuration File
@@ -307,6 +310,7 @@ namespace OsamesMicroOrm.Configuration
         /// <param name="xmlRootTagPrefix_">Préfixe de tag</param>
         /// <param name="xmlRootTagNamespace_">Namespace racine</param>
         /// <param name="activeDbConnectionName_">Nom de la connexion DB active (AppSettings)</param>
+        /// <exception cref="OOrmHandledException"></exception>
         private static void LoadProviderSpecificInformation(XPathNavigator xPathNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_, string activeDbConnectionName_)
         {
             XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xPathNavigator_.NameTable);
@@ -390,40 +394,33 @@ namespace OsamesMicroOrm.Configuration
         /// <param name="xpathNavigator_">Reused XPathNavigator instance</param>
         /// <param name="xmlRootTagPrefix_"> </param>
         /// <param name="xmlRootTagNamespace_"> </param>
+        /// <exception cref="OOrmHandledException"></exception>
         internal static void FillTemplatesDictionaries(XPathNavigator xpathNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_)
         {
             DicInsertSql.Clear();
             DicSelectSql.Clear();
             DicUpdateSql.Clear();
             DicDeleteSql.Clear();
-            try
-            {
-                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xpathNavigator_.NameTable);
-                xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
-                // Inserts nodes
-                XPathNodeIterator xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Inserts", xmlNamespaceManager);
-                if (xPathNodeIterator.MoveNext())
-                    FillSqlTemplateDictionary(xPathNodeIterator, DicInsertSql);
-                // Selects nodes
-                xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Selects", xmlNamespaceManager);
-                if (xPathNodeIterator.MoveNext())
-                    FillSqlTemplateDictionary(xPathNodeIterator, DicSelectSql);
-                // Updates nodes
-                xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Updates", xmlNamespaceManager);
-                if (xPathNodeIterator.MoveNext())
-                    FillSqlTemplateDictionary(xPathNodeIterator, DicUpdateSql);
-                // Deletes nodes
-                xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Deletes", xmlNamespaceManager);
-                if (xPathNodeIterator.MoveNext())
-                    FillSqlTemplateDictionary(xPathNodeIterator, DicDeleteSql);
 
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(TraceEventType.Critical, "ConfigurationLoader FillTemplatesDictionaries, see detailed log");
-                Logger.Log(TraceEventType.Critical, "ConfigurationLoader: XML templates definitions analyzis error: " + ex);
-                throw;
-            }
+            XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xpathNavigator_.NameTable);
+            xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
+            // Inserts nodes
+            XPathNodeIterator xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Inserts", xmlNamespaceManager);
+            if (xPathNodeIterator.MoveNext())
+                FillSqlTemplateDictionary(xPathNodeIterator, DicInsertSql);
+            // Selects nodes
+            xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Selects", xmlNamespaceManager);
+            if (xPathNodeIterator.MoveNext())
+                FillSqlTemplateDictionary(xPathNodeIterator, DicSelectSql);
+            // Updates nodes
+            xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Updates", xmlNamespaceManager);
+            if (xPathNodeIterator.MoveNext())
+                FillSqlTemplateDictionary(xPathNodeIterator, DicUpdateSql);
+            // Deletes nodes
+            xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Deletes", xmlNamespaceManager);
+            if (xPathNodeIterator.MoveNext())
+                FillSqlTemplateDictionary(xPathNodeIterator, DicDeleteSql);
+
         }
 
         /// <summary>
@@ -431,6 +428,7 @@ namespace OsamesMicroOrm.Configuration
         /// </summary>
         /// <param name="node_"></param>
         /// <param name="workDictionary_"></param>
+        /// <exception cref="OOrmHandledException"></exception>
         private static void FillSqlTemplateDictionary(XPathNodeIterator node_, Dictionary<string, string> workDictionary_ = null)
         {
             if (workDictionary_ == null) return;
@@ -473,6 +471,7 @@ namespace OsamesMicroOrm.Configuration
         /// <para>Parses XML configuration to internal dictionaries</para>
         /// <para>Checks database configuration and sets values to DbManager</para>
         /// </summary>
+        /// <exception cref="OOrmHandledException"></exception>
         private void LoadConfiguration()
         {
             LoadXmlConfiguration();
