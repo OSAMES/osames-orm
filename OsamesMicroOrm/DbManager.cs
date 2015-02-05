@@ -91,17 +91,14 @@ namespace OsamesMicroOrm
 
         /// <summary>
         /// Standard SQL provider specific connection string.
-        /// Getter throws an exception if setter hasn't been called with a value.
         /// </summary>
+        /// <exception cref="OOrmHandledException">Si une valeur n'a pas été positionnée via le setter avant d'appeler ce getter</exception>
         internal static string ConnectionString
         {
             get
             {
                 if (string.IsNullOrWhiteSpace(ConnectionStringField))
-                {
-                    Logger.Log(TraceEventType.Critical, "Connection string not set!");
-                    throw new Exception("ConnectionString column not initialized, please set a value!");
-                }
+                    throw new OOrmHandledException(HResultEnum.E_DBMANAGERNOCONNECTIONSTRINGSET, null, null);
                 return ConnectionStringField;
             }
             set
@@ -117,15 +114,13 @@ namespace OsamesMicroOrm
         /// Provider specific SQL query select instruction (= command text), to execute "Select Last Insert Id".
         /// It's necessary to define it because there is no ADO.NET generic way of retrieving last insert ID after a SQL update execution.
         /// </summary>
+        /// <exception cref="OOrmHandledException">Si une valeur n'a pas été positionnée via le setter avant d'appeler ce getter</exception>
         internal static string SelectLastInsertIdCommandText
         {
             get
             {
                 if (SelectLastInsertIdCommandTextField == null)
-                {
-                    Logger.Log(TraceEventType.Critical, "Select Last Insert Id Command Text not set!");
-                    throw new Exception("SelectLastInsertIdCommandText column not initialized, please set a value!");
-                }
+                    throw new OOrmHandledException(HResultEnum.E_DBMANAGERNOSELECTLASTINSERTIDCOMMANDSET, null, null);
                 return SelectLastInsertIdCommandTextField;
             }
             set { SelectLastInsertIdCommandTextField = value; }
@@ -169,7 +164,7 @@ namespace OsamesMicroOrm
         /// </summary>
         ~DbManager()
         {
-           Dispose();
+            Dispose();
         }
 
         /// <summary>
@@ -323,7 +318,7 @@ namespace OsamesMicroOrm
                 Logger.Log(TraceEventType.Stop, ex.ToString());
                 throw new Exception("BeginTransaction - " + ex.Message);
             }
-            
+
         }
 
         #endregion

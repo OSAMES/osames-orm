@@ -26,3 +26,5 @@
 "0xA0040317";"E_NOMAPPINGKEY";"[CONF] No match in mapping file for table name";"";""
 "0xA0040318";"E_CONFIGFILENOTFOUND";"[CONF] Configuration file not found";"";""
 "0xA0040319";"E_NOMAPPINGKEYANDPROPERTY";"[CONF] No match in mapping file for table name and property values";"";""
+"0xA0040320";"E_DBMANAGERNOCONNECTIONSTRINGSET";"[CONF] No connection string has been set to DbManager before using it";"";""
+"0xA0040321";"E_DBMANAGERNOSELECTLASTINSERTIDCOMMANDSET";"[CONF] No SQL text for select last inserted ID has been set to DbManager before executing an insert command";"";""
