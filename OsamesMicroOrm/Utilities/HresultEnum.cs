@@ -11,7 +11,7 @@ using System.CodeDom.Compiler;
 namespace OsamesMicroOrm
 {
     /// <summary>
-	/// Auto generated date: 02/04/2015 13:27:04
+	/// Auto generated date: 02/05/2015 13:11:00
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
     public enum HResultEnum
@@ -51,15 +51,11 @@ namespace OsamesMicroOrm
 	                    
         E_XMLNAMEATTRIBUTEMORETHANONCE,
 	                    
-        E_FILL_TEMPLATESDICTIONARY_ERROR,
-	                    
         E_NOACTIVECONNECTIONDEFINED,
 	                    
         E_NOACTIVECONNECTIONFOUND,
 	                    
         E_PROVIDERCONFIGMISSING,
-	                    
-        E_LOADCONFIGURATION,
 	                    
         E_NOPROVIDERNAMEFORCONNECTIONNAME,
 	                    
@@ -72,8 +68,6 @@ namespace OsamesMicroOrm
         E_NOMAPPINGKEY,
 	                    
         E_CONFIGFILENOTFOUND,
-	                    
-        E_FILL_MAPPINGDICTIONARY_ERROR,
 	                    
         E_NOMAPPINGKEYANDPROPERTY,
 	                    
