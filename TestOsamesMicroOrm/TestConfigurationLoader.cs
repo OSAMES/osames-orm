@@ -228,7 +228,7 @@ namespace TestOsamesMicroOrm
         [Owner("Barbara Post")]
         [TestCategory("XML")]
         [TestCategory("Configuration")]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestConfigurationLoaderIncorrectXmlAssertOnInternalDictionaries()
         {
             try
