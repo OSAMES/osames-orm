@@ -1,3 +1,4 @@
+Valeur;Nom;Description;Note;Technical message
 "0xA0040200";"E_CREATECONNECTIONFAILED";"DbManager, CreateConnection: Connection could not be created! Look at detailed log for details";"";""
 "0xA0040201";"E_BEGINTRANSACTIONFAILED";"Transaction couldn't be started. See log file for details";"";""
 "0xA0040202";"E_COMMITTRANSACTIONFAILED";"Transaction couldn't be commited See log file for details";"";""
@@ -28,3 +29,4 @@
 "0xA0040319";"E_NOMAPPINGKEYANDPROPERTY";"[CONF] No match in mapping file for table name and property values";"";""
 "0xA0040320";"E_DBMANAGERNOCONNECTIONSTRINGSET";"[CONF] No connection string has been set to DbManager before using it";"";""
 "0xA0040321";"E_DBMANAGERNOSELECTLASTINSERTIDCOMMANDSET";"[CONF] No SQL text for select last inserted ID has been set to DbManager before executing an insert command";"";""
+"0xA0040322";"E_DBMANAGERNOPROVIDERNAME";"[CONF] No provider name has been set to DbManager before using it";"";""

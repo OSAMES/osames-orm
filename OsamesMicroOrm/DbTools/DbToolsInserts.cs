@@ -82,6 +82,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="strErrorMsg_"></param>
         /// <param name="transaction_"></param>
         /// <returns></returns>
+        /// <exception cref="OOrmHandledException">any error</exception>
         public static long Insert<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, out string strErrorMsg_, OOrmDbTransactionWrapper transaction_ = null)
         {
             string sqlCommand;

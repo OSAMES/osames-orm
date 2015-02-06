@@ -11,12 +11,14 @@ using System.CodeDom.Compiler;
 namespace OsamesMicroOrm
 {
     /// <summary>
-	/// Auto generated date: 02/05/2015 13:23:10
+	/// Auto generated date: 02/06/2015 21:26:03
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
     public enum HResultEnum
     {
         // ReSharper disable InconsistentNaming
+        E_CREATECONNECTIONFAILED,
+	                    
         E_BEGINTRANSACTIONFAILED,
 	                    
         E_COMMITTRANSACTIONFAILED,
@@ -74,6 +76,8 @@ namespace OsamesMicroOrm
         E_DBMANAGERNOCONNECTIONSTRINGSET,
 	                    
         E_DBMANAGERNOSELECTLASTINSERTIDCOMMANDSET,
+	                    
+        E_DBMANAGERNOPROVIDERNAME,
 	                    
         // ReSharper disable InconsistentNaming
     }

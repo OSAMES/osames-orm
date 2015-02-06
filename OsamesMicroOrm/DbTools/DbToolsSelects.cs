@@ -268,6 +268,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereValues_"></param>
         /// <param name="transaction_"></param>
         /// <returns></returns>
+        /// <exception cref="OOrmHandledException">any error</exception>
         public static long Count(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null)
         {
             string sqlCommand;
@@ -312,6 +313,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="sqlCommand_">Texte final de la requête SQL</param>
         /// <param name="adoParameters_">Représentation des paramètres ADO.NET (nom et valeur)</param>
         /// <returns>Retourne un objet de type T rempli par les donnnées du DataReader, ou null</returns>
+        /// <exception cref="OOrmHandledException">any error</exception>
         private static T GetDataObject<T>(OOrmDbTransactionWrapper transaction_, string sqlCommand_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_, IEnumerable<KeyValuePair<string, object>> adoParameters_) where T : class, new()
         {
             T dataObject = new T();
@@ -366,6 +368,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <param name="sqlCommand_">Texte final de la requête SQL</param>
         /// <param name="adoParameters_">Représentation des paramètres ADO.NET (nom et valeur)</param>
+        /// <exception cref="OOrmHandledException">any error</exception>
         private static List<T> GetListDataObject<T>(OOrmDbTransactionWrapper transaction_, string sqlCommand_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_, IEnumerable<KeyValuePair<string, object>> adoParameters_) where T : class, new()
         {
             List<T> dataObjects = new List<T>();

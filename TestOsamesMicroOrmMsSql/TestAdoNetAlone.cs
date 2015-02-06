@@ -131,7 +131,7 @@ namespace TestOsamesMicroOrmMsSql
         [TestMethod]
         [TestCategory("MsSql")]
         [TestCategory("ADO.NET pooling")]
-        [Ignore]
+        //[Ignore]
         public void TestGettingSafeConnectionFromPoolOfTen()
         {
             // Pool de 10 : donne 9 connexions puis la connexion de secours.

@@ -66,13 +66,14 @@ namespace TestOsamesMicroOrm.Utilities
         {
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
-            KeyValuePair<int, string> result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, ErrorType.ERROR, "Custom message");
+            KeyValuePair<int, string> result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, null, ErrorType.ERROR, "Custom message");
             Console.WriteLine(result.Value);
             Assert.IsNotNull(result.Value);
         }
 
         [TestMethod]
         [TestCategory("Error handling")]
+        [TestCategory("Logging")]
         [Owner("Benjamin Nolmans")]
         public void TestProcessOrmExceptionForConsoleMode()
         {
@@ -82,7 +83,7 @@ namespace TestOsamesMicroOrm.Utilities
 
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
-            KeyValuePair<int, string> result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, ErrorType.ERROR, "Custom message");
+            KeyValuePair<int, string> result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, new Exception("exception de test"), ErrorType.ERROR, "Custom message");
             Console.WriteLine(result.Value);
             Assert.IsNotNull(result.Value);
         }
@@ -98,7 +99,7 @@ namespace TestOsamesMicroOrm.Utilities
 
             Dictionary<string, KeyValuePair<string, string>> dicErrors = OsamesMicroOrm.Utilities.OOrmErrorsHandler.HResultCode;
             Assert.AreNotEqual(0, dicErrors.Keys, "le dictionnaire ne doit pas être vide !");
-            KeyValuePair<int, string> result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, ErrorType.ERROR, "Custom message");
+            KeyValuePair<int, string> result = OsamesMicroOrm.Utilities.OOrmErrorsHandler.ProcessOrmException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, null, ErrorType.ERROR, "Custom message");
             Console.WriteLine(result.Value);
             Assert.IsNotNull(result.Value);
         }

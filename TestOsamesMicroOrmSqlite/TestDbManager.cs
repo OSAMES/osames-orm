@@ -34,6 +34,26 @@ namespace TestOsamesMicroOrmSqlite
         }
 
         /// <summary>
+        /// test d'un cas absurde d'ouverture de transation sur connexion nulle (méthode internal testée).
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Transaction")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        [Owner("Barbara Post")]
+        public void OpenTransactionFailed()
+        {
+            try
+            {
+                DbManager.Instance.OpenTransaction(null);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message + "[INNER EXCEPTION]" + (ex.InnerException == null ? "none" : ex.InnerException.Message));
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Test de bas niveau du Select.
         /// </summary>
         [TestMethod]

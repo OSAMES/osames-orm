@@ -180,12 +180,10 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <param name="hresultCode_"></param>
         /// <param name="additionalErrorMsg_"></param>
+        /// <param name="innerException_">Exception d'origine de l'exception à traiter</param>
         /// <param name="errorType_"></param>
         /// <returns>KeyValuePair avec pour la clé le code hresult au format int au lieu de chaîne hexa "0xNNNN" et pour la valeur le message d'erreur complètement formaté à retourner à l'utilisateur</returns>
-        /// <exception cref="IOException">An I/O error occurred. </exception>
-        /// <exception cref="ArgumentNullException"><paramref name="format" /> is null. </exception>
-        /// <exception cref="FormatException">The format specification in <paramref name="format" /> is invalid. </exception>
-        internal static KeyValuePair<int, string> ProcessOrmException(HResultEnum hresultCode_, ErrorType errorType_ = ErrorType.ERROR, string additionalErrorMsg_ = null)
+        internal static KeyValuePair<int, string> ProcessOrmException(HResultEnum hresultCode_, Exception innerException_ = null, ErrorType errorType_ = ErrorType.ERROR, string additionalErrorMsg_ = null)
         {
             // Ecrire dans event log n'est possible qu'en admin sinon on utilisera le log classique uniquement.
             // Le test d'être admin doit être fait à l'initialisation de l'ORM.
@@ -199,6 +197,10 @@ namespace OsamesMicroOrm.Utilities
             string errorDescription = hresultCodeHexaAndDescription.Value;
 
             Logger.Log((TraceEventType)errorType_, FormatCustomerError(errorDescription, additionalErrorMsg_));
+
+            // Si exception d'origine précisée, alors la tracer en détail
+            if(innerException_ != null)
+                Logger.Log((TraceEventType)errorType_, innerException_);
 
             switch (ConfigurationLoader.GetOrmContext)
             {

@@ -38,12 +38,16 @@ namespace OsamesMicroOrm
         /// Constructeur.
         /// </summary>
         /// <param name="connectionWrapper_"></param>
+        /// <exception cref="ArgumentException"></exception>
         internal OOrmDbTransactionWrapper(OOrmDbConnectionWrapper connectionWrapper_)
         {
-            this.ConnectionWrapper = connectionWrapper_;
-            if(this.ConnectionWrapper.AdoDbConnection.State != ConnectionState.Open)
-                this.ConnectionWrapper.AdoDbConnection.Open();
-            this.AdoDbTransaction = this.ConnectionWrapper.AdoDbConnection.BeginTransaction();
+            ConnectionWrapper = connectionWrapper_;
+            if(ConnectionWrapper == null)
+                throw new ArgumentException("Connection cannot be null", "connectionWrapper_");
+
+            if(ConnectionWrapper.AdoDbConnection.State != ConnectionState.Open)
+                ConnectionWrapper.AdoDbConnection.Open();
+            AdoDbTransaction = ConnectionWrapper.AdoDbConnection.BeginTransaction();
         }
 
         /// <summary>

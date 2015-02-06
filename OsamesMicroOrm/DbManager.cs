@@ -129,15 +129,13 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Database provider definition. ADO.NET provider invariant name.
         /// </summary>
+        /// <exception cref="OOrmHandledException">Si une valeur n'a pas été positionnée via le setter avant d'appeler ce getter</exception>
         internal static string ProviderName
         {
             get
             {
                 if (ProviderInvariantName == null)
-                {
-                    Logger.Log(TraceEventType.Critical, "Database provider not set!");
-                    throw new Exception("ProviderName column not initialized, please set a value!");
-                }
+                    throw new OOrmHandledException(HResultEnum.E_DBMANAGERNOPROVIDERNAME, null, null);
                 return ProviderInvariantName;
             }
             set { ProviderInvariantName = value; }
@@ -193,13 +191,12 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Try to get a new connection, usually from pool (may get backup connection in this case) or single connection.
         /// Opens the connection before returning it.
-        /// May throw exception only when no connection at all can be opened.	
         /// </summary>
+        /// <exception cref="OOrmHandledException">No connection at all could be opened</exception>
         internal OOrmDbConnectionWrapper CreateConnection()
         {
             try
             {
-
                 if (DisableConnexionPooling && BackupConnection != null)
                     return BackupConnection;
 
@@ -230,8 +227,7 @@ namespace OsamesMicroOrm
                 if (BackupConnection == null)
                 {
                     // could not get any connection
-                    Logger.Log(TraceEventType.Critical, ex);
-                    throw new Exception("DbManager, CreateConnection: Connection could not be created! *** " + ex.Message + " *** . Look at detailed log for details");
+                    throw new OOrmHandledException(HResultEnum.E_CREATECONNECTIONFAILED, ex, null);
                 }
                 // could not get a second connection
                 // use backup connection
@@ -245,19 +241,19 @@ namespace OsamesMicroOrm
         #region TRANSACTION
 
         /// <summary>
-        /// Opens a transaction and returns it.
+        /// Starts a transaction and returns it.
         /// </summary>
+        /// <returns>ADO.NET transaction wrapped in an OOrmDbTransactionWrapper instance</returns>
+        /// <exception cref="OOrmHandledException">When a transaction cannot be started</exception>
         internal OOrmDbTransactionWrapper OpenTransaction(OOrmDbConnectionWrapper connection_)
         {
             try
             {
                 return new OOrmDbTransactionWrapper(connection_);
-
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                Logger.Log(TraceEventType.Critical, ex.ToString());
-                throw new Exception("OpenTransaction - " + ex.Message);
+                throw new OOrmHandledException(HResultEnum.E_BEGINTRANSACTIONFAILED, ex, null);
             }
         }
 
@@ -266,6 +262,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="transaction_">Transaction to manage</param>
         /// <param name="closeConnexion_">Si true ferme la connexion</param>
+        /// <exception cref="OOrmHandledException">Si la transaction ne peut être validée</exception>
         public void CommitTransaction(OOrmDbTransactionWrapper transaction_, bool closeConnexion_ = true)
         {
             try
@@ -276,10 +273,9 @@ namespace OsamesMicroOrm
                 if (closeConnexion_)
                     transaction_.AdoDbTransaction.Connection.Close();
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                Logger.Log(TraceEventType.Critical, ex.ToString());
-                throw new Exception("CommitTransaction - " + ex.Message);
+                throw new OOrmHandledException(HResultEnum.E_COMMITTRANSACTIONFAILED, ex, null);
             }
         }
 
@@ -287,6 +283,7 @@ namespace OsamesMicroOrm
         /// Rollbacks and closes a transaction.
         /// </summary>
         /// <param name="transaction_">Transaction to manage</param>
+        /// <exception cref="OOrmHandledException">Si la transaction ne peut être invalidée</exception>
         public void RollbackTransaction(OOrmDbTransactionWrapper transaction_)
         {
             try
@@ -294,10 +291,9 @@ namespace OsamesMicroOrm
                 if (transaction_ == null) return;
                 transaction_.AdoDbTransaction.Rollback();
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                Logger.Log(TraceEventType.Critical, ex.ToString());
-                throw new Exception("@RollbackTransaction - " + ex.Message);
+                throw new OOrmHandledException(HResultEnum.E_ROLLBACKTRANSACTIONFAILED, ex, null);
             }
         }
 
@@ -305,20 +301,19 @@ namespace OsamesMicroOrm
         /// Opens a transaction with connexion and returns it.
         /// </summary>
         /// <returns>void</returns>
+        /// <exception cref="OOrmHandledException">Si la transaction ne peut être ouverte</exception>
         public OOrmDbTransactionWrapper BeginTransaction()
         {
             try
             {
-                OOrmDbConnectionWrapper connexion = this.CreateConnection();
+                OOrmDbConnectionWrapper connexion = CreateConnection();
                 return new OOrmDbTransactionWrapper(connexion);
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
                 // this also catches ObjectDisposedException
-                Logger.Log(TraceEventType.Stop, ex.ToString());
-                throw new Exception("BeginTransaction - " + ex.Message);
+                throw new OOrmHandledException(HResultEnum.E_BEGINTRANSACTIONFAILED, ex, null);
             }
-
         }
 
         #endregion
@@ -337,6 +332,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
+        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
             if (connection_.IsBackup)
@@ -348,7 +344,7 @@ namespace OsamesMicroOrm
                     {
                         object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                     }
                 }
             }
@@ -359,7 +355,7 @@ namespace OsamesMicroOrm
                 {
                     object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                 }
             }
             return 1;
@@ -375,6 +371,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
+        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, out long lastInsertedRowId_)
         {
             if (connection_.IsBackup)
@@ -386,7 +383,7 @@ namespace OsamesMicroOrm
                     {
                         object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                     }
 
                 }
@@ -398,7 +395,7 @@ namespace OsamesMicroOrm
                 {
                     object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                 }
 
             }
@@ -415,6 +412,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
+        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
         {
             if (connection_.IsBackup)
@@ -426,7 +424,7 @@ namespace OsamesMicroOrm
                     {
                         object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                     }
 
                 }
@@ -438,7 +436,7 @@ namespace OsamesMicroOrm
                 {
                     object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                 }
             }
             return 1;
@@ -454,6 +452,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
+        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number</exception>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
             if (transaction_.ConnectionWrapper.IsBackup)
@@ -465,7 +464,7 @@ namespace OsamesMicroOrm
                     {
                         object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                     }
 
                 }
@@ -477,7 +476,7 @@ namespace OsamesMicroOrm
                 {
                     object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                 }
             }
 
@@ -494,6 +493,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
+        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number</exception>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, out long lastInsertedRowId_)
         {
             if (transaction_.ConnectionWrapper.IsBackup)
@@ -505,7 +505,7 @@ namespace OsamesMicroOrm
                     {
                         object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                     }
                 }
             }
@@ -516,7 +516,7 @@ namespace OsamesMicroOrm
                 {
                     object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                 }
             }
 
@@ -533,6 +533,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
+        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number</exception>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
         {
             if (transaction_.ConnectionWrapper.IsBackup)
@@ -544,7 +545,7 @@ namespace OsamesMicroOrm
                     {
                         object oValue = command.AdoDbCommand.ExecuteScalar();
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                     }
                 }
             }
@@ -555,7 +556,7 @@ namespace OsamesMicroOrm
                 {
                     object oValue = command.AdoDbCommand.ExecuteScalar();
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new Exception("Returned last insert ID value '" + oValue + "' could not be parsed to Long number");
+                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                 }
             }
             return 1;
@@ -584,7 +585,6 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
-
                         iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
                     }
                 }

@@ -81,9 +81,11 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Constructor
         /// </summary>
+        /// <param name="errorCode_">Code d'erreur</param>
+        /// <param name="innerException_">Exception d'origine optionnelle</param>
         public OOrmHandledException(HResultEnum errorCode_, Exception innerException_)
         {
-            System.Collections.Generic.KeyValuePair<int, string> errorHresultCodeAndDetailedMessageWithLogging = Utilities.OOrmErrorsHandler.ProcessOrmException(errorCode_, Utilities.ErrorType.ERROR, null);
+            System.Collections.Generic.KeyValuePair<int, string> errorHresultCodeAndDetailedMessageWithLogging = Utilities.OOrmErrorsHandler.ProcessOrmException(errorCode_, innerException_, Utilities.ErrorType.ERROR, null);
             // positionnement de notre message formaté
             FormattedMessage = errorHresultCodeAndDetailedMessageWithLogging.Value;
             // transformation de la chaîne "0X1234" en integer
@@ -96,9 +98,12 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Constructor
         /// </summary>
+        /// <param name="errorCode_">Code d'erreur</param>
+        /// <param name="innerException_">Exception d'origine optionnelle</param>
+        /// <param name="additionalMessage_">Texte complémentaire à celui du message associé au code d'erreur</param>
         public OOrmHandledException(HResultEnum errorCode_, Exception innerException_, string additionalMessage_)
         {
-            System.Collections.Generic.KeyValuePair<int, string> errorHresultCodeAndDetailedMessageWithLogging = Utilities.OOrmErrorsHandler.ProcessOrmException(errorCode_, Utilities.ErrorType.ERROR, additionalMessage_);
+            System.Collections.Generic.KeyValuePair<int, string> errorHresultCodeAndDetailedMessageWithLogging = Utilities.OOrmErrorsHandler.ProcessOrmException(errorCode_, innerException_, Utilities.ErrorType.ERROR, additionalMessage_);
             // positionnement de notre message formaté
             FormattedMessage = errorHresultCodeAndDetailedMessageWithLogging.Value;
             // transformation de la chaîne "0X1234" en integer
@@ -106,7 +111,5 @@ namespace OsamesMicroOrm
 
             EInnerException = innerException_;
         }
-
-
     }
 }
