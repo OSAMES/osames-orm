@@ -51,11 +51,11 @@ namespace OsamesMicroOrm.DbTools
         internal static void FormatSqlForSelect(string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out List<string> lstDbColumnNames_)
         {
             lstAdoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
-            string strErrorMsg, strErrorMsg2; ;
+            string strErrorMsg2;
 
             // 1. Détermine les colonnes pour les champs à sélectionner.
             // lstDbColumnNames_ sert de fournisseur pour remplir sbSqlSelectFieldsCommand
-            DbToolsCommon.DetermineDatabaseColumnNames(mappingDictionariesContainerKey_, lstDataObjectPropertyNames_, out lstDbColumnNames_, out strErrorMsg);
+            DbToolsCommon.DetermineDatabaseColumnNames(mappingDictionariesContainerKey_, lstDataObjectPropertyNames_, out lstDbColumnNames_);
 
             string sbSqlSelectFieldsCommand = DbToolsCommon.GenerateCommaSeparatedDbFieldsString(lstDbColumnNames_); //{0} dans le template sql
 
@@ -68,7 +68,7 @@ namespace OsamesMicroOrm.DbTools
             DbToolsCommon.TryFormat(ConfigurationLoader.DicSelectSql[sqlTemplate_], out sqlCommand_, out strErrorMsg2, sqlPlaceholders.ToArray());
 
             // NB : le code qui suit sera à revoir
-            string strGlobalError = string.Concat(strErrorMsg, "\n", strErrorMsg2);
+            string strGlobalError = string.Concat(strErrorMsg2);
             if (!string.IsNullOrWhiteSpace(strGlobalError))
                 throw new Exception(strGlobalError);
         }

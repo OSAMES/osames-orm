@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Configuration.Tweak;
 using OsamesMicroOrm.DbTools;
 using SampleDbEntities.Chinook;
 
@@ -17,6 +18,34 @@ namespace TestOsamesMicroOrmSqlite
     [ExcludeFromCodeCoverage]
     public class TestDbToolsUpdate : OsamesMicroOrmSqliteTest
     {
+        /// <summary>
+        /// Test of FormatSqlForUpdate<T> with a list of 2 properties.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("SqLite")]
+        [TestCategory("Mapping")]
+        [TestCategory("Sql formatting for Update")]
+        public void TestFormatSqlForUpdate()
+        {
+
+            // FormatSqlForUpdate<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
+            //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+
+            string sqlCommand, strErrorMsg_;
+            List<KeyValuePair<string, object>> adoParams;
+            Employee employee = new Employee { LastName = "Doe", FirstName = "John" };
+            DbToolsUpdates.FormatSqlForUpdate(employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
+
+            Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", sqlCommand);
+            Assert.AreEqual(3, adoParams.Count, "no parameters generated");
+            Assert.AreEqual("@lastname", adoParams[0].Key);
+            Assert.AreEqual(employee.LastName, adoParams[0].Value);
+            Assert.AreEqual("@firstname", adoParams[1].Key);
+            Assert.AreEqual(employee.FirstName, adoParams[1].Value);
+            Assert.AreEqual("@p0", adoParams[2].Key);
+            Assert.AreEqual(2, adoParams[2].Value);
+        }
+
         /// <summary>
         /// Update d'un seul objet.
         /// </summary>
@@ -164,6 +193,6 @@ namespace TestOsamesMicroOrmSqlite
             Assert.AreEqual("", errorMsg ?? "", "Attendu pas d'erreur");
 
         }
-        
+
     }
 }

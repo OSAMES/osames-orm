@@ -73,27 +73,16 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
         /// <param name="adoParameterNameAndValue_">Sortie : nom/valeur du paramètre ADO.NET</param>
         /// <returns>Ne renvoie rien</returns>
+        /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping ou autre erreur</exception>
         internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
         {
-            dbColumnName_ = null;
-            adoParameterNameAndValue_ = new KeyValuePair<string, object>();
+            dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
 
-            try
-            {
-                dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
-
-                // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
-                adoParameterNameAndValue_ = new KeyValuePair<string, object>(
-                                        "@" + dataObjectPropertyName_.ToLowerInvariant(),
-                                        dataObject_.GetType().GetProperty(dataObjectPropertyName_).GetValue(dataObject_)
-                                        );
-            }
-            catch (Exception e)
-            {
-                // TODO remonter une exception ?
-                Logger.Log(TraceEventType.Critical, e.Message);
-            }
-
+            // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
+            adoParameterNameAndValue_ = new KeyValuePair<string, object>(
+                                    "@" + dataObjectPropertyName_.ToLowerInvariant(),
+                                    dataObject_.GetType().GetProperty(dataObjectPropertyName_).GetValue(dataObject_)
+                                    );
         }
 
         /// <summary>
@@ -110,30 +99,22 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstDbColumnNames_">Sortie : liste de noms des colonnes en DB</param>
         /// <param name="lstAdoParameterNameAndValues_">Sortie : liste de nom/valeur des paramètres ADO.NET</param>
         /// <returns>Ne renvoie rien</returns>
+        /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping ou autre erreur</exception>
         internal static void DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, out List<string> lstDbColumnNames_, out List<KeyValuePair<string, object>> lstAdoParameterNameAndValues_)
         {
             lstDbColumnNames_ = new List<string>();
-
             lstAdoParameterNameAndValues_ = new List<KeyValuePair<string, object>>();
-            try
-            {
-                foreach (string columnName in lstDataObjectPropertyNames_)
-                {
-                    lstDbColumnNames_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
 
-                    // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
-                    lstAdoParameterNameAndValues_.Add(new KeyValuePair<string, object>(
-                                                    "@" + columnName.ToLowerInvariant(),
-                                                    dataObject_.GetType().GetProperty(columnName).GetValue(dataObject_)
-                                                ));
-                }
-            }
-            catch (Exception e)
+            foreach (string columnName in lstDataObjectPropertyNames_)
             {
-                // TODO remonter une exception ?
-                Logger.Log(TraceEventType.Critical, e.Message);
-            }
+                lstDbColumnNames_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
 
+                // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
+                lstAdoParameterNameAndValues_.Add(new KeyValuePair<string, object>(
+                                                "@" + columnName.ToLowerInvariant(),
+                                                dataObject_.GetType().GetProperty(columnName).GetValue(dataObject_)
+                                            ));
+            }
         }
 
         /// <summary>
@@ -143,23 +124,12 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="lstDataObjectPropertyNames_">Liste de noms des propriétés d'un objet</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes en DB</param>
-        /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static bool DetermineDatabaseColumnNames(string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, out List<string> lstDbColumnNames_, out string strErrorMsg_)
+        /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping</exception>
+        internal static void DetermineDatabaseColumnNames(string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, out List<string> lstDbColumnNames_)
         {
             lstDbColumnNames_ = new List<string>();
-            strErrorMsg_ = null;
-            try
-            {
-                lstDbColumnNames_.AddRange(lstDataObjectPropertyNames_.Select(columnName_ => ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName_)));
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Log(TraceEventType.Critical, e.Message);
-                strErrorMsg_ = e.Message;
-                return false;
-            }
+            lstDbColumnNames_.AddRange(lstDataObjectPropertyNames_.Select(columnName_ => ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName_)));
         }
 
         /// <summary>

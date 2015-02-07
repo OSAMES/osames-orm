@@ -71,12 +71,12 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Caractère d'échappement en début de nom de colonne dans le texte d'une requête SQL.
         /// </summary>
-        internal static string StartFieldEncloser;
+        internal static string StartFieldEncloser = string.Empty;
 
         /// <summary>
         /// Caractère d'échappement en fin de nom de colonne dans le texte d'une requête SQL.
         /// </summary>
-        internal static string EndFieldEncloser;
+        internal static string EndFieldEncloser = string.Empty;
 
 
         /// <summary>
@@ -142,6 +142,7 @@ namespace OsamesMicroOrm.Configuration
         /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="propertyName_">DB entity C# object property name. Ex: "CustomerId"</param>
         /// <returns>DB column name. Ex: "id_customer"</returns>
+        /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping pour les paramètres donnés</exception>
         public string GetDbColumnNameFromMappingDictionary(string mappingDictionaryName_, string propertyName_)
         {
             Dictionary<string, string> mappingObjectSet;
