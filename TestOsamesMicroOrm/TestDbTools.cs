@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -200,7 +201,7 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping")]
         [TestCategory("Sql formatting for Update")]
         [TestCategory("Parameter NOK")]
-        [ExpectedException(typeof(KeyNotFoundException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TestFormatSqlForUpdateIncorrectTemplateName()
         {
             try

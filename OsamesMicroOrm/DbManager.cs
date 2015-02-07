@@ -332,9 +332,10 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number</exception>
+        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
+            object oValue;
             if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
@@ -342,7 +343,9 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                     {
-                        object oValue = command.AdoDbCommand.ExecuteScalar();
+                        try { oValue = command.AdoDbCommand.ExecuteScalar(); }
+                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
+
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                     }
@@ -353,7 +356,8 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                 {
-                    object oValue = command.AdoDbCommand.ExecuteScalar();
+                    try { oValue = command.AdoDbCommand.ExecuteScalar(); }
+                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                 }
@@ -371,17 +375,18 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number</exception>
+        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, out long lastInsertedRowId_)
         {
-            if (connection_.IsBackup)
+            object oValue; if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                     {
-                        object oValue = command.AdoDbCommand.ExecuteScalar();
+                        try { oValue = command.AdoDbCommand.ExecuteScalar(); }
+                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                     }
@@ -393,7 +398,8 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                 {
-                    object oValue = command.AdoDbCommand.ExecuteScalar();
+                    try { oValue = command.AdoDbCommand.ExecuteScalar(); }
+                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                 }
@@ -412,17 +418,18 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number</exception>
+        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
         {
-            if (connection_.IsBackup)
+            object oValue; if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                     {
-                        object oValue = command.AdoDbCommand.ExecuteScalar();
+                        try { oValue = command.AdoDbCommand.ExecuteScalar(); }
+                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                     }
@@ -434,7 +441,8 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                 {
-                    object oValue = command.AdoDbCommand.ExecuteScalar();
+                    try { oValue = command.AdoDbCommand.ExecuteScalar(); }
+                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                 }
@@ -452,17 +460,18 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number</exception>
+        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
-            if (transaction_.ConnectionWrapper.IsBackup)
+            object oValue; if (transaction_.ConnectionWrapper.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                     {
-                        object oValue = command.AdoDbCommand.ExecuteScalar();
+                        try { oValue = command.AdoDbCommand.ExecuteScalar(); }
+                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                     }
@@ -474,7 +483,8 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                 {
-                    object oValue = command.AdoDbCommand.ExecuteScalar();
+                    try { oValue = command.AdoDbCommand.ExecuteScalar(); }
+                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                 }
@@ -493,17 +503,18 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number</exception>
+        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, out long lastInsertedRowId_)
         {
-            if (transaction_.ConnectionWrapper.IsBackup)
+            object oValue; if (transaction_.ConnectionWrapper.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                     {
-                        object oValue = command.AdoDbCommand.ExecuteScalar();
+                        try { oValue = command.AdoDbCommand.ExecuteScalar(); }
+                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                     }
@@ -514,7 +525,8 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                 {
-                    object oValue = command.AdoDbCommand.ExecuteScalar();
+                    try { oValue = command.AdoDbCommand.ExecuteScalar(); }
+                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                 }
@@ -533,17 +545,18 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
-        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number</exception>
+        /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
         {
-            if (transaction_.ConnectionWrapper.IsBackup)
+            object oValue; if (transaction_.ConnectionWrapper.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                     {
-                        object oValue = command.AdoDbCommand.ExecuteScalar();
+                        try { oValue = command.AdoDbCommand.ExecuteScalar(); }
+                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                         if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                             throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                     }
@@ -554,7 +567,8 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
                 {
-                    object oValue = command.AdoDbCommand.ExecuteScalar();
+                    try { oValue = command.AdoDbCommand.ExecuteScalar(); }
+                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                     if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
                         throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
                 }
@@ -574,6 +588,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_)
         {
             int iNbAffectedRows;
@@ -585,7 +600,8 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
+                        try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
+                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                     }
                 }
             }
@@ -594,7 +610,8 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
+                    try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
+                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                 }
             }
 
@@ -609,6 +626,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_)
         {
             int iNbAffectedRows;
@@ -620,7 +638,8 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
+                        try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
+                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                     }
                 }
             }
@@ -629,7 +648,8 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
+                    try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
+                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                 }
             }
 
@@ -644,6 +664,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
             int iNbAffectedRows;
@@ -655,7 +676,8 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
+                        try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
+                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                     }
                 }
             }
@@ -664,7 +686,8 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
+                    try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
+                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                 }
             }
 
@@ -679,6 +702,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_)
         {
             int iNbAffectedRows;
@@ -690,7 +714,8 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
+                        try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
+                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                     }
                 }
             }
@@ -699,7 +724,8 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
+                    try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
+                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                 }
             }
 
@@ -714,6 +740,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_)
         {
             int iNbAffectedRows;
@@ -725,7 +752,8 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
+                        try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
+                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                     }
                 }
             }
@@ -734,7 +762,8 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
+                    try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
+                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                 }
             }
 
@@ -749,6 +778,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_">Type de la commande, par défaut CommandType.Text</param>
         /// <param name="cmdText_">Texte de la requête SQL</param>
         /// <returns>Nombre de lignes affectées</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
             int iNbAffectedRows;
@@ -760,7 +790,8 @@ namespace OsamesMicroOrm
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
                     {
-                        iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
+                        try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
+                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                     }
                 }
             }
@@ -769,7 +800,8 @@ namespace OsamesMicroOrm
                 // no lock
                 using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
                 {
-                    iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery();
+                    try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
+                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
                 }
             }
 
@@ -789,6 +821,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
         /// <returns>ADO .NET data reader</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         internal DbDataReader ExecuteReader(OOrmDbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
@@ -804,8 +837,7 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText_);
                         }
                 }
             }
@@ -818,8 +850,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText_);
                 }
         }
 
@@ -831,6 +862,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format</param>
         /// <returns>ADO .NET data reader</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         internal DbDataReader ExecuteReader(OOrmDbConnectionWrapper connection_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
@@ -846,8 +878,7 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText_);
                         }
                     }
                 }
@@ -875,6 +906,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) formatted as a list of key/value</param>
         /// <returns>ADO .NET data reader</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         internal DbDataReader ExecuteReader(OOrmDbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
@@ -890,8 +922,7 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText_);
                         }
                     }
                 }
@@ -905,8 +936,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText_);
                 }
             }
         }
@@ -919,6 +949,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple array format</param>
         /// <returns>ADO .NET data reader</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         public DbDataReader ExecuteReader(OOrmDbTransactionWrapper transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (transaction_.ConnectionWrapper.IsBackup)
@@ -934,8 +965,7 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText_);
                         }
                 }
             }
@@ -948,8 +978,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText_);
                 }
         }
 
@@ -961,6 +990,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format</param>
         /// <returns>ADO .NET data reader</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         public DbDataReader ExecuteReader(OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (transaction_.ConnectionWrapper.IsBackup)
@@ -976,8 +1006,7 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText_);
                         }
                     }
                 }
@@ -991,8 +1020,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText_);
                 }
             }
         }
@@ -1005,6 +1033,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) formatted as a list of key/value</param>
         /// <returns>ADO .NET data reader</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         public DbDataReader ExecuteReader(OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (transaction_.ConnectionWrapper.IsBackup)
@@ -1020,8 +1049,7 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText_);
                         }
                     }
                 }
@@ -1052,10 +1080,11 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format</param>
         /// <returns>ADO .NET dataset</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         internal DataSet DataAdapter(OOrmDbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
-            if (connection_.IsBackup)
+            object oValue; if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
@@ -1068,7 +1097,7 @@ namespace OsamesMicroOrm
 
                             if (dda == null)
                             {
-                                throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                                throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
                             }
                             dda.SelectCommand = command.AdoDbCommand;
                             DataSet ds = new DataSet();
@@ -1077,8 +1106,9 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            if (ex is OOrmHandledException)
+                                throw;
+                            throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
                         }
                 }
             }
@@ -1092,7 +1122,7 @@ namespace OsamesMicroOrm
 
                     if (dda == null)
                     {
-                        throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
                     }
                     dda.SelectCommand = command.AdoDbCommand;
                     DataSet ds = new DataSet();
@@ -1101,8 +1131,9 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    if (ex is OOrmHandledException)
+                        throw;
+                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
                 }
         }
 
@@ -1114,6 +1145,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format</param>
         /// <returns>ADO .NET dataset</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         internal DataSet DataAdapter(OOrmDbConnectionWrapper connection_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
@@ -1130,7 +1162,7 @@ namespace OsamesMicroOrm
 
                             if (dda == null)
                             {
-                                throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                                throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
                             }
                             dda.SelectCommand = command.AdoDbCommand;
                             DataSet ds = new DataSet();
@@ -1139,8 +1171,9 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            if (ex is OOrmHandledException)
+                                throw;
+                            throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
                         }
                 }
 
@@ -1156,7 +1189,7 @@ namespace OsamesMicroOrm
 
                     if (dda == null)
                     {
-                        throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
                     }
                     dda.SelectCommand = command.AdoDbCommand;
                     DataSet ds = new DataSet();
@@ -1165,8 +1198,9 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    if (ex is OOrmHandledException)
+                        throw;
+                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
                 }
         }
 
@@ -1178,6 +1212,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in list of key/value pair format</param>
         /// <returns>ADO .NET dataset</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         internal DataSet DataAdapter(OOrmDbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
@@ -1194,7 +1229,7 @@ namespace OsamesMicroOrm
 
                             if (dda == null)
                             {
-                                throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                                throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
                             }
                             dda.SelectCommand = command.AdoDbCommand;
                             DataSet ds = new DataSet();
@@ -1203,8 +1238,9 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            if (ex is OOrmHandledException)
+                                throw;
+                            throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
                         }
                 }
 
@@ -1219,7 +1255,7 @@ namespace OsamesMicroOrm
 
                     if (dda == null)
                     {
-                        throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
                     }
                     dda.SelectCommand = command.AdoDbCommand;
                     DataSet ds = new DataSet();
@@ -1228,8 +1264,9 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    if (ex is OOrmHandledException)
+                        throw;
+                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
                 }
         }
 
@@ -1241,9 +1278,9 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format</param>
         /// <returns>ADO .NET dataset</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         public DataSet DataAdapter(OOrmDbTransactionWrapper transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-
             if (transaction_.ConnectionWrapper.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
@@ -1257,7 +1294,7 @@ namespace OsamesMicroOrm
 
                             if (dda == null)
                             {
-                                throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                                throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
                             }
                             dda.SelectCommand = command.AdoDbCommand;
                             DataSet ds = new DataSet();
@@ -1266,8 +1303,9 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            if (ex is OOrmHandledException)
+                                throw;
+                            throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
                         }
                 }
             }
@@ -1281,7 +1319,7 @@ namespace OsamesMicroOrm
 
                     if (dda == null)
                     {
-                        throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
                     }
                     dda.SelectCommand = command.AdoDbCommand;
                     DataSet ds = new DataSet();
@@ -1290,8 +1328,9 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    if (ex is OOrmHandledException)
+                        throw;
+                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
                 }
         }
 
@@ -1303,6 +1342,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format</param>
         /// <returns>ADO .NET dataset</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         public DataSet DataAdapter(OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
@@ -1319,7 +1359,7 @@ namespace OsamesMicroOrm
 
                             if (dda == null)
                             {
-                                throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                                throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
                             }
                             dda.SelectCommand = command.AdoDbCommand;
                             DataSet ds = new DataSet();
@@ -1328,8 +1368,9 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            if (ex is OOrmHandledException)
+                                throw;
+                            throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
                         }
                 }
 
@@ -1345,7 +1386,7 @@ namespace OsamesMicroOrm
 
                     if (dda == null)
                     {
-                        throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
                     }
                     dda.SelectCommand = command.AdoDbCommand;
                     DataSet ds = new DataSet();
@@ -1354,8 +1395,9 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    if (ex is OOrmHandledException)
+                        throw;
+                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
                 }
         }
 
@@ -1367,6 +1409,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in list of key/value pair format</param>
         /// <returns>ADO .NET dataset</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         public DataSet DataAdapter(OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
@@ -1383,7 +1426,7 @@ namespace OsamesMicroOrm
 
                             if (dda == null)
                             {
-                                throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                                throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
                             }
                             dda.SelectCommand = command.AdoDbCommand;
                             DataSet ds = new DataSet();
@@ -1392,8 +1435,9 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            if (ex is OOrmHandledException)
+                                throw;
+                            throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
                         }
                 }
 
@@ -1408,7 +1452,7 @@ namespace OsamesMicroOrm
 
                     if (dda == null)
                     {
-                        throw new Exception("DbHelper, DataAdapter: data adapter could not be created");
+                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
                     }
                     dda.SelectCommand = command.AdoDbCommand;
                     DataSet ds = new DataSet();
@@ -1417,8 +1461,9 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    if (ex is OOrmHandledException)
+                        throw;
+                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
                 }
         }
 
@@ -1436,6 +1481,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format. Can be null</param>
         /// <returns>data value</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         internal object ExecuteScalar(OOrmDbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (connection_.IsBackup)
@@ -1452,8 +1498,7 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
                         }
                     }
                 }
@@ -1469,8 +1514,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
                 }
             }
         }
@@ -1484,6 +1528,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format. Can be null</param>
         /// <returns>data value</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         internal object ExecuteScalar(OOrmDbConnectionWrapper connection_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
@@ -1500,8 +1545,7 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
                         }
                 }
             }
@@ -1514,8 +1558,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
                 }
 
         }
@@ -1529,6 +1572,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format. Can be null</param>
         /// <returns>data value</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         internal object ExecuteScalar(OOrmDbConnectionWrapper connection_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
@@ -1545,8 +1589,7 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
                         }
                 }
             }
@@ -1559,8 +1602,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
                 }
 
         }
@@ -1574,6 +1616,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in multiple object array format. Can be null</param>
         /// <returns>data value</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         public object ExecuteScalar(OOrmDbTransactionWrapper transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             if (transaction_.ConnectionWrapper.IsBackup)
@@ -1590,8 +1633,7 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
                         }
                     }
                 }
@@ -1607,8 +1649,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
                 }
             }
         }
@@ -1622,6 +1663,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format. Can be null</param>
         /// <returns>data value</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         public object ExecuteScalar(OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
@@ -1638,8 +1680,7 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
                         }
                 }
             }
@@ -1652,8 +1693,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
                 }
 
         }
@@ -1667,6 +1707,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">SQL command text</param>
         /// <param name="cmdParams_">ADO.NET parameters (name and value) in array of OrmDbParameter objects format. Can be null</param>
         /// <returns>data value</returns>
+        /// <exception cref="OOrmHandledException">SQL execution error</exception>
         public object ExecuteScalar(OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
@@ -1683,8 +1724,7 @@ namespace OsamesMicroOrm
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                            throw;
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
                         }
                 }
             }
@@ -1697,8 +1737,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
                 }
 
         }

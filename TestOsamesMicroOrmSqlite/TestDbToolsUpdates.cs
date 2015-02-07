@@ -32,7 +32,7 @@ namespace TestOsamesMicroOrmSqlite
             _config = ConfigurationLoader.Instance;
 
             // Lecture initiale
-            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> {"IdCustomer", "#"}, new List<object> {testCustomerId}, _transaction);
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
 
             string nomInitial = customer.LastName;
             string prenomInitial = customer.FirstName;
@@ -44,12 +44,12 @@ namespace TestOsamesMicroOrmSqlite
 
             customer.FirstName = "Benjamin";
             customer.LastName = "Nolmans";
-            
+
             string errorMsg;
-            
+
             // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
-            int testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer", 
-                new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer }, 
+            int testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
+                new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer },
                 out errorMsg, _transaction);
 
             Assert.AreEqual(1, testing);
@@ -123,7 +123,47 @@ namespace TestOsamesMicroOrmSqlite
             Assert.AreEqual(1, testing);
             Assert.AreEqual("", errorMsg ?? "", "Attendu pas d'erreur");
 
-           }
+        }
 
+        /// <summary>
+        /// Update d'un seul objet en omettant des valeurs obligatoires.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("SqLite")]
+        [TestCategory("Update")]
+        [Owner("Barbara Post")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestUpdateSingleErrorWithoutMandatoryValuesSqlite()
+        {
+            const int testCustomerId = 3;
+
+            _config = ConfigurationLoader.Instance;
+
+            // Lecture initiale
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
+
+            string nomInitial = customer.LastName;
+            string prenomInitial = customer.FirstName;
+
+            Console.WriteLine("En début de test : Nom : " + nomInitial + " prénom : " + prenomInitial);
+
+            Assert.IsFalse(string.IsNullOrWhiteSpace(nomInitial), "Données de début de test pas dans la bonne version en base de données");
+            Assert.IsFalse(string.IsNullOrWhiteSpace(prenomInitial), "Données de début de test pas dans la bonne version en base de données");
+
+            customer.FirstName = null;
+            customer.LastName = null;
+
+            string errorMsg;
+
+            // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
+            int testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
+                new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer },
+                out errorMsg, _transaction);
+
+            Assert.AreEqual(1, testing);
+            Assert.AreEqual("", errorMsg ?? "", "Attendu pas d'erreur");
+
+        }
+        
     }
 }
