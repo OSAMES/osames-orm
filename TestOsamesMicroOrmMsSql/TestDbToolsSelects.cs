@@ -13,11 +13,9 @@ namespace TestOsamesMicroOrmMsSql
 {
     [TestClass]
     [ExcludeFromCodeCoverage]
-    public class TestDbTools : OsamesMicroOrmMsSqlTest
+    public class TestDbToolsSelects : OsamesMicroOrmMsSqlTest
     {
         private readonly string _incorrectMappingFileFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CommonMsSql.CST_INCORRECT_MAPPING_CUSTOMER);
-
-       // TODO les différents tests seront à réintégrer ici.
 
         /// <summary>
         /// Test de haut niveau du select.

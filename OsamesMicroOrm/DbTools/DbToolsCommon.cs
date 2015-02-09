@@ -140,27 +140,18 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstDbColumnNames_">Sortie : liste de noms des colonnes en DB</param>
         /// <param name="lstDataObjectPropertyNames_">Sortie : liste de noms des propriétés de l'objet associé au mapping</param>
         /// <returns>Ne renvoie rien</returns>
+        /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping</exception>
         internal static void DetermineDatabaseColumnNamesAndDataObjectPropertyNames(string mappingDictionariesContainerKey_, out List<string> lstDbColumnNames_, out List<string> lstDataObjectPropertyNames_)
         {
             lstDbColumnNames_ = new List<string>();
             lstDataObjectPropertyNames_ = new List<string>();
-
-            try
+            // Ce dictionnaire contient clé/valeur : propriété/nom de colonne
+            Dictionary<string, string> mappingObjectSet = ConfigurationLoader.Instance.GetMappingDefinitionsForTable(mappingDictionariesContainerKey_);
+            foreach (string key in mappingObjectSet.Keys)
             {
-                // Ce dictionnaire contient clé/valeur : propriété/nom de colonne
-                Dictionary<string, string> mappingObjectSet = ConfigurationLoader.Instance.GetMappingDefinitionsForTable(mappingDictionariesContainerKey_);
-                foreach (string key in mappingObjectSet.Keys)
-                {
-                    lstDataObjectPropertyNames_.Add(key);
-                    lstDbColumnNames_.Add(mappingObjectSet[key]);
-                }
+                lstDataObjectPropertyNames_.Add(key);
+                lstDbColumnNames_.Add(mappingObjectSet[key]);
             }
-            catch (Exception e)
-            {
-                // TODO remonter une exception ?
-                Logger.Log(TraceEventType.Critical, e.Message);
-            }
-
         }
 
         /// <summary>
@@ -182,24 +173,21 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="parameterAutomaticNameIndex_">Index incrémenté à chaque fois qu'on génère un nom de paramètre "@p..."</param>
         /// <param name="parameterIndex_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
         /// Sert aussi pour le nom du paramètre dynamique si on avait passé "#".</param>
-        /// <param name="unprotectedLiteral">Indique si le littéral doit être protégé avec les fields encloser. Vrai pour non protégé. Gère aussi le fait d'avoir une valeur null ou whitespace</param>
+        /// <param name="unprotectedLiteral_">Indique si le littéral doit être protégé avec les fields encloser. Vrai pour non protégé. Gère aussi le fait d'avoir une valeur null ou whitespace</param>
         /// <returns>Nom de colonne DB</returns>
-        /// <throws>ArgumentException when value_ parameter is null</throws>
-        internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_, out bool unprotectedLiteral)
+        /// <exception cref="OOrmHandledException">Erreurs possibles : 1. pas de correspondance dans le mapping pour mappingDictionariesContainerKey_. 2. value_ n'as pas une syntaxe interprétable</exception>
+        internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_, out bool unprotectedLiteral_)
         {
-            unprotectedLiteral = false;
+            unprotectedLiteral_ = false;
 
             if (string.IsNullOrWhiteSpace(value_) || value_.ToUpperInvariant().StartsWith("%UL%"))
             {
-                unprotectedLiteral = true;
+                unprotectedLiteral_ = true;
                 return value_;
             }
 
             string returnValue;
             char[] valueAsCharArray;
-
-            if (value_ == null)
-                throw new ArgumentException("value_ cannot be null");
 
             if (value_ == "#")
             {
@@ -216,14 +204,11 @@ namespace OsamesMicroOrm.DbTools
                 // Il ne peut contenir d'espaces par définition.
 
                 parameterIndex_++;
-
-
                 valueAsCharArray = value_.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                              c_ == '_' ||
                                                              c_ == '-')).ToArray();
 
                 returnValue = new string(valueAsCharArray);
-
                 return "@" + returnValue.ToLowerInvariant();
             }
 
@@ -233,20 +218,17 @@ namespace OsamesMicroOrm.DbTools
                 // Dans un literal on permet les espaces.
 
                 parameterIndex_++;
-
-
                 valueAsCharArray = value_.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                              char.IsWhiteSpace(c_) ||
                                                              c_ == '_' ||
                                                              c_ == '-')).ToArray();
 
                 returnValue = new string(valueAsCharArray);
-
                 return returnValue;
             }
 
             if (value_.Count(c_ => c_ == ':') > 1)
-                throw new Exception("No matching rules for given parameter: \"" + value_ + "\"");
+                throw new OOrmHandledException(HResultEnum.E_INCORRECTPLACEHOLDERVALUE, null, "Value : '" + value_ +"' cannot contain more than one colon");
 
             string columnName;
             var temp = value_.Split(':');
@@ -285,6 +267,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstSqlPlaceholders_">Liste de string existante, destinée à ajouter les noms des paramètres ADO.NET. (Ex.: @ado_param) à la suite des éléments existant</param>
         /// <param name="lstAdoParameters_">Liste de clés/valeurs existante, destinée à ajouter les noms et valeurs des paramètres ADO.NET. (Ex. </param>
         /// <returns>Ne renvoie rien</returns>
+        /// <exception cref="OOrmHandledException">Exception remontée depuis une méthode appelée</exception>
         internal static void FillPlaceHoldersAndAdoParametersNamesAndValues(string mappingDictionariesContainerKey_, List<string> lstColumnNames_, List<object> lstValues_, List<string> lstSqlPlaceholders_, List<KeyValuePair<string, object>> lstAdoParameters_)
         {
             if (lstColumnNames_ == null) return;

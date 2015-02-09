@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
-using SampleDbEntities.Chinook;
 using OsamesMicroOrm.DbTools;
-using OsamesMicroOrm;
 using OsamesMicroOrm.Utilities;
+using SampleDbEntities.Chinook;
 
 namespace TestOsamesMicroOrm
 {
@@ -143,12 +141,13 @@ namespace TestOsamesMicroOrm
         [ExpectedException(typeof(OOrmHandledException))]
         public void TestDetermineDatabaseColumnNamesAndAdoParametersWrongDictionaryName()
         {
-            try { 
+            try
+            {
                 // DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
 
-            List<string> lstDbColumnNames;
-            List<KeyValuePair<string, object>> adoParams;
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(Employee, "NotAnEmployee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
+                List<string> lstDbColumnNames;
+                List<KeyValuePair<string, object>> adoParams;
+                DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(Employee, "NotAnEmployee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
             }
             catch (OOrmHandledException ex)
             {
@@ -426,6 +425,7 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         [TestCategory("Mapping")]
         [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestDetermineDatabaseColumnNamesAndDataObjectPropertyNamesWrongDictionaryName()
         {
             try
@@ -442,8 +442,6 @@ namespace TestOsamesMicroOrm
         }
 
         #endregion
-
-
 
     }
 }

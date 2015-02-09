@@ -63,7 +63,7 @@
     <Compile Include="TestAdoNetAlone.cs" />
     <Compile Include="TestConfigurationLoader.cs" />
     <Compile Include="TestDbManager.cs" />
-    <Compile Include="TestDbTools.cs" />
+    <Compile Include="TestDbToolsSelects.cs" />
     <Compile Include="TestDbToolsInsert.cs" />
     <Compile Include="TestDbToolsUpdates.cs" />
     <Compile Include="Tools\CommonMsSql.cs" />
