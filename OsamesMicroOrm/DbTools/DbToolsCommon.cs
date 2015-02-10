@@ -282,6 +282,9 @@ namespace OsamesMicroOrm.DbTools
                 //Analyse la chaine courante de strColumnNames_ et retoure soit un @pN ou alors @nomcolonne
                 string paramName = DeterminePlaceholderType(lstColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex, out unprotectedLiteral);
 
+                if(paramName == null)
+                    continue;
+
                 if (paramName.StartsWith("%UL%"))
                 {
                     lstSqlPlaceholders_.Add(paramName.Remove(paramName.IndexOf("%"), (paramName.IndexOf("%", paramName.IndexOf("%") + 2)) - paramName.IndexOf("%") + 1));
