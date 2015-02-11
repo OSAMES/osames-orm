@@ -22,7 +22,7 @@ namespace TestOsamesMicroOrmSqlite
         /// <summary>
         /// Donnée d'entrée de méthode à tester. Meta names corrects.
         /// </summary>
-        readonly List<string> lstSyntaxticallyCorrectMetaNamesToProcess = new List<string>
+        readonly List<string> LstSyntaxticallyCorrectMetaNamesToProcess = new List<string>
         {
             // 1. propriété d'objet db entity
             "IdCustomer", 
@@ -145,14 +145,14 @@ namespace TestOsamesMicroOrmSqlite
             "@customvalue",
             // 4. 2e paramètre dynamique
             "@p1", 
-            // 5. litéral nettoyé
-            "chaine", 
-            // 6. litéral nettoyé
-            "chaine", 
-            // 7. litéral nettoyé
-            "chaine", 
-            // 8. litéral nettoyé
-            "ma chaine", 
+            // 5. litéral nettoyé et protégé
+            "[chaine]", 
+            // 6. litéral nettoyé et protégé
+            "[chaine]", 
+            // 7. litéral nettoyé et protégé
+            "[chaine]", 
+            // 8. litéral nettoyé et protégé
+            "[ma chaine]", 
             // 9. nom de colonne correspondant à la propriété d'objet db entity, protégé
             "[FirstName FirstName]", 
             // 10. nom de colonne correspondant à la propriété d'objet db entity, protégé
@@ -191,9 +191,9 @@ namespace TestOsamesMicroOrmSqlite
 
                 bool unprotectedLiteral;
 
-                List<string> lstResult = lstSyntaxticallyCorrectMetaNamesToProcess.Select(metaName_ => DbToolsCommon.DeterminePlaceholderType(metaName_, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex, out unprotectedLiteral)).ToList();
+                List<string> lstResult = LstSyntaxticallyCorrectMetaNamesToProcess.Select(metaName_ => DbToolsCommon.DeterminePlaceholderType(metaName_, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex, out unprotectedLiteral)).ToList();
 
-                Assert.AreEqual(lstSyntaxticallyCorrectMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments attendus en sortie que de meta names à traiter");
+                Assert.AreEqual(LstSyntaxticallyCorrectMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments attendus en sortie que de meta names à traiter");
 
 
                 try
@@ -253,7 +253,7 @@ namespace TestOsamesMicroOrmSqlite
         }
 
         /// <summary>
-        /// Test de FillPlaceHoldersAndAdoParametersNamesAndValues qui détermine une chaîne.
+        /// Test de FillPlaceHoldersAndAdoParametersNamesAndValues qui détermine une valeur pour le nom du paramètre ADO.NET et une valeur pour la valeur du paramètre ADO.NET.
         /// </summary>
         [TestMethod]
         [TestCategory("Meta name")]
@@ -273,14 +273,20 @@ namespace TestOsamesMicroOrmSqlite
 
                 List<string> lstPlaceholders = new List<string>();
                 List<KeyValuePair<string, object>> lstAdoNetValues = new List<KeyValuePair<string, object>>();
-                DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues("Customer", lstSyntaxticallyCorrectMetaNamesToProcess, LstValuesForSyntaxticallyCorrectMetaNamesToProcess, lstPlaceholders, lstAdoNetValues);
+                DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues("Customer", LstSyntaxticallyCorrectMetaNamesToProcess, LstValuesForSyntaxticallyCorrectMetaNamesToProcess, lstPlaceholders, lstAdoNetValues);
 
-                Assert.AreEqual(lstSyntaxticallyCorrectMetaNamesToProcess.Count -1, lstPlaceholders.Count, "Même nombre d'éléments attendus en sortie que de meta names à traiter, moins l'élément null");
+                Assert.AreEqual(LstSyntaxticallyCorrectMetaNamesToProcess.Count -1, lstPlaceholders.Count, "Même nombre d'éléments attendus en sortie que de meta names à traiter, moins l'élément null");
                 
                 try
                 {
                     for (int i = 0; i < LstExpectedStringForFillPlaceHoldersAndAdoParametersNamesAndValues.Count; i++)
                     {
+                        string metaName = LstSyntaxticallyCorrectMetaNamesToProcess[i];
+                        if (metaName == null)
+                        {
+                            // pas de donnée correspondante dans la liste de sortie
+                            continue;
+                        }
                         bool ok = LstExpectedStringForFillPlaceHoldersAndAdoParametersNamesAndValues[i] == lstPlaceholders[i];
                         if (!ok)
                             lstFailures.Add(LstExpectedStringForFillPlaceHoldersAndAdoParametersNamesAndValues[i] + " attendu mais obtenu : " + lstPlaceholders[i]);

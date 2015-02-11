@@ -159,7 +159,8 @@ namespace OsamesMicroOrm.DbTools
         /// <list type="bullet">
         /// <item><description>si "#" : retourner un nom de paramètre. Ex.: "@pN"</description></item>
         /// <item><description>si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés. Ex: "@last_name"</description></item>
-        /// <item><description>si commence par "%" : retourner simplement la string sans espace</description></item>
+        /// /// <item><description>si null/whitespace ou commence par "%UL%" : retourner simplement la string telle quelle</description></item>
+        /// <item><description>si commence par "%" : retourner simplement la string telle quelle en enlevant les espaces</description></item>
         /// <item><description>si chaîne avec un ":" : retourner le nom d'une colonne DB issu du mapping en supposant que le chaîne avant le ":" est un nom de dictionnaire de mapping (table DB).
         ///  Ex. "Track:TrackID"</description></item>
         /// <item><description>si chaîne : retourner le nom d'une colonne DB issu du mapping. Ex. "TrackID"</description></item>
@@ -278,9 +279,9 @@ namespace OsamesMicroOrm.DbTools
             for (int i = 0; i < iCount; i++)
             {
 
-                bool unprotectedLiteral;
-                //Analyse la chaine courante de strColumnNames_ et retoure soit un @pN ou alors @nomcolonne
-                string paramName = DeterminePlaceholderType(lstColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex, out unprotectedLiteral);
+                bool isUnprotectedLiteral;
+                //Analyse la chaine courante de strColumnNames_ et retoure soit un @pN ou alors @nomcolonne ou alors le litéral initial
+                string paramName = DeterminePlaceholderType(lstColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex, out isUnprotectedLiteral);
 
                 if(paramName == null)
                     continue;
@@ -294,7 +295,7 @@ namespace OsamesMicroOrm.DbTools
                 // Ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ si doit être protégé (null ou whitespace : ne pas protéger).
                 if (paramName.StartsWith("@"))
                     lstAdoParameters_.Add(new KeyValuePair<string, object>(paramName, lstValues_[parameterIndex]));
-                else if (!unprotectedLiteral)
+                else if (!isUnprotectedLiteral)
                     paramName = string.Concat(ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
 
                 // Ajout pour les placeholders
