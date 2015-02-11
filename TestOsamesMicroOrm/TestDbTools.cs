@@ -263,6 +263,8 @@ namespace TestOsamesMicroOrm
 
             Assert.IsNull(sqlCommand);
 
+            // TODO on ne devrait pas avoir une KeyNotFoundException mais une OOrmHandledException !
+
         }
 
         /// <summary>

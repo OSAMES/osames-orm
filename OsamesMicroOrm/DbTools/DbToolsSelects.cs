@@ -26,7 +26,7 @@ namespace OsamesMicroOrm.DbTools
     /// <summary>
     /// 
     /// </summary>
-    public class DbToolsSelects
+    public static class DbToolsSelects
     {
         /// <summary>
         /// Dans le cas d'un select basé sur un template <c>"SELECT {0} FROM {1}...", cée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET, </c>.
