@@ -31,10 +31,10 @@ namespace TestOsamesMicroOrmSqlite
             // FormatSqlForUpdate<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
             //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
-            string sqlCommand, strErrorMsg_;
+            string sqlCommand;
             List<KeyValuePair<string, object>> adoParams;
             Employee employee = new Employee { LastName = "Doe", FirstName = "John" };
-            DbToolsUpdates.FormatSqlForUpdate(employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
+            DbToolsUpdates.FormatSqlForUpdate(employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams);
 
             Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", sqlCommand);
             Assert.AreEqual(3, adoParams.Count, "no parameters generated");

@@ -51,13 +51,13 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="lstAdoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
-        /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
         /// <param name="tryFormat">Si a vrai, on fait un try format sur le sqlcommand</param>
         /// <returns>Ne renvoie rien</returns>
-        internal static void FormatSqlForUpdate<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out string strErrorMsg_, bool tryFormat = true)
+        /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
+        internal static void FormatSqlForUpdate<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
         {
             StringBuilder sbFieldsToUpdate = new StringBuilder();
-            strErrorMsg_ = sqlCommand_ = null;
+            sqlCommand_ = null;
 
             List<string> lstDbColumnNames;
 
@@ -78,7 +78,7 @@ namespace OsamesMicroOrm.DbTools
             DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters_);
 
             if (tryFormat)
-                DbToolsCommon.TryFormat(ConfigurationLoader.DicUpdateSql[sqlTemplate_], out sqlCommand_, out strErrorMsg_, sqlPlaceholders.ToArray());
+                DbToolsCommon.TryFormat(ConfigurationLoader.DicUpdateSql[sqlTemplate_], out sqlCommand_, sqlPlaceholders.ToArray());
 
         }
 
@@ -108,7 +108,8 @@ namespace OsamesMicroOrm.DbTools
             List<KeyValuePair<string, object>> adoParameters;
             int nbRowsAffected = 0;
 
-            FormatSqlForUpdate(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_, out sqlCommand, out adoParameters, out strErrorMsg_);
+            strErrorMsg_ = null;
+            FormatSqlForUpdate(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_, out sqlCommand, out adoParameters);
 
             if (transaction_ != null)
             {
@@ -171,12 +172,10 @@ namespace OsamesMicroOrm.DbTools
                 T dataObject = dataObjects_[i];
                 if (i == 0)
                     //on tryformat le sqlcommand
-                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_, out sqlCommand, out adoParameters, out tmpStrErrorMsg);
+                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_, out sqlCommand, out adoParameters);
                 else
                     // ici le slqcommand rendu est null
-                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_, out tmpSqlCommand, out adoParameters, out tmpStrErrorMsg, false);
-
-                strErrorMsg_ = string.Concat(strErrorMsg_, tmpStrErrorMsg);
+                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_, out tmpSqlCommand, out adoParameters, false);
 
                 if (transaction_ != null)
                 {

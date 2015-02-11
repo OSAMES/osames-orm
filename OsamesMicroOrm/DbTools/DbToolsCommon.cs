@@ -323,29 +323,23 @@ namespace OsamesMicroOrm.DbTools
         #region utilities
         /// <summary>
         /// <c>String.Format</c> avec gestion d'exception.
-        /// <para>Renvoie faux si le nombre de placeholders et de paramètres ne sont pas égaux.</para>
         /// </summary>
         /// <param name="format_">Chaîne texte avec des placeholders</param>
         /// <param name="result_">Chaine avec les placeholders remplacés si succès ou bien message d'erreur pour l'utilisateur si échec du remplacement (cas d'erreur)</param>
         /// <param name="args_">Valeurs à mettre dans les placeholders</param>
-        /// <param name="strErrorMsg_">Retourne un message d'erreur en cas d'échec</param>
-        /// <returns>Renvoie vrai si réussi, sinon retourne faux.</returns>
-        internal static bool TryFormat(string format_, out string result_, out string strErrorMsg_, params Object[] args_)
+        /// <returns>Ne renvoie rien</returns>
+        /// <exception cref="OOrmHandledException">Si le nombre de placeholders et de paramètres ne sont pas égaux.</exception>
+        internal static void TryFormat(string format_, out string result_, params Object[] args_)
         {
-            strErrorMsg_ = null;
             try
             {
                 result_ = String.Format(format_, args_);
-                return true;
             }
             catch (FormatException ex)
             {
                 int nbOfPlaceholders = Utilities.Common.CountPlaceholders(format_);
-                Logger.Log(TraceEventType.Critical,
-                    "Error, not same number of placeholders. Expected : " + nbOfPlaceholders + ", given parameters : " + args_.Length + ", exception: " + ex.Message);
-                result_ = "Error, not same number of placeholders. See log file for more details.";
-                strErrorMsg_ = ex.Message + "\n" + result_;
-                return false;
+                string errorDetail = "Expected : " + nbOfPlaceholders + ", given parameters : " + args_.Length;
+                throw new OOrmHandledException(HResultEnum.E_STRINGFORMATCOUNTMISMATCH, ex, errorDetail);
             }
         }
 

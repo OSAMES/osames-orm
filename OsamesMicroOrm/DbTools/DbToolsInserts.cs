@@ -43,6 +43,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstAdoParameters_"></param>
         /// <param name="strErrorMsg_"></param>
         /// <param name="tryFormat"></param>
+        /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         internal static void FormatSqlForInsert<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out string strErrorMsg_, bool tryFormat = true)
         {
             StringBuilder sbFieldsToInsert = new StringBuilder();
@@ -68,7 +69,7 @@ namespace OsamesMicroOrm.DbTools
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbFieldsToInsert.ToString(), sbParamToInsert.ToString() };
 
             if (tryFormat)
-                DbToolsCommon.TryFormat(ConfigurationLoader.DicInsertSql[sqlTemplate_], out sqlCommand_, out strErrorMsg_, sqlPlaceholders.ToArray());
+                DbToolsCommon.TryFormat(ConfigurationLoader.DicInsertSql[sqlTemplate_], out sqlCommand_, sqlPlaceholders.ToArray());
         }
 
         /// <summary>
