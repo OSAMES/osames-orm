@@ -253,17 +253,23 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping")]
         [TestCategory("Sql formatting for Select")]
         [TestCategory("Parameter NOK")]
-        [ExpectedException(typeof(KeyNotFoundException))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestFormatSqlForSelectIncorrectTemplateName()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParams;
-            List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelect("ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
+            try
+            {
+                string sqlCommand;
+                List<KeyValuePair<string, object>> adoParams;
+                List<string> lstDbColumnNames;
 
-            Assert.IsNull(sqlCommand);
-
-            // TODO on ne devrait pas avoir une KeyNotFoundException mais une OOrmHandledException !
+                DbToolsSelects.FormatSqlForSelect("ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams,
+                    out lstDbColumnNames);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOTEMPLATE).Key, ex.HResult);
+                throw;
+            }
 
         }
 
@@ -276,17 +282,25 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping")]
         [TestCategory("Sql formatting for Select")]
         [TestCategory("Parameter NOK")]
-        [ExpectedException(typeof(KeyNotFoundException))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestFormatSqlForSelectAutoDetermineSelectedFieldsIncorrectTemplateName()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParams;
-            // cette liste va être créée par la méthode testée
-            List<string> lstDbColumnNames;
-            List<string> lstDbEntityPropertyNames;
-            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("ThisTemplateDoesntExist", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
+            try
+            {
+                string sqlCommand;
+                List<KeyValuePair<string, object>> adoParams;
+                // cette liste va être créée par la méthode testée
+                List<string> lstDbColumnNames;
+                List<string> lstDbEntityPropertyNames;
+                DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("ThisTemplateDoesntExist", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbEntityPropertyNames,
+                    out lstDbColumnNames);
 
-            Assert.IsNull(sqlCommand);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOTEMPLATE).Key, ex.HResult);
+                throw;
+            }
 
         }
 
