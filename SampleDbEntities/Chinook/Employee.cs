@@ -78,7 +78,7 @@ namespace SampleDbEntities.Chinook
         public string LastName
         {
             get { return _lastName; }
-            set { _lastName = value.Trim(); }
+            set { _lastName = value == null ? null : value.Trim(); }
         }
 
        /// <summary>
@@ -87,7 +87,7 @@ namespace SampleDbEntities.Chinook
         public string FirstName
         {
             get { return _firstName; }
-            set { _firstName = value.Trim(); }
+            set { _firstName = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace SampleDbEntities.Chinook
         public string Title
         {
             get { return _title; }
-            set { _title = value.Trim(); }
+            set { _title = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace SampleDbEntities.Chinook
         public string Address
         {
             get { return _address; }
-            set { _address = value.Trim(); }
+            set { _address = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace SampleDbEntities.Chinook
         public string City
         {
             get { return _city; }
-            set { _city = value.Trim(); }
+            set { _city = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace SampleDbEntities.Chinook
         public string State
         {
             get { return _state; }
-            set { _state = value.Trim(); }
+            set { _state = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace SampleDbEntities.Chinook
         public string Country
         {
             get { return _country; }
-            set { _country = value.Trim(); }
+            set { _country = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace SampleDbEntities.Chinook
         public string PostalCode
         {
             get { return _postalCode; }
-            set { _postalCode = value.Trim(); }
+            set { _postalCode = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace SampleDbEntities.Chinook
         public string Phone
         {
             get { return _phone; }
-            set { _phone = value.Trim(); }
+            set { _phone = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace SampleDbEntities.Chinook
         public string Fax
         {
             get { return _fax; }
-            set { _fax = value.Trim(); }
+            set { _fax = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace SampleDbEntities.Chinook
         public string Email
         {
             get { return _email; }
-            set { _email = value.Trim(); }
+            set { _email = value == null ? null : value.Trim(); }
         }
 
         /// <summary>

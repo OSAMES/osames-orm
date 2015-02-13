@@ -48,6 +48,7 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <param name="xmlNamespaces_">XML schemas base namespaces</param>
         /// <param name="xmlSchemas_">XML schemas .xsd files full paths</param>
+        /// <exception cref="OOrmHandledException">En cas d'incohérence des paramètres</exception>
         internal XmlValidator(string[] xmlNamespaces_ = null, string[] xmlSchemas_ = null)
         {
             Errors = new List<string>();
@@ -56,11 +57,11 @@ namespace OsamesMicroOrm.Utilities
             if (xmlNamespaces_ != null && xmlSchemas_ != null)
             {
                 if(xmlNamespaces_.Length != xmlSchemas_.Length)
-                    throw new ArgumentException("Not same number of namespaces and schemas given");
+                    throw new OOrmHandledException(HResultEnum.E_NAMESPACESSCHEMASCOUNTMISMATCH, null, "Namespaces: " + xmlNamespaces_.Length + ". Schemas: " + xmlSchemas_.Length);
             }
             if (xmlSchemas_ != null && xmlNamespaces_ == null)
             {
-                throw new ArgumentException("Schema given but no namespaces");
+                throw new OOrmHandledException(HResultEnum.E_NONAMESPACEINSCHEMA, null);
             }
             
             Settings = new XmlReaderSettings
@@ -74,7 +75,7 @@ namespace OsamesMicroOrm.Utilities
             {
                 for (int i = 0; i < xmlSchemas_.Length; i++)
                 {
-                    Common.CheckFile(xmlSchemas_[i], "XmlValidator");
+                    Common.CheckFile(xmlSchemas_[i]);
                     Settings.Schemas.Add(xmlNamespaces_[i], xmlSchemas_[i]);
                 }
             }
@@ -87,9 +88,10 @@ namespace OsamesMicroOrm.Utilities
         /// XML validation.
         /// </summary>
         /// <param name="xmlFile_">Xml file full path</param>
+        /// <exception cref="OOrmHandledException">XML validation errors</exception>
         internal void ValidateXml(string xmlFile_)
         {
-            Common.CheckFile(xmlFile_, "XmlValidator");
+            Common.CheckFile(xmlFile_);
             XmlReader xml = XmlReader.Create(xmlFile_, Settings);
             while (xml.Read()) { }
             if (Errors.Count == 0 && Warnings.Count == 0) return;
@@ -99,19 +101,20 @@ namespace OsamesMicroOrm.Utilities
             foreach (string err in Warnings)
                 sb.Append(err).Append(Environment.NewLine);
                 
-            throw new Exception("XML validation errors: " + sb);
+            throw new OOrmHandledException(HResultEnum.E_XMLVALIDATIONERRORS, null, sb.ToString());
         }
 
         /// <summary>
         /// XML validation, multiple XML files.
         /// </summary>
         /// <param name="xmlFiles_">Xml file full path</param>
+        /// <exception cref="OOrmHandledException">All XML validation errors</exception>
         internal void ValidateXml(string[] xmlFiles_)
         {
             StringBuilder sb = new StringBuilder();
             foreach (string xmlFile in xmlFiles_)
             {
-                Common.CheckFile(xmlFile, "XmlValidator");
+                Common.CheckFile(xmlFile);
                 XmlReader xml = XmlReader.Create(xmlFile, Settings);
                 while (xml.Read())
                 {
@@ -126,7 +129,7 @@ namespace OsamesMicroOrm.Utilities
             foreach (string err in Warnings)
                 sb.Append(err).Append(Environment.NewLine);
 
-            throw new Exception("XML validation errors: " + sb);
+            throw new OOrmHandledException(HResultEnum.E_XMLVALIDATIONERRORS, null, sb.ToString());
         }
 
         /// <summary>

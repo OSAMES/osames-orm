@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
-using SampleDbEntities.Chinook;
 using OsamesMicroOrm.DbTools;
+using OsamesMicroOrm.Utilities;
+using SampleDbEntities.Chinook;
 
 namespace TestOsamesMicroOrm
 {
@@ -98,6 +99,7 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         [TestCategory("Mapping GetPropertyValue")]
         [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestDetermineDatabaseColumnNameAndAdoParameterWrongDictionaryName()
         {
             // DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
@@ -105,9 +107,6 @@ namespace TestOsamesMicroOrm
             string dbColumnName;
             KeyValuePair<string, object> adoParams;
             DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(Employee, "NotAnEmployee", "LastName", out dbColumnName, out adoParams);
-
-            // Ici on devra faire un Assert.IsFalse du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
-
         }
 
         /// <summary>
@@ -122,8 +121,6 @@ namespace TestOsamesMicroOrm
             List<string> lstDbColumnNames;
             List<KeyValuePair<string, object>> adoParams;
             DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(Employee, "Employee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
-
-            // Ici on devra faire un Assert.IsTrue du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
 
             Assert.AreEqual("LastName", lstDbColumnNames[0]);
             Assert.AreEqual("FirstName", lstDbColumnNames[1]);
@@ -141,52 +138,21 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         [TestCategory("Mapping GetPropertyValue")]
         [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestDetermineDatabaseColumnNamesAndAdoParametersWrongDictionaryName()
-        {
-            // DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
-
-            List<string> lstDbColumnNames;
-            List<KeyValuePair<string, object>> adoParams;
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(Employee, "NotAnEmployee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
-
-            // Ici on devra faire un Assert.IsFalse du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
-
-        }
-
-        /// <summary>
-        /// Test of FormatSqlForUpdate<T> with a list of 2 properties.
-        /// </summary>
-        [TestMethod]
-        [TestCategory("Mapping")]
-        [TestCategory("Sql formatting for Update")]
-        public void TestFormatSqlForUpdate()
         {
             try
             {
+                // DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
 
-                // Utiliser la DB Sqlite
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
-
-                // FormatSqlForUpdate<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
-                //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
-
-                string sqlCommand, strErrorMsg_;
+                List<string> lstDbColumnNames;
                 List<KeyValuePair<string, object>> adoParams;
-                DbToolsUpdates.FormatSqlForUpdate(Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
-
-                Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", sqlCommand);
-                Assert.AreEqual(3, adoParams.Count, "no parameters generated");
-                Assert.AreEqual("@lastname", adoParams[0].Key);
-                Assert.AreEqual(Employee.LastName, adoParams[0].Value);
-                Assert.AreEqual("@firstname", adoParams[1].Key);
-                Assert.AreEqual(Employee.FirstName, adoParams[1].Value);
-                Assert.AreEqual("@p0", adoParams[2].Key);
-                Assert.AreEqual(2, adoParams[2].Value);
+                DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(Employee, "NotAnEmployee", new List<string> { "LastName", "FirstName" }, out lstDbColumnNames, out adoParams);
             }
-            finally
+            catch (OOrmHandledException ex)
             {
-                Customizer.ConfigurationManagerRestoreAllKeys();
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                throw;
             }
         }
 
@@ -198,30 +164,26 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping")]
         [TestCategory("Sql formatting for Update")]
         [TestCategory("Parameter NOK")]
-        [ExpectedException(typeof(KeyNotFoundException))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestFormatSqlForUpdateIncorrectTemplateName()
         {
             try
             {
 
-                // Utiliser la DB Sqlite
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
-
                 // FormatSqlForUpdate<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
                 //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
-                string sqlCommand, strErrorMsg_;
                 List<KeyValuePair<string, object>> adoParams;
-                DbToolsUpdates.FormatSqlForUpdate(Employee, "ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams, out strErrorMsg_);
-
-                Assert.IsNull(sqlCommand);
+                string sqlCommand;
+                DbToolsUpdates.FormatSqlForUpdate(Employee, "ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams);
 
             }
-            finally
+            catch (OOrmHandledException ex)
             {
-                Customizer.ConfigurationManagerRestoreAllKeys();
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOTEMPLATE).Key, ex.HResult);
+                throw;
             }
+
         }
 
 
@@ -267,7 +229,7 @@ namespace TestOsamesMicroOrm
             // cette liste va être créée par la méthode testée
             List<string> lstDbEntityPropertyNames;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("BaseReadAllWhere", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 },  out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
+            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("BaseReadAllWhere", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
 
             Assert.AreEqual("SELECT * FROM [Employee] WHERE [EmployeeId] = @p0;", sqlCommand);
             Assert.AreEqual(1, adoParams.Count);
@@ -286,15 +248,23 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping")]
         [TestCategory("Sql formatting for Select")]
         [TestCategory("Parameter NOK")]
-        [ExpectedException(typeof(KeyNotFoundException))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestFormatSqlForSelectIncorrectTemplateName()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParams;
-            List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelect("ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
+            try
+            {
+                string sqlCommand;
+                List<KeyValuePair<string, object>> adoParams;
+                List<string> lstDbColumnNames;
 
-            Assert.IsNull(sqlCommand);
+                DbToolsSelects.FormatSqlForSelect("ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams,
+                    out lstDbColumnNames);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOTEMPLATE).Key, ex.HResult);
+                throw;
+            }
 
         }
 
@@ -307,17 +277,25 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping")]
         [TestCategory("Sql formatting for Select")]
         [TestCategory("Parameter NOK")]
-        [ExpectedException(typeof(KeyNotFoundException))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestFormatSqlForSelectAutoDetermineSelectedFieldsIncorrectTemplateName()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParams;
-            // cette liste va être créée par la méthode testée
-            List<string> lstDbColumnNames;
-            List<string> lstDbEntityPropertyNames;
-            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("ThisTemplateDoesntExist", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
+            try
+            {
+                string sqlCommand;
+                List<KeyValuePair<string, object>> adoParams;
+                // cette liste va être créée par la méthode testée
+                List<string> lstDbColumnNames;
+                List<string> lstDbEntityPropertyNames;
+                DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("ThisTemplateDoesntExist", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbEntityPropertyNames,
+                    out lstDbColumnNames);
 
-            Assert.IsNull(sqlCommand);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOTEMPLATE).Key, ex.HResult);
+                throw;
+            }
 
         }
 
@@ -373,9 +351,8 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping")]
         public void TestDetermineDatabaseColumnName()
         {
-            string columnName, strErrorMsg_;
-            DbToolsCommon.DetermineDatabaseColumnName("Customer", "LastName", out columnName, out strErrorMsg_);
-            // TODO cette méthode est à modifier pour renvoyer ici true (ajouter un assert) #ORM-85
+            string columnName;
+            DbToolsCommon.DetermineDatabaseColumnName("Customer", "LastName", out columnName);
             Assert.AreEqual("LastName", columnName);
         }
 
@@ -386,32 +363,52 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping")]
         public void TestDetermineDatabaseColumnNames()
         {
-            string strErrorMsg_ = null;
             List<string> columnsNames;
-            bool result = DbToolsCommon.DetermineDatabaseColumnNames("NotCustomer", new List<string> { "FirstName", "LastName" }, out columnsNames, out strErrorMsg_);
-
-            Assert.IsFalse(result);
-
-            columnsNames.Clear();
-
-            result = DbToolsCommon.DetermineDatabaseColumnNames("Customer", new List<string> { "FirstName", "LastName" }, out columnsNames, out strErrorMsg_);
-
-            Assert.IsTrue(result);
+            DbToolsCommon.DetermineDatabaseColumnNames("Customer", new List<string> { "FirstName", "LastName" }, out columnsNames);
         }
 
         /// <summary>
         /// Test of DetermineDatabaseColumnName for a given mapping.
-        /// On demande le mauvais nom de dictionnaire.
+        /// On demande le mauvais nom de dictionnaire et deux propriétés.
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping")]
         [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestDetermineDatabaseColumnNamesNok()
+        {
+            try
+            {
+                List<string> columnsNames;
+                DbToolsCommon.DetermineDatabaseColumnNames("NotCustomer", new List<string> { "FirstName", "LastName" }, out columnsNames);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Test of DetermineDatabaseColumnName for a given mapping.
+        /// On demande le mauvais nom de dictionnaire et une propriété.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Mapping")]
+        [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestDetermineDatabaseColumnNameWrongDictionaryName()
         {
-            string columnName, strErrorMsg_;
-            bool result = DbToolsCommon.DetermineDatabaseColumnName("NotACustomer", "LastName", out columnName, out strErrorMsg_);
-
-            Assert.IsFalse(result);
+            try
+            {
+                string columnName;
+                DbToolsCommon.DetermineDatabaseColumnName("NotACustomer", "LastName", out columnName);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                throw;
+            }
         }
 
         /// <summary>
@@ -425,8 +422,6 @@ namespace TestOsamesMicroOrm
             List<string> lstDbColumnNames;
             DbToolsCommon.DetermineDatabaseColumnNamesAndDataObjectPropertyNames("Customer", out lstDbColumnNames, out lstPropertiesNames);
 
-            // TODO cette méthode est à modifier pour renvoyer ici true (ajouter un assert) #ORM-85
-
             Assert.IsFalse(lstDbColumnNames.Count == 0);
             Assert.IsFalse(lstPropertiesNames.Count == 0);
             Assert.AreEqual(lstDbColumnNames.Count, lstPropertiesNames.Count);
@@ -439,17 +434,23 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         [TestCategory("Mapping")]
         [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestDetermineDatabaseColumnNamesAndDataObjectPropertyNamesWrongDictionaryName()
         {
-            List<string> lstPropertiesNames;
-            List<string> lstDbColumnNames;
-            DbToolsCommon.DetermineDatabaseColumnNamesAndDataObjectPropertyNames("NotACustomer", out lstDbColumnNames, out lstPropertiesNames);
-            // TODO cette méthode est à modifier pour renvoyer ici false (ajouter un assert) #ORM-85
+            try
+            {
+                List<string> lstDbColumnNames;
+                List<string> lstPropertiesNames;
+                DbToolsCommon.DetermineDatabaseColumnNamesAndDataObjectPropertyNames("NotACustomer", out lstDbColumnNames, out lstPropertiesNames);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                throw;
+            }
         }
 
         #endregion
-
-
 
     }
 }

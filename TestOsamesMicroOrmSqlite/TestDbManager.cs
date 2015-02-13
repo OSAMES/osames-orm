@@ -22,6 +22,7 @@ namespace TestOsamesMicroOrmSqlite
         [ExcludeFromCodeCoverage]
         [Owner("Barbara Post")]
         [TestCategory("SqLite")]
+        [TestCategory("List Provider")]
         public void TestGetProvider()
         {
             DataTable providers = DbProviderFactories.GetFactoryClasses();
@@ -30,6 +31,26 @@ namespace TestOsamesMicroOrmSqlite
 
             DbProviderFactory provider = DbProviderFactories.GetFactory("System.Data.SQLite");
             Assert.IsNotNull(provider);
+        }
+
+        /// <summary>
+        /// test d'un cas absurde d'ouverture de transation sur connexion nulle (méthode internal testée).
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Transaction")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        [Owner("Barbara Post")]
+        public void OpenTransactionFailed()
+        {
+            try
+            {
+                DbManager.Instance.OpenTransaction(null);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message + "[INNER EXCEPTION]" + (ex.InnerException == null ? "none" : ex.InnerException.Message));
+                throw;
+            }
         }
 
         /// <summary>
@@ -96,6 +117,8 @@ namespace TestOsamesMicroOrmSqlite
                 throw;
             }
         }
+
+        
 
         /// <summary>
         /// From http://msdn.microsoft.com/en-us/library/system.data.datatable(v=vs.110).aspx

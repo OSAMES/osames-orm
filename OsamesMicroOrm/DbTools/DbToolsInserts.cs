@@ -16,12 +16,111 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
+using System.Text;
+using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Logging;
+
 namespace OsamesMicroOrm.DbTools
 {
     /// <summary>
     /// 
     /// </summary>
-    public class DbToolsInserts
+    public static class DbToolsInserts
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataObject_"></param>
+        /// <param name="sqlTemplate_"></param>
+        /// <param name="mappingDictionariesContainerKey_"></param>
+        /// <param name="lstDataObjectColumnNames_"></param>
+        /// <param name="sqlCommand_"></param>
+        /// <param name="lstAdoParameters_"></param>
+        /// <param name="tryFormat"></param>
+        /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
+        internal static void FormatSqlForInsert<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
+        {
+            StringBuilder sbFieldsToInsert = new StringBuilder();
+            StringBuilder sbParamToInsert = new StringBuilder();
+            sqlCommand_ = null;
+
+            List<string> lstDbColumnNames;
+
+            // 1. détermine les champs à mettre à jour et remplit la stringbuilder sbFieldsToInsert
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(dataObject_, mappingDictionariesContainerKey_, lstDataObjectColumnNames_, out lstDbColumnNames, out lstAdoParameters_);
+
+            int iCountMinusOne = lstDbColumnNames.Count - 1;
+            for (int i = 0; i < iCountMinusOne; i++)
+            {
+                sbFieldsToInsert.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(", ");
+                sbParamToInsert.Append(lstAdoParameters_[i].Key).Append(", ");
+            }
+
+            sbFieldsToInsert.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames[iCountMinusOne]).Append(ConfigurationLoader.EndFieldEncloser);
+            sbParamToInsert.Append(lstAdoParameters_[iCountMinusOne].Key);
+
+            // 2. Positionne les deux premiers placeholders
+            List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbFieldsToInsert.ToString(), sbParamToInsert.ToString() };
+
+            if (tryFormat)
+            {
+                string templateName;
+                if (!ConfigurationLoader.DicInsertSql.TryGetValue(sqlTemplate_, out templateName))
+                    throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: " + sqlTemplate_);
+
+                DbToolsCommon.TryFormat(templateName, out sqlCommand_, sqlPlaceholders.ToArray());
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataObject_"></param>
+        /// <param name="sqlTemplate_"></param>
+        /// <param name="mappingDictionariesContainerKey_"></param>
+        /// <param name="lstPropertiesNames_"></param>
+        /// <param name="transaction_"></param>
+        /// <returns></returns>
+        /// <exception cref="OOrmHandledException">any error</exception>
+        public static long Insert<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, OOrmDbTransactionWrapper transaction_ = null)
+        {
+            string sqlCommand;
+            List<KeyValuePair<string, object>> adoParameters;
+            long newRecordId;
+
+            FormatSqlForInsert(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, out sqlCommand, out adoParameters);
+
+            if (transaction_ != null)
+            {
+                // Présence d'une transaction
+                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters, out newRecordId) == 0)
+                    Logger.Log(TraceEventType.Warning, "Query didn't insert any row: " + sqlCommand);
+                return newRecordId;
+            }
+
+            // Pas de transaction
+            OOrmDbConnectionWrapper conn = null;
+            try
+            {
+                conn = DbManager.Instance.CreateConnection();
+
+                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters, out newRecordId) == 0)
+                    Logger.Log(TraceEventType.Warning, "Query didn't insert any row: " + sqlCommand);
+                return newRecordId;
+            }
+            finally
+            {
+                // Si c'est la connexion de backup alors on ne la dipose pas pour usage ultérieur.
+                if (!conn.IsBackup)
+                    conn.Dispose();
+            }
+
+        }
     }
 }

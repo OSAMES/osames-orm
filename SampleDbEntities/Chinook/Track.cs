@@ -64,7 +64,7 @@ namespace SampleDbEntities.Chinook
         public string Name
         {
             get { return _name; }
-            set { _name = value.Trim(); }
+            set { _name = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace SampleDbEntities.Chinook
         public string Composer
         {
             get { return _composer; }
-            set { _composer = value.Trim(); }
+            set { _composer = value == null ? null : value.Trim(); }
         }
 
         /// <summary>

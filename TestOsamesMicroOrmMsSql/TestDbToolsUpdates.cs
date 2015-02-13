@@ -44,16 +44,12 @@ namespace TestOsamesMicroOrmMsSql
 
             customer.FirstName = "Benjamin";
             customer.LastName = "Nolmans";
-            
-            string errorMsg;
-            
+                       
             // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
             int testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer", 
-                new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer }, 
-                out errorMsg, _transaction);
+                new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer }, _transaction);
 
             Assert.AreEqual(1, testing);
-            Assert.AreEqual("", errorMsg ?? "", "Attendu pas d'erreur");
 
             // Refaire un select, on lit la nouvelle valeur
             Customer reReadcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
@@ -73,7 +69,7 @@ namespace TestOsamesMicroOrmMsSql
             // On réutilise la connexion et on rouvre une transaction
             // teste de robustesse des wrapper en réutilisant expres la connexion
             // (chose que l'on ne peut faire car cette methode est internal)
-            _transaction = DbManager.Instance.OpenTransaction(_transaction.Connection);
+            _transaction = DbManager.Instance.OpenTransaction(_transaction.ConnectionWrapper);
 
             Customer reReadInitialcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
 

@@ -79,7 +79,7 @@ namespace SampleDbEntities.Chinook
         public string BillingAddress
         {
             get { return _billingAddress; }
-            set { _billingAddress = value.Trim(); }
+            set { _billingAddress = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace SampleDbEntities.Chinook
         public string BillingCity
         {
             get { return _billingCity; }
-            set { _billingCity = value.Trim(); }
+            set { _billingCity = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace SampleDbEntities.Chinook
         public string BillingState
         {
             get { return _billingState; }
-            set { _billingState = value.Trim(); }
+            set { _billingState = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace SampleDbEntities.Chinook
         public string BillingCountry
         {
             get { return _billingCountry; }
-            set { _billingCountry = value.Trim(); }
+            set { _billingCountry = value == null ? null : value.Trim(); }
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace SampleDbEntities.Chinook
         public string BillingPostalCode
         {
             get { return _billingPostalCode; }
-            set { _billingPostalCode = value.Trim(); }
+            set { _billingPostalCode = value == null ? null : value.Trim(); }
         }
 
         /// <summary>

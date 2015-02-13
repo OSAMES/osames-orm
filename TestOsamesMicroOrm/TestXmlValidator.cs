@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Utilities;
 using Common = TestOsamesMicroOrm.Tools.Common;
@@ -125,7 +126,7 @@ namespace TestOsamesMicroOrm
         [ExcludeFromCodeCoverage]
         [TestCategory("XML")]
         [TestCategory("Online XML schema")]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestValidateOkTemplatesOnlineSchemaValidatorWithNamespace()
         {
             XmlValidator validator = _xmlValidatorWithSchemasAndNamespaces;
@@ -265,7 +266,7 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         [Owner("Barbara Post")]
         [ExcludeFromCodeCoverage]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         [TestCategory("XML")]
         [TestCategory("Local XML schema")]
         public void TestValidateTemplatesOtherOrder()
@@ -296,7 +297,7 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         [Owner("Barbara Post")]
         [ExcludeFromCodeCoverage]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         [TestCategory("XML")]
         [TestCategory("Online XML schema")]
         public void TestValidateTemplatesOtherOrderOnlineSchema()
@@ -327,7 +328,7 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         [Owner("Barbara Post")]
         [ExcludeFromCodeCoverage]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         [TestCategory("XML")]
         [TestCategory("Local XML schema")]
         public void TestValidateTwoErroneousXmlAtOnce()
@@ -399,7 +400,7 @@ namespace TestOsamesMicroOrm
         [ExcludeFromCodeCoverage]
         [TestCategory("XML")]
         [TestCategory("Local XML schema")]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestValidateTemplatesWrongSchemaUri()
         {
             XmlValidator validator = _xmlValidatorWithSchemasAndNamespaces;
@@ -426,7 +427,7 @@ namespace TestOsamesMicroOrm
         [ExcludeFromCodeCoverage]
         [TestCategory("XML")]
         [TestCategory("Online XML schema")]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestValidateTemplatesWrongSchemaUriOnlineSchema()
         {
             XmlValidator validator = _xmlValidatorWithoutSchemasOrNamespaces;

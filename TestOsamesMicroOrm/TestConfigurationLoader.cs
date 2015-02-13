@@ -9,7 +9,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
-using TestOsamesMicroOrm.Tools;
+using OsamesMicroOrm.Utilities;
+using Common = TestOsamesMicroOrm.Tools.Common;
 
 namespace TestOsamesMicroOrm
 {
@@ -33,6 +34,128 @@ namespace TestOsamesMicroOrm
             // Obligatoire car Resharper ne comprend pas qu'il faut initilaliser la classe mère.
             var tempo = ConfigurationLoader.Instance;
         }
+
+        #region configurations erronées dans les fichiers .config
+
+        /// <summary>
+        /// Pas de valeur pour la connexion active dans AppSettings.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("Configuration")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestNoActiveConnectionDefinedAppSettings()
+        {
+            try
+            {
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "");
+                var test = ConfigurationLoader.Instance;
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOACTIVECONNECTIONDEFINED).Key, ex.HResult);
+                throw;
+            }
+            finally
+            {
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.activeDbConnection.ToString());
+                var test = ConfigurationLoader.Instance;
+            }
+        }
+
+        /// <summary>
+        /// La clé correspondant à la connexion active dans AppSettings n'a pas de correspondance dans le fichier des connexion strings.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("Configuration")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestActiveConnectionDefinedAppSettingsNotFoundAmongConnectionStrings()
+        {
+            try
+            {
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "no match");
+                var test = ConfigurationLoader.Instance;
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOACTIVECONNECTIONFOUND).Key, ex.HResult);
+                throw;
+            }
+            finally
+            {
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.activeDbConnection.ToString());
+                var test = ConfigurationLoader.Instance;
+            }
+        }
+
+        /// <summary>
+        /// Dans les connexion strings, une connexion string ne définit pas de provider name.
+        /// Pour que ce test passe il doit y avoir une configuration dans le fichier des connection strings pour ce provider "test", avec un nom de provider à blanc.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("Configuration")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        [Ignore]
+        public void TestConnectionStringMissingProviderName()
+        {
+            try
+            {
+                //ConfigurationManager.ConnectionStrings.Add(new ConnectionStringSettings(" ", "test"));
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "test");
+                var test = ConfigurationLoader.Instance;
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOPROVIDERNAMEFORCONNECTIONNAME).Key, ex.HResult);
+                throw;
+            }
+            finally
+            {
+                //ConfigurationManager.ConnectionStrings.Remove(" ");
+                var test = ConfigurationLoader.Instance;
+            }
+        }
+
+        /// <summary>
+        /// Le provider défini dans le fichier des connexion strings (pour la connexion active) n'est pas installé sur le système.
+        /// Pour que ce test passe il doit y avoir une configuration dans le fichier des templates (orm:ProviderSpecific) pour ce provider "test".
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("Configuration")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        [Ignore]
+        public void TestNotInstalledProvider()
+        {
+            try
+            {
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "test");
+                var test = ConfigurationLoader.Instance;
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_PROVIDERNOTINSTALLED).Key, ex.HResult);
+                throw;
+            }
+            finally
+            {
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.activeDbConnection.ToString());
+                var test = ConfigurationLoader.Instance;
+            }
+        }
+
+
+        #endregion
 
         /// <summary>
         /// Load of correct configuration file.
@@ -80,7 +203,7 @@ namespace TestOsamesMicroOrm
                 //AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ""));
 
                 // Usage du tweak car nous ne sommes pas dans une classe de test d'un projet "OsamesMicroOrm[type de la DB]Test".
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");            
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.LocalDB");
 
                 ConfigurationLoader tempo = ConfigurationLoader.Instance;
 
@@ -105,7 +228,7 @@ namespace TestOsamesMicroOrm
         [Owner("Barbara Post")]
         [TestCategory("XML")]
         [TestCategory("Configuration")]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestConfigurationLoaderIncorrectXmlAssertOnInternalDictionaries()
         {
             try
@@ -166,6 +289,7 @@ namespace TestOsamesMicroOrm
             Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
         }
 
+        #region cas de test de GetDbColumnNameFromMappingDictionary()
         /// <summary>
         /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is found.
         /// </summary>
@@ -191,38 +315,131 @@ namespace TestOsamesMicroOrm
         /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is not found (key).
         /// </summary>
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
         [ExcludeFromCodeCoverage]
         [Owner("Barbara Post")]
         [TestCategory("XML")]
         [TestCategory("Configuration")]
         [TestCategory("Mapping")]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestGetMappingDbColumnNameWrongKey()
         {
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
             Assert.IsFalse(ConfigurationLoader.MappingDictionnary.ContainsKey("foobar"), "Expected not to find 'foobar' key");
 
-            ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("foobar", "Email");
+            try
+            {
+                ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("foobar", "Email");
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                throw;
+            }
+
         }
 
         /// <summary>
         /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is not found (property name).
         /// </summary>
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
         [ExcludeFromCodeCoverage]
         [Owner("Barbara Post")]
         [TestCategory("XML")]
         [TestCategory("Configuration")]
         [TestCategory("Mapping")]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestGetMappingDbColumnNameWrongPropertyName()
         {
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-            // TODO manque l'assert que la clé n'existe pas dans le dico interne
-            ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("foobar", "Email");
+            Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("Customer"), "Expected to find 'customer' key");
+            Assert.IsFalse(ConfigurationLoader.MappingDictionnary["Customer"].ContainsKey("foobar"), "Expected not to find 'foobar' key");
+            try
+            {
+                ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("Customer", "foobar");
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEYANDPROPERTY).Key, ex.HResult);
+                throw;
+            }
         }
 
-        // TODO les TU dans l'autre sens, GetDbEntityPropertyNameFromMappingDictionary, les 3 cas (OK, pas de match sur clé de mapping, pas de match sur nom de colonne)
+        #endregion
+
+        #region cas de test de GetDbEntityPropertyNameFromMappingDictionary()
+        /// <summary>
+        /// ConfigurationLoader internal dictionary is populated. Test of GetDbEntityPropertyNameFromMappingDictionary : case where mapping is found.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("Mapping")]
+        public void TestGetDbEntityPropertyName()
+        {
+            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
+            Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("Customer"), "Expected to find 'Customer' key");
+
+            // Inspect detail for a specific case
+            Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["Customer"];
+            Assert.IsTrue(mappings.ContainsValue("Email"), "Expected to find 'Email' value");
+            Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
+            Assert.AreEqual("Email", ConfigurationLoader.Instance.GetDbEntityPropertyNameFromMappingDictionary("Customer", "Email"));
+        }
+
+        /// <summary>
+        /// ConfigurationLoader internal dictionary is populated. Test of GetDbEntityPropertyNameFromMappingDictionary : case where mapping is not found (key).
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("Mapping")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestGetDbEntityPropertyNameWrongKey()
+        {
+            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
+            Assert.IsFalse(ConfigurationLoader.MappingDictionnary.ContainsKey("foobar"), "Expected not to find 'foobar' key");
+            try
+            {
+                ConfigurationLoader.Instance.GetDbEntityPropertyNameFromMappingDictionary("foobar", "Email");
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// ConfigurationLoader internal dictionary is populated. Test of GetDbEntityPropertyNameFromMappingDictionary : case where mapping is not found (column name).
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("Mapping")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestGetDbEntityPropertyNameWrongColumnName()
+        {
+            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
+            Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("Customer"), "Expected to find 'customer' key");
+            Assert.IsFalse(ConfigurationLoader.MappingDictionnary["Customer"].ContainsValue("foobar"), "Expected not to find 'foobar' value");
+            try
+            {
+                ConfigurationLoader.Instance.GetDbEntityPropertyNameFromMappingDictionary("Customer", "foobar");
+            }
+            catch (OOrmHandledException ex)
+            {
+                Assert.AreEqual(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEYANDCOLUMN).Key, ex.HResult);
+                throw;
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// After test run, ConfigurationLoader internal dictionary should be populated.

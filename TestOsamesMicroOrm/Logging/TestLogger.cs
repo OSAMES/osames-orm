@@ -32,7 +32,8 @@ namespace TestOsamesMicroOrm.Logging
         /// </summary>
         [TestMethod]
         [TestCategory("Configuration")]
-        public void Test()
+        [TestCategory("Logging")]
+        public void TestLog()
         {
             var temp = ConfigurationLoader.Instance;
             

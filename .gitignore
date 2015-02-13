@@ -168,3 +168,6 @@ Application/*.vsmdi
 
 # Ignore everything in this directory
 !/bin/debug/Logs
+*.chk
+*.jrs
+*.ide

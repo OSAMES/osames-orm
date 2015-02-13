@@ -78,7 +78,7 @@ namespace OsamesMicroOrm.Configuration
         /// </summary>
         internal static string EndFieldEncloser;
 
- 
+
         /// <summary>
         /// Private constructor for singleton.
         /// </summary>
@@ -89,6 +89,7 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Singleton access. Creates an empty object once.
         /// </summary>
+        /// <exception cref="OOrmHandledException"></exception>
         public static ConfigurationLoader Instance
         {
             get
@@ -103,6 +104,21 @@ namespace OsamesMicroOrm.Configuration
                     return Singleton;
 
                 }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <exception cref="OverflowException"><paramref name="value" /> represents a number that is less than <see cref="F:System.Int32.MinValue" /> or greater than <see cref="F:System.Int32.MaxValue" />. </exception>
+        public static int GetOrmContext
+        {
+            get
+            {
+                int context;
+                if (Int32.TryParse(ConfigurationManager.AppSettings["context"], out context))
+                    return context;
+                return 0;
             }
         }
 
@@ -126,6 +142,7 @@ namespace OsamesMicroOrm.Configuration
         /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="propertyName_">DB entity C# object property name. Ex: "CustomerId"</param>
         /// <returns>DB column name. Ex: "id_customer"</returns>
+        /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping pour les paramètres donnés</exception>
         public string GetDbColumnNameFromMappingDictionary(string mappingDictionaryName_, string propertyName_)
         {
             Dictionary<string, string> mappingObjectSet;
@@ -133,10 +150,10 @@ namespace OsamesMicroOrm.Configuration
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
             mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
-            if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "' and property name '" + propertyName_ + "'");
+            if (resultColumnName == null)
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDPROPERTY, null, "[No property " + propertyName_ + " in dictionary " + mappingDictionaryName_ + "]");
 
             return resultColumnName;
         }
@@ -152,28 +169,30 @@ namespace OsamesMicroOrm.Configuration
             Dictionary<string, string> mappingObjectSet;
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
-            if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
-            string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
 
+            if (mappingObjectSet == null)
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
+            string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
             if (resultPropertyName == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "' and DB column name '" + dbColumnName_ + "'");
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDCOLUMN, null, "[No column " + dbColumnName_ + " in dictionary " + mappingDictionaryName_ + "]");
 
             return resultPropertyName;
         }
 
         /// <summary>
-        /// Asks mapping dictionary for all mapping defined for a given table.
+        /// Retourne les informations de mapping pour une table donnée sous forme de dictionnaire :
+        /// clés : propriétés de la classe C# DbEntity, valeurs : noms des colonnes en bae de données.
         /// </summary>
         /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
         /// <returns>Mapping dictionary</returns>
+        /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping pour le nom paramètre</exception>
         public Dictionary<string, string> GetMappingDefinitionsForTable(string mappingDictionaryName_)
         {
             Dictionary<string, string> mappingObjectSet;
 
             MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
             if (mappingObjectSet == null)
-                throw new Exception("No mapping for key '" + mappingDictionaryName_ + "'");
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
             return mappingObjectSet;
         }
 
@@ -184,59 +203,45 @@ namespace OsamesMicroOrm.Configuration
         /// Positionne les valeurs de la connexion string et du nom du provider sur le singleton de DbManager.
         /// </summary>
         /// <returns>false when configuration is wrong</returns>
-        internal bool CheckDatabaseConfiguration()
-        {  
+        /// <exception cref="OOrmHandledException"></exception>
+        private void CheckDatabaseConfiguration()
+        {
             // 1. AppSettings : doit définir une connexion DB active
             string dbConnexion = ConfigurationManager.AppSettings["activeDbConnection"];
             if (string.IsNullOrWhiteSpace(dbConnexion))
-            {
-                Logger.Log(TraceEventType.Critical, "No active connection name defined in appSettings ('activeDbConnection')");
-                return false;
-            }
+                throw new OOrmHandledException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, null);
 
             // 2. Cette connexion DB doit être trouvée dans les ConnectionStrings définies dans la configuration (attribute "Name")
             var activeConnection = ConfigurationManager.ConnectionStrings[dbConnexion];
             if (activeConnection == null)
-            {
-                Logger.Log(TraceEventType.Critical, "Active connection not found in available connection strings (key : '" + dbConnexion + "'");
-                return false;
-            }
-          
+                throw new OOrmHandledException(HResultEnum.E_NOACTIVECONNECTIONFOUND, null, "connection name: '" + dbConnexion + "'");
+
             // 3. Un provider doit être défini (attribut "ProviderName")
             string provider = activeConnection.ProviderName;
             if (string.IsNullOrWhiteSpace(provider))
-            {
-                Logger.Log(TraceEventType.Critical, "No provider name defined in connection strings configuration for connection with name '" + dbConnexion + "'");
-                return false;
-            }
+                throw new OOrmHandledException(HResultEnum.E_NOPROVIDERNAMEFORCONNECTIONNAME, null, "connection name: " + dbConnexion);
 
             // 4. ce provider doit exister sur le système
             if (!FindInProviderFactoryClasses(provider))
-            {
-                Logger.Log(TraceEventType.Critical, "Provider with name '" + provider +"' is not installed '");
-                return false;
-            }
+                throw new OOrmHandledException(HResultEnum.E_PROVIDERNOTINSTALLED, null, "provider name: " + provider);
+
             // 5. Une chaîne de connexion doit être définie (attribut "ConnectionString")
             string conn = activeConnection.ConnectionString;
             if (string.IsNullOrWhiteSpace(conn))
-            {
-                Logger.Log(TraceEventType.Critical, "No connection string value defined in connection strings configuration for connection with name '" + dbConnexion + "'");
-                return false;
-            }
-            
+                throw new OOrmHandledException(HResultEnum.E_NOCONNEXIONSTRINGDEFINED, null, null);
+
             Logger.Log(TraceEventType.Information, "Using DB connection string: " + conn);
-            
+
             // Now pass information to DbHelper
             DbManager.ConnectionString = conn;
             DbManager.ProviderName = provider;
-
-            return true;
 
         }
 
         /// <summary>
         /// Reads configuration from appSettings then load specific configuration files to internal dictionaries.
         /// </summary>
+        /// <exception cref="OOrmHandledException"></exception>
         private void LoadXmlConfiguration()
         {
             // 1. Load ORM Configuration File
@@ -276,6 +281,9 @@ namespace OsamesMicroOrm.Configuration
 
                 // 2. Load provider specific information
                 string dbConnexionName = ConfigurationManager.AppSettings["activeDbConnection"];
+                if (string.IsNullOrWhiteSpace(dbConnexionName))
+                    throw new OOrmHandledException(HResultEnum.E_NOACTIVECONNECTIONDEFINED, null, null);
+
                 LoadProviderSpecificInformation(xmlTemplatesNavigator, xmlPrefix[0], xmlNamespaces[0], dbConnexionName);
 
                 // 3. Load SQL Templates
@@ -304,42 +312,26 @@ namespace OsamesMicroOrm.Configuration
         /// <param name="xmlRootTagPrefix_">Préfixe de tag</param>
         /// <param name="xmlRootTagNamespace_">Namespace racine</param>
         /// <param name="activeDbConnectionName_">Nom de la connexion DB active (AppSettings)</param>
-        internal static void LoadProviderSpecificInformation(XPathNavigator xPathNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_, string activeDbConnectionName_)
+        /// <exception cref="OOrmHandledException"></exception>
+        private static void LoadProviderSpecificInformation(XPathNavigator xPathNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_, string activeDbConnectionName_)
         {
             XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xPathNavigator_.NameTable);
             xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
 
-            if (string.IsNullOrWhiteSpace(activeDbConnectionName_))
-            {
-                Logger.Log(TraceEventType.Critical, "No active connection name defined in appSettings ('activeDbConnection')");
-                return;
-            }
-
             var activeConnection = ConfigurationManager.ConnectionStrings[activeDbConnectionName_];
             if (activeConnection == null)
-            {
-                Logger.Log(TraceEventType.Critical, "Active connection not found in available connection strings (key : '" + activeDbConnectionName_ + "'");
-                return;
-            }
-            string conn = activeConnection.Name;
-            if (string.IsNullOrWhiteSpace(conn))
-            {
-                Logger.Log(TraceEventType.Critical, "No active connection name defined in appSettings for active connection '" + activeDbConnectionName_+ "'");
-                return;
-            }
+                throw new OOrmHandledException(HResultEnum.E_NOACTIVECONNECTIONFOUND, null, "connection name: " + activeDbConnectionName_);
+
             string providerInvariantName = activeConnection.ProviderName;
             if (string.IsNullOrWhiteSpace(providerInvariantName))
-            {
-                Logger.Log(TraceEventType.Critical, "No active connection provider invariant name defined in appSettings  for active connection '" + activeDbConnectionName_ + "'");
-                return;
-            }
+                throw new OOrmHandledException(HResultEnum.E_NOPROVIDERNAMEFORCONNECTIONNAME, null, "connection name: " + activeDbConnectionName_);
+
             // Expression XPath pour se positionner sur le noeud Provider avec l'attribut "name" à la valeur désirée
             string strXPathExpression = "/*/" + xmlRootTagPrefix_ + ":ProviderSpecific/" + xmlRootTagPrefix_ + ":Provider[@name='" + providerInvariantName + "']";
 
-
             XPathNodeIterator xPathNodeIteratorProviderNode = xPathNavigator_.Select(strXPathExpression, xmlNamespaceManager);
             if (!xPathNodeIteratorProviderNode.MoveNext())
-                throw new Exception("Provider with name '" + providerInvariantName + "' missing in XML");
+                throw new OOrmHandledException(HResultEnum.E_PROVIDERCONFIGMISSING, null, "provider name: " + providerInvariantName);
 
             // Sur ce noeud, attributs pour définir les field enclosers
             // Assignation aux variables de classe StartFieldEncloser et EndFieldEncloser
@@ -361,9 +353,8 @@ namespace OsamesMicroOrm.Configuration
                 DbManager.SelectLastInsertIdCommandText = xPathNodeIteratorSelectNode.Current.Value;
             }
             else
-            {
-                Logger.Log(TraceEventType.Critical, "ConfigurationLoader LoadProviderSpecificInformation, no value matching XPath '" + strXPathExpression + "' for the provider '" + providerInvariantName + "'");
-            }
+                throw new OOrmHandledException(HResultEnum.E_PROVIDERCONFIGMISSING, null, "provider name: " + providerInvariantName + " - missing information: Select[@name='getlastinsertid']");
+
         }
 
         /// <summary>
@@ -376,34 +367,26 @@ namespace OsamesMicroOrm.Configuration
         internal static void FillMappingDictionary(XPathNavigator xmlNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_)
         {
             MappingDictionnary.Clear();
-            try
-            {
-                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xmlNavigator_.NameTable);
-                xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
-                // Table nodes
-                XPathNodeIterator xPathNodeIterator = xmlNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Table", xmlNamespaceManager);
 
-                var propertyColumnDictionary = new Dictionary<string, string>();
-                while (xPathNodeIterator.MoveNext()) // Read Table node
+            XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xmlNavigator_.NameTable);
+            xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
+            // Table nodes
+            XPathNodeIterator xPathNodeIterator = xmlNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Table", xmlNamespaceManager);
+
+            var databaseTableDictionary = new Dictionary<string, string>();
+            while (xPathNodeIterator.MoveNext()) // Read Table node
+            {
+                MappingDictionnary.Add(xPathNodeIterator.Current.GetAttribute("name", ""), databaseTableDictionary);
+                xPathNodeIterator.Current.MoveToFirstChild();
+                do
                 {
-                    MappingDictionnary.Add(xPathNodeIterator.Current.GetAttribute("name", ""), propertyColumnDictionary);
-                    xPathNodeIterator.Current.MoveToFirstChild();
-                    do
-                    {
-                        if (xPathNodeIterator.Current.NodeType != XPathNodeType.Element)
-                            continue;
+                    if (xPathNodeIterator.Current.NodeType != XPathNodeType.Element)
+                        continue;
 
-                        propertyColumnDictionary.Add(xPathNodeIterator.Current.GetAttribute("property", ""), xPathNodeIterator.Current.GetAttribute("column", ""));
-                    } while (xPathNodeIterator.Current.MoveToNext()); // Read next Mapping node
+                    databaseTableDictionary.Add(xPathNodeIterator.Current.GetAttribute("property", ""), xPathNodeIterator.Current.GetAttribute("column", ""));
+                } while (xPathNodeIterator.Current.MoveToNext()); // Read next Mapping node
 
-                    propertyColumnDictionary = new Dictionary<string, string>();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(TraceEventType.Critical, "ConfigurationLoader FillMappingDictionary, see detailed log");
-                Logger.Log(TraceEventType.Critical, "ConfigurationLoader: XML mapping definitions analyzis error: " + ex);
-                throw;
+                databaseTableDictionary = new Dictionary<string, string>();
             }
         }
 
@@ -413,40 +396,33 @@ namespace OsamesMicroOrm.Configuration
         /// <param name="xpathNavigator_">Reused XPathNavigator instance</param>
         /// <param name="xmlRootTagPrefix_"> </param>
         /// <param name="xmlRootTagNamespace_"> </param>
+        /// <exception cref="OOrmHandledException"></exception>
         internal static void FillTemplatesDictionaries(XPathNavigator xpathNavigator_, string xmlRootTagPrefix_, string xmlRootTagNamespace_)
         {
             DicInsertSql.Clear();
             DicSelectSql.Clear();
             DicUpdateSql.Clear();
             DicDeleteSql.Clear();
-            try
-            {
-                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xpathNavigator_.NameTable);
-                xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
-                // Inserts nodes
-                XPathNodeIterator xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Inserts", xmlNamespaceManager);
-                if (xPathNodeIterator.MoveNext())
-                    FillSqlTemplateDictionary(xPathNodeIterator, DicInsertSql);
-                // Selects nodes
-                xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Selects", xmlNamespaceManager);
-                if (xPathNodeIterator.MoveNext())
-                    FillSqlTemplateDictionary(xPathNodeIterator, DicSelectSql);
-                // Updates nodes
-                xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Updates", xmlNamespaceManager);
-                if (xPathNodeIterator.MoveNext())
-                    FillSqlTemplateDictionary(xPathNodeIterator, DicUpdateSql);
-                // Deletes nodes
-                xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Deletes", xmlNamespaceManager);
-                if (xPathNodeIterator.MoveNext())
-                    FillSqlTemplateDictionary(xPathNodeIterator, DicDeleteSql);
 
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(TraceEventType.Critical, "ConfigurationLoader FillTemplatesDictionaries, see detailed log");
-                Logger.Log(TraceEventType.Critical, "ConfigurationLoader: XML templates definitions analyzis error: " + ex);
-                throw;
-            }
+            XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(xpathNavigator_.NameTable);
+            xmlNamespaceManager.AddNamespace(xmlRootTagPrefix_, xmlRootTagNamespace_);
+            // Inserts nodes
+            XPathNodeIterator xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Inserts", xmlNamespaceManager);
+            if (xPathNodeIterator.MoveNext())
+                FillSqlTemplateDictionary(xPathNodeIterator, DicInsertSql);
+            // Selects nodes
+            xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Selects", xmlNamespaceManager);
+            if (xPathNodeIterator.MoveNext())
+                FillSqlTemplateDictionary(xPathNodeIterator, DicSelectSql);
+            // Updates nodes
+            xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Updates", xmlNamespaceManager);
+            if (xPathNodeIterator.MoveNext())
+                FillSqlTemplateDictionary(xPathNodeIterator, DicUpdateSql);
+            // Deletes nodes
+            xPathNodeIterator = xpathNavigator_.Select("/*/" + xmlRootTagPrefix_ + ":Deletes", xmlNamespaceManager);
+            if (xPathNodeIterator.MoveNext())
+                FillSqlTemplateDictionary(xPathNodeIterator, DicDeleteSql);
+
         }
 
         /// <summary>
@@ -454,7 +430,8 @@ namespace OsamesMicroOrm.Configuration
         /// </summary>
         /// <param name="node_"></param>
         /// <param name="workDictionary_"></param>
-        internal static void FillSqlTemplateDictionary(XPathNodeIterator node_, Dictionary<string, string> workDictionary_ = null)
+        /// <exception cref="OOrmHandledException"></exception>
+        private static void FillSqlTemplateDictionary(XPathNodeIterator node_, Dictionary<string, string> workDictionary_ = null)
         {
             if (workDictionary_ == null) return;
 
@@ -466,7 +443,7 @@ namespace OsamesMicroOrm.Configuration
 
                 string name = node_.Current.GetAttribute("name", "");
                 if (workDictionary_.ContainsKey(name))
-                    throw new Exception("A 'name' attribute with value '" + name + "' has been defined more than one time, XML is invalid");
+                    throw new OOrmHandledException(HResultEnum.E_XMLNAMEATTRIBUTEMORETHANONCE, null, "value: " + name);
                 workDictionary_.Add(name, node_.Current.Value);
             } while (node_.Current.MoveToNext());
         }
@@ -496,6 +473,7 @@ namespace OsamesMicroOrm.Configuration
         /// <para>Parses XML configuration to internal dictionaries</para>
         /// <para>Checks database configuration and sets values to DbManager</para>
         /// </summary>
+        /// <exception cref="OOrmHandledException"></exception>
         private void LoadConfiguration()
         {
             LoadXmlConfiguration();

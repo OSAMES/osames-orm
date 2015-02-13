@@ -7,6 +7,7 @@ using OsamesMicroOrm.Logging;
 using OsamesMicroOrm.Utilities;
 using SampleDbEntities.Chinook;
 using TestOsamesMicroOrm.TestDbEntities;
+using OsamesMicroOrm;
 
 namespace TestOsamesMicroOrm
 {
@@ -47,21 +48,20 @@ namespace TestOsamesMicroOrm
         /// Case NOK, no mapping attribute on this class.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        [TestCategory("Mapping NOK")]
+        [TestCategory("Mapping")]
         [Owner("Barbara Post")]
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestGetDbEntityDictionnaryMappingKeyNOkMissingAttribute()
         {
             TestUnmappedEntity entity = new TestUnmappedEntity();
             try
             {
                 string test = MappingTools.GetDbEntityDictionnaryMappingKey(entity);
-                Assert.Fail("Test didn't fail");
             }
-            catch (Exception ex)
+            catch (OOrmHandledException ex)
             {
-                Logger.Log(TraceEventType.Information, ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_TYPENOTDEFINEDBMAPPINGATTRIBUTE).Key, ex.HResult);
                 throw;
             }
 
@@ -71,10 +71,10 @@ namespace TestOsamesMicroOrm
         /// Case NOK, empty mapping attribute on this class.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        [TestCategory("Mapping NOK")]
+        [TestCategory("Mapping")]
         [Owner("Barbara Post")]
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestGetDbEntityDictionnaryMappingKeyNOkEmptyAttribute()
         {
             TestEmptyMappingEntity entity = new TestEmptyMappingEntity();
@@ -83,9 +83,9 @@ namespace TestOsamesMicroOrm
                 string test = MappingTools.GetDbEntityDictionnaryMappingKey(entity);
                 Assert.Fail("Test didn't fail");
             }
-            catch (Exception ex)
+            catch (OOrmHandledException ex)
             {
-                Logger.Log(TraceEventType.Information, ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE).Key, ex.HResult);
                 throw;
             }
 
@@ -95,24 +95,22 @@ namespace TestOsamesMicroOrm
         /// Case NOK, mapping attribute on this class value doesn't match a key in mapping dictionary.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        [TestCategory("Mapping NOK")]
+        [TestCategory("Mapping")]
         [Owner("Barbara Post")]
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         public void TestGetDbEntityDictionnaryMappingKeyWrongValueMappingAttribute()
         {
             TestWrongMappingEntity entity = new TestWrongMappingEntity();
             try
             {
                 string test = MappingTools.GetDbEntityDictionnaryMappingKey(entity);
-                Assert.Fail("Test didn't fail");
             }
-            catch (Exception ex)
+            catch (OOrmHandledException ex)
             {
-                Logger.Log(TraceEventType.Information, ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
                 throw;
             }
-
         }
     }
 }

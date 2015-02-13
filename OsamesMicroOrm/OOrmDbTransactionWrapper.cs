@@ -37,53 +37,31 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Constructeur.
         /// </summary>
-        /// <param name="adoTransaction_">DbTransaction ADO.NET</param>
-        internal OOrmDbTransactionWrapper(System.Data.Common.DbTransaction adoTransaction_)
+        /// <param name="connectionWrapper_"></param>
+        /// <exception cref="ArgumentException"></exception>
+        internal OOrmDbTransactionWrapper(OOrmDbConnectionWrapper connectionWrapper_)
         {
-            AdoDbTransaction = adoTransaction_;
-        }
+            ConnectionWrapper = connectionWrapper_;
+            if(ConnectionWrapper == null)
+                throw new ArgumentException("Connection cannot be null", "connectionWrapper_");
 
-        #region reprise des mêmes propriétés publiques que System.Data.Common.DbConnection mais mises en internal
+            if(ConnectionWrapper.AdoDbConnection.State != ConnectionState.Open)
+                ConnectionWrapper.AdoDbConnection.Open();
+            AdoDbTransaction = ConnectionWrapper.AdoDbConnection.BeginTransaction();
+        }
 
         /// <summary>
         /// Connexion parente.
         /// </summary>
-        internal OOrmDbConnectionWrapper Connection { get; set; }
+        internal OOrmDbConnectionWrapper ConnectionWrapper { get; set; }
 
         /// <summary>
-        /// Niveau d'isolation de la transaction.
-        /// </summary>
-        internal IsolationLevel IsolationLevel { get { return AdoDbTransaction.IsolationLevel; } }
-        
-        #endregion
-
-        #region reprise des mêmes méthodes publiques que System.Data.Common.DbTransaction mais mises en internal
-
-        /// <summary>
-        /// Libère les ressources non managées utilisées.
+        /// Ferme la transaction ADO.NET associée.
         /// </summary>
         public void Dispose()
         {
             AdoDbTransaction.Dispose();
         }
 
-        /// <summary>
-        /// Valide la transaction de base de données.
-        /// </summary>
-        internal void Commit()
-        {
-            AdoDbTransaction.Commit();
-        }
-
-        /// <summary>
-        /// Restaure une transaction à partir d'un état d'attente.
-        /// </summary>
-        internal void Rollback()
-        {
-            AdoDbTransaction.Rollback();
-        }
-
-  
-        #endregion
     }
 }
