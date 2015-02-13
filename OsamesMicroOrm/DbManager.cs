@@ -892,8 +892,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText_);
                 }
             }
         }
@@ -1063,8 +1062,7 @@ namespace OsamesMicroOrm
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(TraceEventType.Critical, ex + " Command was: " + cmdText_ + ", params count: " + command.Parameters.Count);
-                    throw;
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText_);
                 }
             }
         }
@@ -1084,7 +1082,7 @@ namespace OsamesMicroOrm
         internal DataSet DataAdapter(OOrmDbConnectionWrapper connection_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
 
-            object oValue; if (connection_.IsBackup)
+            if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {

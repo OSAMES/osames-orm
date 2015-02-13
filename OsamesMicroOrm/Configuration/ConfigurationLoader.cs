@@ -71,12 +71,12 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Caractère d'échappement en début de nom de colonne dans le texte d'une requête SQL.
         /// </summary>
-        internal static string StartFieldEncloser = string.Empty;
+        internal static string StartFieldEncloser;
 
         /// <summary>
         /// Caractère d'échappement en fin de nom de colonne dans le texte d'une requête SQL.
         /// </summary>
-        internal static string EndFieldEncloser = string.Empty;
+        internal static string EndFieldEncloser;
 
 
         /// <summary>

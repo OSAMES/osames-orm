@@ -83,7 +83,7 @@ namespace TestOsamesMicroOrmSqlite
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message + (ex.InnerException != null ? ex.InnerException.Message : ""));
                 Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_EXECUTEREADERFAILED).Key, ex.HResult);
                 throw;
             }
