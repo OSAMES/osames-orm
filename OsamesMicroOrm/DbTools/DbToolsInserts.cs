@@ -69,7 +69,13 @@ namespace OsamesMicroOrm.DbTools
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbFieldsToInsert.ToString(), sbParamToInsert.ToString() };
 
             if (tryFormat)
-                DbToolsCommon.TryFormat(ConfigurationLoader.DicInsertSql[sqlTemplate_], out sqlCommand_, sqlPlaceholders.ToArray());
+            {
+                string templateName;
+                if (!ConfigurationLoader.DicInsertSql.TryGetValue(sqlTemplate_, out templateName))
+                    throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: " + sqlTemplate_);
+
+                DbToolsCommon.TryFormat(templateName, out sqlCommand_, sqlPlaceholders.ToArray());
+            }
         }
 
         /// <summary>
