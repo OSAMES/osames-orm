@@ -20,8 +20,6 @@ namespace TestOsamesMicroOrmSqlite
         {
             _config = ConfigurationLoader.Instance;
 
-            string error;
-            
             Customer testCustomer = new Customer();
 
             testCustomer.Address = "rue du Rond-Point 218";
@@ -30,7 +28,7 @@ namespace TestOsamesMicroOrmSqlite
             testCustomer.LastName = "Nolmans";
             testCustomer.Email = "pas@mail";
 
-            long newRecordId = DbToolsInserts.Insert<Customer>(testCustomer, "BaseInsert", "Customer", new List<string> { "Address", "City", "FirstName", "LastName", "Email" }, out error, _transaction);
+            long newRecordId = DbToolsInserts.Insert<Customer>(testCustomer, "BaseInsert", "Customer", new List<string> { "Address", "City", "FirstName", "LastName", "Email" }, _transaction);
 
             Console.WriteLine(newRecordId);
 
@@ -45,8 +43,6 @@ namespace TestOsamesMicroOrmSqlite
         {
             _config = ConfigurationLoader.Instance;
 
-            string error;
-
             Customer testCustomer = new Customer();
 
             testCustomer.Address = "rue du Rond-Point 218";
@@ -55,7 +51,7 @@ namespace TestOsamesMicroOrmSqlite
             testCustomer.LastName = "Nolmans";
             testCustomer.Email = "pas@mail";
 
-            long newRecordId = DbToolsInserts.Insert<Customer>(testCustomer, "BaseInsert", "Customer", new List<string> { "Address", "City", "FirstName", "LastName", "Email" }, out error);
+            long newRecordId = DbToolsInserts.Insert<Customer>(testCustomer, "BaseInsert", "Customer", new List<string> { "Address", "City", "FirstName", "LastName", "Email" });
 
             Console.WriteLine(newRecordId);
 

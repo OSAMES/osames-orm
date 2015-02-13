@@ -29,7 +29,7 @@ namespace OsamesMicroOrm.DbTools
     /// <summary>
     /// 
     /// </summary>
-    public class DbToolsInserts
+    public static class DbToolsInserts
     {
         /// <summary>
         /// 
@@ -41,14 +41,13 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstDataObjectColumnNames_"></param>
         /// <param name="sqlCommand_"></param>
         /// <param name="lstAdoParameters_"></param>
-        /// <param name="strErrorMsg_"></param>
         /// <param name="tryFormat"></param>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
-        internal static void FormatSqlForInsert<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out string strErrorMsg_, bool tryFormat = true)
+        internal static void FormatSqlForInsert<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
         {
             StringBuilder sbFieldsToInsert = new StringBuilder();
             StringBuilder sbParamToInsert = new StringBuilder();
-            strErrorMsg_ = sqlCommand_ = null;
+            sqlCommand_ = null;
 
             List<string> lstDbColumnNames;
 
@@ -86,24 +85,23 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="sqlTemplate_"></param>
         /// <param name="mappingDictionariesContainerKey_"></param>
         /// <param name="lstPropertiesNames_"></param>
-        /// <param name="strErrorMsg_"></param>
         /// <param name="transaction_"></param>
         /// <returns></returns>
         /// <exception cref="OOrmHandledException">any error</exception>
-        public static long Insert<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, out string strErrorMsg_, OOrmDbTransactionWrapper transaction_ = null)
+        public static long Insert<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, OOrmDbTransactionWrapper transaction_ = null)
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
-            long newRecordId_ = 0;
+            long newRecordId;
 
-            FormatSqlForInsert(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, out sqlCommand, out adoParameters, out strErrorMsg_);
+            FormatSqlForInsert(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, out sqlCommand, out adoParameters);
 
             if (transaction_ != null)
             {
                 // Présence d'une transaction
-                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters, out newRecordId_) == 0)
+                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters, out newRecordId) == 0)
                     Logger.Log(TraceEventType.Warning, "Query didn't insert any row: " + sqlCommand);
-                return newRecordId_;
+                return newRecordId;
             }
 
             // Pas de transaction
@@ -112,9 +110,9 @@ namespace OsamesMicroOrm.DbTools
             {
                 conn = DbManager.Instance.CreateConnection();
 
-                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters, out newRecordId_) == 0)
+                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters, out newRecordId) == 0)
                     Logger.Log(TraceEventType.Warning, "Query didn't insert any row: " + sqlCommand);
-                return newRecordId_;
+                return newRecordId;
             }
             finally
             {

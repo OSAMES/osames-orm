@@ -170,11 +170,6 @@ namespace TestOsamesMicroOrm
             try
             {
 
-                // Utiliser la DB Sqlite
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.activeDbConnection.ToString(), "OsamesMicroORM.Sqlite");
-                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.dbName.ToString(), "Chinook_Sqlite.sqlite");
-                _config = ConfigurationLoader.Instance;
-
                 // FormatSqlForUpdate<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
                 //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
@@ -182,13 +177,13 @@ namespace TestOsamesMicroOrm
                 string sqlCommand;
                 DbToolsUpdates.FormatSqlForUpdate(Employee, "ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams);
 
-                // TODO assert sur le code HResult de l'exception obtenue avant de la throw
-
             }
-            finally
+            catch (OOrmHandledException ex)
             {
-                Customizer.ConfigurationManagerRestoreAllKeys();
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOTEMPLATE).Key, ex.HResult);
+                throw;
             }
+
         }
 
 
