@@ -48,6 +48,7 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <param name="xmlNamespaces_">XML schemas base namespaces</param>
         /// <param name="xmlSchemas_">XML schemas .xsd files full paths</param>
+        /// <exception cref="OOrmHandledException">En cas d'incohérence des paramètres</exception>
         internal XmlValidator(string[] xmlNamespaces_ = null, string[] xmlSchemas_ = null)
         {
             Errors = new List<string>();
@@ -56,11 +57,11 @@ namespace OsamesMicroOrm.Utilities
             if (xmlNamespaces_ != null && xmlSchemas_ != null)
             {
                 if(xmlNamespaces_.Length != xmlSchemas_.Length)
-                    throw new ArgumentException("Not same number of namespaces and schemas given");
+                    throw new OOrmHandledException(HResultEnum.E_NAMESPACESSCHEMASCOUNTMISMATCH, null, "Namespaces: " + xmlNamespaces_.Length + ". Schemas: " + xmlSchemas_.Length);
             }
             if (xmlSchemas_ != null && xmlNamespaces_ == null)
             {
-                throw new ArgumentException("Schema given but no namespaces");
+                throw new OOrmHandledException(HResultEnum.E_NONAMESPACEINSCHEMA, null);
             }
             
             Settings = new XmlReaderSettings

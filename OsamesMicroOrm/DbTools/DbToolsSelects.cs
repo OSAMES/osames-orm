@@ -179,6 +179,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne un objet de type T rempli par les donnnées du DataReader, ou null.</returns>
+        /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         public static T SelectSingle<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) where T : class, new()
         {
             string sqlCommand;
@@ -201,6 +202,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne un objet de type T rempli par les donnnées du DataReader, ou null</returns>
+        /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         public static T SelectSingleAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) where T : class, new()
         {
             string sqlCommand;
@@ -225,6 +227,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne une liste composée d'objets de type T</returns>
+        /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         public static List<T> Select<T>(List<string> lstPropertiesNames_, string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) where T : class, new()
         {
             string sqlCommand;
@@ -247,6 +250,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne une liste composée d'objets de type T</returns>
+        /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         public static List<T> SelectAllColumns<T>(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null) where T : class, new()
         {
             string sqlCommand;
@@ -260,15 +264,15 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// 
+        /// Exécute une requête de type "SELECT COUNT(*) FROM {0} WHERE ..." et retourne le résultat.
         /// </summary>
-        /// <param name="refSqlTemplate_"></param>
-        /// <param name="mappingDictionariesContainerKey_"></param>
-        /// <param name="lstWhereMetaNames_"></param>
-        /// <param name="lstWhereValues_"></param>
-        /// <param name="transaction_"></param>
-        /// <returns></returns>
-        /// <exception cref="OOrmHandledException">any error</exception>
+        /// <param name="refSqlTemplate_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT COUNT(*) FROM {0} WHERE ..."</c></param>
+        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
+        /// <param name="lstWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE". Peut être null</param>
+        /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
+        /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
+        /// <returns>Entier long</returns>
+        /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         public static long Count(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null)
         {
             string sqlCommand;
@@ -313,7 +317,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="sqlCommand_">Texte final de la requête SQL</param>
         /// <param name="adoParameters_">Représentation des paramètres ADO.NET (nom et valeur)</param>
         /// <returns>Retourne un objet de type T rempli par les donnnées du DataReader, ou null</returns>
-        /// <exception cref="OOrmHandledException">any error</exception>
+        /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         private static T GetDataObject<T>(OOrmDbTransactionWrapper transaction_, string sqlCommand_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_, IEnumerable<KeyValuePair<string, object>> adoParameters_) where T : class, new()
         {
             T dataObject = new T();
@@ -368,7 +372,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <param name="sqlCommand_">Texte final de la requête SQL</param>
         /// <param name="adoParameters_">Représentation des paramètres ADO.NET (nom et valeur)</param>
-        /// <exception cref="OOrmHandledException">any error</exception>
+        /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         private static List<T> GetListDataObject<T>(OOrmDbTransactionWrapper transaction_, string sqlCommand_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_, IEnumerable<KeyValuePair<string, object>> adoParameters_) where T : class, new()
         {
             List<T> dataObjects = new List<T>();

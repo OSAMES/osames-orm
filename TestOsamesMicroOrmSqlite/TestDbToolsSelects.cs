@@ -150,6 +150,7 @@ namespace TestOsamesMicroOrmSqlite
             _config = ConfigurationLoader.Instance;
             long count = DbToolsSelects.Count("Count", "Customer");
             Console.WriteLine(count.ToString());
+            Assert.IsTrue(count > 1);
         }
     }
 }
