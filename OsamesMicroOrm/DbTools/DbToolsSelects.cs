@@ -126,7 +126,8 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstDbColumnNames_"></param>
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
         /// <returns>Ne retourne rien</returns>
-        internal static void FillDataObjectFromDataReader<T>(T dataObject_, IDataReader reader_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_)
+        /// <exception cref="OOrmHandledException">Problème de lecture du IDataReader (demande d'une colonne incorrecte...)</exception>
+        private static void FillDataObjectFromDataReader<T>(T dataObject_, IDataReader reader_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_)
         {
             // parcourir toutes les colonnes de résultat et affecter la valeur à la propriété correspondante.
             for (int i = 0; i < lstDbColumnNames_.Count; i++)
@@ -137,14 +138,14 @@ namespace OsamesMicroOrm.DbTools
                 {
                     dataInReaderIndex = reader_.GetOrdinal(columnName);
                 }
-                catch (IndexOutOfRangeException)
+                catch (IndexOutOfRangeException ex)
                 {
-                    throw new Exception("Column '" + columnName + "' doesn't exist in sql data reader");
+                    throw new OOrmHandledException(HResultEnum.E_COLUMNDOESNOTEXIST, ex, "column name: " + columnName);
                 }
 
                 if (dataInReaderIndex == -1)
                 {
-                    throw new Exception("Column '" + columnName + "' doesn't exist in sql data reader");
+                    throw new OOrmHandledException(HResultEnum.E_COLUMNDOESNOTEXIST, null, "column name: " + columnName);
                 }
 
                 // TODO traiter ORM-45 pour cast vers le bon type.
