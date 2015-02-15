@@ -6,6 +6,7 @@ using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
 using OsamesMicroOrm.DbTools;
+using OsamesMicroOrm.Utilities;
 using SampleDbEntities.Chinook;
 
 namespace TestOsamesMicroOrmSqlite
@@ -174,11 +175,18 @@ namespace TestOsamesMicroOrmSqlite
             customer.FirstName = null;
             customer.LastName = null;
 
-            // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
-            int testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
-                new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer }, _transaction);
-
-            Assert.AreEqual(1, testing);
+            try
+            {
+                // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
+                DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
+                    new List<string> {"FirstName", "LastName"}, new List<string> {"IdCustomer", "#"}, new List<object> {customer.IdCustomer}, _transaction);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_EXECUTENONQUERYFAILED).Key, ex.HResult);
+                throw;
+            }
 
         }
 

@@ -221,9 +221,8 @@ namespace OsamesMicroOrm.Configuration
             if (string.IsNullOrWhiteSpace(provider))
                 throw new OOrmHandledException(HResultEnum.E_NOPROVIDERNAMEFORCONNECTIONNAME, null, "connection name: " + dbConnexion);
 
-            // 4. ce provider doit exister sur le système
-            if (!FindInProviderFactoryClasses(provider))
-                throw new OOrmHandledException(HResultEnum.E_PROVIDERNOTINSTALLED, null, "provider name: " + provider);
+            // 4. ce provider doit exister sur le système, si ce n'est pas le cas ce test lance une exception
+            FindInProviderFactoryClasses(provider);
 
             // 5. Une chaîne de connexion doit être définie (attribut "ConnectionString")
             string conn = activeConnection.ConnectionString;
@@ -449,23 +448,23 @@ namespace OsamesMicroOrm.Configuration
         }
 
         /// <summary>
-        /// Recherche dans le tableau des providers disponibles, un provider donné.
-        /// Méthode static car ne dépend pas de la lecture de la configuration
+        /// Recherche sur le système d'un provider donné.
+        /// Méthode static car ne dépend pas de la lecture de la configuration.
         /// </summary>
         /// <param name="providerFactoryToCheck_">Chaine qui est le nom invariant du provider.</param>
-        /// <returns>Retourne vrai ou faux</returns>
-        internal static bool FindInProviderFactoryClasses(string providerFactoryToCheck_)
+        /// <returns>Ne renvoie rien</returns>
+        /// <exception cref="OOrmHandledException">Si provider non trouvé</exception>
+        internal static void FindInProviderFactoryClasses(string providerFactoryToCheck_)
         {
-            // Retrieve the installed providers and factories.
-            DataTable table = DbProviderFactories.GetFactoryClasses();
-
-            // Display each row and column value.
-            foreach (DataRow row in table.Rows)
+            try
             {
-                if (row[2].ToString().Contains(providerFactoryToCheck_))
-                    return true;
+                DbProviderFactories.GetFactory(providerFactoryToCheck_);
             }
-            return false;
+            catch (ArgumentException ex)
+            {
+                throw new OOrmHandledException(HResultEnum.E_PROVIDERNOTINSTALLED, ex, "provider name: " + providerFactoryToCheck_);
+            }
+
         }
 
         /// <summary>

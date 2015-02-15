@@ -16,9 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Utilities;
 
 namespace TestOsamesMicroOrmMsSql
 {
@@ -36,9 +39,17 @@ namespace TestOsamesMicroOrmMsSql
         [TestCategory("Sql provider search")]
         public void TestFindInProviderFactoryClasses()
         {
-            //Assert.IsFalse(ConfigurationLoader.FindInProviderFactoryClasses("some.provider"));
-            //Assert.IsFalse(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SQLite"));
-            Assert.IsTrue(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SqlClient"));
+            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+            try
+            {
+                ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SqlClient");
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_PROVIDERNOTINSTALLED).Key, ex.HResult);
+                throw;
+            }
 
         }
     }

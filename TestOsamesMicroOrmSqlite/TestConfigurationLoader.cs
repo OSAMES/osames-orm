@@ -22,6 +22,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
+using OsamesMicroOrm.Utilities;
 
 namespace TestOsamesMicroOrmSqlite
 {
@@ -37,14 +38,66 @@ namespace TestOsamesMicroOrmSqlite
         [Owner("Barbara Post")]
         [TestCategory("Configuration")]
         [TestCategory("Sql provider search")]
-        public void TestFindInProviderFactoryClasses()
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestFindInProviderFactoryClassesSomeProvider()
         {
             ConfigurationLoader tempo = ConfigurationLoader.Instance;
+            try
+            {
+                ConfigurationLoader.FindInProviderFactoryClasses("some.provider");
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_PROVIDERNOTINSTALLED).Key, ex.HResult);
+                throw;
+            }
+        }
 
-            Assert.IsFalse(ConfigurationLoader.FindInProviderFactoryClasses("some.provider"));
-            Assert.IsTrue(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SQLite"));
-            Assert.IsTrue(ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SqlClient"));
+        /// <summary>
+        /// Pour ce projet de TU il y a seulement un provider Sqlite définis dans App.Config.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("Configuration")]
+        [TestCategory("Sql provider search")]
+        public void TestFindInProviderFactoryClassesSqlite()
+        {
+            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+            try
+            {
+                ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SQLite");
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_PROVIDERNOTINSTALLED).Key, ex.HResult);
+                throw;
+            }
+        }
 
+        /// <summary>
+        /// Pour ce projet de TU il y a seulement un provider Sqlite définis dans App.Config.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("Configuration")]
+        [TestCategory("Sql provider search")]
+        public void TestFindInProviderFactoryClassesSqlclient()
+        {
+            ConfigurationLoader tempo = ConfigurationLoader.Instance;
+            try
+            {
+                ConfigurationLoader.FindInProviderFactoryClasses("System.Data.SqlClient");
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_PROVIDERNOTINSTALLED).Key, ex.HResult);
+                throw;
+            }
         }
 
         /// <summary>

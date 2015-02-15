@@ -124,6 +124,16 @@ namespace OsamesMicroOrm.Utilities
         }
 
         /// <summary>
+        /// Méthode pour les tests unitaires qui récupère 
+        /// </summary>
+        /// <param name="code_"></param>
+        /// <returns></returns>
+        internal static string FindReadableHResultValue(HResultEnum code_)
+        {
+            return HResultCode[code_.ToString()].Key;
+        }
+
+        /// <summary>
         /// Permet d'affficher les erreurs pour un contexte de type winform ou wpf
         /// </summary>
         internal static void DisplayErrorMessageWinforms(ErrorType errorType_, string errorMessage_)
