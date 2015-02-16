@@ -77,7 +77,7 @@ namespace TestOsamesMicroOrmSqlite
                 ConfigurationLoader.Clear();
                 _config = ConfigurationLoader.Instance;
                 // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
-                Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string>{"CustomerId", "FirstName", "LastName"}, "BaseReadWhere", "Customer",
+                Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "CustomerId", "FirstName", "LastName" }, "BaseReadWhere", "Customer",
                     new List<string> { "City", "#" }, new List<object> { "Paris" }, _transaction);
                 Assert.IsNotNull(customer, "Requête incorrecte");
             }
@@ -104,7 +104,7 @@ namespace TestOsamesMicroOrmSqlite
         {
             _config = ConfigurationLoader.Instance;
             Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer",
-              new List<string> { "IdCustomer", "#" }, new List<object> { 1 }, _transaction);
+                new List<string> { "IdCustomer", "#" }, new List<object> { 1 }, _transaction);
             Assert.IsNotNull(customer, "Pas d'enregistrement trouvé, requête select à corriger");
 
             // TODO les asserts
@@ -121,7 +121,7 @@ namespace TestOsamesMicroOrmSqlite
         {
             _config = ConfigurationLoader.Instance;
             Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer",
-              new List<string> { "IdCustomer", "#" }, new List<object> { -1 }, _transaction);
+                new List<string> { "IdCustomer", "#" }, new List<object> { -1 }, _transaction);
             Assert.IsNull(customer, "Doit retourner null");
         }
 
@@ -136,11 +136,9 @@ namespace TestOsamesMicroOrmSqlite
         {
             _config = ConfigurationLoader.Instance;
             List<Customer> customers = DbToolsSelects.SelectAllColumns<Customer>("BaseReadAllWhereLessThan", "Customer",
-              new List<string> { "IdCustomer", "#" }, new List<object> { 0 }, _transaction);
+                new List<string> { "IdCustomer", "#" }, new List<object> { 0 }, _transaction);
             Assert.AreEqual(0, customers.Count, "Doit retourner une liste vide");
         }
-
-        
 
         [TestMethod]
         [TestCategory("Meta name")]
@@ -151,6 +149,36 @@ namespace TestOsamesMicroOrmSqlite
             long count = DbToolsSelects.Count("Count", "Customer");
             Console.WriteLine(count.ToString());
             Assert.IsTrue(count > 1);
+        }
+
+
+        /// <summary>
+        /// Select en n'ayant pas le bon nombre de valeurs pour les paramètres ADO.NET.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("SqLite")]
+        [TestCategory("Select")]
+        [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        [Owner("Barbara Post")]
+        public void TestSelectParameterValuesMismatch()
+        {
+            try
+            {
+
+                // "BaseReadAllWhereBetween" : SELECT * FROM {0} WHERE {1} between {2} and {3};
+                // Il manque le premier élément de la liste des valeurs qui doit être "CustomerId".
+                List<Customer> customers = DbToolsSelects.SelectAllColumns<Customer>("BaseReadAllWhereBetween", "Customer", new List<string> { "%CustomerId", "#", "#" }, new List<object> { 3, 4 });
+                Console.WriteLine("[0] : ID " + customers[0].IdCustomer + " Nom : " + customers[0].LastName + " prénom : " + customers[0].FirstName);
+                Console.WriteLine("[1] : ID " + customers[1].IdCustomer + " Nom : " + customers[1].LastName + " prénom : " + customers[1].FirstName);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message + (ex.InnerException != null ? ex.InnerException.Message : ""));
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_STRINGFORMATCOUNTMISMATCH).Key, ex.HResult);
+                throw;
+            }
+
         }
     }
 }

@@ -179,7 +179,7 @@ namespace TestOsamesMicroOrmSqlite
             {
                 // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
                 DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
-                    new List<string> {"FirstName", "LastName"}, new List<string> {"IdCustomer", "#"}, new List<object> {customer.IdCustomer}, _transaction);
+                    new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer }, _transaction);
             }
             catch (OOrmHandledException ex)
             {
@@ -223,7 +223,7 @@ namespace TestOsamesMicroOrmSqlite
 
                 // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
                 DbToolsUpdates.Update(customer, "IncorrectUpdate", "Customer",
-                    new List<string> {"FirstName", "LastName"}, new List<string> {"IdCustomer", "#"}, new List<object> {customer.IdCustomer}, _transaction);
+                    new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer }, _transaction);
             }
             catch (OOrmHandledException ex)
             {
@@ -235,6 +235,62 @@ namespace TestOsamesMicroOrmSqlite
             {
                 Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString());
             }
+
+        }
+
+        /// <summary>
+        /// Update de deux objets à la fois.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("SqLite")]
+        [TestCategory("Update")]
+        [Owner("Barbara Post")]
+        public void TestUpdateTwoObjectsSqlite()
+        {
+            const int testCustomerId = 3;
+            const int testOtherCustomerId = 4;
+
+            _config = ConfigurationLoader.Instance;
+
+            // Lecture initiale
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
+            Customer otherCustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testOtherCustomerId }, _transaction);
+
+            string nomInitial = customer.LastName;
+            string prenomInitial = customer.FirstName;
+
+            Console.WriteLine("En début de test : Nom : " + nomInitial + " prénom : " + prenomInitial);
+
+            customer.FirstName = "Jane";
+            customer.LastName = "Birkin";
+
+            string otherNomInitial = otherCustomer.LastName;
+            string otherPrenomInitial = otherCustomer.FirstName;
+
+            Console.WriteLine("En début de test : Nom : " + otherNomInitial + " prénom : " + otherPrenomInitial);
+
+            otherCustomer.FirstName = "Pietro";
+            otherCustomer.LastName = "Lavazza";
+
+            // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
+            int updated = DbToolsUpdates.Update(new List<Customer> { customer, otherCustomer }, "BaseUpdateOne", "Customer",
+                new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<List<object>> { new List<object> { customer.IdCustomer }, new List<object> { otherCustomer.IdCustomer } }, _transaction);
+
+            Assert.AreEqual(2, updated);
+
+            // Relecture
+            // "BaseReadAllWhereBetween" : SELECT * FROM {0} WHERE {1} between {2} and {3};
+            List<Customer> customers = DbToolsSelects.SelectAllColumns<Customer>("BaseReadAllWhereBetween", "Customer", new List<string> {"%CustomerId", "#", "#"}, new List<object> {"CustomerId", 3, 4});
+            Console.WriteLine("En fin de test [0] : ID " + customers[0].IdCustomer + " Nom : " + customers[0].LastName + " prénom : " + customers[0].FirstName);
+            Console.WriteLine("En fin de test [1] : ID " + customers[1].IdCustomer + " Nom : " + customers[1].LastName + " prénom : " + customers[1].FirstName);
+
+            Assert.AreEqual(3, customers[0].IdCustomer);
+            Assert.AreEqual("Jane", customers[0].FirstName);
+            Assert.AreEqual("Birkin", customers[0].LastName);
+
+            Assert.AreEqual(4, customers[1].IdCustomer);
+            Assert.AreEqual("Pietro", customers[1].FirstName);
+            Assert.AreEqual("Lavazza", customers[1].LastName);
 
         }
 

@@ -294,7 +294,11 @@ namespace OsamesMicroOrm.DbTools
 
                 // Ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ si doit être protégé (null ou whitespace : ne pas protéger).
                 if (paramName.StartsWith("@"))
+                {
+                    if(parameterIndex > lstValues_.Count-1)
+                        throw new OOrmHandledException(HResultEnum.E_STRINGFORMATCOUNTMISMATCH, null, "Asked for value of index " + parameterIndex + " for dynamic parameter of name " + paramName + " but there are only " + lstValues_.Count + " values");
                     lstAdoParameters_.Add(new KeyValuePair<string, object>(paramName, lstValues_[parameterIndex]));
+                }
                 else if (!isUnprotectedLiteral)
                     paramName = string.Concat(ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
 
