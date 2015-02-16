@@ -8,6 +8,7 @@ using OsamesMicroOrm.Configuration.Tweak;
 using OsamesMicroOrm.DbTools;
 using OsamesMicroOrm.Utilities;
 using SampleDbEntities.Chinook;
+using Common = TestOsamesMicroOrm.Tools.Common;
 
 namespace TestOsamesMicroOrm
 {
@@ -152,7 +153,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEY, ex);
                 throw;
             }
         }
@@ -181,7 +182,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOTEMPLATE).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOTEMPLATE, ex);
                 throw;
             }
 
@@ -211,8 +212,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message + (ex.InnerException != null ? ex.InnerException.Message : ""));
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_STRINGFORMATCOUNTMISMATCH).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_STRINGFORMATCOUNTMISMATCH, ex);
                 throw;
             }
 
@@ -242,8 +242,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message + (ex.InnerException != null ? ex.InnerException.Message : ""));
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEYANDPROPERTY).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEYANDPROPERTY, ex);
                 throw;
             }
 
@@ -323,7 +322,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOTEMPLATE).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOTEMPLATE, ex);
                 throw;
             }
 
@@ -354,7 +353,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOTEMPLATE).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOTEMPLATE, ex);
                 throw;
             }
 
@@ -445,7 +444,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEY, ex);
                 throw;
             }
         }
@@ -467,7 +466,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEY, ex);
                 throw;
             }
         }
@@ -506,7 +505,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEY, ex);
                 throw;
             }
         }

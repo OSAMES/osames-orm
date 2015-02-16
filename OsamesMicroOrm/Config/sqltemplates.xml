@@ -34,6 +34,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
     <orm:Select name="Count">SELECT COUNT(*) FROM {0};</orm:Select>
     <!-- more elaborated -->
     <orm:Select name="BaseReadWhereAndWhere">SELECT {0} FROM {1} WHERE {2} = {3} AND {4} = {5};</orm:Select>
+    <orm:Select name="BaseReadAllWhereLessThan">SELECT * FROM {0} WHERE {1} &lt; {2};</orm:Select>
     <orm:Select name="BaseReadAllWhereBetween">SELECT * FROM {0} WHERE {1} between {2} and {3};</orm:Select>
     <!-- custom select, read customer with 2 joins -->
     <orm:Select name="ReadSingleCustomer">SELECT {0} FROM {1} LEFT JOIN {2} ON {3} = {4} LEFT JOIN {5} ON {6} = {7} WHERE {8} = {9};</orm:Select>

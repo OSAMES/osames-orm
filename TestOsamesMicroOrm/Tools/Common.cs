@@ -1,4 +1,10 @@
-﻿namespace TestOsamesMicroOrm.Tools
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OsamesMicroOrm;
+using OsamesMicroOrm.Utilities;
+using TestOsamesMicroOrm.Utilities;
+
+namespace TestOsamesMicroOrm.Tools
 {
     public static class Common
     {
@@ -32,5 +38,29 @@
         public const string CST_SQL_TEMPLATES_XML_TEST_OTHER_SECTIONS_ORDER_ONLINE_SCHEMA = @"TestConfig\sqltemplates-test-other-sections-order-online-schema.xml";
 
         #endregion
+
+        /// <summary>
+        /// Méthode utilitaire
+        /// </summary>
+        /// <param name="expectedCode_">Valeur de l'enum HResultEnum qu'on s'attend à avoir</param>
+        /// <param name="ex_">Exception OormHandledException catchée dans le test</param>
+        public static void AssertOnHresultAndWriteToConsole(HResultEnum expectedCode_, OOrmHandledException ex_)
+        {
+            Console.WriteLine(ex_.Message + (ex_.InnerException != null ? ex_.InnerException.Message : ""));
+
+            // convert int code to hexa string
+            string hexaCode = "0X" + ex_.HResult.ToString("X").ToUpperInvariant();
+            string exceptionCode = "?";
+            foreach (string key in OOrmErrorsHandler.HResultCode.Keys)
+            {
+                var value = OOrmErrorsHandler.HResultCode[key];
+                if (value.Key.ToUpperInvariant() == hexaCode)
+                {
+                    exceptionCode = key;
+                    break;
+                }
+            }
+            Assert.AreEqual(expectedCode_.ToString().ToUpperInvariant(), exceptionCode.ToUpperInvariant());
+        }
     }
 }

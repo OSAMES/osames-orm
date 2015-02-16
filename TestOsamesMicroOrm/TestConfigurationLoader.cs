@@ -54,8 +54,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOACTIVECONNECTIONDEFINED).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOACTIVECONNECTIONDEFINED, ex);
                 throw;
             }
             finally
@@ -82,8 +81,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOACTIVECONNECTIONFOUND).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOACTIVECONNECTIONFOUND, ex);
                 throw;
             }
             finally
@@ -113,8 +111,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOPROVIDERNAMEFORCONNECTIONNAME).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOPROVIDERNAMEFORCONNECTIONNAME, ex);
                 throw;
             }
             finally
@@ -143,8 +140,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_PROVIDERNOTINSTALLED).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_PROVIDERNOTINSTALLED, ex);
                 throw;
             }
             finally
@@ -237,9 +233,9 @@ namespace TestOsamesMicroOrm
                 Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.mappingFileName.ToString(), _mappingFileFullPath);
                 ConfigurationLoader config = ConfigurationLoader.Instance;
             }
-            catch (Exception ex)
+            catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_XMLNAMEATTRIBUTEMORETHANONCE, ex);
                 throw;
             }
             finally
@@ -332,7 +328,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEY, ex);
                 throw;
             }
 
@@ -359,7 +355,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEYANDPROPERTY).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEYANDPROPERTY, ex);
                 throw;
             }
         }
@@ -408,7 +404,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEY, ex);
                 throw;
             }
         }
@@ -434,7 +430,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OsamesMicroOrm.Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEYANDCOLUMN).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEYANDCOLUMN, ex);
                 throw;
             }
         }

@@ -8,6 +8,7 @@ using OsamesMicroOrm.Utilities;
 using SampleDbEntities.Chinook;
 using TestOsamesMicroOrm.TestDbEntities;
 using OsamesMicroOrm;
+using Common = TestOsamesMicroOrm.Tools.Common;
 
 namespace TestOsamesMicroOrm
 {
@@ -61,7 +62,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_TYPENOTDEFINEDBMAPPINGATTRIBUTE).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_TYPENOTDEFINEDBMAPPINGATTRIBUTE, ex);
                 throw;
             }
 
@@ -85,7 +86,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE, ex);
                 throw;
             }
 
@@ -108,7 +109,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEY).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEY, ex);
                 throw;
             }
         }

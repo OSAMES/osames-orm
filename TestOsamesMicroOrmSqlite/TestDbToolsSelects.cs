@@ -11,6 +11,7 @@ using OsamesMicroOrm.DbTools;
 using OsamesMicroOrm.Utilities;
 using SampleDbEntities.Chinook;
 using TestOsamesMicroOrmSqlite.Tools;
+using Common = TestOsamesMicroOrm.Tools.Common;
 
 namespace TestOsamesMicroOrmSqlite
 {
@@ -174,8 +175,7 @@ namespace TestOsamesMicroOrmSqlite
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message + (ex.InnerException != null ? ex.InnerException.Message : ""));
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_STRINGFORMATCOUNTMISMATCH).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_STRINGFORMATCOUNTMISMATCH, ex);
                 throw;
             }
 

@@ -209,7 +209,7 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         [Owner("Barbara Post")]
         [ExcludeFromCodeCoverage]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         [TestCategory("XML")]
         [TestCategory("Local XML schema")]
         [Ignore]
@@ -219,6 +219,11 @@ namespace TestOsamesMicroOrm
             try
             {
                 validator.ValidateXml(_templatesDuplicateSelectXml);
+            }
+            catch (OOrmHandledException ex)
+            {
+               Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_XMLVALIDATIONERRORS, ex);
+                throw;
             }
             finally
             {
@@ -238,7 +243,7 @@ namespace TestOsamesMicroOrm
         [TestMethod]
         [Owner("Barbara Post")]
         [ExcludeFromCodeCoverage]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(OOrmHandledException))]
         [TestCategory("XML")]
         [TestCategory("Online XML schema")]
         [Ignore]
@@ -248,6 +253,11 @@ namespace TestOsamesMicroOrm
             try
             {
                 validator.ValidateXml(_templatesDuplicateSelectXmlOnlineSchema);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_XMLVALIDATIONERRORS, ex);
+                throw;
             }
             finally
             {
@@ -275,6 +285,11 @@ namespace TestOsamesMicroOrm
             try
             {
                 validator.ValidateXml(_templatesOtherOrderXml);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_XMLVALIDATIONERRORS, ex);
+                throw;
             }
             finally
             {
@@ -307,6 +322,11 @@ namespace TestOsamesMicroOrm
             {
                 validator.ValidateXml(_templatesOtherOrderXmlOnlineSchema);
             }
+            catch (OOrmHandledException ex)
+            {
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_XMLVALIDATIONERRORS, ex);
+                throw;
+            }
             finally
             {
                 foreach (string error in validator.Errors)
@@ -338,9 +358,9 @@ namespace TestOsamesMicroOrm
             {
                 validator.ValidateXml(new[] { _templatesOtherOrderXml, _templatesOtherOrderXml });
             }
-            catch (Exception ex)
+            catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_XMLVALIDATIONERRORS, ex);
                 throw;
             }
             finally
@@ -408,6 +428,11 @@ namespace TestOsamesMicroOrm
             {
                 validator.ValidateXml(_templatesWrongUriXml);
             }
+            catch (OOrmHandledException ex)
+            {
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_XMLVALIDATIONERRORS, ex);
+                throw;
+            }
             finally
             {
                 foreach (string error in validator.Errors)
@@ -434,6 +459,11 @@ namespace TestOsamesMicroOrm
             try
             {
                 validator.ValidateXml(_templatesWrongUriXmlOnlineSchema);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_XMLVALIDATIONERRORS, ex);
+                throw;
             }
             finally
             {
