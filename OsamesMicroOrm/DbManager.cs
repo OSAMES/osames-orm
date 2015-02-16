@@ -335,32 +335,16 @@ namespace OsamesMicroOrm
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
-            object oValue;
             if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
-                    {
-                        try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-
-                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                    }
+                    lastInsertedRowId_ = DbManagerFactored.Execute(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_);
                 }
             }
             else
             {
-                // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
-                {
-                    try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                }
+                lastInsertedRowId_ = DbManagerFactored.Execute(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_);
             }
             return 1;
         }
@@ -377,33 +361,19 @@ namespace OsamesMicroOrm
         /// <returns>Nombre de lignes affectées</returns>
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, out long lastInsertedRowId_)
-        {
-            object oValue; if (connection_.IsBackup)
+        {           
+            if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
-                    {
-                        try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                    }
+                    lastInsertedRowId_ = DbManagerFactored.Execute(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_);
 
                 }
             }
             else
             {
-                // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
-                {
-                    try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                }
-
+                lastInsertedRowId_ = DbManagerFactored.Execute(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_);
             }
             return 1;
         }
@@ -420,32 +390,17 @@ namespace OsamesMicroOrm
         /// <returns>Nombre de lignes affectées</returns>
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
-        {
-            object oValue; if (connection_.IsBackup)
+        { 
+            if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
-                    {
-                        try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                    }
-
+                    lastInsertedRowId_ = DbManagerFactored.Execute(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_);
                 }
             }
             else
             {
-                // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
-                {
-                    try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                }
+                lastInsertedRowId_ = DbManagerFactored.Execute(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_);
             }
             return 1;
         }
@@ -597,22 +552,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                    {
-                        try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
-                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                    }
+                    iNbAffectedRows = (int)DbManagerFactored.Execute(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_);
                 }
             }
             else
             {
-                // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                {
-                    try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
-                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                }
+                iNbAffectedRows = (int)DbManagerFactored.Execute(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -635,22 +580,13 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                    {
-                        try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
-                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                    }
+                    iNbAffectedRows = (int)DbManagerFactored.Execute(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                {
-                    try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
-                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                }
+                iNbAffectedRows = (int)DbManagerFactored.Execute(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -674,21 +610,13 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                    {
-                        try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
-                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                    }
+                    iNbAffectedRows = (int)DbManagerFactored.Execute(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                {
-                    try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
-                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                }
+                iNbAffectedRows = (int)DbManagerFactored.Execute(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_);
             }
 
             return iNbAffectedRows;
