@@ -11,21 +11,21 @@ namespace OsamesMicroOrm
     /// <summary>
     /// Child of DbManager
     /// </summary>
-    internal class DbManagerFactored : IDisposable
+    internal class DbManagerHelper : IDisposable
     {
         private static OOrmDbConnectionWrapper connection;
         private static OOrmDbTransactionWrapper transaction;
         private static CommandType cmdType;
         private static string cmdText;
 
-        internal DbManagerFactored(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_)
+        internal DbManagerHelper(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_)
         {
             connection = connection_;
             cmdType = cmdType_;
             cmdText = cmdText_;
         }
 
-        internal DbManagerFactored(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_)
+        internal DbManagerHelper(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_)
         {
             transaction = transaction_;
             cmdType = cmdType_;
@@ -107,7 +107,7 @@ namespace OsamesMicroOrm
             return commandResult;
         }
 
-        ~DbManagerFactored()
+        ~DbManagerHelper()
         {
             Dispose();
         }

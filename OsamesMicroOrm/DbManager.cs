@@ -339,12 +339,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    lastInsertedRowId_ = new DbManagerFactored(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
                 }
             }
             else
             {
-                lastInsertedRowId_ = new DbManagerFactored(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
             }
             return 1;
         }
@@ -367,13 +367,13 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    lastInsertedRowId_ = new DbManagerFactored(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
 
                 }
             }
             else
             {
-                lastInsertedRowId_ = new DbManagerFactored(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
             }
             return 1;
         }
@@ -395,12 +395,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    lastInsertedRowId_ = new DbManagerFactored(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
                 }
             }
             else
             {
-                lastInsertedRowId_ = new DbManagerFactored(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
             }
             return 1;
         }
@@ -552,12 +552,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    iNbAffectedRows = (int) new DbManagerFactored(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                    iNbAffectedRows = (int) new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
                 }
             }
             else
             {
-                iNbAffectedRows = (int)new DbManagerFactored(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                iNbAffectedRows = (int)new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -580,13 +580,13 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    iNbAffectedRows = (int) new DbManagerFactored(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                    iNbAffectedRows = (int) new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                iNbAffectedRows = (int)new DbManagerFactored(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                iNbAffectedRows = (int)new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -610,13 +610,13 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    iNbAffectedRows = (int) new DbManagerFactored(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                    iNbAffectedRows = (int) new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                iNbAffectedRows = (int) new DbManagerFactored(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                iNbAffectedRows = (int) new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
             }
 
             return iNbAffectedRows;
