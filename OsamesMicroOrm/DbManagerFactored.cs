@@ -13,10 +13,23 @@ namespace OsamesMicroOrm
     /// </summary>
     internal class DbManagerFactored : IDisposable
     {
+        private static OOrmDbConnectionWrapper connection;
+        private static OOrmDbTransactionWrapper transaction;
+        private static CommandType cmdType;
+        private static string cmdText;
 
-        internal DbManagerFactored()
+        internal DbManagerFactored(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_)
         {
-            
+            connection = connection_;
+            cmdType = cmdType_;
+            cmdText = cmdText_;
+        }
+
+        internal DbManagerFactored(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_)
+        {
+            transaction = transaction_;
+            cmdType = cmdType_;
+            cmdText = cmdText_;
         }
 
         /// <summary>
@@ -27,16 +40,16 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_"></param>
         /// <param name="cmdParams_"></param>
         /// <param name="lastInsertedRowId_"></param>
-        internal static long Execute(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_)
+        internal long Execute(object[,] cmdParams_)
         {
             long commandResult;
 
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + DbManager.SelectLastInsertIdCommandText, cmdParams_, cmdType_))
+            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, null, cmdText + ";" + DbManager.SelectLastInsertIdCommandText, cmdParams_, cmdType))
             {
                 object oValue;
                 
                 try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
+                catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText); }
 
                 if (!Int64.TryParse(oValue.ToString(),out commandResult))
                     throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
@@ -52,16 +65,16 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_"></param>
         /// <param name="cmdParams_"></param>
         /// <returns></returns>
-        internal static long Execute(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_)
+        internal long Execute(IEnumerable<OOrmDbParameter> cmdParams_)
         {
             long commandResult;
 
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + DbManager.SelectLastInsertIdCommandText, cmdParams_, cmdType_))
+            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, null, cmdText + ";" + DbManager.SelectLastInsertIdCommandText, cmdParams_, cmdType))
             {
                 object oValue;
 
                 try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
+                catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText); }
 
                 if (!Int64.TryParse(oValue.ToString(), out commandResult))
                     throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
@@ -77,16 +90,16 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_"></param>
         /// <param name="cmdParams_"></param>
         /// <returns></returns>
-        internal static long Execute(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_)
+        internal long Execute(IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
             long commandResult;
 
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_ + ";" + DbManager.SelectLastInsertIdCommandText, cmdParams_, cmdType_))
+            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, null, cmdText + ";" + DbManager.SelectLastInsertIdCommandText, cmdParams_, cmdType))
             {
                 object oValue;
 
                 try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
+                catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText); }
 
                 if (!Int64.TryParse(oValue.ToString(), out commandResult))
                     throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
