@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
@@ -186,8 +187,68 @@ namespace TestOsamesMicroOrm
 
         }
 
+        /// <summary>
+        /// Ici on a oublié de passer "#" pour le paramètre dynamique dans le 5e paramètre : liste des meta names.
+        /// La chaîne SQL ne peut être générée.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Mapping")]
+        [TestCategory("Sql formatting for Update")]
+        [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestFormatSqlForUpdateIncorrectParameters()
+        {
+            try
+            {
 
+                // FormatSqlForUpdate<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
+                //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
+                List<KeyValuePair<string, object>> adoParams;
+                string sqlCommand;
+                DbToolsUpdates.FormatSqlForUpdate(Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId" }, new List<object> { 2 }, out sqlCommand, out adoParams);
+
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message + (ex.InnerException != null ? ex.InnerException.Message : ""));
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_STRINGFORMATCOUNTMISMATCH).Key, ex.HResult);
+                throw;
+            }
+
+        }
+
+        /// <summary>
+        /// Ici on a passé "Test" au lieu de "#" pour le paramètre dynamique dans le 5e paramètre : liste des meta names.
+        /// Le donnée n'est pas trouvée dans le mapping.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Mapping")]
+        [TestCategory("Sql formatting for Update")]
+        [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestFormatSqlForUpdateIncorrectParameters2()
+        {
+            try
+            {
+
+                // FormatSqlForUpdate<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
+                //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+
+                List<KeyValuePair<string, object>> adoParams;
+                string sqlCommand;
+                DbToolsUpdates.FormatSqlForUpdate(Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "Test" }, new List<object> { 2 }, out sqlCommand, out adoParams);
+
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message + (ex.InnerException != null ? ex.InnerException.Message : ""));
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOMAPPINGKEYANDPROPERTY).Key, ex.HResult);
+                throw;
+            }
+
+        }
+        
         #endregion
 
         #region DbToolsSelect - test sql formatting

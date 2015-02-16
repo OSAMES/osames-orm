@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!--/*
+This file is part of OSAMES Micro ORM.
+Copyright 2014 OSAMES
+
+OSAMES Micro ORM is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+OSAMES Micro ORM is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
+*/-->
+<orm:QueryList xmlns:orm="http://www.osames.org/osamesorm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osames.org/osamesorm xml_schemas\sqlTemplates.xsd" >
+  <orm:Inserts>
+    <orm:Insert name="BaseInsert">INSERT INTO {0} ({1}) values ({2});</orm:Insert>
+  </orm:Inserts>
+  <orm:Updates>
+    <orm:Update name="IncorrectUpdate">UPDATE {0} SET {1} = {2} WHERE {0} = {3};</orm:Update>
+  </orm:Updates>
+  <orm:Selects>
+    <orm:Select name="BaseRead">SELECT {0} FROM {1};</orm:Select>
+    <orm:Select name="BaseReadAll">SELECT * FROM {0};</orm:Select>
+    <orm:Select name="BaseReadWhere">SELECT {0} FROM {1} WHERE {2} = {3};</orm:Select>
+    <orm:Select name="BaseReadAllWhere">SELECT * FROM {0} WHERE {1} = {2};</orm:Select>
+    <orm:Select name="Count">SELECT COUNT(*) FROM {0};</orm:Select>
+  </orm:Selects>
+  <orm:Deletes>
+    <orm:Delete name="BaseDeleteWhere">DELETE FROM {0} WHERE {1} = {2};</orm:Delete>
+  </orm:Deletes>
+  <orm:ProviderSpecific>
+    <!-- SQLite -->
+    <orm:Provider xsi:type="orm:DoubleFE" name="System.Data.SQLite" StartFieldEncloser="[" EndFieldEncloser="]">
+        <orm:Select name="getlastinsertid">select last_insert_rowid();</orm:Select>
+    </orm:Provider>
+    <!-- MySQL -->
+    <orm:Provider xsi:type="orm:SingleFE" name="MySql.Data.MySqlClient" FieldEncloser="`">
+        <orm:Select name="getlastinsertid">select last_insert_id();</orm:Select>
+    </orm:Provider>
+    <!-- MS SQL -->
+    <orm:Provider xsi:type="orm:DoubleFE" name="System.Data.SqlClient" StartFieldEncloser="[" EndFieldEncloser="]">
+        <orm:Select name="getlastinsertid">select scope_identity()</orm:Select>
+    </orm:Provider>
+    <!-- Oracle -->
+    <orm:Provider xsi:type="orm:DoubleFE" name="### ORACLE ###" StartFieldEncloser="" EndFieldEncloser="">
+    </orm:Provider>
+    <!-- SQL Server Compact -->
+    <orm:Provider xsi:type="orm:DoubleFE" name="### SQL Server Compact ###" StartFieldEncloser="" EndFieldEncloser="">
+    </orm:Provider>
+    <!-- pour test unitaire de configuration NOK -->
+    <!--<orm:Provider xsi:type="orm:DoubleFE" name="not existing provider" StartFieldEncloser="" EndFieldEncloser="">
+    </orm:Provider>-->
+  </orm:ProviderSpecific>
+</orm:QueryList>
+

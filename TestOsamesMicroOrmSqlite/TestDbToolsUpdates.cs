@@ -190,5 +190,53 @@ namespace TestOsamesMicroOrmSqlite
 
         }
 
+        /// <summary>
+        /// Update d'un seul objet en utilisant un template qui donne lieu à une commande SQL incohérente.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("SqLite")]
+        [TestCategory("Update")]
+        [Owner("Barbara Post")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestUpdateSingleErrorIncorrectTemplateSqlite()
+        {
+            try
+            {
+                const int testCustomerId = 3;
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString(), "incorrect-sqltemplates.xml");
+                _config = ConfigurationLoader.Instance;
+
+                // Lecture initiale
+                Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
+
+                string nomInitial = customer.LastName;
+                string prenomInitial = customer.FirstName;
+
+                Console.WriteLine("En début de test : Nom : " + nomInitial + " prénom : " + prenomInitial);
+
+                Assert.IsFalse(string.IsNullOrWhiteSpace(nomInitial), "Données de début de test pas dans la bonne version en base de données");
+                Assert.IsFalse(string.IsNullOrWhiteSpace(prenomInitial), "Données de début de test pas dans la bonne version en base de données");
+
+                customer.FirstName = "Test 1";
+                customer.LastName = "Test 2";
+
+
+                // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
+                DbToolsUpdates.Update(customer, "IncorrectUpdate", "Customer",
+                    new List<string> {"FirstName", "LastName"}, new List<string> {"IdCustomer", "#"}, new List<object> {customer.IdCustomer}, _transaction);
+            }
+            catch (OOrmHandledException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_EXECUTENONQUERYFAILED).Key, ex.HResult);
+                throw;
+            }
+            finally
+            {
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString());
+            }
+
+        }
+
     }
 }
