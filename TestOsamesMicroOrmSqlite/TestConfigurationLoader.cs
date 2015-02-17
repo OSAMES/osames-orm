@@ -21,8 +21,8 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
-using OsamesMicroOrm.Configuration.Tweak;
 using OsamesMicroOrm.Utilities;
+using Common = TestOsamesMicroOrm.Tools.Common;
 
 namespace TestOsamesMicroOrmSqlite
 {
@@ -48,8 +48,7 @@ namespace TestOsamesMicroOrmSqlite
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_PROVIDERNOTINSTALLED).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_PROVIDERNOTINSTALLED, ex );
                 throw;
             }
         }
@@ -71,8 +70,8 @@ namespace TestOsamesMicroOrmSqlite
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_PROVIDERNOTINSTALLED).Key, ex.HResult);
+                // Si jamais on a une erreur c'est celle-ci qui doit sortir, cependant on ne doit pas avoir d'erreur
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_PROVIDERNOTINSTALLED, ex);
                 throw;
             }
         }

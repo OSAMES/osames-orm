@@ -24,7 +24,9 @@ namespace TestOsamesMicroOrmSqlite
         /// <summary>
         /// Test de haut niveau du Select avec auto-détermination des propriétés et colonnes.
         /// Test ORM-37. Configuration incorrecte du mapping : exception attendue.
+        /// 
         /// Le mapping définit une colonne IdCustomer alors que le nom de la colonne en base est CustomerId.
+        /// On lève une exception SQL dans le DataReader mais on est en mesure de dire que c'est à cause de la tentative de lecture d'une colonne qui n'existe pas.
         /// </summary>
         [TestMethod]
         [TestCategory("SqLite")]
@@ -47,8 +49,7 @@ namespace TestOsamesMicroOrmSqlite
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_COLUMNDOESNOTEXIST).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_COLUMNDOESNOTEXIST, ex);
                 throw;
             }
             finally
@@ -84,8 +85,7 @@ namespace TestOsamesMicroOrmSqlite
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message + (ex.InnerException != null ? ex.InnerException.Message : ""));
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_EXECUTEREADERFAILED).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_EXECUTEREADERFAILED, ex);
                 throw;
             }
             finally
@@ -162,11 +162,10 @@ namespace TestOsamesMicroOrmSqlite
         [TestCategory("Parameter NOK")]
         [ExpectedException(typeof(OOrmHandledException))]
         [Owner("Barbara Post")]
-        public void TestSelectParameterValuesMismatch()
+        public void TestSelectMetaNamesAndValuesCountMismatch()
         {
             try
             {
-
                 // "BaseReadAllWhereBetween" : SELECT * FROM {0} WHERE {1} between {2} and {3};
                 // Il manque le premier élément de la liste des valeurs qui doit être "CustomerId".
                 List<Customer> customers = DbToolsSelects.SelectAllColumns<Customer>("BaseReadAllWhereBetween", "Customer", new List<string> { "%CustomerId", "#", "#" }, new List<object> { 3, 4 });
@@ -175,7 +174,7 @@ namespace TestOsamesMicroOrmSqlite
             }
             catch (OOrmHandledException ex)
             {
-                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_STRINGFORMATCOUNTMISMATCH, ex);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_METANAMESVALUESCOUNTMISMATCH, ex);
                 throw;
             }
 

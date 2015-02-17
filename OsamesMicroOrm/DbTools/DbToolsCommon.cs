@@ -268,7 +268,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstSqlPlaceholders_">Liste de string existante, destinée à ajouter les noms des paramètres ADO.NET. (Ex.: @ado_param) à la suite des éléments existant</param>
         /// <param name="lstAdoParameters_">Liste de clés/valeurs existante, destinée à ajouter les noms et valeurs des paramètres ADO.NET. (Ex. </param>
         /// <returns>Ne renvoie rien</returns>
-        /// <exception cref="OOrmHandledException">Exception remontée depuis une méthode appelée</exception>
+        /// <exception cref="OOrmHandledException">Exception générée ici ou remontée depuis une méthode appelée</exception>
         internal static void FillPlaceHoldersAndAdoParametersNamesAndValues(string mappingDictionariesContainerKey_, List<string> lstColumnNames_, List<object> lstValues_, List<string> lstSqlPlaceholders_, List<KeyValuePair<string, object>> lstAdoParameters_)
         {
             if (lstColumnNames_ == null) return;
@@ -296,7 +296,7 @@ namespace OsamesMicroOrm.DbTools
                 if (paramName.StartsWith("@"))
                 {
                     if(parameterIndex > lstValues_.Count-1)
-                        throw new OOrmHandledException(HResultEnum.E_STRINGFORMATCOUNTMISMATCH, null, "Asked for value of index " + parameterIndex + " for dynamic parameter of name " + paramName + " but there are only " + lstValues_.Count + " values");
+                        throw new OOrmHandledException(HResultEnum.E_METANAMESVALUESCOUNTMISMATCH, null, "Asked for value of index " + parameterIndex + " for dynamic parameter of name " + paramName + " but there are only " + lstValues_.Count + " values");
                     lstAdoParameters_.Add(new KeyValuePair<string, object>(paramName, lstValues_[parameterIndex]));
                 }
                 else if (!isUnprotectedLiteral)
@@ -343,7 +343,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 int nbOfPlaceholders = Utilities.Common.CountPlaceholders(format_);
                 string errorDetail = "Expected : " + nbOfPlaceholders + ", given parameters : " + args_.Length;
-                throw new OOrmHandledException(HResultEnum.E_STRINGFORMATCOUNTMISMATCH, ex, errorDetail);
+                throw new OOrmHandledException(HResultEnum.E_PLACEHOLDERSVALUESCOUNTMISMATCH, ex, errorDetail);
             }
         }
 

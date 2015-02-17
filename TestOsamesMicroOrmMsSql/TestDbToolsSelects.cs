@@ -10,6 +10,7 @@ using OsamesMicroOrm.DbTools;
 using OsamesMicroOrm.Utilities;
 using SampleDbEntities.Chinook;
 using TestOsamesMicroOrmMsSql.Tools;
+using Common = TestOsamesMicroOrm.Tools.Common;
 
 namespace TestOsamesMicroOrmMsSql
 {
@@ -46,8 +47,7 @@ namespace TestOsamesMicroOrmMsSql
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message + (ex.InnerException != null ? ex.InnerException.Message : ""));
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_EXECUTEREADERFAILED).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_EXECUTEREADERFAILED, ex);
                 throw;
             }
             finally
@@ -82,8 +82,7 @@ namespace TestOsamesMicroOrmMsSql
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_COLUMNDOESNOTEXIST).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_COLUMNDOESNOTEXIST, ex);
                 throw;
             }
             finally

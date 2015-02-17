@@ -22,6 +22,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Utilities;
+using Common = TestOsamesMicroOrm.Tools.Common;
 
 namespace TestOsamesMicroOrmMsSql
 {
@@ -46,8 +47,8 @@ namespace TestOsamesMicroOrmMsSql
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_PROVIDERNOTINSTALLED).Key, ex.HResult);
+                // Si jamais on a une erreur c'est celle-ci qui doit sortir, cependant on ne doit pas avoir d'erreur
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_PROVIDERNOTINSTALLED, ex);
                 throw;
             }
 
