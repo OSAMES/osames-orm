@@ -132,7 +132,7 @@ namespace OsamesMicroOrm
         /// Adds ADO.NET parameters to current DbCommand.
         /// Parameters can be input or output parameters.
         /// </summary>
-       /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable OrmDbParameter objects format</param>
+        /// <param name="adoParams_">ADO.NET parameters (name and value) as enumerable OrmDbParameter objects format</param>
         private void CreateDbParameters(IEnumerable<OOrmDbParameter> adoParams_)
         {
             foreach (OOrmDbParameter oParam in adoParams_)

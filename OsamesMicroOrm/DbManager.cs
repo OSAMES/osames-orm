@@ -339,12 +339,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute<long>(cmdParams_);
                 }
             }
             else
             {
-                lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute<long>(cmdParams_);
             }
             return 1;
         }
@@ -361,19 +361,19 @@ namespace OsamesMicroOrm
         /// <returns>Nombre de lignes affectées</returns>
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, out long lastInsertedRowId_)
-        {           
+        {
             if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute<long>(cmdParams_);
 
                 }
             }
             else
             {
-                lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute<long>(cmdParams_);
             }
             return 1;
         }
@@ -390,17 +390,17 @@ namespace OsamesMicroOrm
         /// <returns>Nombre de lignes affectées</returns>
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         internal int ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
-        { 
+        {
             if (connection_.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute<long>(cmdParams_);
                 }
             }
             else
             {
-                lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute<long>(cmdParams_);
             }
             return 1;
         }
@@ -418,31 +418,18 @@ namespace OsamesMicroOrm
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
-            object oValue; if (transaction_.ConnectionWrapper.IsBackup)
+            if (transaction_.ConnectionWrapper.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
-                    {
-                        try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                    }
-
+                    lastInsertedRowId_ = new DbManagerHelper(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute<long>(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
-                {
-                    try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                }
+                lastInsertedRowId_ = new DbManagerHelper(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute<long>(cmdParams_);
             }
 
             return 1;
@@ -461,30 +448,19 @@ namespace OsamesMicroOrm
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, out long lastInsertedRowId_)
         {
-            object oValue; if (transaction_.ConnectionWrapper.IsBackup)
+            
+            if (transaction_.ConnectionWrapper.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
-                    {
-                        try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                    }
+                    lastInsertedRowId_ = new DbManagerHelper(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute<long>(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
-                {
-                    try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                }
+                lastInsertedRowId_ = new DbManagerHelper(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute<long>(cmdParams_);
             }
 
             return 1;
@@ -503,30 +479,17 @@ namespace OsamesMicroOrm
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         public int ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
         {
-            object oValue; if (transaction_.ConnectionWrapper.IsBackup)
+            if (transaction_.ConnectionWrapper.IsBackup)
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
-                    {
-                        try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                        if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                    }
+                    lastInsertedRowId_ = new DbManagerHelper(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute<long>(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_ + ";" + SelectLastInsertIdCommandText, cmdParams_, cmdType_))
-                {
-                    try { oValue = command.AdoDbCommand.ExecuteScalar(); }
-                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                    if (!Int64.TryParse(oValue.ToString(), out lastInsertedRowId_))
-                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                }
+                lastInsertedRowId_ = new DbManagerHelper(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute<long>(cmdParams_);
             }
             return 1;
         }
@@ -552,12 +515,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    iNbAffectedRows = (int) new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                    iNbAffectedRows = (int)new DbManagerHelper(connection_, cmdType_, cmdText_, sqlCommandType.Update).Execute<int>(cmdParams_);
                 }
             }
             else
             {
-                iNbAffectedRows = (int)new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                iNbAffectedRows = (int)new DbManagerHelper(connection_, cmdType_, cmdText_, sqlCommandType.Update).Execute<int>(cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -580,13 +543,13 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    iNbAffectedRows = (int) new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                    iNbAffectedRows = (int)new DbManagerHelper(connection_, cmdType_, cmdText_, sqlCommandType.Update).Execute<int>(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                iNbAffectedRows = (int)new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                iNbAffectedRows = (int)new DbManagerHelper(connection_, cmdType_, cmdText_, sqlCommandType.Update).Execute<int>(cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -610,13 +573,13 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    iNbAffectedRows = (int) new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                    iNbAffectedRows = (int)new DbManagerHelper(connection_, cmdType_, cmdText_, sqlCommandType.Update).Execute<int>(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                iNbAffectedRows = (int) new DbManagerHelper(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText).Execute(cmdParams_);
+                iNbAffectedRows = (int)new DbManagerHelper(connection_, cmdType_, cmdText_, sqlCommandType.Update).Execute<int>(cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -640,21 +603,13 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                    {
-                        try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
-                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                    }
+                    iNbAffectedRows = (int)new DbManagerHelper(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).Execute<int>(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                {
-                    try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
-                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                }
+                iNbAffectedRows = (int)new DbManagerHelper(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).Execute<int>(cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -677,22 +632,13 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                    {
-                        try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
-                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                    }
+                    iNbAffectedRows = (int)new DbManagerHelper(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).Execute<int>(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                {
-                    try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
-                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                }
+                iNbAffectedRows = (int)new DbManagerHelper(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).Execute<int>(cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -715,22 +661,13 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                    {
-                        try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
-                        catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                    }
+                    iNbAffectedRows = (int)new DbManagerHelper(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).Execute<int>(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                {
-                    try { iNbAffectedRows = command.AdoDbCommand.ExecuteNonQuery(); }
-                    catch (Exception ex) { throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText_); }
-                }
+                iNbAffectedRows = (int)new DbManagerHelper(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).Execute<int>(cmdParams_);
             }
 
             return iNbAffectedRows;
