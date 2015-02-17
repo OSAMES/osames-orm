@@ -131,7 +131,7 @@ namespace OsamesMicroOrm
         }
 
         /// <summary>
-        /// Execute with cmdParams as IEnumerable of  KeyValuePair of <string, object>
+        /// Execute with cmdParams as IEnumerable of  KeyValuePair of &lt;string, object&gt;
         /// </summary>
         /// <param name="cmdParams_"></param>
         /// <returns></returns>
@@ -230,7 +230,7 @@ namespace OsamesMicroOrm
                 {
                     throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText);
                 }
-        } 
+        }
         #endregion
 
         #region DESTRUCTOR
@@ -242,7 +242,7 @@ namespace OsamesMicroOrm
         public void Dispose()
         {
 
-        } 
+        }
         #endregion
     }
 
