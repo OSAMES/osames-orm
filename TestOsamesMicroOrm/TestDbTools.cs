@@ -190,7 +190,7 @@ namespace TestOsamesMicroOrm
 
         /// <summary>
         /// Ici on a oublié de passer "#" pour le paramètre dynamique dans le 5e paramètre : liste des meta names.
-        /// La chaîne SQL ne peut être générée.
+        /// La chaîne SQL ne peut être générée car il n'y a pas assez de valeurs pour les placeholders.
         /// </summary>
         [TestMethod]
         [TestCategory("Mapping")]
@@ -212,7 +212,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_STRINGFORMATCOUNTMISMATCH, ex);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_PLACEHOLDERSVALUESCOUNTMISMATCH, ex);
                 throw;
             }
 

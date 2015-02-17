@@ -162,11 +162,10 @@ namespace TestOsamesMicroOrmSqlite
         [TestCategory("Parameter NOK")]
         [ExpectedException(typeof(OOrmHandledException))]
         [Owner("Barbara Post")]
-        public void TestSelectParameterValuesMismatch()
+        public void TestSelectMetaNamesAndValuesCountMismatch()
         {
             try
             {
-
                 // "BaseReadAllWhereBetween" : SELECT * FROM {0} WHERE {1} between {2} and {3};
                 // Il manque le premier élément de la liste des valeurs qui doit être "CustomerId".
                 List<Customer> customers = DbToolsSelects.SelectAllColumns<Customer>("BaseReadAllWhereBetween", "Customer", new List<string> { "%CustomerId", "#", "#" }, new List<object> { 3, 4 });
@@ -175,7 +174,7 @@ namespace TestOsamesMicroOrmSqlite
             }
             catch (OOrmHandledException ex)
             {
-                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_STRINGFORMATCOUNTMISMATCH, ex);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_METANAMESVALUESCOUNTMISMATCH, ex);
                 throw;
             }
 
