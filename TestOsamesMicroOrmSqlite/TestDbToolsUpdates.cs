@@ -8,6 +8,7 @@ using OsamesMicroOrm.Configuration.Tweak;
 using OsamesMicroOrm.DbTools;
 using OsamesMicroOrm.Utilities;
 using SampleDbEntities.Chinook;
+using Common = TestOsamesMicroOrm.Tools.Common;
 
 namespace TestOsamesMicroOrmSqlite
 {
@@ -183,8 +184,7 @@ namespace TestOsamesMicroOrmSqlite
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_EXECUTENONQUERYFAILED).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_EXECUTENONQUERYFAILED, ex);
                 throw;
             }
 
@@ -227,8 +227,7 @@ namespace TestOsamesMicroOrmSqlite
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message);
-                Assert.AreEqual(OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_EXECUTENONQUERYFAILED).Key, ex.HResult);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_EXECUTENONQUERYFAILED, ex);
                 throw;
             }
             finally

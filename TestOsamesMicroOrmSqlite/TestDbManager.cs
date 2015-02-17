@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
+using TestOsamesMicroOrm.Tools;
 
 namespace TestOsamesMicroOrmSqlite
 {
@@ -48,7 +49,7 @@ namespace TestOsamesMicroOrmSqlite
             }
             catch (OOrmHandledException ex)
             {
-                Console.WriteLine(ex.Message + "[INNER EXCEPTION]" + (ex.InnerException == null ? "none" : ex.InnerException.Message));
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_BEGINTRANSACTIONFAILED, ex);
                 throw;
             }
         }
@@ -110,10 +111,10 @@ namespace TestOsamesMicroOrmSqlite
                 Console.WriteLine("New record ID: {0}, expected number > 1", lastInsertedRowId);
                 Assert.AreNotEqual(0, lastInsertedRowId);
             }
-            catch (Exception ex)
+            catch (OOrmHandledException ex)
             {
-                Debug.WriteLine(ex);
-                // relancer l'exception telle que catchée comme ça le test est correctement en erreur
+                // On ne devrait pas avoir d'exception, mais si on en a une, c'est celle-ci qu'on devrait avoir
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_EXECUTENONQUERYFAILED, ex);
                 throw;
             }
         }
