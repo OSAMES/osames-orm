@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 
 namespace OsamesMicroOrm
 {
     /// <summary>
     /// Child of DbManager
     /// </summary>
-    internal class DbManagerHelper : IDisposable
+    internal class DbManagerHelper<T> : IDisposable
     {
         private OOrmDbConnectionWrapper connection;
         private OOrmDbTransactionWrapper transaction;
@@ -173,7 +174,66 @@ namespace OsamesMicroOrm
 
         #endregion
 
+        #region READER
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cmdParams_"></param>
+        /// <returns></returns>
+        internal DbDataReader ExecuteReader(object[,] cmdParams_)
+        {
+            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+                try
+                {
+                    DbDataReader dr = command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
+                    return dr;
+                }
+                catch (Exception ex)
+                {
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText);
+                }
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cmdParams_"></param>
+        /// <returns></returns>
+        internal DbDataReader ExecuteReader(IEnumerable<OOrmDbParameter> cmdParams_)
+        {
+            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+                try
+                {
+                    DbDataReader dr = command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
+                    return dr;
+                }
+                catch (Exception ex)
+                {
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText);
+                }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cmdParams_"></param>
+        /// <returns></returns>
+        internal DbDataReader ExecuteReader(IEnumerable<KeyValuePair<string, object>> cmdParams_)
+        {
+            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+                try
+                {
+                    DbDataReader dr = command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
+                    return dr;
+                }
+                catch (Exception ex)
+                {
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText);
+                }
+        } 
+        #endregion
+
+        #region DESTRUCTOR
         ~DbManagerHelper()
         {
             Dispose();
@@ -182,7 +242,8 @@ namespace OsamesMicroOrm
         public void Dispose()
         {
 
-        }
+        } 
+        #endregion
     }
 
     internal enum sqlCommandType
