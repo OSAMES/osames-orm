@@ -53,7 +53,7 @@ namespace OsamesMicroOrm
         /// Execute with cmdParams as object array
         /// </summary>
         /// <param name="cmdParams_"></param>
-        internal T Execute<T>(object[,] cmdParams_)
+        internal T Execute(object[,] cmdParams_)
         {
             long commandResult; //used to return insert or update value
 
@@ -93,7 +93,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="cmdParams_"></param>
         /// <returns></returns>
-        internal T Execute<T>(IEnumerable<OOrmDbParameter> cmdParams_)
+        internal T Execute(IEnumerable<OOrmDbParameter> cmdParams_)
         {
             long commandResult;   //used to return insert or update value
 
@@ -135,7 +135,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="cmdParams_"></param>
         /// <returns></returns>
-        internal T Execute<T>(IEnumerable<KeyValuePair<string, object>> cmdParams_)
+        internal T Execute(IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
             long commandResult;   //used to return insert or update value
 
