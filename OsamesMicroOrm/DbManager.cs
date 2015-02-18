@@ -71,11 +71,6 @@ namespace OsamesMicroOrm
         private static readonly object SingletonInitLockObject = new object();
 
         /// <summary>
-        /// Lock object for using backup connection.
-        /// </summary>
-        private static readonly object BackupConnectionUsageLockObject = new object();
-
-        /// <summary>
         /// Singleton access, with singleton thread-safe initialization using dedicated lock object.
         /// </summary>
         public static DbManager Instance
@@ -337,7 +332,7 @@ namespace OsamesMicroOrm
         {
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
                 }
@@ -364,7 +359,7 @@ namespace OsamesMicroOrm
         {
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
@@ -393,7 +388,7 @@ namespace OsamesMicroOrm
         {
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
                 }
@@ -420,7 +415,7 @@ namespace OsamesMicroOrm
         {
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
@@ -451,7 +446,7 @@ namespace OsamesMicroOrm
 
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
@@ -481,7 +476,7 @@ namespace OsamesMicroOrm
         {
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
                 }
@@ -513,7 +508,7 @@ namespace OsamesMicroOrm
 
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
                 }
@@ -541,7 +536,7 @@ namespace OsamesMicroOrm
 
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
                 }
@@ -570,7 +565,7 @@ namespace OsamesMicroOrm
 
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
@@ -600,7 +595,7 @@ namespace OsamesMicroOrm
 
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
@@ -630,7 +625,7 @@ namespace OsamesMicroOrm
 
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
                 }
@@ -659,7 +654,7 @@ namespace OsamesMicroOrm
 
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
                 }
@@ -691,7 +686,7 @@ namespace OsamesMicroOrm
         {
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
@@ -714,7 +709,7 @@ namespace OsamesMicroOrm
         {
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
@@ -736,7 +731,7 @@ namespace OsamesMicroOrm
         {
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
@@ -759,7 +754,7 @@ namespace OsamesMicroOrm
         {
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
@@ -782,7 +777,7 @@ namespace OsamesMicroOrm
         {
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
@@ -804,7 +799,7 @@ namespace OsamesMicroOrm
         {
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
@@ -831,7 +826,7 @@ namespace OsamesMicroOrm
 
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     return new DbManagerHelper<bool>(connection_,  cmdType_,cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
@@ -854,7 +849,7 @@ namespace OsamesMicroOrm
 
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
@@ -877,7 +872,7 @@ namespace OsamesMicroOrm
 
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
@@ -899,7 +894,7 @@ namespace OsamesMicroOrm
         {
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
@@ -923,7 +918,7 @@ namespace OsamesMicroOrm
 
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
@@ -947,7 +942,7 @@ namespace OsamesMicroOrm
 
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
@@ -976,7 +971,7 @@ namespace OsamesMicroOrm
         {
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
@@ -1024,7 +1019,7 @@ namespace OsamesMicroOrm
 
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
@@ -1068,7 +1063,7 @@ namespace OsamesMicroOrm
 
             if (connection_.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
@@ -1111,7 +1106,7 @@ namespace OsamesMicroOrm
         {
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
@@ -1159,7 +1154,7 @@ namespace OsamesMicroOrm
 
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
@@ -1203,7 +1198,7 @@ namespace OsamesMicroOrm
 
             if (transaction_.ConnectionWrapper.IsBackup)
             {
-                lock (BackupConnectionUsageLockObject)
+                lock (BackupConnection)
                 {
                     // perform code with locking
                     using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
