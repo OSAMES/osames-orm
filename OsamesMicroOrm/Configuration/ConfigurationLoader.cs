@@ -108,15 +108,15 @@ namespace OsamesMicroOrm.Configuration
         }
 
         /// <summary>
-        /// 
+        /// ORM configuration indicator that determines Exception behavior (ORM use context : webapp, winforms/wpf...).
         /// </summary>
-        /// <exception cref="OverflowException"><paramref name="value" /> represents a number that is less than <see cref="F:System.Int32.MinValue" /> or greater than <see cref="F:System.Int32.MaxValue" />. </exception>
-        public static int GetOrmContext
+        /// <exception cref="OverflowException"><paramref name="value" /> represents a number that is less than 0 or greater than 255. </exception>
+        public static byte GetOrmContext
         {
             get
             {
-                int context;
-                if (Int32.TryParse(ConfigurationManager.AppSettings["context"], out context))
+                byte context;
+                if (Byte.TryParse(ConfigurationManager.AppSettings["context"], out context))
                     return context;
                 return 0;
             }

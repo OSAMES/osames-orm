@@ -26,7 +26,7 @@ namespace TestOsamesMicroOrmMsSql
         [Owner("Benjamin Nolmans")]
         public void TestUpdateSingleMsSql()
         {
-
+            // MS SQL n'aime pas les uint, seulement des int...
             const int testCustomerId = 3;
 
             _config = ConfigurationLoader.Instance;
@@ -46,10 +46,11 @@ namespace TestOsamesMicroOrmMsSql
             customer.LastName = "Nolmans";
                        
             // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
-            int testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer", 
+            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer", 
                 new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer }, _transaction);
 
-            Assert.AreEqual(1, testing);
+            // il faut caster car sinon "1" est de type int.
+            Assert.AreEqual((uint)1, testing);
 
             // Refaire un select, on lit la nouvelle valeur
             Customer reReadcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);

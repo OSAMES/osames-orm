@@ -118,7 +118,7 @@ namespace TestOsamesMicroOrmSqlite
                     {
                         conn2.AdoDbConnection.ConnectionString = DbManager.ConnectionString;
                         conn2.AdoDbConnection.Open();
-                        int affectedRecordsCount = DbManager.Instance.ExecuteNonQuery(conn2, CommandType.Text, "INSERT INTO Customer (LastName, FirstName, Email) VALUES (@lastname, @firstname, @email)", parameters.ToArray(), out lastInsertedRowId);
+                        byte affectedRecordsCount = DbManager.Instance.ExecuteNonQuery(conn2, CommandType.Text, "INSERT INTO Customer (LastName, FirstName, Email) VALUES (@lastname, @firstname, @email)", parameters.ToArray(), out lastInsertedRowId);
                         Assert.AreEqual(1, affectedRecordsCount, "Expected 1 record affected by INSERT operation");
                         Console.WriteLine("New record ID: {0}, expected number > 1", lastInsertedRowId);
                         Assert.AreNotEqual(0, lastInsertedRowId);

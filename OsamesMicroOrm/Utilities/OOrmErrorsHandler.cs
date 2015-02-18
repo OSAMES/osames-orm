@@ -102,7 +102,7 @@ namespace OsamesMicroOrm.Utilities
         }
 
         /// <summary>
-        /// Retourne une KeyValuePair avec : comme clé, le code hresult au format int au lieu de chaîne hexadécimale, comme valeur : le descriptif assocé au code.
+        /// Retourne une KeyValuePair avec : comme clé, le code hresult au format Int32 au lieu de chaîne hexadécimale, comme valeur : le descriptif assocé au code.
         /// </summary>
         /// <param name="code_"></param>
         /// <returns></returns>
@@ -182,7 +182,7 @@ namespace OsamesMicroOrm.Utilities
         /// <param name="additionalErrorMsg_"></param>
         /// <param name="innerException_">Exception d'origine de l'exception à traiter</param>
         /// <param name="errorType_"></param>
-        /// <returns>KeyValuePair avec pour la clé le code hresult au format int au lieu de chaîne hexa "0xNNNN" et pour la valeur le message d'erreur complètement formaté à retourner à l'utilisateur</returns>
+        /// <returns>KeyValuePair avec pour la clé le code hresult au format Int32 au lieu de chaîne hexa "0xNNNN" et pour la valeur le message d'erreur complètement formaté à retourner à l'utilisateur</returns>
         internal static KeyValuePair<int, string> ProcessOrmException(HResultEnum hresultCode_, Exception innerException_ = null, ErrorType errorType_ = ErrorType.ERROR, string additionalErrorMsg_ = null)
         {
             // Ecrire dans event log n'est possible qu'en admin sinon on utilisera le log classique uniquement.

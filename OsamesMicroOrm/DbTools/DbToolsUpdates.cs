@@ -106,11 +106,11 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">any error</exception>
-        public static int Update<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereColumnNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
+        public static uint Update<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereColumnNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
-            int nbRowsAffected = 0;
+            uint nbRowsAffected = 0;
 
             FormatSqlForUpdate(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_, out sqlCommand, out adoParameters);
 
@@ -159,11 +159,11 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">any error</exception>
-        public static int Update<T>(List<T> dataObjects_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereColumnNames_, List<List<object>> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
+        public static uint Update<T>(List<T> dataObjects_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereColumnNames_, List<List<object>> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
         {
             string sqlCommand = null;
 
-            int nbRowsAffected = 0;
+            uint nbRowsAffected = 0;
 
             for (int i = 0; i < dataObjects_.Count; i++)
             {

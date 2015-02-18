@@ -58,7 +58,7 @@ namespace TestOsamesMicroOrmSqlite
         public void TestUpdateSingleSqlite()
         {
 
-            const int testCustomerId = 3;
+            const uint testCustomerId = 3;
 
             _config = ConfigurationLoader.Instance;
 
@@ -77,10 +77,11 @@ namespace TestOsamesMicroOrmSqlite
             customer.LastName = "Nolmans";
 
             // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
-            int testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
+            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
                 new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer }, _transaction);
 
-            Assert.AreEqual(1, testing);
+            // il faut caster car sinon "1" est de type int.
+            Assert.AreEqual((uint) 1, testing);
 
             // Refaire un select, on lit la nouvelle valeur
             Customer reReadcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
@@ -125,7 +126,7 @@ namespace TestOsamesMicroOrmSqlite
         [Owner("Benjamin Nolmans")]
         public void TestUpdateSingleSqliteWithoutTransaction()
         {
-            const int testCustomerId = 1;
+            const uint testCustomerId = 1;
 
             _config = ConfigurationLoader.Instance;
 
@@ -141,10 +142,11 @@ namespace TestOsamesMicroOrmSqlite
             customer.LastName = "Nolmans";
 
             // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
-            int testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
+            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
                 new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer });
 
-            Assert.AreEqual(1, testing);
+            // il faut caster car sinon "1" est de type int.
+            Assert.AreEqual((uint)1, testing);
 
         }
 
@@ -158,7 +160,7 @@ namespace TestOsamesMicroOrmSqlite
         [ExpectedException(typeof(OOrmHandledException))]
         public void TestUpdateSingleErrorWithoutMandatoryValuesSqlite()
         {
-            const int testCustomerId = 3;
+            const uint testCustomerId = 3;
 
             _config = ConfigurationLoader.Instance;
 
@@ -202,7 +204,7 @@ namespace TestOsamesMicroOrmSqlite
         {
             try
             {
-                const int testCustomerId = 3;
+                const uint testCustomerId = 3;
                 Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.sqlTemplatesFileName.ToString(), "incorrect-sqltemplates.xml");
                 _config = ConfigurationLoader.Instance;
 
@@ -246,8 +248,8 @@ namespace TestOsamesMicroOrmSqlite
         [Owner("Barbara Post")]
         public void TestUpdateTwoObjectsSqlite()
         {
-            const int testCustomerId = 3;
-            const int testOtherCustomerId = 4;
+            const uint testCustomerId = 3;
+            const uint testOtherCustomerId = 4;
 
             _config = ConfigurationLoader.Instance;
 
@@ -272,10 +274,11 @@ namespace TestOsamesMicroOrmSqlite
             otherCustomer.LastName = "Lavazza";
 
             // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
-            int updated = DbToolsUpdates.Update(new List<Customer> { customer, otherCustomer }, "BaseUpdateOne", "Customer",
+            uint updated = DbToolsUpdates.Update(new List<Customer> { customer, otherCustomer }, "BaseUpdateOne", "Customer",
                 new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<List<object>> { new List<object> { customer.IdCustomer }, new List<object> { otherCustomer.IdCustomer } }, _transaction);
 
-            Assert.AreEqual(2, updated);
+            // il faut caster car sinon "1" est de type int.
+            Assert.AreEqual((uint)2, updated);
 
             // Relecture
             // "BaseReadAllWhereBetween" : SELECT * FROM {0} WHERE {1} between {2} and {3};
