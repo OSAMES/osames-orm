@@ -231,7 +231,90 @@ namespace OsamesMicroOrm
                     throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText);
                 }
         }
-        #endregion
+        
+		#endregion
+
+		#region ADAPTER
+
+		/// <summary>
+		/// Datas the adapter.
+		/// </summary>
+		/// <returns>The adapter.</returns>
+		/// <param name="cmdParams_">Cmd parameters.</param>
+		internal DataSet DataAdapter (object[,] cmdParams_)
+		{
+			using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper (connection, transaction, cmdText, cmdParams_, cmdType))
+				try {
+
+					DbDataAdapter dda = DbProviderFactory.CreateDataAdapter ();
+
+					if (dda == null) {
+						throw new OOrmHandledException (HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
+					}
+					dda.SelectCommand = command.AdoDbCommand;
+					DataSet ds = new DataSet ();
+					dda.Fill (ds);
+					return ds;
+				} catch (Exception ex) {
+					if (ex is OOrmHandledException)
+						throw;
+					throw new OOrmHandledException (HResultEnum.E_FILLDATASETFAILED, ex, cmdText);
+				}
+		}
+
+		/// <summary>
+		/// Datas the adapter.
+		/// </summary>
+		/// <returns>The adapter.</returns>
+		/// <param name="cmdParams_">Cmd parameters.</param>
+		internal DataSet DataAdapter (IEnumerable<OOrmDbParameter> cmdParams_)
+		{
+			using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper (connection, transaction, cmdText, cmdParams_, cmdType))
+				try {
+
+					DbDataAdapter dda = DbProviderFactory.CreateDataAdapter ();
+
+					if (dda == null) {
+						throw new OOrmHandledException (HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
+					}
+					dda.SelectCommand = command.AdoDbCommand;
+					DataSet ds = new DataSet ();
+					dda.Fill (ds);
+					return ds;
+				} catch (Exception ex) {
+					if (ex is OOrmHandledException)
+						throw;
+					throw new OOrmHandledException (HResultEnum.E_FILLDATASETFAILED, ex, cmdText);
+				}
+		}
+
+		/// <summary>
+		/// Datas the adapter.
+		/// </summary>
+		/// <returns>The adapter.</returns>
+		/// <param name="cmdParams_">Cmd parameters.</param>
+		internal DataSet DataAdapter (IEnumerable<KeyValuePair<string, object>> cmdParams_)
+		{
+			using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper (connection, transaction, cmdText, cmdParams_, cmdType))
+				try {
+
+					DbDataAdapter dda = DbProviderFactory.CreateDataAdapter ();
+
+					if (dda == null) {
+						throw new OOrmHandledException (HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
+					}
+					dda.SelectCommand = command.AdoDbCommand;
+					DataSet ds = new DataSet ();
+					dda.Fill (ds);
+					return ds;
+				} catch (Exception ex) {
+					if (ex is OOrmHandledException)
+						throw;
+					throw new OOrmHandledException (HResultEnum.E_FILLDATASETFAILED, ex, cmdText);
+				}
+		}
+
+		#endregion
 
         #region DESTRUCTOR
         ~DbManagerHelper()
