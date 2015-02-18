@@ -339,12 +339,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
                 }
             }
             else
             {
-                lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
             }
             return 1;
         }
@@ -367,13 +367,13 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
 
                 }
             }
             else
             {
-                lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
             }
             return 1;
         }
@@ -395,12 +395,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
                 }
             }
             else
             {
-                lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
             }
             return 1;
         }
@@ -423,13 +423,13 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
             }
 
             return 1;
@@ -454,13 +454,13 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
             }
 
             return 1;
@@ -483,13 +483,13 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, sqlCommandType.Insert).Execute(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper<long>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
             }
             return 1;
         }
@@ -515,12 +515,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, sqlCommandType.Update).Execute(cmdParams_);
+                    iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
                 }
             }
             else
             {
-                iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, sqlCommandType.Update).Execute(cmdParams_);
+                iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -543,13 +543,13 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, sqlCommandType.Update).Execute(cmdParams_);
+                    iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, sqlCommandType.Update).Execute(cmdParams_);
+                iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -573,13 +573,13 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, sqlCommandType.Update).Execute(cmdParams_);
+                    iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, sqlCommandType.Update).Execute(cmdParams_);
+                iNbAffectedRows = new DbManagerHelper<uint>(connection_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -603,13 +603,13 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).Execute(cmdParams_);
+                    iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).Execute(cmdParams_);
+                iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -632,13 +632,13 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).Execute(cmdParams_);
+                    iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).Execute(cmdParams_);
+                iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -661,13 +661,13 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).Execute(cmdParams_);
+                    iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).Execute(cmdParams_);
+                iNbAffectedRows = new DbManagerHelper<uint>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).Execute(cmdParams_);
             }
 
             return iNbAffectedRows;
@@ -694,11 +694,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, sqlCommandType.Update).ExecuteReader(cmdParams_);
+                    return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, sqlCommandType.Update).ExecuteReader(cmdParams_);
+            return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
         }
 
         /// <summary>
@@ -716,11 +716,11 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, sqlCommandType.Update).ExecuteReader(cmdParams_);
+                    return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, sqlCommandType.Update).ExecuteReader(cmdParams_);
+            return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
         }
 
         /// <summary>
@@ -739,11 +739,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, sqlCommandType.Update).ExecuteReader(cmdParams_);
+                    return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, sqlCommandType.Update).ExecuteReader(cmdParams_);
+            return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
         }
 
         /// <summary>
@@ -762,11 +762,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).ExecuteReader(cmdParams_);
+                    return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).ExecuteReader(cmdParams_);
+            return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
         }
 
         /// <summary>
@@ -784,11 +784,11 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).ExecuteReader(cmdParams_);
+                    return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).ExecuteReader(cmdParams_);
+            return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
         }
 
         /// <summary>
@@ -807,11 +807,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).ExecuteReader(cmdParams_);
+                    return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, sqlCommandType.Update).ExecuteReader(cmdParams_);
+            return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
         }
         #endregion
 
@@ -833,53 +833,11 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                        try
-                        {
-
-                            DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                            if (dda == null)
-                            {
-                                throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                            }
-                            dda.SelectCommand = command.AdoDbCommand;
-                            DataSet ds = new DataSet();
-                            dda.Fill(ds);
-                            return ds;
-                        }
-                        catch (Exception ex)
-                        {
-                            if (ex is OOrmHandledException)
-                                throw;
-                            throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
-                        }
+                    return new DbManagerHelper<bool>(connection_,  cmdType_,cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
             }
             // no lock
-
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                try
-                {
-
-                    DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                    if (dda == null)
-                    {
-                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                    }
-                    dda.SelectCommand = command.AdoDbCommand;
-                    DataSet ds = new DataSet();
-                    dda.Fill(ds);
-                    return ds;
-                }
-                catch (Exception ex)
-                {
-                    if (ex is OOrmHandledException)
-                        throw;
-                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
-                }
+            return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
         }
 
         /// <summary>
@@ -898,55 +856,11 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                        try
-                        {
-
-                            DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                            if (dda == null)
-                            {
-                                throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                            }
-                            dda.SelectCommand = command.AdoDbCommand;
-                            DataSet ds = new DataSet();
-                            dda.Fill(ds);
-                            return ds;
-                        }
-                        catch (Exception ex)
-                        {
-                            if (ex is OOrmHandledException)
-                                throw;
-                            throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
-                        }
+                    return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
-
             }
-
             // no lock
-
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                try
-                {
-
-                    DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                    if (dda == null)
-                    {
-                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                    }
-                    dda.SelectCommand = command.AdoDbCommand;
-                    DataSet ds = new DataSet();
-                    dda.Fill(ds);
-                    return ds;
-                }
-                catch (Exception ex)
-                {
-                    if (ex is OOrmHandledException)
-                        throw;
-                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
-                }
+            return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
         }
 
         /// <summary>
@@ -965,54 +879,11 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnectionUsageLockObject)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                        try
-                        {
-
-                            DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                            if (dda == null)
-                            {
-                                throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                            }
-                            dda.SelectCommand = command.AdoDbCommand;
-                            DataSet ds = new DataSet();
-                            dda.Fill(ds);
-                            return ds;
-                        }
-                        catch (Exception ex)
-                        {
-                            if (ex is OOrmHandledException)
-                                throw;
-                            throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
-                        }
+                    return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
-
             }
-
             // no lock
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                try
-                {
-
-                    DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                    if (dda == null)
-                    {
-                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                    }
-                    dda.SelectCommand = command.AdoDbCommand;
-                    DataSet ds = new DataSet();
-                    dda.Fill(ds);
-                    return ds;
-                }
-                catch (Exception ex)
-                {
-                    if (ex is OOrmHandledException)
-                        throw;
-                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
-                }
+            return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
         }
 
         /// <summary>
@@ -1031,52 +902,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                        try
-                        {
-
-                            DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                            if (dda == null)
-                            {
-                                throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                            }
-                            dda.SelectCommand = command.AdoDbCommand;
-                            DataSet ds = new DataSet();
-                            dda.Fill(ds);
-                            return ds;
-                        }
-                        catch (Exception ex)
-                        {
-                            if (ex is OOrmHandledException)
-                                throw;
-                            throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
-                        }
+                    return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
             }
             // no lock
-
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                try
-                {
-
-                    DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                    if (dda == null)
-                    {
-                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                    }
-                    dda.SelectCommand = command.AdoDbCommand;
-                    DataSet ds = new DataSet();
-                    dda.Fill(ds);
-                    return ds;
-                }
-                catch (Exception ex)
-                {
-                    if (ex is OOrmHandledException)
-                        throw;
-                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
-                }
+            return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
         }
 
         /// <summary>
@@ -1096,54 +926,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                        try
-                        {
-
-                            DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                            if (dda == null)
-                            {
-                                throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                            }
-                            dda.SelectCommand = command.AdoDbCommand;
-                            DataSet ds = new DataSet();
-                            dda.Fill(ds);
-                            return ds;
-                        }
-                        catch (Exception ex)
-                        {
-                            if (ex is OOrmHandledException)
-                                throw;
-                            throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
-                        }
+                    return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
-
             }
-
             // no lock
-
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                try
-                {
-
-                    DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                    if (dda == null)
-                    {
-                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                    }
-                    dda.SelectCommand = command.AdoDbCommand;
-                    DataSet ds = new DataSet();
-                    dda.Fill(ds);
-                    return ds;
-                }
-                catch (Exception ex)
-                {
-                    if (ex is OOrmHandledException)
-                        throw;
-                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
-                }
+            return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
         }
 
         /// <summary>
@@ -1163,53 +950,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnectionUsageLockObject)
                 {
                     // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                        try
-                        {
-
-                            DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                            if (dda == null)
-                            {
-                                throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                            }
-                            dda.SelectCommand = command.AdoDbCommand;
-                            DataSet ds = new DataSet();
-                            dda.Fill(ds);
-                            return ds;
-                        }
-                        catch (Exception ex)
-                        {
-                            if (ex is OOrmHandledException)
-                                throw;
-                            throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
-                        }
+                    return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
-
             }
-
             // no lock
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                try
-                {
-
-                    DbDataAdapter dda = DbProviderFactory.CreateDataAdapter();
-
-                    if (dda == null)
-                    {
-                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                    }
-                    dda.SelectCommand = command.AdoDbCommand;
-                    DataSet ds = new DataSet();
-                    dda.Fill(ds);
-                    return ds;
-                }
-                catch (Exception ex)
-                {
-                    if (ex is OOrmHandledException)
-                        throw;
-                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText_);
-                }
+            return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
         }
 
 
