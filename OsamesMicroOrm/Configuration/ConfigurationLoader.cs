@@ -153,7 +153,7 @@ namespace OsamesMicroOrm.Configuration
                 throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
             mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
             if (resultColumnName == null)
-                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDPROPERTY, null, "[No property " + propertyName_ + " in dictionary " + mappingDictionaryName_ + "]");
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDPROPERTY, null, "[No property '" + propertyName_ + "' in dictionary " + mappingDictionaryName_ + "]");
 
             return resultColumnName;
         }
@@ -174,7 +174,7 @@ namespace OsamesMicroOrm.Configuration
                 throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
             string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
             if (resultPropertyName == null)
-                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDCOLUMN, null, "[No column " + dbColumnName_ + " in dictionary " + mappingDictionaryName_ + "]");
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDCOLUMN, null, "[No column '" + dbColumnName_ + "' in dictionary " + mappingDictionaryName_ + "]");
 
             return resultPropertyName;
         }
