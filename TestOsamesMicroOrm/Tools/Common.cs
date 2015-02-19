@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Utilities;
-using TestOsamesMicroOrm.Utilities;
 
 namespace TestOsamesMicroOrm.Tools
 {
@@ -46,7 +45,7 @@ namespace TestOsamesMicroOrm.Tools
         /// <param name="ex_">Exception OormHandledException catchée dans le test</param>
         public static void AssertOnHresultAndWriteToConsole(HResultEnum expectedCode_, OOrmHandledException ex_)
         {
-            Console.WriteLine(ex_.Message + (ex_.InnerException != null ? ex_.InnerException.Message : ""));
+            Console.WriteLine(ex_.Message + (ex_.InnerException != null ? Environment.NewLine + "[InnerException: " + ex_.InnerException.Message + "]" : ""));
 
             // convert int code to hexa string
             string hexaCode = "0X" + ex_.HResult.ToString("X").ToUpperInvariant();

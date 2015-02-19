@@ -55,14 +55,14 @@ namespace TestOsamesMicroOrmSqlite
         }
 
         /// <summary>
-        /// Test de bas niveau du Select.
+        /// Test de bas niveau du Select. Avec un IDataReader qui contient les données.
         /// </summary>
         [TestMethod]
         [ExcludeFromCodeCoverage]
         [Owner("Barbara Post")]
         [TestCategory("SqLite")]
         [TestCategory("ADO.NET Select")]
-        public void TestSelectUsingSqlite()
+        public void TestSelectUsingDataReaderSqlite()
         {
             // select * from clients where id_client = @p0
             List<OOrmDbParameter> parameters = new List<OOrmDbParameter> { new OOrmDbParameter("@customerid", 3) };
@@ -83,6 +83,31 @@ namespace TestOsamesMicroOrmSqlite
             Assert.AreEqual(3, int.Parse(idCustomer.ToString()));
             Assert.IsNotNull(lastName);
             Assert.AreEqual("Tremblay", lastName.ToString());
+        }
+
+        /// <summary>
+        /// Test de bas niveau du Select. Avec un Dataset qui contient les données.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("SqLite")]
+        [TestCategory("ADO.NET Select")]
+        public void TestSelectUsingDataAdapterSqlite()
+        {
+            // select * from clients where id_client = @p0
+            List<OOrmDbParameter> parameters = new List<OOrmDbParameter> { new OOrmDbParameter("@customerid", 3) };
+
+            using (DataSet dataset = DbManager.Instance.DataAdapter(_transaction, "SELECT * FROM Customer WHERE CustomerId = @customerid", parameters.ToArray()))
+            {
+                foreach (DataRow row in dataset.Tables[0].Rows)
+                {
+                    foreach (DataColumn col in dataset.Tables[0].Columns)
+                    {
+                        Console.Write("{0,-14}", row[col]);
+                    }
+                }
+            }
         }
 
         /// <summary>
