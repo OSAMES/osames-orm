@@ -58,7 +58,7 @@ namespace TestOsamesMicroOrmSqlite
         /// <summary>
         /// Donnée d'entrée de méthode à tester. Meta names incorrects.
         /// </summary>
-        readonly List<string> lstSyntaxticallyIncorrectMetaNamesToProcess = new List<string> { "Customer::IdCustomer", "Customer:TrackId" };
+        readonly List<string> lstSyntaxticallyIncorrectMetaNamesToProcess = new List<string> { "Customer::IdCustomer", "Customer:TrackId", "Customer:" };
         /// <summary>
         /// Donnée d'entrée de méthode à tester. Valeurs correspondant à la liste des meta names corrects ci dessus.
         /// </summary>
