@@ -280,20 +280,26 @@ namespace OsamesMicroOrm.DbTools
             {
 
                 bool isUnprotectedLiteral;
-                //Analyse la chaine courante de strColumnNames_ et retoure soit un @pN ou alors @nomcolonne ou alors le litéral initial
+                // Analyse la chaine courante de strColumnNames_ et retourne :
+                // - soit un @pN 
+                // - soit @nomcolonne
+                // - soit le unprotected litéral initial 
+                // - soit le litéral protégé 
+                // - soit le nom de colonne protégé
                 string paramName = DeterminePlaceholderType(lstColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex, out isUnprotectedLiteral);
 
                 if(paramName == null)
                     continue;
 
-                if (paramName.StartsWith("%UL%"))
+                if (isUnprotectedLiteral)
                 {
-                    lstSqlPlaceholders_.Add(paramName.Remove(paramName.IndexOf("%"), (paramName.IndexOf("%", paramName.IndexOf("%") + 2)) - paramName.IndexOf("%") + 1));
+                    // Retirer le préfixe "%UL%"
+                    lstSqlPlaceholders_.Add(paramName.Remove(4));
                     continue;
                 }
-
-                // Ajout d'un paramètre ADO.NET dans la liste. Sinon protection du champ si doit être protégé (null ou whitespace : ne pas protéger).
-                if (paramName.StartsWith("@"))
+                
+                // Ajout d'un paramètre ADO.NET dans la liste.
+                if (paramName[0] == '@')
                 {
                     if(parameterIndex > lstValues_.Count-1)
                         throw new OOrmHandledException(HResultEnum.E_METANAMESVALUESCOUNTMISMATCH, null, "Asked for value of index " + parameterIndex + " for dynamic parameter of name '" + paramName + "' but there are only " + lstValues_.Count + " values");
