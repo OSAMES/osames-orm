@@ -14,45 +14,47 @@ using System.CodeDom.Compiler;
 
 namespace OsamesMicroOrm
 {
-    /// <summary>
+	/// <summary>
 	/// Auto generated date: <#= DateTime.Now #>
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
-    public enum HResultEnum
-    {
-        // ReSharper disable InconsistentNaming
+	public enum HResultEnum
+	{
+		// ReSharper disable InconsistentNaming
 <#
-        var path = Host.ResolvePath(string.Empty);
-        var file = Path.Combine(path, @"..\Resources\HResult Orm.csv");
-        using (StreamReader reader = new StreamReader(file))
-        {
-            reader.ReadLine();
-            while (!reader.EndOfStream)
-            {
-                string line = reader.ReadLine();
-                string[] keyValue = line.Split(';');
-                string hresulthexa = keyValue[0];
-                string hresultcode = keyValue[1];
+		var path = Host.ResolvePath(string.Empty);
+		var file = Path.Combine(path, @"..\Resources\HResult Orm.csv");
+		using (StreamReader reader = new StreamReader(file))
+		{
+			reader.ReadLine();
+			while (!reader.EndOfStream)
+			{
+				string line = reader.ReadLine();
+				string[] keyValue = line.Split(';');
+				string hresulthexa = keyValue[0];
+				string hresultcode = keyValue[1];
 
-                if (hresultcode != "\"\"" )
-                {
+				if (hresultcode != "\"\"" )
+				{
 #>
-        <#=  //Pascalize(hresultcode).Insert(1,"_") + ",\r\n"
-                hresultcode.Replace("\"","") + ",\r\n"
-        #>	                    
+		/// <summary>
+		/// <#= keyValue[2].Substring(1, keyValue[2].Length-2) #>
+		/// </summary>
+		<#= hresultcode.Replace("\"","") + ",\r\n" #>	                    
 <#
-                }
-            }
-        }
+				}
+			}
+		}
 #>
-        // ReSharper disable InconsistentNaming
-    }
+		// ReSharper disable InconsistentNaming
+	}
 } 
 
 <#+
-    private string Pascalize(object value)
-    {
-        Regex rx = new Regex(@"(?:[^a-zA-Z0-9]*)(?<first>[a-zA-Z0-9])(?<reminder>[a-zA-Z0-9]*)(?:[^a-zA-Z0-9]*)");
-        return rx.Replace(value.ToString(), m => m.Groups["first"].ToString().ToUpper() + m.Groups["reminder"].ToString().ToLower());
-    }
+	//use : Pascalize(hresultcode).Insert(1,"_") + ",\r\n"
+	private string Pascalize(object value)
+	{
+		Regex rx = new Regex(@"(?:[^a-zA-Z0-9]*)(?<first>[a-zA-Z0-9])(?<reminder>[a-zA-Z0-9]*)(?:[^a-zA-Z0-9]*)");
+		return rx.Replace(value.ToString(), m => m.Groups["first"].ToString().ToUpper() + m.Groups["reminder"].ToString().ToLower());
+	}
 #>

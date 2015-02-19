@@ -10,88 +10,199 @@ using System.CodeDom.Compiler;
 
 namespace OsamesMicroOrm
 {
-    /// <summary>
-	/// Auto generated date: 02/17/2015 12:54:54
+	/// <summary>
+	/// Auto generated date: 02/19/2015 23:21:13
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
-    public enum HResultEnum
-    {
-        // ReSharper disable InconsistentNaming
-        E_CREATECONNECTIONFAILED,
+	public enum HResultEnum
+	{
+		// ReSharper disable InconsistentNaming
+		/// <summary>
+		/// DbManager, CreateConnection: Connection could not be created! Look at detailed log for details
+		/// </summary>
+		E_CREATECONNECTIONFAILED,
 	                    
-        E_BEGINTRANSACTIONFAILED,
+		/// <summary>
+		/// Transaction couldn't be started. See log file for details
+		/// </summary>
+		E_BEGINTRANSACTIONFAILED,
 	                    
-        E_COMMITTRANSACTIONFAILED,
+		/// <summary>
+		/// Transaction couldn't be commited See log file for details
+		/// </summary>
+		E_COMMITTRANSACTIONFAILED,
 	                    
-        E_ROLLBACKTRANSACTIONFAILED,
+		/// <summary>
+		/// Transaction couldn't be rolled back. See log file for details
+		/// </summary>
+		E_ROLLBACKTRANSACTIONFAILED,
 	                    
-        E_EXECUTEREADERFAILED,
+		/// <summary>
+		/// Error during execution of an SQL query (ExecuteReader). See log file for details.
+		/// </summary>
+		E_EXECUTEREADERFAILED,
 	                    
-        E_CREATEDATAADAPTERFAILED,
+		/// <summary>
+		/// DbHelper, DataAdapter: data adapter could not be created. See log file for details
+		/// </summary>
+		E_CREATEDATAADAPTERFAILED,
 	                    
-        E_COLUMNDOESNOTEXIST,
+		/// <summary>
+		/// Column doesn't exist in sql data reader, See log file for details
+		/// </summary>
+		E_COLUMNDOESNOTEXIST,
 	                    
-        E_NOROWUPDATED,
+		/// <summary>
+		/// Query didn't update any row
+		/// </summary>
+		E_NOROWUPDATED,
 	                    
-        E_EXECUTESCALARFAILED,
+		/// <summary>
+		/// Error during execution of an SQL query (ExecuteScalar). See log file for details.
+		/// </summary>
+		E_EXECUTESCALARFAILED,
 	                    
-        E_EXECUTENONQUERYFAILED,
+		/// <summary>
+		/// Error during execution of an SQL query (ExecuteNonQuery). See log file for details.
+		/// </summary>
+		E_EXECUTENONQUERYFAILED,
 	                    
-        E_FILLDATASETFAILED,
+		/// <summary>
+		/// Error during execution of an SQL query (Fill DataSet). See log file for details.
+		/// </summary>
+		E_FILLDATASETFAILED,
 	                    
-        E_LASTINSERTIDNOTNUMBER,
+		/// <summary>
+		/// Returned last insert ID value could not be parsed to Long number
+		/// </summary>
+		E_LASTINSERTIDNOTNUMBER,
 	                    
-        E_TYPENOTDEFINEDBMAPPINGATTRIBUTE,
+		/// <summary>
+		/// [XML] This C# class doesn't define DatabaseMapping attribute (at class level)
+		/// </summary>
+		E_TYPENOTDEFINEDBMAPPINGATTRIBUTE,
 	                    
-        E_TYPEDEFINESDBMAPPINGATTRIBUTEMOREONETIME,
+		/// <summary>
+		/// [XML] This C# class defines DatabaseMapping attribute more than once (at class level)
+		/// </summary>
+		E_TYPEDEFINESDBMAPPINGATTRIBUTEMOREONETIME,
 	                    
-        E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE,
+		/// <summary>
+		/// [XML] This C# class defines an empty DatabaseMapping attribute (at class level)
+		/// </summary>
+		E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE,
 	                    
-        E_XMLVALIDATIONERRORS,
+		/// <summary>
+		/// [XML] XML validation errors
+		/// </summary>
+		E_XMLVALIDATIONERRORS,
 	                    
-        E_NAMESPACESSCHEMASCOUNTMISMATCH,
+		/// <summary>
+		/// [XML] Not same number of namespaces and schemas given
+		/// </summary>
+		E_NAMESPACESSCHEMASCOUNTMISMATCH,
 	                    
-        E_NONAMESPACEINSCHEMA,
+		/// <summary>
+		/// [XML] Schema given but no namespaces
+		/// </summary>
+		E_NONAMESPACEINSCHEMA,
 	                    
-        E_NULLVALUE,
+		/// <summary>
+		/// [PARAMETER] Value cannot be null
+		/// </summary>
+		E_NULLVALUE,
 	                    
-        E_INCORRECTPLACEHOLDERVALUE,
+		/// <summary>
+		/// [PARAMETER] Placeholder value isn't syntactically correct according to our parsing rules. See log file for details
+		/// </summary>
+		E_INCORRECTPLACEHOLDERVALUE,
 	                    
-        E_XMLNAMEATTRIBUTEMORETHANONCE,
+		/// <summary>
+		/// [XML] Invalid XML, ""name"" attribute defines more than once the same value (template name in templates file)
+		/// </summary>
+		E_XMLNAMEATTRIBUTEMORETHANONCE,
 	                    
-        E_NOACTIVECONNECTIONDEFINED,
+		/// <summary>
+		/// [CONF] No active connection name defined in appSettings ('activeDbConnection')
+		/// </summary>
+		E_NOACTIVECONNECTIONDEFINED,
 	                    
-        E_NOACTIVECONNECTIONFOUND,
+		/// <summary>
+		/// [CONF] Active connection not found in available connection strings
+		/// </summary>
+		E_NOACTIVECONNECTIONFOUND,
 	                    
-        E_PROVIDERCONFIGMISSING,
+		/// <summary>
+		/// [CONF] Provider configuration missing in orm:ProviderSpecific section of XML templates file
+		/// </summary>
+		E_PROVIDERCONFIGMISSING,
 	                    
-        E_NOPROVIDERNAMEFORCONNECTIONNAME,
+		/// <summary>
+		/// [CONF] No provider name defined in connection strings configuration for active connection
+		/// </summary>
+		E_NOPROVIDERNAMEFORCONNECTIONNAME,
 	                    
-        E_PROVIDERNOTINSTALLED,
+		/// <summary>
+		/// [CONF] Provider defined is not installed
+		/// </summary>
+		E_PROVIDERNOTINSTALLED,
 	                    
-        E_NOCONNEXIONSTRINGDEFINED,
+		/// <summary>
+		/// [CONF] No connection string value defined in connection strings configuration for active connection
+		/// </summary>
+		E_NOCONNEXIONSTRINGDEFINED,
 	                    
-        E_NOMAPPINGKEYANDCOLUMN,
+		/// <summary>
+		/// [CONF] No match in mapping file for table name and column values
+		/// </summary>
+		E_NOMAPPINGKEYANDCOLUMN,
 	                    
-        E_NOMAPPINGKEY,
+		/// <summary>
+		/// [CONF] No match in mapping file for table name
+		/// </summary>
+		E_NOMAPPINGKEY,
 	                    
-        E_CONFIGFILENOTFOUND,
+		/// <summary>
+		/// [CONF] Configuration file not found
+		/// </summary>
+		E_CONFIGFILENOTFOUND,
 	                    
-        E_NOMAPPINGKEYANDPROPERTY,
+		/// <summary>
+		/// [CONF] No match in mapping file for table name and property values
+		/// </summary>
+		E_NOMAPPINGKEYANDPROPERTY,
 	                    
-        E_DBMANAGERNOCONNECTIONSTRINGSET,
+		/// <summary>
+		/// [CONF] No connection string has been set to DbManager before using it
+		/// </summary>
+		E_DBMANAGERNOCONNECTIONSTRINGSET,
 	                    
-        E_DBMANAGERNOSELECTLASTINSERTIDCOMMANDSET,
+		/// <summary>
+		/// [CONF] No SQL text for select last inserted ID has been set to DbManager before executing an insert command
+		/// </summary>
+		E_DBMANAGERNOSELECTLASTINSERTIDCOMMANDSET,
 	                    
-        E_DBMANAGERNOPROVIDERNAME,
+		/// <summary>
+		/// [CONF] No provider name has been set to DbManager before using it
+		/// </summary>
+		E_DBMANAGERNOPROVIDERNAME,
 	                    
-        E_PLACEHOLDERSVALUESCOUNTMISMATCH,
+		/// <summary>
+		/// [PARAMETER] There are less values provided than placeholders to replace for the current template string to process. See log file for details.
+		/// </summary>
+		E_PLACEHOLDERSVALUESCOUNTMISMATCH,
 	                    
-        E_NOTEMPLATE,
+		/// <summary>
+		/// [CONF] No SQL template by this name
+		/// </summary>
+		E_NOTEMPLATE,
 	                    
-        E_METANAMESVALUESCOUNTMISMATCH,
+		/// <summary>
+		/// [PARAMETER] There are less values provided than meta names to format ADO.NET parameters. See log file for details.
+		/// </summary>
+		E_METANAMESVALUESCOUNTMISMATCH,
 	                    
-        // ReSharper disable InconsistentNaming
-    }
+		// ReSharper disable InconsistentNaming
+	}
 } 
 
