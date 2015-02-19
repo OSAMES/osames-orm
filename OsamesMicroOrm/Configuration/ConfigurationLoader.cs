@@ -90,7 +90,7 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Singleton access. Creates an empty object once.
         /// </summary>
-        /// <exception cref="OOrmHandledException"></exception>
+        /// <exception cref="OOrmHandledException">Erreurs diverses</exception>
         public static ConfigurationLoader Instance
         {
             get
@@ -241,7 +241,7 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Reads configuration from appSettings then load specific configuration files to internal dictionaries.
         /// </summary>
-        /// <exception cref="OOrmHandledException"></exception>
+        /// <exception cref="OOrmHandledException">Erreurs diverses</exception>
         private void LoadXmlConfiguration()
         {
             // 1. Load ORM Configuration File
@@ -249,8 +249,6 @@ namespace OsamesMicroOrm.Configuration
             // Format path for loading the xsd schemas file
             string xsdSchemasPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["xmlSchemasFolder"].TrimStart('\\').TrimStart('/'));
 
-            try
-            {
                 Logger.Log(TraceEventType.Information, "Osames ORM Initializing...");
 
                 // Format path for loading the configuration file
@@ -291,15 +289,6 @@ namespace OsamesMicroOrm.Configuration
 
                 // 4. Load mapping definitions
                 FillMappingDictionary(xmlMappingNavigator, xmlPrefix[1], xmlNamespaces[1]);
-
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(TraceEventType.Critical, "ConfigurationLoader LoadXmlConfiguration, see detailed log");
-                Logger.Log(TraceEventType.Critical, "ConfigurationLoader : '" + ex + "'");
-                throw;
-            }
         }
 
         /// <summary>
@@ -463,7 +452,7 @@ namespace OsamesMicroOrm.Configuration
             }
             catch (ArgumentException ex)
             {
-                throw new OOrmHandledException(HResultEnum.E_PROVIDERNOTINSTALLED, ex, "provider name: '" + providerFactoryToCheck_ + Environment.NewLine + Environment.NewLine + ListExistingProviders() + "'");
+                throw new OOrmHandledException(HResultEnum.E_PROVIDERNOTINSTALLED, ex, "provider name: '" + providerFactoryToCheck_ + "'" + Environment.NewLine + Environment.NewLine + ListExistingProviders());
             }
 
         }
@@ -489,7 +478,7 @@ namespace OsamesMicroOrm.Configuration
         /// <para>Parses XML configuration to internal dictionaries</para>
         /// <para>Checks database configuration and sets values to DbManager</para>
         /// </summary>
-        /// <exception cref="OOrmHandledException"></exception>
+        /// <exception cref="OOrmHandledException">Erreurs diverses</exception>
         private void LoadConfiguration()
         {
             LoadXmlConfiguration();
