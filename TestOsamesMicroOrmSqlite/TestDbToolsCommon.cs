@@ -100,7 +100,7 @@ namespace TestOsamesMicroOrmSqlite
         readonly List<string> LstExpectedStringForDeterminePlaceholderType = new List<string>
         {
             // 1. nom de colonne correspondant à la propriété d'objet db entity
-            "CustomerId", 
+            "[CustomerId]", 
             // 2. paramètre dynamique
             "@p0", 
             // 3. paramètre dynamique custom avec mise en minuscules
@@ -108,23 +108,23 @@ namespace TestOsamesMicroOrmSqlite
             // 4. 2e paramètre dynamique
             "@p1",
             // 5. litéral nettoyé
-            "chaine", 
+            "[chaine]", 
             // 6. litéral nettoyé
-            "chaine", 
+            "[chaine]", 
             // 7. litéral nettoyé
-            "chaine", 
+            "[chaine]", 
             // 8. litéral nettoyé
-            "ma chaine", 
+            "[ma chaine]", 
             // 9. nom de colonne correspondant à la propriété d'objet db entity
-            "FirstName FirstName", 
+            "[FirstName FirstName]", 
             // 10. nom de colonne correspondant à la propriété d'objet db entity
-            "Last_Name", 
+            "[Last_Name]", 
             // 11. nom de colonne correspondant à lapropriété d'objet db entity
-            "PostalCode", 
+            "[PostalCode]", 
             // 12. nom de table et nom de colonne correspondant à la propriété d'objet db entity préfixée par le nom de l'objet db entity
-            "Customer.CustomerId", 
+            "[Customer].[CustomerId]", 
             // 13. nom de table et nom de colonne correspondant à la propriété d'objet db entity préfixée par le nom de l'objet db entity
-            "Track.TrackId", 
+            "[Track].[TrackId]", 
             // 14. valeur null
             null, 
             // 15. unprotected literal

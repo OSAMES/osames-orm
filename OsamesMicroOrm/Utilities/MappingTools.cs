@@ -38,19 +38,19 @@ namespace OsamesMicroOrm.Utilities
             // Get value
             object[] classAttributes = dataObject_.GetType().GetCustomAttributes(typeof(DatabaseMappingAttribute), false);
             if(classAttributes.Length == 0)
-                throw new OOrmHandledException(HResultEnum.E_TYPENOTDEFINEDBMAPPINGATTRIBUTE, null, "'[" + dataObject_.GetType().FullName + "]'");
+                throw new OOrmHandledException(HResultEnum.E_TYPENOTDEFINEDBMAPPINGATTRIBUTE, null, "C# type : '" + dataObject_.GetType().FullName + "'");
             
             if(classAttributes.Length > 1)
-                throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESDBMAPPINGATTRIBUTEMOREONETIME, null, "'[" + dataObject_.GetType().FullName + "]'");
+                throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESDBMAPPINGATTRIBUTEMOREONETIME, null, "C# type: '" + dataObject_.GetType().FullName + "'");
 
             string dbTableName = ((DatabaseMappingAttribute) classAttributes[0]).DbTableName;
             
             if (string.IsNullOrWhiteSpace(dbTableName))
-                throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE, null, "'[" + dataObject_.GetType().FullName + "]'");
+                throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE, null, "C# type: '" + dataObject_.GetType().FullName + "'");
 
             // Check that value exists in mapping
             if(!ConfigurationLoader.MappingDictionnary.ContainsKey(dbTableName))
-                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "'[" + dbTableName + "]'");
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "Key (table name): '" + dbTableName + "'");
 
             return dbTableName;
 
