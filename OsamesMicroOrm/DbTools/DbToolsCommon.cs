@@ -296,7 +296,7 @@ namespace OsamesMicroOrm.DbTools
                 if (paramName.StartsWith("@"))
                 {
                     if(parameterIndex > lstValues_.Count-1)
-                        throw new OOrmHandledException(HResultEnum.E_METANAMESVALUESCOUNTMISMATCH, null, "Asked for value of index " + parameterIndex + " for dynamic parameter of name " + paramName + " but there are only " + lstValues_.Count + " values");
+                        throw new OOrmHandledException(HResultEnum.E_METANAMESVALUESCOUNTMISMATCH, null, "Asked for value of index '" + parameterIndex + "' for dynamic parameter of name '" + paramName + "' but there are only '" + lstValues_.Count + "' values");
                     lstAdoParameters_.Add(new KeyValuePair<string, object>(paramName, lstValues_[parameterIndex]));
                 }
 
@@ -340,7 +340,7 @@ namespace OsamesMicroOrm.DbTools
             catch (FormatException ex)
             {
                 int nbOfPlaceholders = Utilities.Common.CountPlaceholders(format_);
-                string errorDetail = "Expected : " + nbOfPlaceholders + ", given parameters : " + args_.Length;
+                string errorDetail = "Expected : '" + nbOfPlaceholders + "', given parameters : '" + args_.Length + "'";
                 throw new OOrmHandledException(HResultEnum.E_PLACEHOLDERSVALUESCOUNTMISMATCH, ex, errorDetail);
             }
         }

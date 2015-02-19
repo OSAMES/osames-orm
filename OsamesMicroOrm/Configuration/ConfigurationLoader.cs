@@ -220,7 +220,7 @@ namespace OsamesMicroOrm.Configuration
             // 3. Un provider doit être défini (attribut "ProviderName")
             string provider = activeConnection.ProviderName;
             if (string.IsNullOrWhiteSpace(provider))
-                throw new OOrmHandledException(HResultEnum.E_NOPROVIDERNAMEFORCONNECTIONNAME, null, "connection name: " + dbConnexion);
+                throw new OOrmHandledException(HResultEnum.E_NOPROVIDERNAMEFORCONNECTIONNAME, null, "connection name: '" + dbConnexion + "'");
 
             // 4. ce provider doit exister sur le système, si ce n'est pas le cas ce test lance une exception
             FindInProviderFactoryClasses(provider);
@@ -230,7 +230,7 @@ namespace OsamesMicroOrm.Configuration
             if (string.IsNullOrWhiteSpace(conn))
                 throw new OOrmHandledException(HResultEnum.E_NOCONNEXIONSTRINGDEFINED, null, null);
 
-            Logger.Log(TraceEventType.Information, "Using DB connection string: " + conn);
+            Logger.Log(TraceEventType.Information, "Using DB connection string: '" + conn + "'");
 
             // Now pass information to DbHelper
             DbManager.ConnectionString = conn;
@@ -297,7 +297,7 @@ namespace OsamesMicroOrm.Configuration
             catch (Exception ex)
             {
                 Logger.Log(TraceEventType.Critical, "ConfigurationLoader LoadXmlConfiguration, see detailed log");
-                Logger.Log(TraceEventType.Critical, "ConfigurationLoader : " + ex);
+                Logger.Log(TraceEventType.Critical, "ConfigurationLoader : '" + ex + "'");
                 throw;
             }
         }
@@ -320,11 +320,11 @@ namespace OsamesMicroOrm.Configuration
 
             var activeConnection = ConfigurationManager.ConnectionStrings[activeDbConnectionName_];
             if (activeConnection == null)
-                throw new OOrmHandledException(HResultEnum.E_NOACTIVECONNECTIONFOUND, null, "connection name: " + activeDbConnectionName_);
+                throw new OOrmHandledException(HResultEnum.E_NOACTIVECONNECTIONFOUND, null, "connection name: '" + activeDbConnectionName_ + "'");
 
             string providerInvariantName = activeConnection.ProviderName;
             if (string.IsNullOrWhiteSpace(providerInvariantName))
-                throw new OOrmHandledException(HResultEnum.E_NOPROVIDERNAMEFORCONNECTIONNAME, null, "connection name: " + activeDbConnectionName_);
+                throw new OOrmHandledException(HResultEnum.E_NOPROVIDERNAMEFORCONNECTIONNAME, null, "connection name: '" + activeDbConnectionName_ + "'");
 
             // Expression XPath pour se positionner sur le noeud Provider avec l'attribut "name" à la valeur désirée
             string strXPathExpression = "/*/" + xmlRootTagPrefix_ + ":ProviderSpecific/" + xmlRootTagPrefix_ + ":Provider[@name='" + providerInvariantName + "']";
@@ -353,7 +353,7 @@ namespace OsamesMicroOrm.Configuration
                 DbManager.SelectLastInsertIdCommandText = xPathNodeIteratorSelectNode.Current.Value;
             }
             else
-                throw new OOrmHandledException(HResultEnum.E_PROVIDERCONFIGMISSING, null, "provider name: " + providerInvariantName + " - missing information: Select[@name='getlastinsertid']");
+                throw new OOrmHandledException(HResultEnum.E_PROVIDERCONFIGMISSING, null, "provider name: '" + providerInvariantName + "' - missing information: Select[@name='getlastinsertid']");
 
         }
 
@@ -463,7 +463,7 @@ namespace OsamesMicroOrm.Configuration
             }
             catch (ArgumentException ex)
             {
-                throw new OOrmHandledException(HResultEnum.E_PROVIDERNOTINSTALLED, ex, "provider name: " + providerFactoryToCheck_ + Environment.NewLine + Environment.NewLine + ListExistingProviders());
+                throw new OOrmHandledException(HResultEnum.E_PROVIDERNOTINSTALLED, ex, "provider name: '" + providerFactoryToCheck_ + Environment.NewLine + Environment.NewLine + ListExistingProviders() + "'");
             }
 
         }

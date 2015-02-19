@@ -88,13 +88,13 @@ namespace OsamesMicroOrm.Logging
         private static string FormatContextualInformation(string memberName, string sourceFilePath, int sourceLineNumber)
         {
             StringBuilder logMessage = new StringBuilder();
-            logMessage.Append("Calling method : ");
+            logMessage.Append("Calling method : '");
             logMessage.Append(memberName);
-            logMessage.Append("() in source file ");
+            logMessage.Append("()' in source file '");
             logMessage.Append(sourceFilePath);
-            logMessage.Append(" at line number ");
+            logMessage.Append("' at line number '");
             logMessage.Append(sourceLineNumber);
-            logMessage.Append(" |---| ");
+            logMessage.Append("' |---| ");
 
             return logMessage.ToString();
         }

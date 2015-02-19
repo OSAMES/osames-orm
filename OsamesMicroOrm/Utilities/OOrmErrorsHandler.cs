@@ -54,7 +54,7 @@ namespace OsamesMicroOrm.Utilities
             HasAdminPrivileges = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
             // Source active : si admin, source custom, sinon une source existante.
             SActiveSource = HasAdminPrivileges ? SSource : SNetRuntimeSource;
-            Logger.Log(TraceEventType.Information, "If logging to event log is enabled (see configuration), used souce will be: " + SActiveSource);
+            Logger.Log(TraceEventType.Information, "If logging to event log is enabled (see configuration), used souce will be: '" + SActiveSource + "'");
             ReadHResultCodesFromResources("HResult Orm.csv", out HResultCode);
         }
 

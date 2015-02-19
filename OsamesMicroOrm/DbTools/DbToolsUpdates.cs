@@ -80,7 +80,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 string templateName;
                 if (!ConfigurationLoader.DicUpdateSql.TryGetValue(sqlTemplate_, out templateName))
-                    throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: " + sqlTemplate_);
+                    throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: '" + sqlTemplate_ + "'");
 
                 DbToolsCommon.TryFormat(templateName, out sqlCommand_, sqlPlaceholders.ToArray());
             }
@@ -118,7 +118,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 // Présence d'une transaction
                 if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) == 0)
-                    Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
+                    Logger.Log(TraceEventType.Warning, "Query didn't update any row: '" + sqlCommand + "'");
                 else
                     nbRowsAffected++;
 
@@ -131,7 +131,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 conn = DbManager.Instance.CreateConnection();
                 if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) == 0)
-                    Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
+                    Logger.Log(TraceEventType.Warning, "Query didn't update any row: '" + sqlCommand + "'");
                 else
                     nbRowsAffected++;
 
@@ -183,7 +183,7 @@ namespace OsamesMicroOrm.DbTools
                 {
                     // Présence d'une transaction
                     if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) == 0)
-                        Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
+                        Logger.Log(TraceEventType.Warning, "Query didn't update any row: '" + sqlCommand + "'");
                     else
                         nbRowsAffected++;
 
@@ -196,7 +196,7 @@ namespace OsamesMicroOrm.DbTools
                 {
                     conn = DbManager.Instance.CreateConnection();
                     if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) == 0)
-                        Logger.Log(TraceEventType.Warning, "Query didn't update any row: " + sqlCommand);
+                        Logger.Log(TraceEventType.Warning, "Query didn't update any row: '" + sqlCommand + "'");
                     else
                         nbRowsAffected++;
                 }

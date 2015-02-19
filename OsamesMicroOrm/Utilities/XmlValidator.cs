@@ -57,7 +57,7 @@ namespace OsamesMicroOrm.Utilities
             if (xmlNamespaces_ != null && xmlSchemas_ != null)
             {
                 if(xmlNamespaces_.Length != xmlSchemas_.Length)
-                    throw new OOrmHandledException(HResultEnum.E_NAMESPACESSCHEMASCOUNTMISMATCH, null, "Namespaces: " + xmlNamespaces_.Length + ". Schemas: " + xmlSchemas_.Length);
+                    throw new OOrmHandledException(HResultEnum.E_NAMESPACESSCHEMASCOUNTMISMATCH, null, "Namespaces: '" + xmlNamespaces_.Length + "'. Schemas: '" + xmlSchemas_.Length + "'");
             }
             if (xmlSchemas_ != null && xmlNamespaces_ == null)
             {

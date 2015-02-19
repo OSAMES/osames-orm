@@ -66,7 +66,7 @@ namespace OsamesMicroOrm.DbTools
 
             string templateName;
             if(!ConfigurationLoader.DicSelectSql.TryGetValue(sqlTemplate_, out templateName))
-                throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: " + sqlTemplate_);
+                throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: '" + sqlTemplate_ + "'");
 
             DbToolsCommon.TryFormat(templateName, out sqlCommand_, sqlPlaceholders.ToArray());
 
@@ -110,7 +110,7 @@ namespace OsamesMicroOrm.DbTools
 
             string templateName;
             if (!ConfigurationLoader.DicSelectSql.TryGetValue(sqlTemplate_, out templateName))
-                throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: " + sqlTemplate_);
+                throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: '" + sqlTemplate_ + "'");
 
             DbToolsCommon.TryFormat(templateName, out sqlCommand_, sqlPlaceholders.ToArray());
 
@@ -140,12 +140,12 @@ namespace OsamesMicroOrm.DbTools
                 }
                 catch (IndexOutOfRangeException ex)
                 {
-                    throw new OOrmHandledException(HResultEnum.E_COLUMNDOESNOTEXIST, ex, "column name: " + columnName);
+                    throw new OOrmHandledException(HResultEnum.E_COLUMNDOESNOTEXIST, ex, "column name: '" + columnName + "'");
                 }
 
                 if (dataInReaderIndex == -1)
                 {
-                    throw new OOrmHandledException(HResultEnum.E_COLUMNDOESNOTEXIST, null, "column name: " + columnName);
+                    throw new OOrmHandledException(HResultEnum.E_COLUMNDOESNOTEXIST, null, "column name: '" + columnName + "'");
                 }
 
                 // TODO traiter ORM-45 pour cast vers le bon type.

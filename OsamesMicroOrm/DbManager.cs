@@ -100,7 +100,7 @@ namespace OsamesMicroOrm
             {
                 ConnectionStringField = value;
                 DisableConnexionPooling = ConnectionStringField.Replace(" ", "").ToLowerInvariant().Contains("pooling=false");
-                Logger.Log(TraceEventType.Information, "Connection pooling " + (DisableConnexionPooling ? "disabled" : "enabled"));
+                Logger.Log(TraceEventType.Information, "Connection pooling '" + (DisableConnexionPooling ? "disabled" : "enabled") + "'");
 
             }
         }

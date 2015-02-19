@@ -71,7 +71,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 string templateName;
                 if (!ConfigurationLoader.DicInsertSql.TryGetValue(sqlTemplate_, out templateName))
-                    throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: " + sqlTemplate_);
+                    throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: '" + sqlTemplate_ + "'");
 
                 DbToolsCommon.TryFormat(templateName, out sqlCommand_, sqlPlaceholders.ToArray());
             }
@@ -100,7 +100,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 // Présence d'une transaction
                 if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters, out newRecordId) == 0)
-                    Logger.Log(TraceEventType.Warning, "Query didn't insert any row: " + sqlCommand);
+                    Logger.Log(TraceEventType.Warning, "Query didn't insert any row: '" + sqlCommand + "'");
                 return newRecordId;
             }
 
@@ -111,7 +111,7 @@ namespace OsamesMicroOrm.DbTools
                 conn = DbManager.Instance.CreateConnection();
 
                 if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters, out newRecordId) == 0)
-                    Logger.Log(TraceEventType.Warning, "Query didn't insert any row: " + sqlCommand);
+                    Logger.Log(TraceEventType.Warning, "Query didn't insert any row: '" + sqlCommand + "'");
                 return newRecordId;
             }
             finally
