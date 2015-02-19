@@ -260,10 +260,9 @@ namespace OsamesMicroOrm
         /// <exception cref="OOrmHandledException">Si la transaction ne peut être validée</exception>
         public void CommitTransaction(OOrmDbTransactionWrapper transaction_, bool closeConnexion_ = true)
         {
+            if (transaction_ == null) return;
             try
             {
-                if (transaction_ == null) return;
-
                 transaction_.AdoDbTransaction.Commit();
                 if (closeConnexion_)
                     transaction_.AdoDbTransaction.Connection.Close();
@@ -281,9 +280,9 @@ namespace OsamesMicroOrm
         /// <exception cref="OOrmHandledException">Si la transaction ne peut être invalidée</exception>
         public void RollbackTransaction(OOrmDbTransactionWrapper transaction_)
         {
+            if (transaction_ == null) return;
             try
             {
-                if (transaction_ == null) return;
                 transaction_.AdoDbTransaction.Rollback();
             }
             catch (Exception ex)
@@ -973,35 +972,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                    {
-                        try
-                        {
-                            return command.AdoDbCommand.ExecuteScalar();
-
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
-                        }
-                    }
+                    return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
                 }
             }
 
             // no lock
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-            {
-                try
-                {
-                    return command.AdoDbCommand.ExecuteScalar();
-
-                }
-                catch (Exception ex)
-                {
-                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
-                }
-            }
+            return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
         }
 
         /// <summary>
@@ -1021,30 +997,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                        try
-                        {
-                            return command.AdoDbCommand.ExecuteScalar();
-
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
-                        }
+                    return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
                 }
             }
-            // no lock
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                try
-                {
-                    return command.AdoDbCommand.ExecuteScalar();
 
-                }
-                catch (Exception ex)
-                {
-                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
-                }
+            // no lock
+            return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
 
         }
 
@@ -1065,30 +1023,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                        try
-                        {
-                            return command.AdoDbCommand.ExecuteScalar();
-
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
-                        }
+                    return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
                 }
             }
-            // no lock
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection_, null, cmdText_, cmdParams_, cmdType_))
-                try
-                {
-                    return command.AdoDbCommand.ExecuteScalar();
 
-                }
-                catch (Exception ex)
-                {
-                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
-                }
+            // no lock
+            return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
 
         }
 
@@ -1108,35 +1048,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                    {
-                        try
-                        {
-                            return command.AdoDbCommand.ExecuteScalar();
-
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
-                        }
-                    }
+                    return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
                 }
             }
 
             // no lock
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-            {
-                try
-                {
-                    return command.AdoDbCommand.ExecuteScalar();
-
-                }
-                catch (Exception ex)
-                {
-                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
-                }
-            }
+            return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
         }
 
         /// <summary>
@@ -1151,36 +1068,16 @@ namespace OsamesMicroOrm
         /// <exception cref="OOrmHandledException">SQL execution error</exception>
         public object ExecuteScalar(OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-
             if (transaction_.ConnectionWrapper.IsBackup)
             {
                 lock (BackupConnection)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                        try
-                        {
-                            return command.AdoDbCommand.ExecuteScalar();
-
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
-                        }
+                    return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
                 }
             }
+
             // no lock
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                try
-                {
-                    return command.AdoDbCommand.ExecuteScalar();
-
-                }
-                catch (Exception ex)
-                {
-                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
-                }
-
+            return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
         }
 
         /// <summary>
@@ -1200,31 +1097,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    // perform code with locking
-                    using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                        try
-                        {
-                            return command.AdoDbCommand.ExecuteScalar();
-
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
-                        }
+                    return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
                 }
             }
+
             // no lock
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(transaction_.ConnectionWrapper, transaction_, cmdText_, cmdParams_, cmdType_))
-                try
-                {
-                    return command.AdoDbCommand.ExecuteScalar();
-
-                }
-                catch (Exception ex)
-                {
-                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText_);
-                }
-
+            return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
         }
 
         #endregion

@@ -328,6 +328,71 @@ namespace OsamesMicroOrm
 
         #endregion
 
+        #region EXECUTE SCALAR
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cmdParams_"></param>
+        /// <returns></returns>
+        internal object ExecuteScalar(object[,] cmdParams_)
+        {
+            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            {
+                try
+                {
+                    return command.AdoDbCommand.ExecuteScalar();
+
+                }
+                catch (Exception ex)
+                {
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cmdParams_"></param>
+        /// <returns></returns>
+        internal object ExecuteScalar(IEnumerable<OOrmDbParameter> cmdParams_)
+        {
+            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            {
+                try
+                {
+                    return command.AdoDbCommand.ExecuteScalar();
+
+                }
+                catch (Exception ex)
+                {
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cmdParams_"></param>
+        /// <returns></returns>
+        internal object ExecuteScalar(IEnumerable<KeyValuePair<string, object>> cmdParams_)
+        {
+            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            {
+                try
+                {
+                    return command.AdoDbCommand.ExecuteScalar();
+
+                }
+                catch (Exception ex)
+                {
+                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText);
+                }
+            }
+        } 
+        #endregion
+
         #region DESTRUCTOR
         ~DbManagerHelper()
         {
