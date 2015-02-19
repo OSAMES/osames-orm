@@ -225,7 +225,7 @@ namespace OsamesMicroOrm.DbTools
                                                              c_ == '-')).ToArray();
 
                 returnValue = new string(valueAsCharArray);
-                return returnValue;
+                return string.Concat(ConfigurationLoader.StartFieldEncloser, returnValue, ConfigurationLoader.EndFieldEncloser);
             }
 
             if (value_.Count(c_ => c_ == ':') > 1)
@@ -242,7 +242,7 @@ namespace OsamesMicroOrm.DbTools
                 valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                            char.IsWhiteSpace(c_) ||
                                                            c_ == '_')).ToArray();
-                return new string(valueAsCharArray);
+                return string.Concat(ConfigurationLoader.StartFieldEncloser, new string(valueAsCharArray), ConfigurationLoader.EndFieldEncloser);
             }
 
             // Dans ce dernier cas c'est une colonne et non pas un paramètre, parameterIndex_ n'est donc pas modifié.
@@ -251,7 +251,7 @@ namespace OsamesMicroOrm.DbTools
             valueAsCharArray = columnName.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                        char.IsWhiteSpace(c_) ||
                                                        c_ == '_')).ToArray();
-            return temp[0] + '.' + new string(valueAsCharArray);
+            return string.Concat(ConfigurationLoader.StartFieldEncloser, temp[0], ConfigurationLoader.EndFieldEncloser, ".", ConfigurationLoader.StartFieldEncloser, new string(valueAsCharArray), ConfigurationLoader.EndFieldEncloser);
 
         }
 
@@ -299,8 +299,6 @@ namespace OsamesMicroOrm.DbTools
                         throw new OOrmHandledException(HResultEnum.E_METANAMESVALUESCOUNTMISMATCH, null, "Asked for value of index " + parameterIndex + " for dynamic parameter of name " + paramName + " but there are only " + lstValues_.Count + " values");
                     lstAdoParameters_.Add(new KeyValuePair<string, object>(paramName, lstValues_[parameterIndex]));
                 }
-                else if (!isUnprotectedLiteral)
-                    paramName = string.Concat(ConfigurationLoader.StartFieldEncloser, paramName, ConfigurationLoader.EndFieldEncloser);
 
                 // Ajout pour les placeholders
                 lstSqlPlaceholders_.Add(paramName);
