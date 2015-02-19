@@ -11,7 +11,7 @@ using System.CodeDom.Compiler;
 namespace OsamesMicroOrm
 {
 	/// <summary>
-	/// Auto generated date: 02/19/2015 23:21:13
+	/// Auto generated date: 02/19/2015 23:25:00
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
 	public enum HResultEnum
@@ -202,7 +202,7 @@ namespace OsamesMicroOrm
 		/// </summary>
 		E_METANAMESVALUESCOUNTMISMATCH,
 	                    
-		// ReSharper disable InconsistentNaming
+		// ReSharper restore InconsistentNaming
 	}
 } 
 

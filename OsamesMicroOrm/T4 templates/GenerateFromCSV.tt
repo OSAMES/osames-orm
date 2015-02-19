@@ -46,7 +46,7 @@ namespace OsamesMicroOrm
 			}
 		}
 #>
-		// ReSharper disable InconsistentNaming
+		// ReSharper restore InconsistentNaming
 	}
 } 
 
