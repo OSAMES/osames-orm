@@ -28,6 +28,7 @@ using OsamesMicroOrm.Logging;
 using OsamesMicroOrm.Utilities;
 using System.Data;
 using System.Data.Common;
+using System.Text;
 
 namespace OsamesMicroOrm.Configuration
 {
@@ -462,9 +463,25 @@ namespace OsamesMicroOrm.Configuration
             }
             catch (ArgumentException ex)
             {
-                throw new OOrmHandledException(HResultEnum.E_PROVIDERNOTINSTALLED, ex, "provider name: " + providerFactoryToCheck_);
+                throw new OOrmHandledException(HResultEnum.E_PROVIDERNOTINSTALLED, ex, "provider name: " + providerFactoryToCheck_ + Environment.NewLine + Environment.NewLine + ListExistingProviders());
             }
 
+        }
+        /// <summary>
+        /// Formate un texte listant les providers disponibles sur le système (nom invariant et description).
+        /// </summary>
+        /// <returns></returns>
+        private static string ListExistingProviders()
+        {
+            StringBuilder sb = new StringBuilder();
+            DataTable providers = DbProviderFactories.GetFactoryClasses();
+                            DataColumn invariantNameCol = providers.Columns["InvariantName"];
+                DataColumn descriptionColumn = providers.Columns["Description"];
+            foreach (DataRow row in providers.Rows)
+            {
+                sb.Append(row[invariantNameCol]).Append(" (").Append(row[descriptionColumn]).Append(")").Append(Environment.NewLine);
+            }
+            return "Available providers invariant names: " + Environment.NewLine + sb;
         }
 
         /// <summary>
