@@ -25,31 +25,17 @@ using System.Collections.Generic;
 namespace OsamesMicroOrm
 {
     /// <summary>
-    /// Wrapper de la classe System.Data.Common.DbCommand pour gérer une référence vers la classe DbConnection de l'ORM.
-    /// Elle expose les mêmes méthodes que System.Data.Common.DbCommand à qui elle délègue.
-    /// On encapsule au lieu d'hériter car System.Data.Common.DbCommand est une classe abstraite.
+    /// Utilitaire qui formate notre représentation personnelle de paramètres ADO.NET vers des paramètres standards ADO.NET (objet de type System.Data.DbParamater)
+    /// Puis les associe à la connexion et/ou transaction courante de l'orm.
     /// </summary>
-    internal sealed class OOrmDbCommandWrapper : IDisposable
+    internal sealed class PrepareCommandHelper: IDisposable
     {
+
         /// <summary>
         /// Commande telle que fournie par l'appel à DbProviderFactory.CreateCommand();
         /// Accessible en interne pour l'ORM.
         /// </summary>
         internal System.Data.Common.DbCommand AdoDbCommand { get; private set; }
-
-        /// <summary>
-        /// Constructeur.
-        /// </summary>
-        /// <param name="connection_">Référence sur la DbConnection de l'ORM</param>
-        /// <param name="transaction_">Référence sur la DbTransaction de l'ORM</param>
-        /// <param name="command_">DbCommand ADO.NET</param>
-        internal OOrmDbCommandWrapper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, System.Data.Common.DbCommand command_)
-        {
-            AdoDbCommand = command_;
-            AdoDbCommand.Connection = connection_.AdoDbConnection;
-            if (transaction_ != null)
-                AdoDbCommand.Transaction = transaction_.AdoDbTransaction;
-        }
 
         /// <summary>
         /// Constructeur
@@ -59,7 +45,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">Texte SQL</param>
         /// <param name="cmdParams_">Paramètres ADO.NET au format tableau multidimensionnel</param>
         /// <param name="cmdType_">Type de la commande SQL, texte par défaut</param>
-        internal OOrmDbCommandWrapper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal PrepareCommandHelper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             this.PrepareCommand(connection_, transaction_, cmdText_, cmdParams_, cmdType_);
         }
@@ -72,7 +58,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">Texte SQL</param>
         /// <param name="cmdParams_">Paramètres ADO.NET au format liste d'objets OrmDbParameter</param>
         /// <param name="cmdType_">Type de la commande SQL, texte par défaut</param>
-        internal OOrmDbCommandWrapper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal PrepareCommandHelper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             this.PrepareCommand(connection_, transaction_, cmdText_, cmdParams_, cmdType_);
         }
@@ -85,7 +71,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">Texte SQL</param>
         /// <param name="cmdParams_">Paramètres ADO.NET au format liste de clés/valeurs</param>
         /// <param name="cmdType_">Type de la commande SQL, texte par défaut</param>
-        internal OOrmDbCommandWrapper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal PrepareCommandHelper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
             this.PrepareCommand(connection_, transaction_, cmdText_, cmdParams_, cmdType_);
         }

@@ -10,11 +10,11 @@ namespace OsamesMicroOrm
     /// </summary>
     internal class DbManagerHelper<T> : IDisposable
     {
-        private OOrmDbConnectionWrapper connection;
-        private OOrmDbTransactionWrapper transaction;
-        private CommandType cmdType;
-        private string cmdText;
-        private SqlCommandType sqlCommandType;
+        private readonly OOrmDbConnectionWrapper connection;
+        private readonly OOrmDbTransactionWrapper transaction;
+        private readonly CommandType cmdType;
+        private readonly string cmdText;
+        private readonly SqlCommandType sqlCommandType;
 
         #region CONSTRUCTOR
         /// <summary>
@@ -24,7 +24,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdType_"></param>
         /// <param name="cmdText_"></param>
         /// <param name="commandType_"></param>
-        internal DbManagerHelper(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, SqlCommandType commandType_)
+        private DbManagerHelper(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, SqlCommandType commandType_)
         {
             connection = connection_;
             cmdType = cmdType_;
@@ -55,7 +55,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdParams_"></param>
         internal T Execute(object[,] cmdParams_)
         {
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            using (PrepareCommandHelper command = new PrepareCommandHelper(connection, transaction, cmdText, cmdParams_, cmdType))
             {
                 // case du INSERT
                 long commandResult; //used to return insert or update value
@@ -101,7 +101,7 @@ namespace OsamesMicroOrm
         {
             long commandResult;   //used to return insert or update value
 
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            using (PrepareCommandHelper command = new PrepareCommandHelper(connection, transaction, cmdText, cmdParams_, cmdType))
             {
                 if (sqlCommandType == SqlCommandType.Insert) //if is insert
                 {
@@ -143,7 +143,7 @@ namespace OsamesMicroOrm
         internal T Execute(IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
             long commandResult; //used to return insert or update value
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            using (PrepareCommandHelper command = new PrepareCommandHelper(connection, transaction, cmdText, cmdParams_, cmdType))
             {
                 switch (sqlCommandType)
                 {
@@ -189,7 +189,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         internal DbDataReader ExecuteReader(object[,] cmdParams_)
         {
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            using (PrepareCommandHelper command = new PrepareCommandHelper(connection, transaction, cmdText, cmdParams_, cmdType))
                 try
                 {
                     DbDataReader dr = command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
@@ -208,7 +208,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         internal DbDataReader ExecuteReader(IEnumerable<OOrmDbParameter> cmdParams_)
         {
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            using (PrepareCommandHelper command = new PrepareCommandHelper(connection, transaction, cmdText, cmdParams_, cmdType))
                 try
                 {
                     DbDataReader dr = command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
@@ -227,7 +227,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         internal DbDataReader ExecuteReader(IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            using (PrepareCommandHelper command = new PrepareCommandHelper(connection, transaction, cmdText, cmdParams_, cmdType))
                 try
                 {
                     DbDataReader dr = command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
@@ -250,7 +250,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdParams_">Cmd parameters.</param>
         internal DataSet DataAdapter(object[,] cmdParams_)
         {
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            using (PrepareCommandHelper command = new PrepareCommandHelper(connection, transaction, cmdText, cmdParams_, cmdType))
                 try
                 {
 
@@ -280,7 +280,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdParams_">Cmd parameters.</param>
         internal DataSet DataAdapter(IEnumerable<OOrmDbParameter> cmdParams_)
         {
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            using (PrepareCommandHelper command = new PrepareCommandHelper(connection, transaction, cmdText, cmdParams_, cmdType))
                 try
                 {
 
@@ -310,7 +310,7 @@ namespace OsamesMicroOrm
         /// <param name="cmdParams_">Cmd parameters.</param>
         internal DataSet DataAdapter(IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            using (PrepareCommandHelper command = new PrepareCommandHelper(connection, transaction, cmdText, cmdParams_, cmdType))
                 try
                 {
 
@@ -343,7 +343,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         internal object ExecuteScalar(object[,] cmdParams_)
         {
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            using (PrepareCommandHelper command = new PrepareCommandHelper(connection, transaction, cmdText, cmdParams_, cmdType))
             {
                 try
                 {
@@ -364,7 +364,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         internal object ExecuteScalar(IEnumerable<OOrmDbParameter> cmdParams_)
         {
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            using (PrepareCommandHelper command = new PrepareCommandHelper(connection, transaction, cmdText, cmdParams_, cmdType))
             {
                 try
                 {
@@ -385,7 +385,7 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         internal object ExecuteScalar(IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
-            using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
+            using (PrepareCommandHelper command = new PrepareCommandHelper(connection, transaction, cmdText, cmdParams_, cmdType))
             {
                 try
                 {
