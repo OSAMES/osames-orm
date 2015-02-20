@@ -24,18 +24,6 @@ namespace OsamesMicroOrm
         internal ParameterDirection ParamDirection;
 
         /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="name_">Name</param>
-        /// <param name="value_">Value</param>
-        /// <param name="direction_">ADO.NET parameter direction</param>
-        internal OOrmDbParameter(string name_, object value_, ParameterDirection direction_)
-        {
-            ParamName = name_;
-            ParamValue = value_;
-            ParamDirection = direction_;
-        }
-        /// <summary>
         /// Constructor with default "in" direction.
         /// </summary>
         /// <param name="name_">Name</param>
@@ -45,6 +33,17 @@ namespace OsamesMicroOrm
             ParamName = name_;
             ParamValue = value_;
             ParamDirection = ParameterDirection.Input;
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="name_">Name</param>
+        /// <param name="value_">Value</param>
+        /// <param name="direction_">ADO.NET parameter direction</param>
+        internal OOrmDbParameter(string name_, object value_, ParameterDirection direction_) : this (name_, value_)
+        {
+            ParamDirection = direction_;
         }
     }
 }
