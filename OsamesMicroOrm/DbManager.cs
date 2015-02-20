@@ -333,7 +333,7 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_,  cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
                 }
             }
             else
@@ -972,12 +972,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
+                    return new DbManagerHelper<object[,]>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
                 }
             }
 
             // no lock
-            return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
+            return new DbManagerHelper<object[,]>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
         }
 
         /// <summary>
@@ -997,12 +997,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
+                    return new DbManagerHelper<IEnumerable<OOrmDbParameter>>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
                 }
             }
 
             // no lock
-            return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
+            return new DbManagerHelper<IEnumerable<OOrmDbParameter>>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
 
         }
 
@@ -1023,12 +1023,12 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
+                    return new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
                 }
             }
 
             // no lock
-            return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
+            return new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).ExecuteScalar(cmdParams_);
 
         }
 

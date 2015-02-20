@@ -28,7 +28,7 @@ namespace OsamesMicroOrm
     /// Utilitaire qui formate notre représentation personnelle de paramètres ADO.NET vers des paramètres standards ADO.NET (objet de type System.Data.DbParamater)
     /// Puis les associe à la connexion et/ou transaction courante de l'orm.
     /// </summary>
-    internal sealed class PrepareCommandHelper: IDisposable
+    internal sealed class PrepareCommandHelper<T>: IDisposable
     {
 
         /// <summary>
@@ -45,9 +45,10 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">Texte SQL</param>
         /// <param name="cmdParams_">Paramètres ADO.NET au format tableau multidimensionnel</param>
         /// <param name="cmdType_">Type de la commande SQL, texte par défaut</param>
-        internal PrepareCommandHelper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, string cmdText_, object[,] cmdParams_, CommandType cmdType_ = CommandType.Text)
+        internal PrepareCommandHelper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, string cmdText_, T cmdParams_, CommandType cmdType_ = CommandType.Text)
         {
-            this.PrepareCommand(connection_, transaction_, cmdText_, cmdParams_, cmdType_);
+
+            this.PrepareCommand(connection_, transaction_, cmdText_, (dynamic)cmdParams_, cmdType_);
         }
 
         /// <summary>
@@ -58,10 +59,10 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">Texte SQL</param>
         /// <param name="cmdParams_">Paramètres ADO.NET au format liste d'objets OrmDbParameter</param>
         /// <param name="cmdType_">Type de la commande SQL, texte par défaut</param>
-        internal PrepareCommandHelper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
-        {
-            this.PrepareCommand(connection_, transaction_, cmdText_, cmdParams_, cmdType_);
-        }
+        //internal PrepareCommandHelper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        //{
+        //    this.PrepareCommand(connection_, transaction_, cmdText_, cmdParams_, cmdType_);
+        //}
 
         /// <summary>
         /// Constructeur
@@ -71,10 +72,10 @@ namespace OsamesMicroOrm
         /// <param name="cmdText_">Texte SQL</param>
         /// <param name="cmdParams_">Paramètres ADO.NET au format liste de clés/valeurs</param>
         /// <param name="cmdType_">Type de la commande SQL, texte par défaut</param>
-        internal PrepareCommandHelper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
-        {
-            this.PrepareCommand(connection_, transaction_, cmdText_, cmdParams_, cmdType_);
-        }
+        //internal PrepareCommandHelper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, CommandType cmdType_ = CommandType.Text)
+        //{
+        //    this.PrepareCommand(connection_, transaction_, cmdText_, cmdParams_, cmdType_);
+        //}
 
         public void Dispose()
         {
