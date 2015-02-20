@@ -133,8 +133,8 @@ namespace TestOsamesMicroOrmSqlite
             null, 
             // 15. unprotected literal
             "order by",
-            // 16. chaîne vide : valeur null
-            null
+            // 16. chaîne vide
+            ""
 
         };
 
@@ -171,8 +171,9 @@ namespace TestOsamesMicroOrmSqlite
             "[Track].[TrackId]", 
             // 14. valeur null : rien 
             // 15. litéral unprotected
-            "order by"
-            // 16. valeur "" : rien
+            "order by",
+            // 16. valeur ""
+            ""
         };
 
 
@@ -282,14 +283,14 @@ namespace TestOsamesMicroOrmSqlite
                 List<KeyValuePair<string, object>> lstAdoNetValues = new List<KeyValuePair<string, object>>();
                 DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues("Customer", LstSyntaxticallyCorrectMetaNamesToProcess, LstValuesForSyntaxticallyCorrectMetaNamesToProcess, lstPlaceholders, lstAdoNetValues);
 
-                Assert.AreEqual(LstSyntaxticallyCorrectMetaNamesToProcess.Count - 2, lstPlaceholders.Count, "Même nombre d'éléments attendus en sortie que de meta names à traiter, moins les éléments chaîne vide et null");
+                Assert.AreEqual(LstSyntaxticallyCorrectMetaNamesToProcess.Count - 1, lstPlaceholders.Count, "Même nombre d'éléments attendus en sortie que de meta names à traiter, moins l'élément null");
 
                 try
                 {
                     for (int i = 0; i < LstExpectedStringForFillPlaceHoldersAndAdoParametersNamesAndValues.Count; i++)
                     {
                         string metaName = LstSyntaxticallyCorrectMetaNamesToProcess[i];
-                        if (string.IsNullOrWhiteSpace(metaName))
+                        if (metaName == null)
                         {
                             // pas de donnée correspondante dans la liste de sortie
                             continue;

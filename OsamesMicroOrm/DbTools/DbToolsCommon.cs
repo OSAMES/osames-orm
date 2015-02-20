@@ -191,7 +191,7 @@ namespace OsamesMicroOrm.DbTools
 
             if (string.IsNullOrWhiteSpace(value_))
             {
-                return null;
+                return value_;
             }
             if (value_.ToUpperInvariant().StartsWith("%UL%"))
             {
@@ -301,7 +301,7 @@ namespace OsamesMicroOrm.DbTools
                 // - soit un nom de colonne protégé
                 string paramName = DeterminePlaceholderValue(lstColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex, out isDynamicParameter);
 
-                if(string.IsNullOrWhiteSpace(paramName))
+                if(paramName == null)
                     continue;
                 
                 // Ajout d'un paramètre ADO.NET dans la liste.
