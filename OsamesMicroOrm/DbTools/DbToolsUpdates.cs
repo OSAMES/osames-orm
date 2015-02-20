@@ -118,9 +118,9 @@ namespace OsamesMicroOrm.DbTools
             {
                 // Présence d'une transaction
                 if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) == 0)
-                    throw new OOrmHandledException(HResultEnum.E_NOROWUPDATED, null, "Sql command: '" + sqlTemplate_ + "'");
-                
-                nbRowsAffected++;
+                    Logger.Log(TraceEventType.Warning, "Query didn't update any row: '" + sqlCommand + "'");
+                else
+                    nbRowsAffected++;
 
                 return nbRowsAffected;
             }
@@ -131,7 +131,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 conn = DbManager.Instance.CreateConnection();
                 if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) == 0)
-                    throw new OOrmHandledException(HResultEnum.E_NOROWUPDATED, null, "Sql command: '" + sqlTemplate_ + "'");
+                    Logger.Log(TraceEventType.Warning, "Query didn't update any row: '" + sqlCommand + "'");
                 else
                     nbRowsAffected++;
 
@@ -183,9 +183,9 @@ namespace OsamesMicroOrm.DbTools
                 {
                     // Présence d'une transaction
                     if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) == 0)
-                        throw new OOrmHandledException(HResultEnum.E_NOROWUPDATED, null, "Sql command: '" + sqlTemplate_ + "'");
-
-                    nbRowsAffected++;
+                        Logger.Log(TraceEventType.Warning, "Query didn't update any row: '" + sqlCommand + "'");
+                    else
+                        nbRowsAffected++;
 
                     continue;
                 }
@@ -196,7 +196,7 @@ namespace OsamesMicroOrm.DbTools
                 {
                     conn = DbManager.Instance.CreateConnection();
                     if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) == 0)
-                        throw new OOrmHandledException(HResultEnum.E_NOROWUPDATED, null, "Sql command: '" + sqlTemplate_ + "'");
+                        Logger.Log(TraceEventType.Warning, "Query didn't update any row: '" + sqlCommand + "'");
                     else
                         nbRowsAffected++;
                 }
