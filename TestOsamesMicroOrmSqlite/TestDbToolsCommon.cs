@@ -53,7 +53,9 @@ namespace TestOsamesMicroOrmSqlite
             // 14. valeur null
             null, 
             // 15. unprotected literal
-            "%UL%order by"
+            "%UL%order by",
+            // 16. chaîne vide
+            ""
         };
         /// <summary>
         /// Donnée d'entrée de méthode à tester. Meta names incorrects.
@@ -85,11 +87,13 @@ namespace TestOsamesMicroOrmSqlite
             // 14.
             null,
             // 15. nom de colonne pour placeholder après "order by"
-            "CustomerId"
+            "CustomerId",
+            // 16. chaîne vide
+            ""
         };
 
         /// <summary>
-        /// Valeurs attendues en sortie de DeterminePlaceholderType().
+        /// Valeurs attendues en sortie de DeterminePlaceholderValue().
         /// 
         /// Column name, dynamic 0, paramname 1, dynamic 1, paramname 2, paramname 3...
         /// Look in mapping file : 
@@ -97,7 +101,7 @@ namespace TestOsamesMicroOrmSqlite
         /// - "LastName" gives "Last_Name" which will give "Last_Name"
         /// - "PostalCode" gives "Postal-Code" which will give "PostalCode"
         /// </summary>
-        readonly List<string> LstExpectedStringForDeterminePlaceholderType = new List<string>
+        readonly List<string> LstExpectedStringForDeterminePlaceholderValue = new List<string>
         {
             // 1. nom de colonne correspondant à la propriété d'objet db entity
             "[CustomerId]", 
@@ -128,7 +132,9 @@ namespace TestOsamesMicroOrmSqlite
             // 14. valeur null
             null, 
             // 15. unprotected literal
-            "%UL%order by"
+            "order by",
+            // 16. chaîne vide : valeur null
+            null
 
         };
 
@@ -166,16 +172,17 @@ namespace TestOsamesMicroOrmSqlite
             // 14. valeur null : rien 
             // 15. litéral unprotected
             "order by"
+            // 16. valeur "" : rien
         };
 
 
         /// <summary>
-        /// Test de DeterminePlaceholderType qui détermine une chaîne et gère des compteurs incrémentaux.
+        /// Test de DeterminePlaceholderValue qui détermine une chaîne et gère des compteurs incrémentaux.
         /// </summary>
         [TestMethod]
         [TestCategory("Meta name")]
         [Owner("Barbara Post")]
-        public void TestDeterminePlaceholderType()
+        public void TestDeterminePlaceholderValue()
         {
             List<string> lstFailures = new List<string>();
             try
@@ -191,25 +198,25 @@ namespace TestOsamesMicroOrmSqlite
 
                 bool unprotectedLiteral;
 
-                List<string> lstResult = LstSyntaxticallyCorrectMetaNamesToProcess.Select(metaName_ => DbToolsCommon.DeterminePlaceholderType(metaName_, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex, out unprotectedLiteral)).ToList();
+                List<string> lstResult = LstSyntaxticallyCorrectMetaNamesToProcess.Select(metaName_ => DbToolsCommon.DeterminePlaceholderValue(metaName_, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex, out unprotectedLiteral)).ToList();
 
                 Assert.AreEqual(LstSyntaxticallyCorrectMetaNamesToProcess.Count, lstResult.Count, "Même nombre d'éléments attendus en sortie que de meta names à traiter");
 
 
-                try
+                for (int i = 0; i < LstExpectedStringForDeterminePlaceholderValue.Count; i++)
                 {
-                    for (int i = 0; i < LstExpectedStringForDeterminePlaceholderType.Count; i++)
+                    try
                     {
-                        bool ok = LstExpectedStringForDeterminePlaceholderType[i] == lstResult[i];
+                        bool ok = LstExpectedStringForDeterminePlaceholderValue[i] == lstResult[i];
                         if (!ok)
-                            lstFailures.Add(LstExpectedStringForDeterminePlaceholderType[i] + " attendu mais obtenu : " + lstResult[i]);
+                            lstFailures.Add(LstExpectedStringForDeterminePlaceholderValue[i] + " attendu mais obtenu : " + lstResult[i]);
+                    }
+                    catch (Exception ex)
+                    {
+                        Assert.Fail("Avec ces valeurs de paramètres on ne doit pas avoir d'exception. Obtenu : " + ex.Message + " pour l'index de test  " + i);
                     }
                 }
-                catch (Exception ex)
-                {
-                    Assert.Fail("Avec ces valeurs de paramètres on ne doit pas avoir d'exception. Obtenu : " + ex.Message);
-                }
-
+                
                 if (lstFailures.Count > 0)
                 {
                     StringBuilder sb = new StringBuilder();
@@ -225,7 +232,7 @@ namespace TestOsamesMicroOrmSqlite
                     bool exception = false;
                     try
                     {
-                        DbToolsCommon.DeterminePlaceholderType(metaName, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex, out unprotectedLiteral);
+                        DbToolsCommon.DeterminePlaceholderValue(metaName, "Customer", ref parameterIndex, ref parameterAutomaticNameIndex, out unprotectedLiteral);
                     }
                     catch (OOrmHandledException ex)
                     {
@@ -275,14 +282,14 @@ namespace TestOsamesMicroOrmSqlite
                 List<KeyValuePair<string, object>> lstAdoNetValues = new List<KeyValuePair<string, object>>();
                 DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues("Customer", LstSyntaxticallyCorrectMetaNamesToProcess, LstValuesForSyntaxticallyCorrectMetaNamesToProcess, lstPlaceholders, lstAdoNetValues);
 
-                Assert.AreEqual(LstSyntaxticallyCorrectMetaNamesToProcess.Count -1, lstPlaceholders.Count, "Même nombre d'éléments attendus en sortie que de meta names à traiter, moins l'élément null");
-                
+                Assert.AreEqual(LstSyntaxticallyCorrectMetaNamesToProcess.Count - 2, lstPlaceholders.Count, "Même nombre d'éléments attendus en sortie que de meta names à traiter, moins les éléments chaîne vide et null");
+
                 try
                 {
                     for (int i = 0; i < LstExpectedStringForFillPlaceHoldersAndAdoParametersNamesAndValues.Count; i++)
                     {
                         string metaName = LstSyntaxticallyCorrectMetaNamesToProcess[i];
-                        if (metaName == null)
+                        if (string.IsNullOrWhiteSpace(metaName))
                         {
                             // pas de donnée correspondante dans la liste de sortie
                             continue;
