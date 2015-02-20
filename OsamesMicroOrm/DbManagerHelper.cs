@@ -55,37 +55,41 @@ namespace OsamesMicroOrm
         /// <param name="cmdParams_"></param>
         internal T Execute(object[,] cmdParams_)
         {
-            long commandResult; //used to return insert or update value
-
             using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
             {
-                if (sqlCommandType == SqlCommandType.Insert) //if is insert
+                // case du INSERT
+                long commandResult; //used to return insert or update value
+                switch (sqlCommandType)
                 {
-                    object oValue;
-                    try
-                    {
-                        oValue = command.AdoDbCommand.ExecuteScalar();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
-                    }
-                    if (!Int64.TryParse(oValue.ToString(), out commandResult))
-                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                    return (T)Convert.ChangeType(commandResult, typeof(T));
+                    case SqlCommandType.Insert:
+                        object oValue;
+                        try
+                        {
+                            oValue = command.AdoDbCommand.ExecuteScalar();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
+                        }
+
+                        if (!Int64.TryParse(oValue.ToString(), out commandResult))
+                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
+                        break;
+                    // cas du UPDATE
+                    default:
+                        try
+                        {
+                            commandResult = command.AdoDbCommand.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
+                        }
+                        break;
                 }
 
-                //if is update
-                try
-                {
-                    commandResult = command.AdoDbCommand.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
-                }
+                return (T)Convert.ChangeType(commandResult, typeof(T));
             }
-            return (T)Convert.ChangeType(commandResult, typeof(T));
         }
 
         /// <summary>
@@ -127,6 +131,7 @@ namespace OsamesMicroOrm
                     throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
                 }
             }
+            // Résultat
             return (T)Convert.ChangeType(commandResult, typeof(T));
         }
 
@@ -137,36 +142,38 @@ namespace OsamesMicroOrm
         /// <returns></returns>
         internal T Execute(IEnumerable<KeyValuePair<string, object>> cmdParams_)
         {
-            long commandResult;   //used to return insert or update value
-
+            long commandResult; //used to return insert or update value
             using (OOrmDbCommandWrapper command = new OOrmDbCommandWrapper(connection, transaction, cmdText, cmdParams_, cmdType))
             {
-                if (sqlCommandType == SqlCommandType.Insert) //if is insert
+                switch (sqlCommandType)
                 {
-                    object oValue;
+                    // cas du INSERT
+                    case SqlCommandType.Insert:
+                        object oValue;
 
-                    try
-                    {
-                        oValue = command.AdoDbCommand.ExecuteScalar();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
-                    }
+                        try
+                        {
+                            oValue = command.AdoDbCommand.ExecuteScalar();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
+                        }
 
-                    if (!Int64.TryParse(oValue.ToString(), out commandResult))
-                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                    return (T)Convert.ChangeType(commandResult, typeof(T));
-                }
-
-                //if is update
-                try
-                {
-                    commandResult = command.AdoDbCommand.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
+                        if (!Int64.TryParse(oValue.ToString(), out commandResult))
+                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
+                        break;
+                    default:
+                        // cas du UPDATE
+                        try
+                        {
+                            commandResult = command.AdoDbCommand.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
+                        }
+                        break;
                 }
             }
             return (T)Convert.ChangeType(commandResult, typeof(T));
@@ -390,7 +397,7 @@ namespace OsamesMicroOrm
                     throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText);
                 }
             }
-        } 
+        }
         #endregion
 
         #region DESTRUCTOR

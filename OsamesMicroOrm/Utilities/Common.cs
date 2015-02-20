@@ -61,8 +61,7 @@ namespace OsamesMicroOrm.Utilities
         /// <returns>True/false</returns>
         internal static bool CheckPlaceholdersAndParametersNumbers(string stringWithPlaceholders_, List<string> lstValuesForPlaceholders_)
         {
-            int count = CountPlaceholders(stringWithPlaceholders_);
-            return count == lstValuesForPlaceholders_.Count;
+            return CountPlaceholders(stringWithPlaceholders_) == lstValuesForPlaceholders_.Count;
         }
     }
 }

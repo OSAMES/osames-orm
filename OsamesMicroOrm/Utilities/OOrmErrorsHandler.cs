@@ -61,13 +61,14 @@ namespace OsamesMicroOrm.Utilities
         /// <summary>
         /// Lis les hresult dans la resource embarquée de l'ORM et places ces données dans un dictionnaire.
         /// </summary>
-        /// <param name="resource_"></param>
-        /// <param name="hresultCodes_"></param>
+        /// <param name="resource_">Nom d'une ressource</param>
+        /// <param name="hresultCodes_">Dictionnaire en sortie, non null</param>
         /// <exception cref="Exception"></exception>
         private static void ReadHResultCodesFromResources(string resource_, out Dictionary<string, KeyValuePair<string, string>> hresultCodes_)
         {
             using (Stream str = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(OOrmErrorsHandler).Assembly.GetName().Name + ".Resources." + resource_))
             {
+                // output dictionary will be empty but not null in case of error
                 hresultCodes_ = new Dictionary<string, KeyValuePair<string, string>>();
                 //null if resource doesn't exist
                 if (str == null)

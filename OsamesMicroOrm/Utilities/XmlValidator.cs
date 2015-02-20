@@ -93,8 +93,10 @@ namespace OsamesMicroOrm.Utilities
         {
             Common.CheckFile(xmlFile_);
             XmlReader xml = XmlReader.Create(xmlFile_, Settings);
+
             while (xml.Read()) { }
             if (Errors.Count == 0 && Warnings.Count == 0) return;
+
             StringBuilder sb = new StringBuilder();
             foreach (string err in Errors)
                 sb.Append(err).Append(Environment.NewLine);
@@ -111,7 +113,6 @@ namespace OsamesMicroOrm.Utilities
         /// <exception cref="OOrmHandledException">All XML validation errors</exception>
         internal void ValidateXml(string[] xmlFiles_)
         {
-            StringBuilder sb = new StringBuilder();
             foreach (string xmlFile in xmlFiles_)
             {
                 Common.CheckFile(xmlFile);
@@ -123,7 +124,10 @@ namespace OsamesMicroOrm.Utilities
 #endif 
                 } 
             }
+
             if (Errors.Count == 0 && Warnings.Count == 0) return;
+
+            StringBuilder sb = new StringBuilder();
             foreach (string err in Errors)
                 sb.Append(err).Append(Environment.NewLine);
             foreach (string err in Warnings)
