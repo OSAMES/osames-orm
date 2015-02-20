@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Runtime.CompilerServices;
 
 namespace OsamesMicroOrm
 {
@@ -50,53 +51,10 @@ namespace OsamesMicroOrm
         #region EXECUTE
 
         /// <summary>
-        /// Execute with cmdParams as object array
+        /// Execute with cmdParams as dynamic type
         /// </summary>
         /// <param name="cmdParams_"></param>
-        internal T Execute(object[,] cmdParams_)
-        {
-			long commandResult; //used to return insert or update value
-            using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
-            {
-                if (sqlCommandType == SqlCommandType.Update)
-                {
-                    // cas du UPDATE (le plus fréquent)
-                    try
-                    {
-                        commandResult = command.AdoDbCommand.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
-                    }
-                }
-                else
-                {
-                    // case du INSERT
-                    object oValue;
-                    try
-                    {
-                        oValue = command.AdoDbCommand.ExecuteScalar();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
-                    }
-
-                    if (!Int64.TryParse(oValue.ToString(), out commandResult))
-                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                }
-            }
-
-            return (T)Convert.ChangeType(commandResult, typeof(T));
-        }
-
-        /// <summary>
-        /// Execute with cmdParams as IEnumerable of OOrmDbParameter
-        /// </summary>
-        /// <param name="cmdParams_"></param>
-        /// <returns></returns>
-        internal T Execute(IEnumerable<OOrmDbParameter> cmdParams_)
+        internal TU Execute<TU>(T cmdParams_)
         {
             long commandResult; //used to return insert or update value
             using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
@@ -131,51 +89,7 @@ namespace OsamesMicroOrm
                 }
             }
 
-            return (T)Convert.ChangeType(commandResult, typeof(T));
-        }
-
-        /// <summary>
-        /// Execute with cmdParams as IEnumerable of  KeyValuePair of &lt;string, object&gt;
-        /// </summary>
-        /// <param name="cmdParams_"></param>
-        /// <returns></returns>
-        internal T Execute(IEnumerable<KeyValuePair<string, object>> cmdParams_)
-        {
-            long commandResult; //used to return insert or update value
-            using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
-            {
-                switch (sqlCommandType)
-                {
-                    // cas du INSERT
-                    case SqlCommandType.Insert:
-                        object oValue;
-
-                        try
-                        {
-                            oValue = command.AdoDbCommand.ExecuteScalar();
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
-                        }
-
-                        if (!Int64.TryParse(oValue.ToString(), out commandResult))
-                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                        break;
-                    default:
-                        // cas du UPDATE
-                        try
-                        {
-                            commandResult = command.AdoDbCommand.ExecuteNonQuery();
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
-                        }
-                        break;
-                }
-            }
-            return (T)Convert.ChangeType(commandResult, typeof(T));
+            return (TU)Convert.ChangeType(commandResult, typeof(TU));
         }
 
         #endregion
@@ -186,45 +100,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="cmdParams_"></param>
         /// <returns></returns>
-        internal DbDataReader ExecuteReader(object[,] cmdParams_)
-        {
-            using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
-                try
-                {
-                    DbDataReader dr = command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
-                    return dr;
-                }
-                catch (Exception ex)
-                {
-                    throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText);
-                }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cmdParams_"></param>
-        /// <returns></returns>
-        internal DbDataReader ExecuteReader(IEnumerable<OOrmDbParameter> cmdParams_)
-        {
-            using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
-                try
-                {
-                    DbDataReader dr = command.AdoDbCommand.ExecuteReader(CommandBehavior.Default);
-                    return dr;
-                }
-                catch (Exception ex)
-                {
-                    throw new OOrmHandledException(HResultEnum.E_EXECUTEREADERFAILED, ex, cmdText);
-                }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cmdParams_"></param>
-        /// <returns></returns>
-        internal DbDataReader ExecuteReader(IEnumerable<KeyValuePair<string, object>> cmdParams_)
+        internal DbDataReader ExecuteReader(T cmdParams_)
         {
             using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
                 try
@@ -247,67 +123,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <returns>The adapter.</returns>
         /// <param name="cmdParams_">Cmd parameters.</param>
-        internal DataSet DataAdapter(object[,] cmdParams_)
-        {
-            using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
-                try
-                {
-
-                    DbDataAdapter dda = DbManager.Instance.DbProviderFactory.CreateDataAdapter();
-
-                    if (dda == null)
-                    {
-                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                    }
-                    dda.SelectCommand = command.AdoDbCommand;
-                    DataSet ds = new DataSet();
-                    dda.Fill(ds);
-                    return ds;
-                }
-                catch (Exception ex)
-                {
-                    if (ex is OOrmHandledException)
-                        throw;
-                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText);
-                }
-        }
-
-        /// <summary>
-        /// Datas the adapter.
-        /// </summary>
-        /// <returns>The adapter.</returns>
-        /// <param name="cmdParams_">Cmd parameters.</param>
-        internal DataSet DataAdapter(IEnumerable<OOrmDbParameter> cmdParams_)
-        {
-            using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
-                try
-                {
-
-                    DbDataAdapter dda = DbManager.Instance.DbProviderFactory.CreateDataAdapter();
-
-                    if (dda == null)
-                    {
-                        throw new OOrmHandledException(HResultEnum.E_CREATEDATAADAPTERFAILED, null, null);
-                    }
-                    dda.SelectCommand = command.AdoDbCommand;
-                    DataSet ds = new DataSet();
-                    dda.Fill(ds);
-                    return ds;
-                }
-                catch (Exception ex)
-                {
-                    if (ex is OOrmHandledException)
-                        throw;
-                    throw new OOrmHandledException(HResultEnum.E_FILLDATASETFAILED, ex, cmdText);
-                }
-        }
-
-        /// <summary>
-        /// Datas the adapter.
-        /// </summary>
-        /// <returns>The adapter.</returns>
-        /// <param name="cmdParams_">Cmd parameters.</param>
-        internal DataSet DataAdapter(IEnumerable<KeyValuePair<string, object>> cmdParams_)
+        internal DataSet DataAdapter(T cmdParams_)
         {
             using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
                 try
@@ -340,7 +156,7 @@ namespace OsamesMicroOrm
         /// </summary>
         /// <param name="cmdParams_"></param>
         /// <returns></returns>
-        internal object ExecuteScalar(object[,] cmdParams_)
+        internal object ExecuteScalar(T cmdParams_)
         {
             using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
             {
@@ -356,47 +172,6 @@ namespace OsamesMicroOrm
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cmdParams_"></param>
-        /// <returns></returns>
-        internal object ExecuteScalar(IEnumerable<OOrmDbParameter> cmdParams_)
-        {
-            using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
-            {
-                try
-                {
-                    return command.AdoDbCommand.ExecuteScalar();
-
-                }
-                catch (Exception ex)
-                {
-                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cmdParams_"></param>
-        /// <returns></returns>
-        internal object ExecuteScalar(IEnumerable<KeyValuePair<string, object>> cmdParams_)
-        {
-            using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
-            {
-                try
-                {
-                    return command.AdoDbCommand.ExecuteScalar();
-
-                }
-                catch (Exception ex)
-                {
-                    throw new OOrmHandledException(HResultEnum.E_EXECUTESCALARFAILED, ex, cmdText);
-                }
-            }
-        }
         #endregion
 
         #region DESTRUCTOR
