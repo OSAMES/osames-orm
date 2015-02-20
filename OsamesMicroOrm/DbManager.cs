@@ -333,7 +333,7 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_,  cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<long>(connection_, cmdType_, cmdText_ + ";" + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute(cmdParams_);
                 }
             }
             else
@@ -688,11 +688,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnection)
                 {
                     // perform code with locking
-                    return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
+                    return new DbManagerHelper<object[,]>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
+            return new DbManagerHelper<object[,]>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
         }
 
         /// <summary>
@@ -710,11 +710,11 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
+                    return new DbManagerHelper<IEnumerable<OOrmDbParameter>>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
+            return new DbManagerHelper<IEnumerable<OOrmDbParameter>>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
         }
 
         /// <summary>
@@ -733,11 +733,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnection)
                 {
                     // perform code with locking
-                    return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
+                    return new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<byte>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
+            return new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(connection_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
         }
 
         /// <summary>
@@ -756,11 +756,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnection)
                 {
                     // perform code with locking
-                    return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
+                    return new DbManagerHelper<object[,]>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
+            return new DbManagerHelper<object[,]>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
         }
 
         /// <summary>
@@ -778,11 +778,11 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
+                    return new DbManagerHelper<IEnumerable<OOrmDbParameter>>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
+            return new DbManagerHelper<IEnumerable<OOrmDbParameter>>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
         }
 
         /// <summary>
@@ -801,11 +801,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnection)
                 {
                     // perform code with locking
-                    return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
+                    return new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<byte>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
+            return new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Update).ExecuteReader(cmdParams_);
         }
         #endregion
 
@@ -827,11 +827,11 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    return new DbManagerHelper<bool>(connection_,  cmdType_,cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
+                    return new DbManagerHelper<object[,]>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
+            return new DbManagerHelper<object[,]>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
         }
 
         /// <summary>
@@ -850,11 +850,11 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
+                    return new DbManagerHelper<IEnumerable<OOrmDbParameter>>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
+            return new DbManagerHelper<IEnumerable<OOrmDbParameter>>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
         }
 
         /// <summary>
@@ -873,11 +873,11 @@ namespace OsamesMicroOrm
             {
                 lock (BackupConnection)
                 {
-                    return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
+                    return new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<bool>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
+            return new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(connection_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
         }
 
         /// <summary>
@@ -896,11 +896,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnection)
                 {
                     // perform code with locking
-                    return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
+                    return new DbManagerHelper<object[,]>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
+            return new DbManagerHelper<object[,]>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
         }
 
         /// <summary>
@@ -920,11 +920,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnection)
                 {
                     // perform code with locking
-                    return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
+                    return new DbManagerHelper<IEnumerable<OOrmDbParameter>>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
+            return new DbManagerHelper<IEnumerable<OOrmDbParameter>>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
         }
 
         /// <summary>
@@ -944,11 +944,11 @@ namespace OsamesMicroOrm
                 lock (BackupConnection)
                 {
                     // perform code with locking
-                    return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
+                    return new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
                 }
             }
             // no lock
-            return new DbManagerHelper<bool>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
+            return new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(transaction_.ConnectionWrapper, transaction_, cmdType_, cmdText_, SqlCommandType.Adapter).DataAdapter(cmdParams_);
         }
 
 
