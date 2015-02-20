@@ -159,7 +159,8 @@ namespace OsamesMicroOrm.DbTools
         /// <list type="bullet">
         /// <item><description>si "#" : retourner un nom de paramètre. Ex.: "@pN"</description></item>
         /// <item><description>si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés. Ex: "@last_name"</description></item>
-        /// <item><description>si null/whitespace : retourner null</description></item>
+        /// <item><description>si null : retourner null</description></item>
+        /// <item><description>si chaîne vide : retourner chaîne vide</description></item>
         /// <item><description>si commence par "%UL%" : retourner la string sans le préfixe "%UL%"</description></item>
         /// <item><description>si commence par "%" : retourner la string telle quelle en enlevant les espaces et le préfixe %, et en la protégeant avec les fields enclosers</description></item>
         /// <item><description>si chaîne avec un ":" : retourner le nom d'une colonne DB issu du mapping, en la protégeant avec les fields enclosers, 
