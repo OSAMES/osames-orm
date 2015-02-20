@@ -57,6 +57,7 @@ namespace OsamesMicroOrm
         public void Dispose()
         {
             this.AdoDbConnection.Dispose();
+            AdoDbConnection = null;
         }
 
         /// <summary>

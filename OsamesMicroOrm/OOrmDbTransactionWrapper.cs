@@ -61,6 +61,7 @@ namespace OsamesMicroOrm
         public void Dispose()
         {
             AdoDbTransaction.Dispose();
+            AdoDbTransaction = null;
         }
 
     }
