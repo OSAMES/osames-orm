@@ -55,58 +55,25 @@ namespace OsamesMicroOrm
         /// <param name="cmdParams_"></param>
         internal T Execute(object[,] cmdParams_)
         {
+			long commandResult; //used to return insert or update value
             using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
             {
-                // case du INSERT
-                long commandResult; //used to return insert or update value
-                switch (sqlCommandType)
+                if (sqlCommandType == SqlCommandType.Update)
                 {
-                    case SqlCommandType.Insert:
-                        object oValue;
-                        try
-                        {
-                            oValue = command.AdoDbCommand.ExecuteScalar();
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
-                        }
-
-                        if (!Int64.TryParse(oValue.ToString(), out commandResult))
-                            throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                        break;
-                    // cas du UPDATE
-                    default:
-                        try
-                        {
-                            commandResult = command.AdoDbCommand.ExecuteNonQuery();
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
-                        }
-                        break;
+                    // cas du UPDATE (le plus fréquent)
+                    try
+                    {
+                        commandResult = command.AdoDbCommand.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
+                    }
                 }
-
-                return (T)Convert.ChangeType(commandResult, typeof(T));
-            }
-        }
-
-        /// <summary>
-        /// Execute with cmdParams as IEnumerable of OOrmDbParameter
-        /// </summary>
-        /// <param name="cmdParams_"></param>
-        /// <returns></returns>
-        internal T Execute(IEnumerable<OOrmDbParameter> cmdParams_)
-        {
-            long commandResult;   //used to return insert or update value
-
-            using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
-            {
-                if (sqlCommandType == SqlCommandType.Insert) //if is insert
+                else
                 {
+                    // case du INSERT
                     object oValue;
-
                     try
                     {
                         oValue = command.AdoDbCommand.ExecuteScalar();
@@ -118,20 +85,52 @@ namespace OsamesMicroOrm
 
                     if (!Int64.TryParse(oValue.ToString(), out commandResult))
                         throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
-                    return (T)Convert.ChangeType(commandResult, typeof(T));
-                }
-
-                //if is update
-                try
-                {
-                    commandResult = command.AdoDbCommand.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
                 }
             }
-            // Résultat
+
+            return (T)Convert.ChangeType(commandResult, typeof(T));
+        }
+
+        /// <summary>
+        /// Execute with cmdParams as IEnumerable of OOrmDbParameter
+        /// </summary>
+        /// <param name="cmdParams_"></param>
+        /// <returns></returns>
+        internal T Execute(IEnumerable<OOrmDbParameter> cmdParams_)
+        {
+            long commandResult; //used to return insert or update value
+            using (PrepareCommandHelper<T> command = new PrepareCommandHelper<T>(connection, transaction, cmdText, (dynamic)cmdParams_, cmdType))
+            {
+                if (sqlCommandType == SqlCommandType.Update)
+                {
+                    // cas du UPDATE (le plus fréquent)
+                    try
+                    {
+                        commandResult = command.AdoDbCommand.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
+                    }
+                }
+                else
+                {
+                    // case du INSERT
+                    object oValue;
+                    try
+                    {
+                        oValue = command.AdoDbCommand.ExecuteScalar();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new OOrmHandledException(HResultEnum.E_EXECUTENONQUERYFAILED, ex, cmdText);
+                    }
+
+                    if (!Int64.TryParse(oValue.ToString(), out commandResult))
+                        throw new OOrmHandledException(HResultEnum.E_LASTINSERTIDNOTNUMBER, null, "value: '" + oValue + "'");
+                }
+            }
+
             return (T)Convert.ChangeType(commandResult, typeof(T));
         }
 

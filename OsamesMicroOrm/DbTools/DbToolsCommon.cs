@@ -155,15 +155,19 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Détermine de quel type sera le placeholder en cours :
+        /// Détermine la valeur à utiliser pour le placeholder :
         /// <list type="bullet">
         /// <item><description>si "#" : retourner un nom de paramètre. Ex.: "@pN"</description></item>
         /// <item><description>si commence par "@" : retourne la chaîne en lowercase avec espaces remplacés. Ex: "@last_name"</description></item>
-        /// /// <item><description>si null/whitespace ou commence par "%UL%" : retourner simplement la string telle quelle</description></item>
-        /// <item><description>si commence par "%" : retourner simplement la string telle quelle en enlevant les espaces</description></item>
-        /// <item><description>si chaîne avec un ":" : retourner le nom d'une colonne DB issu du mapping en supposant que le chaîne avant le ":" est un nom de dictionnaire de mapping (table DB).
+        /// <item><description>si null/whitespace : retourner null</description></item>
+        /// <item><description>si commence par "%UL%" : retourner la string sans le préfixe "%UL%"</description></item>
+        /// <item><description>si commence par "%" : retourner la string telle quelle en enlevant les espaces et le préfixe %, et en la protégeant avec les fields enclosers</description></item>
+        /// <item><description>si chaîne avec un ":" : retourner le nom d'une colonne DB issu du mapping, en la protégeant avec les fields enclosers, 
+        /// en supposant que le chaîne avant le ":" est un nom de dictionnaire de mapping (table DB).
         ///  Ex. "Track:TrackID"</description></item>
-        /// <item><description>si chaîne : retourner le nom d'une colonne DB issu du mapping. Ex. "TrackID"</description></item>
+        /// <item><description>si chaîne sans ":" : retourner le nom d'une colonne DB issu du mapping, en la protégeant avec les fields enclosers, 
+        /// en utilisant mappingDictionariesContainerKey_ comme nom de dictionnaire de mapping (table DB).
+        ///  Ex. "TrackID"</description></item>
         /// <item><description>sinon lance une exception</description></item>
         /// </list>
         /// <para>Enlève tout caractère non alphanumérique des littéraux, des paramètres non dynamiques, des noms de colonne, pour éviter les injections SQL</para>
@@ -174,17 +178,24 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="parameterAutomaticNameIndex_">Index incrémenté à chaque fois qu'on génère un nom de paramètre "@p..."</param>
         /// <param name="parameterIndex_">Index incrémenté servant à savoir où on se trouve dans la liste des paramètres et valeurs.
         /// Sert aussi pour le nom du paramètre dynamique si on avait passé "#".</param>
-        /// <param name="unprotectedLiteral_">Indique si le littéral doit être protégé avec les fields encloser. Vrai pour non protégé. Gère aussi le fait d'avoir une valeur null ou whitespace</param>
+        /// <param name="isDynamicParameter_">Indique si le littéral doit être protégé avec les fields encloser. Vrai pour non protégé. Gère aussi le fait d'avoir une valeur null ou whitespace</param>
         /// <returns>Nom de colonne DB</returns>
-        /// <exception cref="OOrmHandledException">Erreurs possibles : 1. pas de correspondance dans le mapping pour mappingDictionariesContainerKey_. 2. value_ n'as pas une syntaxe interprétable</exception>
-        internal static string DeterminePlaceholderType(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_, out bool unprotectedLiteral_)
+        /// <exception cref="OOrmHandledException">Erreurs possibles : 
+        /// <list type="bullet">
+        /// <item><description>pas de correspondance dans le mapping pour mappingDictionariesContainerKey_.</description></item>
+        /// <item><description>value_ n'as pas une syntaxe interprétable, par exemple contient deux ":", etc</description></item>
+        /// </list></exception>
+        internal static string DeterminePlaceholderValue(string value_, string mappingDictionariesContainerKey_, ref int parameterIndex_, ref int parameterAutomaticNameIndex_, out bool isDynamicParameter_)
         {
-            unprotectedLiteral_ = false;
+            isDynamicParameter_ = false;
 
-            if (string.IsNullOrWhiteSpace(value_) || value_.ToUpperInvariant().StartsWith("%UL%"))
+            if (string.IsNullOrWhiteSpace(value_))
             {
-                unprotectedLiteral_ = true;
-                return value_;
+                return null;
+            }
+            if (value_.ToUpperInvariant().StartsWith("%UL%"))
+            {
+                return value_.Substring(4);
             }
 
             string returnValue;
@@ -196,6 +207,7 @@ namespace OsamesMicroOrm.DbTools
 
                 parameterIndex_++;
                 parameterAutomaticNameIndex_++;
+                isDynamicParameter_ = true;
                 return "@p" + parameterAutomaticNameIndex_;
             }
 
@@ -205,6 +217,7 @@ namespace OsamesMicroOrm.DbTools
                 // Il ne peut contenir d'espaces par définition.
 
                 parameterIndex_++;
+                isDynamicParameter_ = true;
                 valueAsCharArray = value_.Where(c_ => (char.IsLetterOrDigit(c_) ||
                                                              c_ == '_' ||
                                                              c_ == '-')).ToArray();
@@ -279,27 +292,20 @@ namespace OsamesMicroOrm.DbTools
             for (int i = 0; i < iCount; i++)
             {
 
-                bool isUnprotectedLiteral;
+                bool isDynamicParameter;
                 // Analyse la chaine courante de strColumnNames_ et retourne :
                 // - soit un @pN 
                 // - soit @nomcolonne
-                // - soit le unprotected litéral initial 
-                // - soit le litéral protégé 
-                // - soit le nom de colonne protégé
-                string paramName = DeterminePlaceholderType(lstColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex, out isUnprotectedLiteral);
+                // - soit un unprotected litéral 
+                // - soit un litéral protégé 
+                // - soit un nom de colonne protégé
+                string paramName = DeterminePlaceholderValue(lstColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex, out isDynamicParameter);
 
-                if(paramName == null)
+                if(string.IsNullOrWhiteSpace(paramName))
                     continue;
-
-                if (isUnprotectedLiteral)
-                {
-                    // Retirer le préfixe "%UL%"
-                    lstSqlPlaceholders_.Add(paramName.Remove(4));
-                    continue;
-                }
                 
                 // Ajout d'un paramètre ADO.NET dans la liste.
-                if (paramName[0] == '@')
+                if (isDynamicParameter)
                 {
                     if(parameterIndex > lstValues_.Count-1)
                         throw new OOrmHandledException(HResultEnum.E_METANAMESVALUESCOUNTMISMATCH, null, "Asked for value of index " + parameterIndex + " for dynamic parameter of name '" + paramName + "' but there are only " + lstValues_.Count + " values");
