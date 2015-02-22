@@ -36,13 +36,12 @@ namespace OsamesMicroOrm
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="connection_"></param>
         /// <param name="transaction_"></param>
         /// <param name="cmdType_"></param>
         /// <param name="cmdText_"></param>
         /// <param name="commandType_"></param>
-        internal DbManagerHelper(OOrmDbConnectionWrapper connection_, OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, SqlCommandType commandType_)
-            : this(connection_, cmdType_, cmdText_, commandType_)
+        internal DbManagerHelper(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, SqlCommandType commandType_)
+            : this(transaction_.ConnectionWrapper, cmdType_, cmdText_, commandType_)
         {
             transaction = transaction_;
         }
