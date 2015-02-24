@@ -28,6 +28,7 @@ using OsamesMicroOrm.Logging;
 using OsamesMicroOrm.Utilities;
 using System.Data;
 using System.Data.Common;
+using System.Reflection;
 using System.Text;
 
 namespace OsamesMicroOrm.Configuration
@@ -45,22 +46,22 @@ namespace OsamesMicroOrm.Configuration
         /// <summary>
         /// Templates dictionary for select
         /// </summary>
-        public static readonly Dictionary<string, string> DicInsertSql = new Dictionary<string, string>();
+        internal static readonly Dictionary<string, string> DicInsertSql = new Dictionary<string, string>();
 
         /// <summary>
         /// Templates dictionary for update
         /// </summary>
-        public static readonly Dictionary<string, string> DicUpdateSql = new Dictionary<string, string>();
+        internal static readonly Dictionary<string, string> DicUpdateSql = new Dictionary<string, string>();
 
         /// <summary>
         /// Templates dictionary for select
         /// </summary>
-        public static readonly Dictionary<string, string> DicSelectSql = new Dictionary<string, string>();
+        internal static readonly Dictionary<string, string> DicSelectSql = new Dictionary<string, string>();
 
         /// <summary>
         /// Templates dictionary for delete
         /// </summary>
-        public static readonly Dictionary<string, string> DicDeleteSql = new Dictionary<string, string>();
+        internal static readonly Dictionary<string, string> DicDeleteSql = new Dictionary<string, string>();
 
         /// <summary>
         /// Mapping is stored as follows : an external dictionary and an internal dictionary.
@@ -144,7 +145,7 @@ namespace OsamesMicroOrm.Configuration
         /// <param name="propertyName_">DB entity C# object property name. Ex: "CustomerId"</param>
         /// <returns>DB column name. Ex: "id_customer"</returns>
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping pour les paramètres donnés</exception>
-        public string GetDbColumnNameFromMappingDictionary(string mappingDictionaryName_, string propertyName_)
+        internal string GetDbColumnNameFromMappingDictionary(string mappingDictionaryName_, string propertyName_)
         {
             Dictionary<string, string> mappingObjectSet;
             string resultColumnName;
@@ -160,12 +161,31 @@ namespace OsamesMicroOrm.Configuration
         }
 
         /// <summary>
+        /// Cherche le nom d'une colonne de la table de la base de données qui correspond au PropertyInfo paramètre.
+        /// </summary>
+        /// <param name="dbEntityProperty_">PropertyInfo</param>
+        /// <returns>nom de colonne définie par le mapping ou null (pas d'exception)</returns>
+        public string GetDbColumnName(PropertyInfo dbEntityProperty_)
+        {
+            string resultColumnName;
+            string propName = dbEntityProperty_.Name;
+            string typeName = dbEntityProperty_.ReflectedType.Name;
+
+            Dictionary<string, string> mappingObjectSet;
+             MappingDictionnary.TryGetValue(typeName, out mappingObjectSet);
+            if (mappingObjectSet == null)
+                return null;
+            mappingObjectSet.TryGetValue(propName, out resultColumnName);
+            return resultColumnName;
+        }
+
+        /// <summary>
         /// Asks mapping dictionary for a Db entity object property name, given a DB column name.
         /// </summary>
         /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="dbColumnName_">DB column name. Ex: "id_customer"</param>
         /// <returns>DB entity C# object property name. Ex: "CustomerId"</returns>
-        public string GetDbEntityPropertyNameFromMappingDictionary(string mappingDictionaryName_, string dbColumnName_)
+        internal string GetDbEntityPropertyNameFromMappingDictionary(string mappingDictionaryName_, string dbColumnName_)
         {
             Dictionary<string, string> mappingObjectSet;
 
@@ -187,7 +207,7 @@ namespace OsamesMicroOrm.Configuration
         /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
         /// <returns>Mapping dictionary</returns>
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping pour le nom paramètre</exception>
-        public Dictionary<string, string> GetMappingDefinitionsForTable(string mappingDictionaryName_)
+        internal Dictionary<string, string> GetMappingDefinitionsForTable(string mappingDictionaryName_)
         {
             Dictionary<string, string> mappingObjectSet;
 
@@ -348,7 +368,6 @@ namespace OsamesMicroOrm.Configuration
 
         /// <summary>
         /// Loads XML file which contains mapping definitions to internal dictionary.
-        /// <para>Transforme en ToLowerInariant() le nom du dictionnaire de mapping (nom de la table de la DB)</para>
         /// </summary>
         /// <param name="xmlNavigator_">Reused XPathNavigator instance</param>
         /// <param name="xmlRootTagPrefix_"> </param>

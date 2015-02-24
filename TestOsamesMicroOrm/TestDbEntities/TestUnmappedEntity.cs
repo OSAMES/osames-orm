@@ -2,5 +2,7 @@
 {
     internal class TestUnmappedEntity
     {
+
+        public string Id { get; set; }
     }
 }

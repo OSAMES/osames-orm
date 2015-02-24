@@ -10,6 +10,8 @@ using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
 using OsamesMicroOrm.Utilities;
+using SampleDbEntities.Chinook;
+using TestOsamesMicroOrm.TestDbEntities;
 using Common = TestOsamesMicroOrm.Tools.Common;
 
 namespace TestOsamesMicroOrm
@@ -305,6 +307,23 @@ namespace TestOsamesMicroOrm
             Assert.IsTrue(mappings.ContainsKey("Email"), "Expected to find 'Email' key");
             Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
             Assert.AreEqual("Email", ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("Customer", "Email"));
+        }
+
+        /// <summary>
+        /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is found.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("Mapping")]
+        public void TestGeDbColumnName()
+        {
+            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
+            Assert.AreEqual("CustomerId", ConfigurationLoader.Instance.GetDbColumnName(new Customer().GetType().GetProperty("IdCustomer")));
+            Assert.IsNull(ConfigurationLoader.Instance.GetDbColumnName(new Customer().GetType().GetProperty("ThisPropertyDoesntExist")));
+            Assert.IsNull(ConfigurationLoader.Instance.GetDbColumnName(new TestUnmappedEntity().GetType().GetProperty("Id")));
         }
 
         /// <summary>
