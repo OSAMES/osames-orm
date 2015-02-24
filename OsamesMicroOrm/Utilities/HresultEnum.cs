@@ -11,7 +11,7 @@ using System.CodeDom.Compiler;
 namespace OsamesMicroOrm
 {
 	/// <summary>
-	/// Auto generated date: 02/19/2015 23:25:00
+	/// Auto generated date: 02/24/2015 14:39:58
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
 	public enum HResultEnum
@@ -201,6 +201,21 @@ namespace OsamesMicroOrm
 		/// [PARAMETER] There are less values provided than meta names to format ADO.NET parameters. See log file for details.
 		/// </summary>
 		E_METANAMESVALUESCOUNTMISMATCH,
+	                    
+		/// <summary>
+		/// [PARAMETER] ADO.NET command could not be created
+		/// </summary>
+		E_ADOCOMMANDNOCREATED,
+	                    
+		/// <summary>
+		/// Connection cannot be null
+		/// </summary>
+		W_NULLCONNECTION,
+	                    
+		/// <summary>
+		/// Query didn't update any row
+		/// </summary>
+		W_CANNOTUPDATEROW,
 	                    
 		// ReSharper restore InconsistentNaming
 	}
