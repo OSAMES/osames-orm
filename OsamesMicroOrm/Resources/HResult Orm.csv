@@ -36,3 +36,5 @@ Valeur;Nom;Description;Note;Technical message
 "0xA0040323";"E_PLACEHOLDERSVALUESCOUNTMISMATCH";"[PARAMETER] There are less values provided than placeholders to replace for the current template string to process. See log file for details.";"";""
 "0xA0040324";"E_NOTEMPLATE";"[CONF] No SQL template by this name";"";""
 "0xA0040325";"E_METANAMESVALUESCOUNTMISMATCH";"[PARAMETER] There are less values provided than meta names to format ADO.NET parameters. See log file for details.";"";""
+"0xA0040326";"E_ADOCOMMANDNOCREATED";"[PARAMETER] ADO.NET command could not be created";"";""
+"0xA0040500";"W_NULLCONNECTION";"Connection cannot be null";"";""
