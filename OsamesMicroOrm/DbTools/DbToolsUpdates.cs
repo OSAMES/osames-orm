@@ -80,7 +80,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 string templateName;
                 if (!ConfigurationLoader.DicUpdateSql.TryGetValue(sqlTemplate_, out templateName))
-                    throw new OOrmHandledException(HResultEnum.E_NOROWUPDATED, null, "Template: '" + sqlTemplate_ + "'");
+                    throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: '" + sqlTemplate_ + "'");
 
                 DbToolsCommon.TryFormat(templateName, out sqlCommand_, sqlPlaceholders.ToArray());
             }
