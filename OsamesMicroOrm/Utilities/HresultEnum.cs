@@ -11,7 +11,7 @@ using System.CodeDom.Compiler;
 namespace OsamesMicroOrm
 {
 	/// <summary>
-	/// Auto generated date: 02/24/2015 14:39:58
+	/// Auto generated date: 02/25/2015 10:35:44
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
 	public enum HResultEnum
@@ -211,11 +211,6 @@ namespace OsamesMicroOrm
 		/// Connection cannot be null
 		/// </summary>
 		W_NULLCONNECTION,
-	                    
-		/// <summary>
-		/// Query didn't update any row
-		/// </summary>
-		W_CANNOTUPDATEROW,
 	                    
 		// ReSharper restore InconsistentNaming
 	}

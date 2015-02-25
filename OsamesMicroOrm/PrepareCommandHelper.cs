@@ -50,7 +50,7 @@ namespace OsamesMicroOrm
             AdoDbCommand = DbManager.Instance.DbProviderFactory.CreateCommand();
 
             if (AdoDbCommand == null)
-                throw new Exception("DbCommandWrapper, PrepareCommandWithoutParameter: ADO.NET command could not be created");
+                throw new OOrmHandledException(HResultEnum.E_ADOCOMMANDNOCREATED, null, "AdoDbCommand is null");
 
             AdoDbCommand.Connection = connection_.AdoDbConnection;
             AdoDbCommand.CommandText = cmdText_;
