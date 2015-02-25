@@ -50,7 +50,7 @@ namespace OsamesMicroOrm
             AdoDbCommand = DbManager.Instance.DbProviderFactory.CreateCommand();
 
             if (AdoDbCommand == null)
-                throw new OOrmHandledException(HResultEnum.E_ADOCOMMANDNOCREATED, null, "AdoDbCommand is null");
+                throw new OOrmHandledException(HResultEnum.E_ADOCOMMANDNOTCREATED, null, "AdoDbCommand is null");
 
             AdoDbCommand.Connection = connection_.AdoDbConnection;
             AdoDbCommand.CommandText = cmdText_;

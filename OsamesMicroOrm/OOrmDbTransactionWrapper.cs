@@ -43,7 +43,7 @@ namespace OsamesMicroOrm
         {
             ConnectionWrapper = connectionWrapper_;
             if(ConnectionWrapper == null)
-                throw new ArgumentException("Connection cannot be null", "connectionWrapper_");
+                throw new OOrmHandledException(HResultEnum.E_NULLCONNECTION, null, "Parameter : connectionWrapper_");
 
             if(ConnectionWrapper.AdoDbConnection.State != ConnectionState.Open)
                 ConnectionWrapper.AdoDbConnection.Open();

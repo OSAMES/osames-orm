@@ -11,7 +11,7 @@ using System.CodeDom.Compiler;
 namespace OsamesMicroOrm
 {
 	/// <summary>
-	/// Auto generated date: 02/25/2015 10:35:44
+	/// Auto generated date: 02/25/2015 10:46:00
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
 	public enum HResultEnum
@@ -183,7 +183,7 @@ namespace OsamesMicroOrm
 		E_DBMANAGERNOSELECTLASTINSERTIDCOMMANDSET,
 	                    
 		/// <summary>
-		/// [CONF] No provider name has been set to DbManager before using it
+		/// [CONF] No provider name has been set to DbManager before using it.
 		/// </summary>
 		E_DBMANAGERNOPROVIDERNAME,
 	                    
@@ -203,14 +203,14 @@ namespace OsamesMicroOrm
 		E_METANAMESVALUESCOUNTMISMATCH,
 	                    
 		/// <summary>
-		/// [PARAMETER] ADO.NET command could not be created
+		/// [PARAMETER] ADO.NET command could not be created.
 		/// </summary>
-		E_ADOCOMMANDNOCREATED,
+		E_ADOCOMMANDNOTCREATED,
 	                    
 		/// <summary>
-		/// Connection cannot be null
+		/// [PARAMETER] Connection cannot be null.
 		/// </summary>
-		W_NULLCONNECTION,
+		E_NULLCONNECTION,
 	                    
 		// ReSharper restore InconsistentNaming
 	}
