@@ -38,13 +38,13 @@ namespace OsamesMicroOrm.Utilities
         private const string SLog = "Application";
         string sEvent;
 
-        private static bool HasAdminPrivileges;
-        private static string SActiveSource;
+        private static readonly bool HasAdminPrivileges;
+        private static readonly string SActiveSource;
 
         /// <summary>
         /// Dictionnaire interne des erreurs au format suivant : clé : code d'erreur "E_XXX". Valeur : code HRESULT "0x1234" et texte.
         /// </summary>
-        internal static readonly Dictionary<string, KeyValuePair<string, string>> HResultCode = new Dictionary<string, KeyValuePair<string, string>>();
+        internal static readonly Dictionary<string, KeyValuePair<string, string>> HResultCode;
 
         /// <summary>
         /// Cosntructor

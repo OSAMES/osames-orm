@@ -118,7 +118,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 // Présence d'une transaction
                 if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) == 0)
-                    Logger.Log(TraceEventType.Warning, HResultEnum.E_NOROWUPDATED + " : '" + sqlCommand + "'");
+                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED) + " : '" + sqlCommand + "'");
                 else
                     nbRowsAffected++;
 
@@ -131,7 +131,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 conn = DbManager.Instance.CreateConnection();
                 if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) == 0)
-                    Logger.Log(TraceEventType.Warning, HResultEnum.E_NOROWUPDATED + " : '" + sqlCommand + "'");
+                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED) + " : '" + sqlCommand + "'");
                 else
                     nbRowsAffected++;
 
@@ -173,8 +173,7 @@ namespace OsamesMicroOrm.DbTools
                     //on tryformat le sqlcommand
                     FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_[i], out sqlCommand, out adoParameters);
                 else
-                    // ici le slqcommand rendu est null
-                {
+                {    // ici le slqcommand rendu est null
                     string tmpSqlCommand;
                     FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_[i], out tmpSqlCommand, out adoParameters, false);
                 }
@@ -183,7 +182,7 @@ namespace OsamesMicroOrm.DbTools
                 {
                     // Présence d'une transaction
                     if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) == 0)
-                        Logger.Log(TraceEventType.Warning, HResultEnum.E_NOROWUPDATED + " : '" + sqlCommand + "'");
+                        Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED) + " : '" + sqlCommand + "'");
                     else
                         nbRowsAffected++;
 
@@ -196,7 +195,7 @@ namespace OsamesMicroOrm.DbTools
                 {
                     conn = DbManager.Instance.CreateConnection();
                     if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) == 0)
-                        Logger.Log(TraceEventType.Warning, HResultEnum.E_NOROWUPDATED + " : '" + sqlCommand + "'");
+                        Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED) + " : '" + sqlCommand + "'");
                     else
                         nbRowsAffected++;
                 }
