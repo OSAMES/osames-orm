@@ -117,6 +117,34 @@ namespace TestOsamesMicroOrmSqlite
         }
 
         /// <summary>
+        /// Update d'un seul objet en n'ayant pas de ligne mise à jour.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("SqLite")]
+        [TestCategory("Update")]
+        [TestCategory("Visual log")]
+        [Owner("Benjamin Nolmans")]
+        public void TestUpdateSingleNoMatchSqlite()
+        {
+
+            const uint testCustomerId = 3;
+
+            _config = ConfigurationLoader.Instance;
+
+            // Lecture initiale
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> {"IdCustomer", "#"}, new List<object> {testCustomerId}, _transaction);
+
+            // Partie where : "propriété LastName = @p0", donc paramètres "LastName" et "#" pour paramètre dynamique
+            // Ici on met pour valeur de "@p0" une valeur qui fera qu'on ne trouve pas de ligne correspondante.
+            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
+                new List<string> {"FirstName", "LastName"}, new List<string> {"LastName", "#"}, new List<object> {"???" + customer.LastName + "??"}, _transaction);
+
+            // il faut caster car sinon "0" est de type int.
+            Assert.AreEqual((uint) 0, testing);
+        }
+
+
+        /// <summary>
         /// Update d'un seul objet.
         /// </summary>
         [TestMethod]
