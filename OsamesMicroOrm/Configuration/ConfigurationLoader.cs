@@ -167,6 +167,11 @@ namespace OsamesMicroOrm.Configuration
         /// <returns>nom de colonne définie par le mapping ou null (pas d'exception)</returns>
         public string GetDbColumnName(PropertyInfo dbEntityProperty_)
         {
+            if (dbEntityProperty_ == null)
+            {
+                Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NULLVALUE) + " : PropertyInfo parameter is null");
+                return null;
+            }
             string resultColumnName;
             string propName = dbEntityProperty_.Name;
             string typeName = dbEntityProperty_.ReflectedType.Name;
