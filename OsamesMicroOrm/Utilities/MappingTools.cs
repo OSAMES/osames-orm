@@ -30,15 +30,16 @@ namespace OsamesMicroOrm.Utilities
     /// </summary>
     public static class MappingTools
     {
-
+        #region obtention du nom de la table en DB
         /// <summary>
+        /// Retourne le nom de la table pour la DbEntity paramètre.
         /// Reads value of DatabaseMapping class custom attribute.
         /// </summary>
         /// <param name="dataObject_">data object</param>
         /// <typeparam name="T">type indication</typeparam>
         /// <returns>Nom de table défini par l'attribut DatabaseMapping porté par le déclaratif de la classe C# de dataObject_</returns>
         /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
-        internal static string GetDbEntityDictionnaryMappingKey<T>(T dataObject_)
+        public static string GetDbEntityTableName<T>(T dataObject_)
         {
             // Get value
             object[] classAttributes = dataObject_.GetType().GetCustomAttributes(typeof(DatabaseMappingAttribute), false);
@@ -60,6 +61,10 @@ namespace OsamesMicroOrm.Utilities
             return dbTableName;
 
         }
+
+        #endregion
+
+        #region obtention du nom de la colonne en DB
 
         /// <summary>
         /// Asks mapping dictionary for a DB column name, given a Db entity property name.
@@ -85,10 +90,11 @@ namespace OsamesMicroOrm.Utilities
 
         /// <summary>
         /// Cherche le nom d'une colonne de la table de la base de données qui correspond au PropertyInfo paramètre.
+        /// Ce PropertyInfo est l'objet porteur d'information (nom, valeur...) d'une propriété d'une instance d'une classe C# de type DbEntity.
         /// </summary>
         /// <param name="dbEntityProperty_">PropertyInfo</param>
         /// <returns>nom de colonne définie par le mapping ou null (pas d'exception)</returns>
-        public static string GetDbColumnName(PropertyInfo dbEntityProperty_)
+        public static string GetDbColumnNameFromDbEntity(PropertyInfo dbEntityProperty_)
         {
             if (dbEntityProperty_ == null)
             {
@@ -107,6 +113,9 @@ namespace OsamesMicroOrm.Utilities
             return resultColumnName;
         }
 
+        #endregion
+
+        #region obtention du nom de la propriété d'un DbEntity
         /// <summary>
         /// Asks mapping dictionary for a Db entity object property name, given a DB column name.
         /// </summary>
@@ -128,6 +137,9 @@ namespace OsamesMicroOrm.Utilities
             return resultPropertyName;
         }
 
+        #endregion
+
+        #region obtention de l'ensemble nom de la colonne en DB + nom de la propriété d'un DbEntity
         /// <summary>
         /// Retourne les informations de mapping pour une table donnée sous forme de dictionnaire :
         /// clés : propriétés de la classe C# DbEntity, valeurs : noms des colonnes en bae de données.
@@ -144,5 +156,7 @@ namespace OsamesMicroOrm.Utilities
                 throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
             return mappingObjectSet;
         }
+
+        #endregion
     }
 }

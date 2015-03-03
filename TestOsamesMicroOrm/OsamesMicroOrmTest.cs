@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Data.Common;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using TestOsamesMicroOrm.Tools;
@@ -10,6 +10,8 @@ using DbTransaction = OsamesMicroOrm.OOrmDbTransactionWrapper;
 
 namespace TestOsamesMicroOrm
 {
+
+
     /// <summary>
     /// Base class of tests.
     /// Useful for centralizing deployment items declarations
@@ -24,12 +26,17 @@ namespace TestOsamesMicroOrm
     [ExcludeFromCodeCoverage]
     public abstract class OsamesMicroOrmTest
     {
+        /// <summary>
+        /// Chemin complet du fichier standard de l'ORM qui définit les mappings DbEntity/base de données.
+        /// </summary>
+        protected readonly string _mappingFileFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_MAPPING_XML);
+
         protected static ConfigurationLoader _config;
 
         /// <summary>
         /// Every test uses a transaction.
         /// </summary>
-        protected static OOrmDbTransactionWrapper _transaction;
+        protected static DbTransaction _transaction;
 
         /// <summary>
         /// Initialisation des TUs.
@@ -55,7 +62,7 @@ namespace TestOsamesMicroOrm
             if (_transaction != null)
             {
                 // Connexion associée
-                OOrmDbConnectionWrapper connection = _transaction.ConnectionWrapper;
+                DbConnection connection = _transaction.ConnectionWrapper;
                 // Rollback de la transaction et fermeture de sa connexion
                 DbManager.Instance.RollbackTransaction(_transaction);
                 connection.AdoDbConnection.Close();

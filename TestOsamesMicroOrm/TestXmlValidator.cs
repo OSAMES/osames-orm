@@ -26,7 +26,6 @@ namespace TestOsamesMicroOrm
     [ExcludeFromCodeCoverage]
     public class TestXmlValidator : OsamesMicroOrmTest
     {
-        private readonly string _mappingFileFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_MAPPING_XML);
         private readonly string _templatesFileFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_TEMPLATES_XML);
         private readonly string _mappingXsdFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_MAPPING_XSD);
         private readonly string _templatesXsdFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_TEMPLATES_XSD);

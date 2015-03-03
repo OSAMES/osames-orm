@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -9,10 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
-using OsamesMicroOrm.Utilities;
-using SampleDbEntities.Chinook;
-using TestOsamesMicroOrm.TestDbEntities;
-using Common = TestOsamesMicroOrm.Tools.Common;
+using TestOsamesMicroOrm.Tools;
 
 namespace TestOsamesMicroOrm
 {
@@ -25,7 +21,6 @@ namespace TestOsamesMicroOrm
     [ExcludeFromCodeCoverage]
     public class TestOrmConfigurationLoader : OsamesMicroOrmTest
     {
-        private readonly string _mappingFileFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_MAPPING_XML);
         private readonly string _templatesFileFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_TEMPLATES_XML);
         private readonly string _templatesTestNodeCase = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_TEMPLATES_XML_TEST_NODE_CASE);
         private readonly string _templatesTestDuplicateSelect = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Common.CST_SQL_TEMPLATES_XML_TEST_DUPLICATE_SELECT);
@@ -287,174 +282,9 @@ namespace TestOsamesMicroOrm
             Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
         }
 
-        #region cas de test de GetDbColumnNameFromMappingDictionary()
-        /// <summary>
-        /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is found.
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Barbara Post")]
-        [TestCategory("XML")]
-        [TestCategory("Configuration")]
-        [TestCategory("Mapping")]
-        public void TestGetMappingDbColumnName()
-        {
-            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-            Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("Customer"), "Expected to find 'Customer' key");
+      
 
-            // Inspect detail for a specific case
-            Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["Customer"];
-            Assert.IsTrue(mappings.ContainsKey("Email"), "Expected to find 'Email' key");
-            Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
-            Assert.AreEqual("Email", MappingTools.GetDbColumnNameFromMappingDictionary("Customer", "Email"));
-        }
-
-        /// <summary>
-        /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is found.
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Barbara Post")]
-        [TestCategory("XML")]
-        [TestCategory("Configuration")]
-        [TestCategory("Mapping")]
-        public void TestGeDbColumnName()
-        {
-            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-            Assert.AreEqual("CustomerId", MappingTools.GetDbColumnName(new Customer().GetType().GetProperty("IdCustomer")));
-            Assert.IsNull(MappingTools.GetDbColumnName(new Customer().GetType().GetProperty("ThisPropertyDoesntExist")));
-            Assert.IsNull(MappingTools.GetDbColumnName(new TestUnmappedEntity().GetType().GetProperty("Id")));
-        }
-
-        /// <summary>
-        /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is not found (key).
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Barbara Post")]
-        [TestCategory("XML")]
-        [TestCategory("Configuration")]
-        [TestCategory("Mapping")]
-        [ExpectedException(typeof(OOrmHandledException))]
-        public void TestGetMappingDbColumnNameWrongKey()
-        {
-            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-            Assert.IsFalse(ConfigurationLoader.MappingDictionnary.ContainsKey("foobar"), "Expected not to find 'foobar' key");
-
-            try
-            {
-                MappingTools.GetDbColumnNameFromMappingDictionary("foobar", "Email");
-            }
-            catch (OOrmHandledException ex)
-            {
-                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEY, ex);
-                throw;
-            }
-
-        }
-
-        /// <summary>
-        /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is not found (property name).
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Barbara Post")]
-        [TestCategory("XML")]
-        [TestCategory("Configuration")]
-        [TestCategory("Mapping")]
-        [ExpectedException(typeof(OOrmHandledException))]
-        public void TestGetMappingDbColumnNameWrongPropertyName()
-        {
-            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-            Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("Customer"), "Expected to find 'customer' key");
-            Assert.IsFalse(ConfigurationLoader.MappingDictionnary["Customer"].ContainsKey("foobar"), "Expected not to find 'foobar' key");
-            try
-            {
-                MappingTools.GetDbColumnNameFromMappingDictionary("Customer", "foobar");
-            }
-            catch (OOrmHandledException ex)
-            {
-                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEYANDPROPERTY, ex);
-                throw;
-            }
-        }
-
-        #endregion
-
-        #region cas de test de GetDbEntityPropertyNameFromMappingDictionary()
-        /// <summary>
-        /// ConfigurationLoader internal dictionary is populated. Test of GetDbEntityPropertyNameFromMappingDictionary : case where mapping is found.
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Barbara Post")]
-        [TestCategory("XML")]
-        [TestCategory("Configuration")]
-        [TestCategory("Mapping")]
-        public void TestGetDbEntityPropertyName()
-        {
-            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-            Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("Customer"), "Expected to find 'Customer' key");
-
-            // Inspect detail for a specific case
-            Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["Customer"];
-            Assert.IsTrue(mappings.ContainsValue("Email"), "Expected to find 'Email' value");
-            Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
-            Assert.AreEqual("Email", MappingTools.GetDbEntityPropertyNameFromMappingDictionary("Customer", "Email"));
-        }
-
-        /// <summary>
-        /// ConfigurationLoader internal dictionary is populated. Test of GetDbEntityPropertyNameFromMappingDictionary : case where mapping is not found (key).
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Barbara Post")]
-        [TestCategory("XML")]
-        [TestCategory("Configuration")]
-        [TestCategory("Mapping")]
-        [ExpectedException(typeof(OOrmHandledException))]
-        public void TestGetDbEntityPropertyNameWrongKey()
-        {
-            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-            Assert.IsFalse(ConfigurationLoader.MappingDictionnary.ContainsKey("foobar"), "Expected not to find 'foobar' key");
-            try
-            {
-                MappingTools.GetDbEntityPropertyNameFromMappingDictionary("foobar", "Email");
-            }
-            catch (OOrmHandledException ex)
-            {
-                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEY, ex);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// ConfigurationLoader internal dictionary is populated. Test of GetDbEntityPropertyNameFromMappingDictionary : case where mapping is not found (column name).
-        /// </summary>
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [Owner("Barbara Post")]
-        [TestCategory("XML")]
-        [TestCategory("Configuration")]
-        [TestCategory("Mapping")]
-        [ExpectedException(typeof(OOrmHandledException))]
-        public void TestGetDbEntityPropertyNameWrongColumnName()
-        {
-            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-            Assert.IsTrue(ConfigurationLoader.MappingDictionnary.ContainsKey("Customer"), "Expected to find 'customer' key");
-            Assert.IsFalse(ConfigurationLoader.MappingDictionnary["Customer"].ContainsValue("foobar"), "Expected not to find 'foobar' value");
-            try
-            {
-                MappingTools.GetDbEntityPropertyNameFromMappingDictionary("Customer", "foobar");
-            }
-            catch (OOrmHandledException ex)
-            {
-                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NOMAPPINGKEYANDCOLUMN, ex);
-                throw;
-            }
-        }
-
-        #endregion
+      
 
         /// <summary>
         /// After test run, ConfigurationLoader internal dictionary should be populated.
