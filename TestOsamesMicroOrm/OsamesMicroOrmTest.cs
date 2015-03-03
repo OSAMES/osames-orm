@@ -36,7 +36,7 @@ namespace TestOsamesMicroOrm
         /// <summary>
         /// Every test uses a transaction.
         /// </summary>
-        protected static DbTransaction _transaction;
+        protected static OOrmDbTransactionWrapper _transaction;
 
         /// <summary>
         /// Initialisation des TUs.
@@ -62,7 +62,7 @@ namespace TestOsamesMicroOrm
             if (_transaction != null)
             {
                 // Connexion associée
-                DbConnection connection = _transaction.ConnectionWrapper;
+                OOrmDbConnectionWrapper connection = _transaction.ConnectionWrapper;
                 // Rollback de la transaction et fermeture de sa connexion
                 DbManager.Instance.RollbackTransaction(_transaction);
                 connection.AdoDbConnection.Close();
