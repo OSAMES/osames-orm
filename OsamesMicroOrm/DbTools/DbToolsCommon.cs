@@ -23,6 +23,7 @@ using System.Linq;
 using System.Text;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Logging;
+using OsamesMicroOrm.Utilities;
 
 namespace OsamesMicroOrm.DbTools
 {
@@ -76,7 +77,7 @@ namespace OsamesMicroOrm.DbTools
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping ou autre erreur</exception>
         internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
         {
-            dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
+            dbColumnName_ = MappingTools.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
 
             // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
             adoParameterNameAndValue_ = new KeyValuePair<string, object>(
@@ -107,7 +108,8 @@ namespace OsamesMicroOrm.DbTools
 
             foreach (string columnName in lstDataObjectPropertyNames_)
             {
-                lstDbColumnNames_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
+                //lstDbColumnNames_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
+                lstDbColumnNames_.Add(MappingTools.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
 
                 // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
                 lstAdoParameterNameAndValues_.Add(new KeyValuePair<string, object>(
@@ -129,7 +131,7 @@ namespace OsamesMicroOrm.DbTools
         internal static void DetermineDatabaseColumnNames(string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, out List<string> lstDbColumnNames_)
         {
             lstDbColumnNames_ = new List<string>();
-            lstDbColumnNames_.AddRange(lstDataObjectPropertyNames_.Select(columnName_ => ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName_)));
+            lstDbColumnNames_.AddRange(lstDataObjectPropertyNames_.Select(columnName_ => MappingTools.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName_)));
         }
 
         /// <summary>
@@ -146,7 +148,7 @@ namespace OsamesMicroOrm.DbTools
             lstDbColumnNames_ = new List<string>();
             lstDataObjectPropertyNames_ = new List<string>();
             // Ce dictionnaire contient clé/valeur : propriété/nom de colonne
-            Dictionary<string, string> mappingObjectSet = ConfigurationLoader.Instance.GetMappingDefinitionsForTable(mappingDictionariesContainerKey_);
+            Dictionary<string, string> mappingObjectSet = MappingTools.GetMappingDefinitionsForTable(mappingDictionariesContainerKey_);
             foreach (string key in mappingObjectSet.Keys)
             {
                 lstDataObjectPropertyNames_.Add(key);
@@ -330,7 +332,7 @@ namespace OsamesMicroOrm.DbTools
         /// <exception cref="OOrmHandledException">Erreur quand l'information demandée ne peut être trouvée das les données de maping</exception>
         internal static void DetermineDatabaseColumnName(string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_)
         {
-            dbColumnName_ = ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
+            dbColumnName_ = MappingTools.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
         }
 
         #endregion

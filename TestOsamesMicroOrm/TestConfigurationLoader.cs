@@ -306,7 +306,7 @@ namespace TestOsamesMicroOrm
             Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["Customer"];
             Assert.IsTrue(mappings.ContainsKey("Email"), "Expected to find 'Email' key");
             Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
-            Assert.AreEqual("Email", ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("Customer", "Email"));
+            Assert.AreEqual("Email", MappingTools.GetDbColumnNameFromMappingDictionary("Customer", "Email"));
         }
 
         /// <summary>
@@ -321,9 +321,9 @@ namespace TestOsamesMicroOrm
         public void TestGeDbColumnName()
         {
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-            Assert.AreEqual("CustomerId", ConfigurationLoader.Instance.GetDbColumnName(new Customer().GetType().GetProperty("IdCustomer")));
-            Assert.IsNull(ConfigurationLoader.Instance.GetDbColumnName(new Customer().GetType().GetProperty("ThisPropertyDoesntExist")));
-            Assert.IsNull(ConfigurationLoader.Instance.GetDbColumnName(new TestUnmappedEntity().GetType().GetProperty("Id")));
+            Assert.AreEqual("CustomerId", MappingTools.GetDbColumnName(new Customer().GetType().GetProperty("IdCustomer")));
+            Assert.IsNull(MappingTools.GetDbColumnName(new Customer().GetType().GetProperty("ThisPropertyDoesntExist")));
+            Assert.IsNull(MappingTools.GetDbColumnName(new TestUnmappedEntity().GetType().GetProperty("Id")));
         }
 
         /// <summary>
@@ -343,7 +343,7 @@ namespace TestOsamesMicroOrm
 
             try
             {
-                ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("foobar", "Email");
+                MappingTools.GetDbColumnNameFromMappingDictionary("foobar", "Email");
             }
             catch (OOrmHandledException ex)
             {
@@ -370,7 +370,7 @@ namespace TestOsamesMicroOrm
             Assert.IsFalse(ConfigurationLoader.MappingDictionnary["Customer"].ContainsKey("foobar"), "Expected not to find 'foobar' key");
             try
             {
-                ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary("Customer", "foobar");
+                MappingTools.GetDbColumnNameFromMappingDictionary("Customer", "foobar");
             }
             catch (OOrmHandledException ex)
             {
@@ -400,7 +400,7 @@ namespace TestOsamesMicroOrm
             Dictionary<string, string> mappings = ConfigurationLoader.MappingDictionnary["Customer"];
             Assert.IsTrue(mappings.ContainsValue("Email"), "Expected to find 'Email' value");
             Assert.AreEqual("Email", mappings["Email"], "Expected column 'Email' for property 'Email'");
-            Assert.AreEqual("Email", ConfigurationLoader.Instance.GetDbEntityPropertyNameFromMappingDictionary("Customer", "Email"));
+            Assert.AreEqual("Email", MappingTools.GetDbEntityPropertyNameFromMappingDictionary("Customer", "Email"));
         }
 
         /// <summary>
@@ -419,7 +419,7 @@ namespace TestOsamesMicroOrm
             Assert.IsFalse(ConfigurationLoader.MappingDictionnary.ContainsKey("foobar"), "Expected not to find 'foobar' key");
             try
             {
-                ConfigurationLoader.Instance.GetDbEntityPropertyNameFromMappingDictionary("foobar", "Email");
+                MappingTools.GetDbEntityPropertyNameFromMappingDictionary("foobar", "Email");
             }
             catch (OOrmHandledException ex)
             {
@@ -445,7 +445,7 @@ namespace TestOsamesMicroOrm
             Assert.IsFalse(ConfigurationLoader.MappingDictionnary["Customer"].ContainsValue("foobar"), "Expected not to find 'foobar' value");
             try
             {
-                ConfigurationLoader.Instance.GetDbEntityPropertyNameFromMappingDictionary("Customer", "foobar");
+                MappingTools.GetDbEntityPropertyNameFromMappingDictionary("Customer", "foobar");
             }
             catch (OOrmHandledException ex)
             {

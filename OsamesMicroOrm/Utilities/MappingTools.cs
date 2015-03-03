@@ -16,14 +16,19 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using OsamesMicroOrm.Configuration;
+using OsamesMicroOrm.Logging;
 
 namespace OsamesMicroOrm.Utilities
 {
     /// <summary>
     /// Utility methods related to database/object mapping.
     /// </summary>
-    internal static class MappingTools
+    public static class MappingTools
     {
 
         /// <summary>
@@ -54,6 +59,90 @@ namespace OsamesMicroOrm.Utilities
 
             return dbTableName;
 
+        }
+
+        /// <summary>
+        /// Asks mapping dictionary for a DB column name, given a Db entity property name.
+        /// </summary>
+        /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
+        /// <param name="propertyName_">DB entity C# object property name. Ex: "CustomerId"</param>
+        /// <returns>DB column name. Ex: "id_customer"</returns>
+        /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping pour les paramètres donnés</exception>
+        internal static string GetDbColumnNameFromMappingDictionary(string mappingDictionaryName_, string propertyName_)
+        {
+            Dictionary<string, string> mappingObjectSet;
+            string resultColumnName;
+
+            ConfigurationLoader.MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
+            if (mappingObjectSet == null)
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
+            mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
+            if (resultColumnName == null)
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDPROPERTY, null, "[No property '" + propertyName_ + "' in dictionary " + mappingDictionaryName_ + "]");
+
+            return resultColumnName;
+        }
+
+        /// <summary>
+        /// Cherche le nom d'une colonne de la table de la base de données qui correspond au PropertyInfo paramètre.
+        /// </summary>
+        /// <param name="dbEntityProperty_">PropertyInfo</param>
+        /// <returns>nom de colonne définie par le mapping ou null (pas d'exception)</returns>
+        public static string GetDbColumnName(PropertyInfo dbEntityProperty_)
+        {
+            if (dbEntityProperty_ == null)
+            {
+                Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NULLVALUE) + " : PropertyInfo parameter is null");
+                return null;
+            }
+            string resultColumnName;
+            string propName = dbEntityProperty_.Name;
+            string typeName = dbEntityProperty_.ReflectedType.Name;
+
+            Dictionary<string, string> mappingObjectSet;
+            ConfigurationLoader.MappingDictionnary.TryGetValue(typeName, out mappingObjectSet);
+            if (mappingObjectSet == null)
+                return null;
+            mappingObjectSet.TryGetValue(propName, out resultColumnName);
+            return resultColumnName;
+        }
+
+        /// <summary>
+        /// Asks mapping dictionary for a Db entity object property name, given a DB column name.
+        /// </summary>
+        /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
+        /// <param name="dbColumnName_">DB column name. Ex: "id_customer"</param>
+        /// <returns>DB entity C# object property name. Ex: "CustomerId"</returns>
+        internal static string GetDbEntityPropertyNameFromMappingDictionary(string mappingDictionaryName_, string dbColumnName_)
+        {
+            Dictionary<string, string> mappingObjectSet;
+
+            ConfigurationLoader.MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
+
+            if (mappingObjectSet == null)
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
+            string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
+            if (resultPropertyName == null)
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDCOLUMN, null, "[No column '" + dbColumnName_ + "' in dictionary " + mappingDictionaryName_ + "]");
+
+            return resultPropertyName;
+        }
+
+        /// <summary>
+        /// Retourne les informations de mapping pour une table donnée sous forme de dictionnaire :
+        /// clés : propriétés de la classe C# DbEntity, valeurs : noms des colonnes en bae de données.
+        /// </summary>
+        /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
+        /// <returns>Mapping dictionary</returns>
+        /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping pour le nom paramètre</exception>
+        internal static Dictionary<string, string> GetMappingDefinitionsForTable(string mappingDictionaryName_)
+        {
+            Dictionary<string, string> mappingObjectSet;
+
+            ConfigurationLoader.MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
+            if (mappingObjectSet == null)
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
+            return mappingObjectSet;
         }
     }
 }
