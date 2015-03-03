@@ -31,7 +31,7 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping")]
         [Owner("Barbara Post")]
         [TestMethod]
-        public void TestGetDbEntityDictionnaryMappingKeyOk()
+        public void TestGetDbEntityTableNameOk()
         {
             Employee entityEmployee = new Employee();
             Customer entityCustomer = new Customer();
@@ -54,7 +54,7 @@ namespace TestOsamesMicroOrm
         [Owner("Barbara Post")]
         [TestMethod]
         [ExpectedException(typeof(OOrmHandledException))]
-        public void TestGetDbEntityDictionnaryMappingKeyNOkMissingAttribute()
+        public void TestGetDbEntityTableNameNOkMissingAttribute()
         {
             TestUnmappedEntity entity = new TestUnmappedEntity();
             try
@@ -77,7 +77,7 @@ namespace TestOsamesMicroOrm
         [Owner("Barbara Post")]
         [TestMethod]
         [ExpectedException(typeof(OOrmHandledException))]
-        public void TestGetDbEntityDictionnaryMappingKeyNOkEmptyAttribute()
+        public void TestGetDbEntityTableNameNOkEmptyAttribute()
         {
             TestEmptyMappingEntity entity = new TestEmptyMappingEntity();
             try
@@ -101,7 +101,7 @@ namespace TestOsamesMicroOrm
         [Owner("Barbara Post")]
         [TestMethod]
         [ExpectedException(typeof(OOrmHandledException))]
-        public void TestGetDbEntityDictionnaryMappingKeyWrongValueMappingAttribute()
+        public void TestGetDbEntityTableNameWrongValueMappingAttribute()
         {
             TestWrongMappingEntity entity = new TestWrongMappingEntity();
             try
