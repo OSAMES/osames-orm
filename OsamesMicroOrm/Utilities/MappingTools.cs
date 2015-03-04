@@ -98,7 +98,7 @@ namespace OsamesMicroOrm.Utilities
         {
             if (dbEntityProperty_ == null)
             {
-                Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NULLVALUE) + " : PropertyInfo parameter is null");
+                Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NULLVALUE).Value + " : PropertyInfo parameter is null");
                 return null;
             }
             string resultColumnName;
