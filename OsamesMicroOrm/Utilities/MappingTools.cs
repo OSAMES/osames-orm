@@ -39,7 +39,7 @@ namespace OsamesMicroOrm.Utilities
         /// <typeparam name="T">type indication</typeparam>
         /// <returns>Nom de table défini par l'attribut DatabaseMapping porté par le déclaratif de la classe C# de dataObject_</returns>
         /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
-        public static string GetDbEntityTableName<T>(T dataObject_)
+        public static string GetTableName<T>(T dataObject_)
         {
             // Get value
             object[] classAttributes = dataObject_.GetType().GetCustomAttributes(typeof(DatabaseMappingAttribute), false);
@@ -94,7 +94,7 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <param name="dbEntityProperty_">PropertyInfo</param>
         /// <returns>nom de colonne définie par le mapping ou null (pas d'exception)</returns>
-        public static string GetDbColumnNameFromDbEntity(PropertyInfo dbEntityProperty_)
+        public static string GetDbColumnName(PropertyInfo dbEntityProperty_)
         {
             if (dbEntityProperty_ == null)
             {

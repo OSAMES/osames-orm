@@ -39,11 +39,11 @@ namespace TestOsamesMicroOrm
             InvoiceLine entityInvoiceLineI = new InvoiceLine();
             Track entityTrack = new Track();
 
-            Assert.AreEqual("Employee", MappingTools.GetDbEntityTableName(entityEmployee));
-            Assert.AreEqual("Customer", MappingTools.GetDbEntityTableName(entityCustomer));
-            Assert.AreEqual("Invoice", MappingTools.GetDbEntityTableName(entityInvoice));
-            Assert.AreEqual("InvoiceLine", MappingTools.GetDbEntityTableName(entityInvoiceLineI));
-            Assert.AreEqual("Track", MappingTools.GetDbEntityTableName(entityTrack));
+            Assert.AreEqual("Employee", MappingTools.GetTableName(entityEmployee));
+            Assert.AreEqual("Customer", MappingTools.GetTableName(entityCustomer));
+            Assert.AreEqual("Invoice", MappingTools.GetTableName(entityInvoice));
+            Assert.AreEqual("InvoiceLine", MappingTools.GetTableName(entityInvoiceLineI));
+            Assert.AreEqual("Track", MappingTools.GetTableName(entityTrack));
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace TestOsamesMicroOrm
             TestUnmappedEntity entity = new TestUnmappedEntity();
             try
             {
-                string test = MappingTools.GetDbEntityTableName(entity);
+                string test = MappingTools.GetTableName(entity);
             }
             catch (OOrmHandledException ex)
             {
@@ -82,7 +82,7 @@ namespace TestOsamesMicroOrm
             TestEmptyMappingEntity entity = new TestEmptyMappingEntity();
             try
             {
-                string test = MappingTools.GetDbEntityTableName(entity);
+                string test = MappingTools.GetTableName(entity);
                 Assert.Fail("Test didn't fail");
             }
             catch (OOrmHandledException ex)
@@ -106,7 +106,7 @@ namespace TestOsamesMicroOrm
             TestWrongMappingEntity entity = new TestWrongMappingEntity();
             try
             {
-                string test = MappingTools.GetDbEntityTableName(entity);
+                string test = MappingTools.GetTableName(entity);
             }
             catch (OOrmHandledException ex)
             {
