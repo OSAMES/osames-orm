@@ -62,6 +62,17 @@ namespace OsamesMicroOrm.Utilities
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataObject_"></param>
+        /// <returns></returns>
+        public static string GetProtectedTableName<T>(T dataObject_)
+        {
+            return ConfigurationLoader.StartFieldEncloser + GetTableName<T>(dataObject_) + ConfigurationLoader.EndFieldEncloser;
+        }
+
         #endregion
 
         #region obtention du nom de la colonne en DB
@@ -111,6 +122,16 @@ namespace OsamesMicroOrm.Utilities
                 return null;
             mappingObjectSet.TryGetValue(propName, out resultColumnName);
             return resultColumnName;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dbEntityProperty_"></param>
+        /// <returns></returns>
+        public static string GetProtectedDbColumnName(PropertyInfo dbEntityProperty_)
+        {
+            return ConfigurationLoader.StartFieldEncloser + GetDbColumnName(dbEntityProperty_) + ConfigurationLoader.EndFieldEncloser;
         }
 
         #endregion
