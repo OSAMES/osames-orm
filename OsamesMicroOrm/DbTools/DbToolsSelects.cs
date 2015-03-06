@@ -148,20 +148,21 @@ namespace OsamesMicroOrm.DbTools
                     throw new OOrmHandledException(HResultEnum.E_COLUMNDOESNOTEXIST, null, "column name: '" + columnName + "'");
                 }
 
-                // TODO traiter ORM-45 pour cast vers le bon type.
                 object dbValue = reader_[dataInReaderIndex];
-
+                Type dbValueType = reader_.GetFieldType(dataInReaderIndex);
+                
                 // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
                 if (dbValue.GetType() != typeof(DBNull))
                 {
                     try
                     {
-                        dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValue);
+                        var dbValueWithType = Convert.ChangeType(dbValue, dbValueType);
+                        dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValueWithType);
                     }
-                    catch (ArgumentException)
+                    catch (Exception)
                     {
-                        // par exemple valeur entière et propriété de type string
-                        dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValue.ToString());
+                        throw;
+                        // TODO message d'erreur comme indiqué dans ORM-45
                     }
                 }
             }
