@@ -39,7 +39,7 @@ namespace OsamesMicroOrm.Utilities
         /// <typeparam name="T">type indication</typeparam>
         /// <returns>Nom de table défini par l'attribut DatabaseMapping porté par le déclaratif de la classe C# de dataObject_</returns>
         /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
-        public static string GetDbEntityTableName<T>(T dataObject_)
+        public static string GetTableName<T>(T dataObject_)
         {
             // Get value
             object[] classAttributes = dataObject_.GetType().GetCustomAttributes(typeof(DatabaseMappingAttribute), false);
@@ -59,6 +59,22 @@ namespace OsamesMicroOrm.Utilities
                 throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "Key (table name): '" + dbTableName + "'");
 
             return dbTableName;
+
+        }
+
+        /// <summary>
+        /// Retourne le nom de la table pour la DbEntity paramètre, avec des fields enclosers.
+        /// Reads value of DatabaseMapping class custom attribute.
+        /// </summary>
+        /// <param name="dataObject_">data object</param>
+        /// <typeparam name="T">type indication</typeparam>
+        /// <returns>Nom de table défini par l'attribut DatabaseMapping porté par le déclaratif de la classe C# de dataObject_</returns>
+        /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
+        public static string GetProtectedTableName<T>(T dataObject_)
+        {
+            string dbTableName = GetTableName(dataObject_);
+
+            return ConfigurationLoader.StartFieldEncloser + dbTableName + ConfigurationLoader.EndFieldEncloser;
 
         }
 
@@ -92,9 +108,9 @@ namespace OsamesMicroOrm.Utilities
         /// Cherche le nom d'une colonne de la table de la base de données qui correspond au PropertyInfo paramètre.
         /// Ce PropertyInfo est l'objet porteur d'information (nom, valeur...) d'une propriété d'une instance d'une classe C# de type DbEntity.
         /// </summary>
-        /// <param name="dbEntityProperty_">PropertyInfo</param>
+        /// <param name="dbEntityProperty_">PropertyInfo d'un DbEntity</param>
         /// <returns>nom de colonne définie par le mapping ou null (pas d'exception)</returns>
-        public static string GetDbColumnNameFromDbEntity(PropertyInfo dbEntityProperty_)
+        public static string GetColumnName(PropertyInfo dbEntityProperty_)
         {
             if (dbEntityProperty_ == null)
             {
@@ -111,6 +127,18 @@ namespace OsamesMicroOrm.Utilities
                 return null;
             mappingObjectSet.TryGetValue(propName, out resultColumnName);
             return resultColumnName;
+        }
+
+        /// <summary>
+        /// Cherche le nom d'une colonne de la table de la base de données qui correspond au PropertyInfo paramètre. L'entoure de fields enclosers.
+        /// Ce PropertyInfo est l'objet porteur d'information (nom, valeur...) d'une propriété d'une instance d'une classe C# de type DbEntity.
+        /// </summary>
+        /// <param name="dbEntityProperty_">PropertyInfo d'un DbEntity</param>
+        /// <returns>nom de colonne définie par le mapping ou null (pas d'exception)</returns>
+        public static string GetProtectedColumnName(PropertyInfo dbEntityProperty_)
+        {
+            string columnName = GetColumnName(dbEntityProperty_);
+            return ConfigurationLoader.StartFieldEncloser + columnName + ConfigurationLoader.EndFieldEncloser;
         }
 
         #endregion
