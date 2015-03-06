@@ -18,11 +18,9 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using OsamesMicroOrm.Configuration;
-using OsamesMicroOrm.Logging;
 using OsamesMicroOrm.Utilities;
 
 namespace OsamesMicroOrm.DbTools
@@ -338,23 +336,29 @@ namespace OsamesMicroOrm.DbTools
         #endregion
 
         #region utilities
+
         /// <summary>
         /// <c>String.Format</c> avec gestion d'exception.
         /// </summary>
-        /// <param name="format_">Chaîne texte avec des placeholders</param>
+        /// <param name="sqlTemplateName_">Nom du template</param>
         /// <param name="result_">Chaine avec les placeholders remplacés si succès ou bien message d'erreur pour l'utilisateur si échec du remplacement (cas d'erreur)</param>
         /// <param name="args_">Valeurs à mettre dans les placeholders</param>
+        /// <param name="templatesDictionary_">Dictionnaire (des selects ou inserts etc) dans lequel sera cherché le template</param>
         /// <returns>Ne renvoie rien</returns>
-        /// <exception cref="OOrmHandledException">Si le nombre de placeholders et de paramètres ne sont pas égaux.</exception>
-        internal static void TryFormat(string format_, out string result_, params Object[] args_)
+        /// <exception cref="OOrmHandledException">Erreurs possibles : le template n'est pas trouvé, le nombre de placeholders et de paramètres ne sont pas égaux.</exception>
+        internal static void TryFormatTemplate(Dictionary<string, string> templatesDictionary_, string sqlTemplateName_, out string result_, params Object[] args_)
         {
+            string templateText;
+            if (!templatesDictionary_.TryGetValue(sqlTemplateName_, out templateText))
+                throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: " + sqlTemplateName_);
+
             try
             {
-                result_ = String.Format(format_, args_);
+                result_ = String.Format(templateText, args_);
             }
             catch (FormatException ex)
             {
-                int nbOfPlaceholders = Utilities.Common.CountPlaceholders(format_);
+                int nbOfPlaceholders = Common.CountPlaceholders(templateText);
                 string errorDetail = "Expected : " + nbOfPlaceholders + ", given parameters : " + args_.Length;
                 throw new OOrmHandledException(HResultEnum.E_PLACEHOLDERSVALUESCOUNTMISMATCH, ex, errorDetail);
             }

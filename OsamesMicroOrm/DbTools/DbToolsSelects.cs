@@ -64,11 +64,7 @@ namespace OsamesMicroOrm.DbTools
             // 3. Détermine les noms des paramètres pour le where
             DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters_);
 
-            string templateName;
-            if (!ConfigurationLoader.DicSelectSql.TryGetValue(sqlTemplate_, out templateName))
-                throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: '" + sqlTemplate_ + "'");
-
-            DbToolsCommon.TryFormat(templateName, out sqlCommand_, sqlPlaceholders.ToArray());
+            DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicSelectSql, sqlTemplate_, out sqlCommand_, sqlPlaceholders.ToArray());
 
         }
 
@@ -108,12 +104,7 @@ namespace OsamesMicroOrm.DbTools
             // 2. Détermine les noms des paramètres pour le where
             DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters_);
 
-            string templateName;
-            if (!ConfigurationLoader.DicSelectSql.TryGetValue(sqlTemplate_, out templateName))
-                throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: '" + sqlTemplate_ + "'");
-
-            DbToolsCommon.TryFormat(templateName, out sqlCommand_, sqlPlaceholders.ToArray());
-
+            DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicSelectSql, sqlTemplate_, out sqlCommand_, sqlPlaceholders.ToArray());
 
         }
 
