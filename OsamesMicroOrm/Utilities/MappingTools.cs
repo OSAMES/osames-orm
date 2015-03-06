@@ -72,10 +72,7 @@ namespace OsamesMicroOrm.Utilities
         /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
         public static string GetProtectedTableName<T>(T dataObject_)
         {
-            string dbTableName = GetTableName(dataObject_);
-
-            return ConfigurationLoader.StartFieldEncloser + dbTableName + ConfigurationLoader.EndFieldEncloser;
-
+            return ConfigurationLoader.StartFieldEncloser + GetTableName<T>(dataObject_) + ConfigurationLoader.EndFieldEncloser;
         }
 
         #endregion
@@ -110,7 +107,7 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <param name="dbEntityProperty_">PropertyInfo d'un DbEntity</param>
         /// <returns>nom de colonne définie par le mapping ou null (pas d'exception)</returns>
-        public static string GetColumnName(PropertyInfo dbEntityProperty_)
+        public static string GetDbColumnName(PropertyInfo dbEntityProperty_)
         {
             if (dbEntityProperty_ == null)
             {
@@ -135,10 +132,9 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <param name="dbEntityProperty_">PropertyInfo d'un DbEntity</param>
         /// <returns>nom de colonne définie par le mapping ou null (pas d'exception)</returns>
-        public static string GetProtectedColumnName(PropertyInfo dbEntityProperty_)
+        public static string GetProtectedDbColumnName(PropertyInfo dbEntityProperty_)
         {
-            string columnName = GetColumnName(dbEntityProperty_);
-            return ConfigurationLoader.StartFieldEncloser + columnName + ConfigurationLoader.EndFieldEncloser;
+            return ConfigurationLoader.StartFieldEncloser + GetDbColumnName(dbEntityProperty_) + ConfigurationLoader.EndFieldEncloser;
         }
 
         #endregion
