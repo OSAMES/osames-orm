@@ -113,10 +113,10 @@ namespace OsamesMicroOrm.DbTools
             if (transaction_ != null)
             {
                 // Présence d'une transaction
-                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) == 0)
-                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
-                else
+                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) != 0)
                     nbRowsAffected++;
+                else
+                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
 
                 return nbRowsAffected;
             }
@@ -126,10 +126,10 @@ namespace OsamesMicroOrm.DbTools
             try
             {
                 conn = DbManager.Instance.CreateConnection();
-                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) == 0)
-                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
-                else
+                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) != 0)
                     nbRowsAffected++;
+                else
+                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
 
                 return nbRowsAffected;
             }
@@ -165,22 +165,22 @@ namespace OsamesMicroOrm.DbTools
             {
                 T dataObject = dataObjects_[i];
                 List<KeyValuePair<string, object>> adoParameters;
-                if (i == 0)
-                    //on tryformat le sqlcommand
-                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_[i], out sqlCommand, out adoParameters);
-                else
-                {    // ici le slqcommand rendu est null
+                if (i != 0)
+                {
+                    // ici le slqcommand rendu est null
                     string tmpSqlCommand;
                     FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_[i], out tmpSqlCommand, out adoParameters, false);
                 }
+                else
+                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_[i], out sqlCommand, out adoParameters);
 
                 if (transaction_ != null)
                 {
                     // Présence d'une transaction
-                    if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) == 0)
-                        Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
-                    else
+                    if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) != 0)
                         nbRowsAffected++;
+                    else
+                        Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
 
                     continue;
                 }
