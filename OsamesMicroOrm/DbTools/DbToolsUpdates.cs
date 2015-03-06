@@ -190,10 +190,10 @@ namespace OsamesMicroOrm.DbTools
                 try
                 {
                     conn = DbManager.Instance.CreateConnection();
-                    if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) == 0)
-                        Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
-                    else
+                    if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) != 0)
                         nbRowsAffected++;
+                    else
+                        Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
                 }
                 finally
                 {

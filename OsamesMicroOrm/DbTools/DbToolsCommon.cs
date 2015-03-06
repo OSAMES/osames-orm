@@ -194,10 +194,6 @@ namespace OsamesMicroOrm.DbTools
             {
                 return value_;
             }
-            if (value_.ToUpperInvariant().StartsWith("%UL%"))
-            {
-                return value_.Substring(4);
-            }
 
             string returnValue;
             char[] valueAsCharArray;
@@ -242,6 +238,11 @@ namespace OsamesMicroOrm.DbTools
                 return string.Concat(ConfigurationLoader.StartFieldEncloser, returnValue, ConfigurationLoader.EndFieldEncloser);
             }
 
+            if (value_.ToUpperInvariant().StartsWith("%UL%"))
+            {
+                return value_.Substring(4);
+            }
+            
             if (value_.Count(c_ => c_ == ':') > 1)
                 throw new OOrmHandledException(HResultEnum.E_INCORRECTPLACEHOLDERVALUE, null, "Value : '" + value_ +"' cannot contain more than one colon");
 

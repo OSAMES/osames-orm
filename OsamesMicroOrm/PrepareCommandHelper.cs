@@ -17,10 +17,9 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Threading;
-using System.Collections.Generic;
 
 namespace OsamesMicroOrm
 {
@@ -35,7 +34,7 @@ namespace OsamesMicroOrm
         /// Commande telle que fournie par l'appel à DbProviderFactory.CreateCommand();
         /// Accessible en interne pour l'ORM.
         /// </summary>
-        internal System.Data.Common.DbCommand AdoDbCommand { get; private set; }
+        internal DbCommand AdoDbCommand { get; private set; }
 
         /// <summary>
         /// Constructeur
@@ -70,13 +69,13 @@ namespace OsamesMicroOrm
         /// <summary>
         /// Obtient la collection d'objets DbParameter. 
         /// </summary>
-        internal DbParameterCollection Parameters { get { return AdoDbCommand.Parameters; } }
+        private DbParameterCollection Parameters { get { return AdoDbCommand.Parameters; } }
 
         /// <summary>
         /// Crée une nouvelle instance d'un objet DbParameter.
         /// </summary>
         /// <returns></returns>
-        internal DbParameter CreateParameter()
+        private DbParameter CreateParameter()
         {
             return AdoDbCommand.CreateParameter();
         }
