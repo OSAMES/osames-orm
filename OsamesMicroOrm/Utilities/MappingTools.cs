@@ -72,7 +72,7 @@ namespace OsamesMicroOrm.Utilities
         /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
         public static string GetProtectedTableName<T>(T dataObject_)
         {
-            return ConfigurationLoader.StartFieldEncloser + GetTableName<T>(dataObject_) + ConfigurationLoader.EndFieldEncloser;
+            return ConfigurationLoader.StartFieldEncloser + GetTableName(dataObject_) + ConfigurationLoader.EndFieldEncloser;
         }
 
         #endregion
