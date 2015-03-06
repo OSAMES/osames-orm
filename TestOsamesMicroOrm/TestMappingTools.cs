@@ -149,9 +149,9 @@ namespace TestOsamesMicroOrm
         public void TestGeDbColumnName()
         {
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-            Assert.AreEqual("CustomerId", MappingTools.GetDbColumnNameFromDbEntity(new Customer().GetType().GetProperty("IdCustomer")));
-            Assert.IsNull(MappingTools.GetDbColumnNameFromDbEntity(new Customer().GetType().GetProperty("ThisPropertyDoesntExist")));
-            Assert.IsNull(MappingTools.GetDbColumnNameFromDbEntity(new TestUnmappedEntity().GetType().GetProperty("Id")));
+            Assert.AreEqual("CustomerId", MappingTools.GetDbColumnName(new Customer().GetType().GetProperty("IdCustomer")));
+            Assert.IsNull(MappingTools.GetDbColumnName(new Customer().GetType().GetProperty("ThisPropertyDoesntExist")));
+            Assert.IsNull(MappingTools.GetDbColumnName(new TestUnmappedEntity().GetType().GetProperty("Id")));
         }
 
         /// <summary>
