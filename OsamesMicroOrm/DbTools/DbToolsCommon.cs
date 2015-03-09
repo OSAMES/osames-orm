@@ -223,6 +223,11 @@ namespace OsamesMicroOrm.DbTools
                 return "@" + returnValue.ToLowerInvariant();
             }
 
+            if (value_.ToUpperInvariant().StartsWith("%UL%"))
+            {
+                return value_.Substring(4);
+            }
+
             if (value_.StartsWith("%"))
             {
                 // C'est un littéral.
@@ -236,11 +241,6 @@ namespace OsamesMicroOrm.DbTools
 
                 returnValue = new string(valueAsCharArray);
                 return string.Concat(ConfigurationLoader.StartFieldEncloser, returnValue, ConfigurationLoader.EndFieldEncloser);
-            }
-
-            if (value_.ToUpperInvariant().StartsWith("%UL%"))
-            {
-                return value_.Substring(4);
             }
             
             if (value_.Count(c_ => c_ == ':') > 1)
