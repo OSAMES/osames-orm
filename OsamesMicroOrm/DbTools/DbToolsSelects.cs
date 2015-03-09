@@ -161,7 +161,7 @@ namespace OsamesMicroOrm.DbTools
                 }
                 catch (Exception ex)
                 {
-                    throw new OOrmHandledException(HResultEnum.E_CANNOTSETVALUEDATAREADERTODBENTITY, ex, "[Data raw value]: '" + dbValue + "' + [C# type from data reader]: ' " + dbValueType + "' [C# type of DbEntity property]: '" + dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).PropertyType.FullName + "'");
+                    throw new OOrmHandledException(HResultEnum.E_CANNOTSETVALUEDATAREADERTODBENTITY, ex, "[Data raw value]: '" + dbValue + "', [C# type from data reader]: ' " + dbValueType + "', [C# type of DbEntity property]: '" + dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).PropertyType.FullName + "'");
                 }
             }
         }
