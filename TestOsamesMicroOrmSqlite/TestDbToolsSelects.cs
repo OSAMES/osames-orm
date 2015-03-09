@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
 using OsamesMicroOrm.DbTools;
-using OsamesMicroOrm.Utilities;
 using SampleDbEntities.Chinook;
+using TestOsamesMicroOrm.Tools;
 using TestOsamesMicroOrmSqlite.Tools;
-using Common = TestOsamesMicroOrm.Tools.Common;
 
 namespace TestOsamesMicroOrmSqlite
 {
@@ -177,6 +175,23 @@ namespace TestOsamesMicroOrmSqlite
                 Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_METANAMESVALUESCOUNTMISMATCH, ex);
                 throw;
             }
+
+        }
+
+        /// <summary>
+        /// Test du select sur un champ date.
+        /// 1962/2/18 pour Adams Andrew.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("SqLite")]
+        [TestCategory("Mapping")]
+        [TestCategory("Select")]
+        public void TestSelectDateData()
+        {
+            Employee employee = DbToolsSelects.SelectSingle<Employee>(new List<string> { "FirstName", "LastName", "BirthDate" }, "BaseReadWhereAndWhere", "Employee",
+                new List<string> { "FirstName", "#", "LastName", "#" }, new List<object> { "Andrew", "Adams" });
+            Console.WriteLine(employee.BirthDate);
+            Assert.AreEqual(new DateTime(1962, 2, 18), employee.BirthDate);
 
         }
     }
