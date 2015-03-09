@@ -58,7 +58,7 @@ namespace OsamesMicroOrm.DbTools
 
             string sbSqlSelectFieldsCommand = DbToolsCommon.GenerateCommaSeparatedDbFieldsString(lstDbColumnNames_); //{0} dans le template sql
 
-            // 2. Positionne les deux premiers placeholders
+            // 2. Positionne les deux premiers placeholders : chaîne pour les champs à sélectionner, nom de la table
             List<string> sqlPlaceholders = new List<string> { sbSqlSelectFieldsCommand, string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 3. Détermine les noms des paramètres pour le where
@@ -98,7 +98,7 @@ namespace OsamesMicroOrm.DbTools
             if (!skipAutoDetermine_)
                 DbToolsCommon.DetermineDatabaseColumnNamesAndDataObjectPropertyNames(mappingDictionariesContainerKey_, out lstDbColumnNames_, out lstPropertiesNames_);
 
-            // 1. Positionne le premier placeholder
+            // 1. Positionne le premier placeholder : nom de la table
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 2. Détermine les noms des paramètres pour le where

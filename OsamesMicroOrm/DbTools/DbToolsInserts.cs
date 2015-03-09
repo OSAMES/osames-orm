@@ -64,7 +64,7 @@ namespace OsamesMicroOrm.DbTools
             sbFieldsToInsert.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames[iCountMinusOne]).Append(ConfigurationLoader.EndFieldEncloser);
             sbParamToInsert.Append(lstAdoParameters_[iCountMinusOne].Key);
 
-            // 2. Positionne les deux premiers placeholders
+            // 2. Positionne les deux premiers placeholders : nom de la table, chaîne pour les champs à mettre à jour
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbFieldsToInsert.ToString(), sbParamToInsert.ToString() };
 
             if (tryFormat)

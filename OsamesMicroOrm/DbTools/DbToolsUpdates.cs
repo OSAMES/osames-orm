@@ -50,7 +50,8 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="lstAdoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
-        /// <param name="tryFormat">Si a vrai, on fait un try format sur le sqlcommand</param>
+        /// <param name="tryFormat">Si a vrai, on fait un try format sur le sqlcommand.
+        /// A faux quand on appelle cette méthode pour une liste d'objets à mettre à jour : on ne fait try format que pour le premier objet, puis la sqlcommand est réutilisée</param>
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         internal static void FormatSqlForUpdate<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
@@ -70,7 +71,7 @@ namespace OsamesMicroOrm.DbTools
             }
             sbFieldsToUpdate.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames[iCountMinusOne]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(lstAdoParameters_[iCountMinusOne].Key);
 
-            // 2. Positionne les deux premiers placeholders
+            // 2. Positionne les deux premiers placeholders : nom de la table, chaîne pour les champs à mettre à jour
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbFieldsToUpdate.ToString() };
 
             // 3. Détermine les noms des paramètres pour le where
