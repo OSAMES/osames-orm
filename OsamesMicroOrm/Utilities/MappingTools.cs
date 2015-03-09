@@ -171,7 +171,7 @@ namespace OsamesMicroOrm.Utilities
         /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
         /// <returns>Mapping dictionary</returns>
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping pour le nom paramètre</exception>
-        internal static Dictionary<string, string> GetMappingDefinitionsForTable(string mappingDictionaryName_)
+        public static Dictionary<string, string> GetMappingDefinitionsForTable(string mappingDictionaryName_)
         {
             Dictionary<string, string> mappingObjectSet;
 
