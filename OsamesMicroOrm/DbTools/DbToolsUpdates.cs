@@ -97,19 +97,19 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="sqlTemplate_">Contient le nom du template sql update à utiliser</param>
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
-        /// <param name="lstWhereColumnNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">any error</exception>
-        public static uint Update<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereColumnNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
+        public static uint Update<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             uint nbRowsAffected = 0;
 
-            FormatSqlForUpdate(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_, out sqlCommand, out adoParameters);
+            FormatSqlForUpdate(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters);
 
             if (transaction_ != null)
             {
@@ -150,13 +150,13 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="sqlTemplate_">Contient le nom du template sql update à utiliser</param>
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
-        /// <param name="lstWhereColumnNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET, une liste pour chaque objet de dataObjects_. Peut être null</param>
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">any error</exception>
-        public static uint Update<T>(List<T> dataObjects_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereColumnNames_, List<List<object>> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
+        public static uint Update<T>(List<T> dataObjects_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<List<object>> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
         {
             string sqlCommand = null;
 
@@ -170,10 +170,10 @@ namespace OsamesMicroOrm.DbTools
                 {
                     // ici le slqcommand rendu est null
                     string tmpSqlCommand;
-                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_[i], out tmpSqlCommand, out adoParameters, false);
+                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i], out tmpSqlCommand, out adoParameters, false);
                 }
                 else
-                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereColumnNames_, lstWhereValues_[i], out sqlCommand, out adoParameters);
+                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i], out sqlCommand, out adoParameters);
 
                 if (transaction_ != null)
                 {
