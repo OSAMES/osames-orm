@@ -38,3 +38,4 @@ Valeur;Nom;Description;Note;Technical message
 "0xA0040325";"E_METANAMESVALUESCOUNTMISMATCH";"[PARAMETER] There are less values provided than meta names to format ADO.NET parameters. See log file for details.";"";""
 "0xA0040326";"E_ADOCOMMANDNOTCREATED";"[PARAMETER] ADO.NET command could not be created.";"";""
 "0xA0040327";"E_NULLCONNECTION";"[PARAMETER] Connection cannot be null.";"";""
+"0xA0040328";"E_CANNOTSETVALUEDATAREADERTODBENTITY";"Cannot set value from data reader to C# DbEntity : types defined by data reader and C# DbEntity property are not compatible";"";""

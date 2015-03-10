@@ -35,4 +35,11 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
   	<orm:MappingObject property="Email" column="Email"/>
   	<orm:MappingObject property="SupportRepId" column="SupportRepId"/>
   </orm:Table>
+
+  <orm:Table name="Employee">
+    <orm:MappingObject property="EmployeeId" column="EmployeeId"/>
+    <orm:MappingObject property="LastName" column="LastName"/>
+    <orm:MappingObject property="FirstName" column="FirstName"/>
+    <orm:MappingObject property="BirthDate" column="LastName"/>
+  </orm:Table>
 </orm:Tables>

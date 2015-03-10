@@ -11,7 +11,7 @@ using System.CodeDom.Compiler;
 namespace OsamesMicroOrm
 {
 	/// <summary>
-	/// Auto generated date: 02/25/2015 10:46:00
+	/// Auto generated date: 03/07/2015 21:50:23
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
 	public enum HResultEnum
@@ -211,6 +211,11 @@ namespace OsamesMicroOrm
 		/// [PARAMETER] Connection cannot be null.
 		/// </summary>
 		E_NULLCONNECTION,
+	                    
+		/// <summary>
+		/// Cannot set value from data reader to C# DbEntity : types defined by data reader and C# DbEntity property are not compatible
+		/// </summary>
+		E_CANNOTSETVALUEDATAREADERTODBENTITY,
 	                    
 		// ReSharper restore InconsistentNaming
 	}
