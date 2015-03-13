@@ -370,7 +370,7 @@ namespace OsamesMicroOrm.Configuration
                 if (workDictionary_.ContainsKey(name))
                     throw new OOrmHandledException(HResultEnum.E_XMLNAMEATTRIBUTEMORETHANONCE, null, "value: " + name);
                 string nodeValue = node_.Current.Value;
-                if (node_.Current.Value[nodeValue.Length - 1] == ';')
+                if (nodeValue[nodeValue.Length - 1] == ';')
                     workDictionary_.Add(name, nodeValue);
                 else
                     workDictionary_.Add(name, nodeValue + ';');
