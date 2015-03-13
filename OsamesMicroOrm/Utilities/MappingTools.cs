@@ -139,6 +139,19 @@ namespace OsamesMicroOrm.Utilities
 
         #endregion
 
+        #region obtention du nom de la colonne en DB préfixée par le nom de la table
+
+        public static string GetTableAndColumnName(PropertyInfo pi_)
+        {
+            return null;
+        }
+
+        public static string GetProtectedTableAndColumnName(PropertyInfo pi_)
+        {
+            return null;
+        }
+        #endregion
+
         #region obtention du nom de la propriété d'un DbEntity
         /// <summary>
         /// Asks mapping dictionary for a Db entity object property name, given a DB column name.
@@ -181,6 +194,16 @@ namespace OsamesMicroOrm.Utilities
             return mappingObjectSet;
         }
 
+
+        public static List<KeyValuePair<string, string>> GetPropertyToColumnMapping<T>(T dbEntity_)
+        {
+            return null;
+        }
+
+        public static List<KeyValuePair<string, string>> GetProtectedPropertyToColumnMapping<T>(T dbEntity_)
+        {
+            return null;
+        }
         #endregion
     }
 }

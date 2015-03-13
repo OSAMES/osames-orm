@@ -369,10 +369,11 @@ namespace OsamesMicroOrm.Configuration
                 string name = node_.Current.GetAttribute("name", "");
                 if (workDictionary_.ContainsKey(name))
                     throw new OOrmHandledException(HResultEnum.E_XMLNAMEATTRIBUTEMORETHANONCE, null, "value: " + name);
-                if (node_.Current.Value[node_.Current.Value.Length - 1] == ';')
-                    workDictionary_.Add(name, node_.Current.Value);
+                string nodeValue = node_.Current.Value;
+                if (node_.Current.Value[nodeValue.Length - 1] == ';')
+                    workDictionary_.Add(name, nodeValue);
                 else
-                    workDictionary_.Add(name, node_.Current.Value + ';');
+                    workDictionary_.Add(name, nodeValue + ';');
             } while (node_.Current.MoveToNext());
         }
 
