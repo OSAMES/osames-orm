@@ -329,18 +329,16 @@ namespace OsamesMicroOrm
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         internal byte ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
-            var command = cmdText_ + ";" + SelectLastInsertIdCommandText;
-            command = command.Replace(";;", ";");
             if (connection_.IsBackup)
             {
                 lock (BackupConnection)
                 {
-                    lastInsertedRowId_ = new DbManagerHelper<object[,]>(connection_, cmdType_, command, SqlCommandType.Insert).Execute<long>(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<object[,]>(connection_, cmdType_, cmdText_ + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute<long>(cmdParams_);
                 }
             }
             else
             {
-                lastInsertedRowId_ = new DbManagerHelper<object[,]>(connection_, cmdType_, command, SqlCommandType.Insert).Execute<long>(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper<object[,]>(connection_, cmdType_, cmdText_ + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute<long>(cmdParams_);
             }
             return 1;
         }
@@ -358,20 +356,18 @@ namespace OsamesMicroOrm
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         internal byte ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, out long lastInsertedRowId_)
         {
-            var command = cmdText_ + ";" + SelectLastInsertIdCommandText;
-            command = command.Replace(";;", ";");
             if (connection_.IsBackup)
             {
                 lock (BackupConnection)
                 {
                     // perform code with locking
-                    lastInsertedRowId_ = new DbManagerHelper<IEnumerable<OOrmDbParameter>>(connection_, cmdType_, command, SqlCommandType.Insert).Execute<long>(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<IEnumerable<OOrmDbParameter>>(connection_, cmdType_, cmdText_ + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute<long>(cmdParams_);
 
                 }
             }
             else
             {
-                lastInsertedRowId_ = new DbManagerHelper<IEnumerable<OOrmDbParameter>>(connection_, cmdType_, command, SqlCommandType.Insert).Execute<long>(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper<IEnumerable<OOrmDbParameter>>(connection_, cmdType_, cmdText_ + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute<long>(cmdParams_);
             }
             return 1;
         }
@@ -389,18 +385,16 @@ namespace OsamesMicroOrm
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         internal byte ExecuteNonQuery(OOrmDbConnectionWrapper connection_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
         {
-            var command = cmdText_ + ";" + SelectLastInsertIdCommandText;
-            command = command.Replace(";;", ";");
             if (connection_.IsBackup)
             {
                 lock (BackupConnection)
                 {
-                    lastInsertedRowId_ = new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(connection_, cmdType_, command, SqlCommandType.Insert).Execute<long>(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(connection_, cmdType_, cmdText_ + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute<long>(cmdParams_);
                 }
             }
             else
             {
-                lastInsertedRowId_ = new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(connection_, cmdType_, command, SqlCommandType.Insert).Execute<long>(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(connection_, cmdType_, cmdText_ + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute<long>(cmdParams_);
             }
             return 1;
         }
@@ -418,20 +412,18 @@ namespace OsamesMicroOrm
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         public byte ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, object[,] cmdParams_, out long lastInsertedRowId_)
         {
-            var command = cmdText_ + ";" + SelectLastInsertIdCommandText;
-            command = command.Replace(";;", ";");
             if (transaction_.ConnectionWrapper.IsBackup)
             {
                 lock (BackupConnection)
                 {
                     // perform code with locking
-                    lastInsertedRowId_ = new DbManagerHelper<object[,]>(transaction_, cmdType_, command, SqlCommandType.Insert).Execute<long>(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<object[,]>(transaction_, cmdType_, cmdText_ + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute<long>(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                lastInsertedRowId_ = new DbManagerHelper<object[,]>(transaction_, cmdType_, command, SqlCommandType.Insert).Execute<long>(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper<object[,]>(transaction_, cmdType_, cmdText_ + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute<long>(cmdParams_);
             }
 
             return 1;
@@ -450,20 +442,18 @@ namespace OsamesMicroOrm
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         public byte ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<OOrmDbParameter> cmdParams_, out long lastInsertedRowId_)
         {
-            var command = cmdText_ + ";" + SelectLastInsertIdCommandText;
-            command = command.Replace(";;", ";");
             if (transaction_.ConnectionWrapper.IsBackup)
             {
                 lock (BackupConnection)
                 {
                     // perform code with locking
-                    lastInsertedRowId_ = new DbManagerHelper<IEnumerable<OOrmDbParameter>>(transaction_, cmdType_, command, SqlCommandType.Insert).Execute<long>(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<IEnumerable<OOrmDbParameter>>(transaction_, cmdType_, cmdText_ + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute<long>(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                lastInsertedRowId_ = new DbManagerHelper<IEnumerable<OOrmDbParameter>>(transaction_, cmdType_, command, SqlCommandType.Insert).Execute<long>(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper<IEnumerable<OOrmDbParameter>>(transaction_, cmdType_, cmdText_ + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute<long>(cmdParams_);
             }
 
             return 1;
@@ -482,19 +472,17 @@ namespace OsamesMicroOrm
         /// <exception cref="OOrmHandledException">Last inserted row ID isn't a long number, or other SQL execution error</exception>
         public byte ExecuteNonQuery(OOrmDbTransactionWrapper transaction_, CommandType cmdType_, string cmdText_, IEnumerable<KeyValuePair<string, object>> cmdParams_, out long lastInsertedRowId_)
         {
-            var command = cmdText_ + ";" + SelectLastInsertIdCommandText;
-            command = command.Replace(";;", ";");
             if (transaction_.ConnectionWrapper.IsBackup)
             {
                 lock (BackupConnection)
                 {
-                    lastInsertedRowId_ = new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(transaction_, cmdType_, command, SqlCommandType.Insert).Execute<long>(cmdParams_);
+                    lastInsertedRowId_ = new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(transaction_, cmdType_, cmdText_ + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute<long>(cmdParams_);
                 }
             }
             else
             {
                 // no lock
-                lastInsertedRowId_ = new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(transaction_, cmdType_, command, SqlCommandType.Insert).Execute<long>(cmdParams_);
+                lastInsertedRowId_ = new DbManagerHelper<IEnumerable<KeyValuePair<string, object>>>(transaction_, cmdType_, cmdText_ + SelectLastInsertIdCommandText, SqlCommandType.Insert).Execute<long>(cmdParams_);
             }
             return 1;
         }
