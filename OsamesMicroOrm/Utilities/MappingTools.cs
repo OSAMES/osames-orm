@@ -91,11 +91,12 @@ namespace OsamesMicroOrm.Utilities
             Dictionary<string, string> mappingObjectSet;
             string resultColumnName;
 
-            ConfigurationLoader.MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
-            if (mappingObjectSet == null)
+            if (!ConfigurationLoader.MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet))
                 throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
+
             mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
-            if (resultColumnName == null)
+
+            if (!mappingObjectSet.TryGetValue(propertyName_, out resultColumnName))
                 throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDPROPERTY, null, "[No property '" + propertyName_ + "' in dictionary " + mappingDictionaryName_ + "]");
 
             return resultColumnName;
@@ -114,15 +115,14 @@ namespace OsamesMicroOrm.Utilities
                 Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NULLVALUE).Value + " : PropertyInfo parameter is null");
                 return null;
             }
-            string resultColumnName;
+            string resultColumnName = null;
             string propName = dbEntityProperty_.Name;
             string typeName = dbEntityProperty_.ReflectedType.Name;
 
             Dictionary<string, string> mappingObjectSet;
-            ConfigurationLoader.MappingDictionnary.TryGetValue(typeName, out mappingObjectSet);
-            if (mappingObjectSet == null)
-                return null;
-            mappingObjectSet.TryGetValue(propName, out resultColumnName);
+            if (ConfigurationLoader.MappingDictionnary.TryGetValue(typeName, out mappingObjectSet))
+                mappingObjectSet.TryGetValue(propName, out resultColumnName);
+           
             return resultColumnName;
         }
 
@@ -163,11 +163,11 @@ namespace OsamesMicroOrm.Utilities
         {
             Dictionary<string, string> mappingObjectSet;
 
-            ConfigurationLoader.MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
-
-            if (mappingObjectSet == null)
+            if (!ConfigurationLoader.MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet))
                 throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
+
             string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
+
             if (resultPropertyName == null)
                 throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDCOLUMN, null, "[No column '" + dbColumnName_ + "' in dictionary " + mappingDictionaryName_ + "]");
 
@@ -188,8 +188,7 @@ namespace OsamesMicroOrm.Utilities
         {
             Dictionary<string, string> mappingObjectSet;
 
-            ConfigurationLoader.MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet);
-            if (mappingObjectSet == null)
+            if (!ConfigurationLoader.MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet))
                 throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
             return mappingObjectSet;
         }
