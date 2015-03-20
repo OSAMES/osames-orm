@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Logging;
 
@@ -143,12 +144,13 @@ namespace OsamesMicroOrm.Utilities
 
         public static string GetTableAndColumnName(PropertyInfo pi_)
         {
-            return null;
+            return GetTableName(pi_.ReflectedType.Name) + "." + GetDbColumnName(pi_);
         }
 
         public static string GetProtectedTableAndColumnName(PropertyInfo pi_)
         {
-            return null;
+            string protectreturnvalue = ConfigurationLoader.StartFieldEncloser + "." + ConfigurationLoader.EndFieldEncloser;
+            return ConfigurationLoader.StartFieldEncloser + GetTableAndColumnName(pi_).Replace(".", protectreturnvalue) + ConfigurationLoader.EndFieldEncloser;
         }
         #endregion
 
