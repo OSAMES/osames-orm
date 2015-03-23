@@ -16,20 +16,18 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System.Diagnostics;
-using System.Linq;
-using System.Xml.XPath;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
-using System.Xml;
-using OsamesMicroOrm.Logging;
-using OsamesMicroOrm.Utilities;
 using System.Data;
 using System.Data.Common;
-using System.Reflection;
+using System.Diagnostics;
+using System.IO;
 using System.Text;
+using System.Xml;
+using System.Xml.XPath;
+using OsamesMicroOrm.Logging;
+using OsamesMicroOrm.Utilities;
 
 namespace OsamesMicroOrm.Configuration
 {
