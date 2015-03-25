@@ -17,12 +17,8 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using OsamesMicroOrm.Configuration;
-using OsamesMicroOrm.Logging;
 
 namespace OsamesMicroOrm.Utilities
 {
@@ -103,55 +99,7 @@ namespace OsamesMicroOrm.Utilities
             return resultColumnName;
         }
 
-        /// <summary>
-        /// Cherche le nom d'une colonne de la table de la base de données qui correspond au PropertyInfo paramètre.
-        /// Ce PropertyInfo est l'objet porteur d'information (nom, valeur...) d'une propriété d'une instance d'une classe C# de type DbEntity.
-        /// </summary>
-        /// <param name="dbEntityProperty_">PropertyInfo d'un DbEntity</param>
-        /// <returns>nom de colonne définie par le mapping ou null (pas d'exception)</returns>
-        public static string GetDbColumnName(PropertyInfo dbEntityProperty_)
-        {
-            if (dbEntityProperty_ == null)
-            {
-                Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NULLVALUE).Value + " : PropertyInfo parameter is null");
-                return null;
-            }
-            string resultColumnName = null;
-            string propName = dbEntityProperty_.Name;
-            string typeName = dbEntityProperty_.ReflectedType.Name;
-
-            Dictionary<string, string> mappingObjectSet;
-            if (ConfigurationLoader.MappingDictionnary.TryGetValue(typeName, out mappingObjectSet))
-                mappingObjectSet.TryGetValue(propName, out resultColumnName);
-           
-            return resultColumnName;
-        }
-
-        /// <summary>
-        /// Cherche le nom d'une colonne de la table de la base de données qui correspond au PropertyInfo paramètre. L'entoure de fields enclosers.
-        /// Ce PropertyInfo est l'objet porteur d'information (nom, valeur...) d'une propriété d'une instance d'une classe C# de type DbEntity.
-        /// </summary>
-        /// <param name="dbEntityProperty_">PropertyInfo d'un DbEntity</param>
-        /// <returns>nom de colonne définie par le mapping ou null (pas d'exception)</returns>
-        public static string GetProtectedDbColumnName(PropertyInfo dbEntityProperty_)
-        {
-            return ConfigurationLoader.StartFieldEncloser + GetDbColumnName(dbEntityProperty_) + ConfigurationLoader.EndFieldEncloser;
-        }
-
-        #endregion
-
-        #region obtention du nom de la colonne en DB préfixée par le nom de la table
-
-        public static string GetTableAndColumnName(PropertyInfo pi_)
-        {
-            return GetTableName(pi_.ReflectedType.Name) + "." + GetDbColumnName(pi_);
-        }
-
-        public static string GetProtectedTableAndColumnName(PropertyInfo pi_)
-        {
-            string protectreturnvalue = ConfigurationLoader.StartFieldEncloser + "." + ConfigurationLoader.EndFieldEncloser;
-            return ConfigurationLoader.StartFieldEncloser + GetTableAndColumnName(pi_).Replace(".", protectreturnvalue) + ConfigurationLoader.EndFieldEncloser;
-        }
+  
         #endregion
 
         #region obtention du nom de la propriété d'un DbEntity
