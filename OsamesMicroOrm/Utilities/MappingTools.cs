@@ -99,6 +99,21 @@ namespace OsamesMicroOrm.Utilities
             return resultColumnName;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dbEntity_"></param>
+        /// <param name="propertyName_"></param>
+        /// <returns></returns>
+        public static string GetDbColumnName<T>(T dbEntity_, string propertyName_)
+        {
+            if (dbEntity_ == null)
+                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "dbEntity is null");
+            if (string.IsNullOrEmpty(propertyName_) || string.IsNullOrWhiteSpace(propertyName_))
+                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property name is null");
+
+            return ConfigurationLoader.StartFieldEncloser + GetDbColumnNameFromMappingDictionary(GetTableName(dbEntity_), propertyName_) + ConfigurationLoader.EndFieldEncloser;
+        }
   
         #endregion
 
