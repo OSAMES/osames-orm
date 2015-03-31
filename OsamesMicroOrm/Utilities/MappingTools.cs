@@ -155,6 +155,9 @@ namespace OsamesMicroOrm.Utilities
         /// <returns></returns>
         public static Dictionary<string, string> GetDbMappingDefinitionsFor<T>(T dbEntity_)
         {
+            if (dbEntity_ == null)
+                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "dbEntity is null");
+
             string table = GetTableName(dbEntity_);
 
             return GetMappingDefinitionsForTable(
