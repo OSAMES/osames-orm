@@ -24,6 +24,8 @@ namespace OsamesMicroOrm.Utilities
 {
     /// <summary>
     /// Utility methods related to database/object mapping.
+    /// Les méthodes publiques renvoient des noms de table et colonne protégés.
+    /// Les méthodes qui renvoient des noms de table et colonne non protégés doivent être internal ou private.
     /// </summary>
     public static class MappingTools
     {
@@ -32,7 +34,7 @@ namespace OsamesMicroOrm.Utilities
         /// Retourne le nom de la table (protégé) pour la DbEntity paramètre.
         /// Reads value of DatabaseMapping class custom attribute.
         /// </summary>
-        /// <param name="dataObject_">data object</param>
+        /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
         /// <typeparam name="T">type indication</typeparam>
         /// <returns>Nom de table défini par l'attribut DatabaseMapping porté par le déclaratif de la classe C# de dataObject_</returns>
         /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
@@ -45,7 +47,7 @@ namespace OsamesMicroOrm.Utilities
         /// Retourne le nom de la table (non protégé) pour la DbEntity paramètre.
         /// Reads value of DatabaseMapping class custom attribute.
         /// </summary>
-        /// <param name="dataObject_">data object</param>
+        /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
         /// <typeparam name="T">type indication</typeparam>
         /// <returns>Nom de table défini par l'attribut DatabaseMapping porté par le déclaratif de la classe C# de dataObject_</returns>
         /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
@@ -79,7 +81,7 @@ namespace OsamesMicroOrm.Utilities
         /// Retourne le nom de la colonne (non protégé) dans la table paramètre pour le nom de propriété paramètre.
         /// </summary>
         /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="propertyName_">DB entity C# object property name. Ex: "CustomerId"</param>
+        /// <param name="propertyName_">Nom d'une propriété de dbEntity_. Ex: "CustomerId"</param>
         /// <returns>DB column name. Ex: "id_customer"</returns>
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping pour les paramètres donnés</exception>
         internal static string GetDbColumnNameFromMappingDictionary(string mappingDictionaryName_, string propertyName_)
@@ -101,8 +103,8 @@ namespace OsamesMicroOrm.Utilities
         /// <summary>
         /// Retourne le nom de la colonne (protégé) pour la propriété du DbEntity paramètre.
         /// </summary>
-        /// <param name="dbEntity_"></param>
-        /// <param name="propertyName_"></param>
+        /// <param name="dbEntity_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
+        /// <param name="propertyName_">Nom d'une propriété de dbEntity_. Ex: "CustomerId"</param>
         /// <returns></returns>
         public static string GetDbColumnName<T>(T dbEntity_, string propertyName_)
         {
@@ -145,12 +147,13 @@ namespace OsamesMicroOrm.Utilities
         #region obtention de l'ensemble nom de la colonne en DB + nom de la propriété d'un DbEntity
         /// <summary>
         /// Retourne les informations de mapping pour une table donnée sous forme de dictionnaire :
-        /// clés : propriétés de la classe C# DbEntity, valeurs : noms des colonnes en bae de données.
+        /// clés : propriétés de la classe C# DbEntity, valeurs : noms des colonnes en base de données.
+        /// Les noms des colonnes sont non protégées.
         /// </summary>
         /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
         /// <returns>Mapping dictionary</returns>
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping pour le nom paramètre</exception>
-        public static Dictionary<string, string> GetMappingDefinitionsForTable(string mappingDictionaryName_)
+        internal static Dictionary<string, string> GetMappingDefinitionsForTable(string mappingDictionaryName_)
         {
             Dictionary<string, string> mappingObjectSet;
 
@@ -160,22 +163,22 @@ namespace OsamesMicroOrm.Utilities
         }
 
         /// <summary>
-        /// 
+        /// Retourne les informations de mapping pour la table associée à une classe C# décorée d'un DatabaseMappingAttribute, sous forme de dictionnaire :
+        /// clés : propriétés de la classe C# DbEntity, valeurs : noms des colonnes en base de données, protégées.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dbEntity_"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> GetDbMappingDefinitionsFor<T>(T dbEntity_)
+        public static Dictionary<string, string> GetMappingDefinitionsFor<T>(T dbEntity_)
         {
             if (dbEntity_ == null)
                 throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "dbEntity is null");
 
-            string table = GetTableName(dbEntity_);
+            string table = GetTableNameFromMappingDictionary(dbEntity_);
 
-            return GetMappingDefinitionsForTable(
-                table.Trim(ConfigurationLoader.StartFieldEncloser[0], ConfigurationLoader.EndFieldEncloser[0])).ToDictionary(
-                item => ConfigurationLoader.StartFieldEncloser + item.Value + ConfigurationLoader.EndFieldEncloser, item => string.Concat(
-                    table, '.', ConfigurationLoader.StartFieldEncloser, item.Value, ConfigurationLoader.EndFieldEncloser));
+            return GetMappingDefinitionsForTable(table).ToDictionary(
+                item_ => item_.Key, item_ => string.Concat(
+                    ConfigurationLoader.StartFieldEncloser, table, ConfigurationLoader.EndFieldEncloser, '.', ConfigurationLoader.StartFieldEncloser, item_.Value, ConfigurationLoader.EndFieldEncloser));
         }
 
         #endregion

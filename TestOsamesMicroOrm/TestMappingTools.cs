@@ -115,6 +115,27 @@ namespace TestOsamesMicroOrm
             }
         }
 
+        /// <summary>
+        /// ConfigurationLoader internal dictionary is populated. Test of GetMappingDefinitionsFor.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("Mapping")]
+        public void TestGetMappingDefinitionsFor()
+        {
+            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
+            Dictionary<string, string> dictionary = MappingTools.GetMappingDefinitionsFor(new Customer());
+
+            Assert.IsNotNull(dictionary);
+            Assert.AreNotEqual(0, dictionary.Keys);
+            Assert.IsTrue(dictionary.ContainsKey("IdCustomer"));
+            Assert.AreEqual("[CustomerId]", dictionary["IdCustomer"]);
+            // TODO ajouter un 2e assert sur une clé et une valeur.
+        }
+
         #region cas de test de GetDbColumnNameFromMappingDictionary()
         /// <summary>
         /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is found.
@@ -203,7 +224,7 @@ namespace TestOsamesMicroOrm
                 throw;
             }
 
-            
+
         }
 
         /// <summary>
