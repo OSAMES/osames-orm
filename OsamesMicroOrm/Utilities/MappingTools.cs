@@ -155,14 +155,12 @@ namespace OsamesMicroOrm.Utilities
         /// <returns></returns>
         public static Dictionary<string, string> GetDbMappingDefinitionsFor<T>(T dbEntity_)
         {
-            Dictionary<string, string> mappingtable = null;
             string table = GetTableName(dbEntity_);
 
-            foreach (var item in GetMappingDefinitionsForTable(table.Trim('[', ']')))
-            {
-                mappingtable.Add('[' + item.Value + ']', table+ '[' + item.Value + ']');
-            }
-            return mappingtable;
+            return GetMappingDefinitionsForTable(
+                table.Trim(ConfigurationLoader.StartFieldEncloser[0], ConfigurationLoader.EndFieldEncloser[0])).ToDictionary(
+                item => ConfigurationLoader.StartFieldEncloser + item.Value + ConfigurationLoader.EndFieldEncloser, item => string.Concat(
+                    table, '.', ConfigurationLoader.StartFieldEncloser, item.Value, ConfigurationLoader.EndFieldEncloser));
         }
 
         #endregion
