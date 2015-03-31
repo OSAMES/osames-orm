@@ -29,7 +29,7 @@ namespace OsamesMicroOrm.Utilities
     {
         #region obtention du nom de la table en DB
         /// <summary>
-        /// Retourne le nom de la table pour la DbEntity paramètre.
+        /// Retourne le nom de la table (protégé) pour la DbEntity paramètre.
         /// Reads value of DatabaseMapping class custom attribute.
         /// </summary>
         /// <param name="dataObject_">data object</param>
@@ -64,7 +64,7 @@ namespace OsamesMicroOrm.Utilities
         #region obtention du nom de la colonne en DB
 
         /// <summary>
-        /// Asks mapping dictionary for a DB column name, given a Db entity property name.
+        /// Retourne le nom de la colonne (protégé) dans la table paramètre pour le nom de propriété paramètre.
         /// </summary>
         /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="propertyName_">DB entity C# object property name. Ex: "CustomerId"</param>
@@ -87,7 +87,7 @@ namespace OsamesMicroOrm.Utilities
         }
 
         /// <summary>
-        /// 
+        /// Retourne le nom de la colonne (protégé) pour la propriété du DbEntity paramètre.
         /// </summary>
         /// <param name="dbEntity_"></param>
         /// <param name="propertyName_"></param>
