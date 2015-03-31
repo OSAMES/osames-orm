@@ -39,11 +39,11 @@ namespace TestOsamesMicroOrm
             InvoiceLine entityInvoiceLineI = new InvoiceLine();
             Track entityTrack = new Track();
 
-            Assert.AreEqual("Employee", MappingTools.GetTableName(entityEmployee));
-            Assert.AreEqual("Customer", MappingTools.GetTableName(entityCustomer));
-            Assert.AreEqual("Invoice", MappingTools.GetTableName(entityInvoice));
-            Assert.AreEqual("InvoiceLine", MappingTools.GetTableName(entityInvoiceLineI));
-            Assert.AreEqual("Track", MappingTools.GetTableName(entityTrack));
+            Assert.AreEqual("[Employee]", MappingTools.GetTableName(entityEmployee));
+            Assert.AreEqual("[Customer]", MappingTools.GetTableName(entityCustomer));
+            Assert.AreEqual("[Invoice]", MappingTools.GetTableName(entityInvoice));
+            Assert.AreEqual("[InvoiceLine]", MappingTools.GetTableName(entityInvoiceLineI));
+            Assert.AreEqual("[Track]", MappingTools.GetTableName(entityTrack));
         }
 
         /// <summary>
@@ -146,12 +146,64 @@ namespace TestOsamesMicroOrm
         [TestCategory("XML")]
         [TestCategory("Configuration")]
         [TestCategory("Mapping")]
-        public void TestGeDbColumnName()
+        public void TestGetDbColumnName()
         {
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
-            Assert.AreEqual("CustomerId", MappingTools.GetDbColumnName(new Customer().GetType().GetProperty("IdCustomer")));
-            Assert.IsNull(MappingTools.GetDbColumnName(new Customer().GetType().GetProperty("ThisPropertyDoesntExist")));
-            Assert.IsNull(MappingTools.GetDbColumnName(new TestUnmappedEntity().GetType().GetProperty("Id")));
+            Assert.AreEqual("[CustomerId]", MappingTools.GetDbColumnName(new Customer(), "IdCustomer"));
+        }
+
+        /// <summary>
+        /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary.
+        /// La propriété demandée n'existe pas sur l'objet C#.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("Mapping")]
+        [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestGetDbColumnNamePropertyDoesntExist()
+        {
+            try
+            {
+                ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
+                Assert.IsNull(MappingTools.GetDbColumnName(new Customer(), "ThisPropertyDoesntExist"));
+            }
+            catch (OOrmHandledException ex)
+            {
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NULLVALUE, ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary.
+        /// L'objet C# ne comporte pas de DatabaseMappingAttribute.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("Mapping")]
+        [TestCategory("Parameter NOK")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestGetDbColumnNameNoDatabaseAttributeDecoration()
+        {
+            try
+            {
+                ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
+                Assert.IsNull(MappingTools.GetDbColumnName(new TestUnmappedEntity(), "Id"));
+            }
+            catch (OOrmHandledException ex)
+            {
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_TYPENOTDEFINEDBMAPPINGATTRIBUTE, ex);
+                throw;
+            }
+
+            
         }
 
         /// <summary>

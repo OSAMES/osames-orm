@@ -38,25 +38,37 @@ namespace OsamesMicroOrm.Utilities
         /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
         public static string GetTableName<T>(T dataObject_)
         {
+            return ConfigurationLoader.StartFieldEncloser + GetTableNameFromMappingDictionary(dataObject_) + ConfigurationLoader.EndFieldEncloser;
+        }
+
+        /// <summary>
+        /// Retourne le nom de la table (non protégé) pour la DbEntity paramètre.
+        /// Reads value of DatabaseMapping class custom attribute.
+        /// </summary>
+        /// <param name="dataObject_">data object</param>
+        /// <typeparam name="T">type indication</typeparam>
+        /// <returns>Nom de table défini par l'attribut DatabaseMapping porté par le déclaratif de la classe C# de dataObject_</returns>
+        /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
+        private static string GetTableNameFromMappingDictionary<T>(T dataObject_)
+        {
             // Get value
             object[] classAttributes = dataObject_.GetType().GetCustomAttributes(typeof(DatabaseMappingAttribute), false);
-            if(classAttributes.Length == 0)
+            if (classAttributes.Length == 0)
                 throw new OOrmHandledException(HResultEnum.E_TYPENOTDEFINEDBMAPPINGATTRIBUTE, null, "C# type : '" + dataObject_.GetType().FullName + "'");
-            
-            if(classAttributes.Length > 1)
+
+            if (classAttributes.Length > 1)
                 throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESDBMAPPINGATTRIBUTEMOREONETIME, null, "C# type: '" + dataObject_.GetType().FullName + "'");
 
-            string dbTableName = ((DatabaseMappingAttribute) classAttributes[0]).DbTableName;
-            
+            string dbTableName = ((DatabaseMappingAttribute)classAttributes[0]).DbTableName;
+
             if (string.IsNullOrWhiteSpace(dbTableName))
                 throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE, null, "C# type: '" + dataObject_.GetType().FullName + "'");
 
             // Check that value exists in mapping
-            if(!ConfigurationLoader.MappingDictionnary.ContainsKey(dbTableName))
+            if (!ConfigurationLoader.MappingDictionnary.ContainsKey(dbTableName))
                 throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "Key (table name): '" + dbTableName + "'");
 
-            return ConfigurationLoader.StartFieldEncloser + dbTableName + ConfigurationLoader.EndFieldEncloser;
-
+            return dbTableName;
         }
 
         #endregion
@@ -64,7 +76,7 @@ namespace OsamesMicroOrm.Utilities
         #region obtention du nom de la colonne en DB
 
         /// <summary>
-        /// Retourne le nom de la colonne (protégé) dans la table paramètre pour le nom de propriété paramètre.
+        /// Retourne le nom de la colonne (non protégé) dans la table paramètre pour le nom de propriété paramètre.
         /// </summary>
         /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
         /// <param name="propertyName_">DB entity C# object property name. Ex: "CustomerId"</param>
@@ -83,7 +95,7 @@ namespace OsamesMicroOrm.Utilities
             if (!mappingObjectSet.TryGetValue(propertyName_, out resultColumnName))
                 throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDPROPERTY, null, "[No property '" + propertyName_ + "' in dictionary " + mappingDictionaryName_ + "]");
 
-            return ConfigurationLoader.StartFieldEncloser + resultColumnName + ConfigurationLoader.EndFieldEncloser;
+            return resultColumnName;
         }
 
         /// <summary>
@@ -99,9 +111,9 @@ namespace OsamesMicroOrm.Utilities
             if (string.IsNullOrEmpty(propertyName_) || string.IsNullOrWhiteSpace(propertyName_))
                 throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property name is null");
             if (dbEntity_.GetType().GetProperty(propertyName_) == null)
-                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property not exist in object");
+                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property does not exist in object");
 
-            return GetDbColumnNameFromMappingDictionary(GetTableName(dbEntity_), propertyName_);
+            return ConfigurationLoader.StartFieldEncloser + GetDbColumnNameFromMappingDictionary(GetTableNameFromMappingDictionary(dbEntity_), propertyName_) + ConfigurationLoader.EndFieldEncloser;
         }
   
         #endregion
