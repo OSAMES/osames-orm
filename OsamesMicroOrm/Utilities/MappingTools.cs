@@ -147,16 +147,24 @@ namespace OsamesMicroOrm.Utilities
             return mappingObjectSet;
         }
 
-
-        public static List<KeyValuePair<string, string>> GetPropertyToColumnMapping<T>(T dbEntity_)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dbEntity_"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> GetDbMappingDefinitionsFor<T>(T dbEntity_)
         {
-            return null;
+            Dictionary<string, string> mappingtable = null;
+            string table = GetTableName(dbEntity_);
+
+            foreach (var item in GetMappingDefinitionsForTable(table.Trim('[', ']')))
+            {
+                mappingtable.Add('[' + item.Value + ']', table+ '[' + item.Value + ']');
+            }
+            return mappingtable;
         }
 
-        public static List<KeyValuePair<string, string>> GetProtectedPropertyToColumnMapping<T>(T dbEntity_)
-        {
-            return null;
-        }
         #endregion
     }
 }
