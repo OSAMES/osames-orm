@@ -45,7 +45,7 @@ namespace SampleDbEntities.Chinook
     /// </summary>
     [Serializable]
     [DatabaseMapping("Customer")]
-    public class Customer
+    public class Customer : DataObject
     {
 
         private string _firstName;

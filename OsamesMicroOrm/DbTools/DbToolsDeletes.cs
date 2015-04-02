@@ -71,7 +71,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="transaction_"></param>
         public static long Delete(string refSqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
         {
-            string sqlCommand = null;
+            string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             long nbRowsAffected = 0;
 

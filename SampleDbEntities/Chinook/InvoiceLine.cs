@@ -33,7 +33,7 @@ namespace SampleDbEntities.Chinook
      */
     [Serializable]
     [DatabaseMapping("InvoiceLine")]
-    public class InvoiceLine
+    public class InvoiceLine : DataObject
     {
         private long _invoiceLineId;
         private long _invoiceId;

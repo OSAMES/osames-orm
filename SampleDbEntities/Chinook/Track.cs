@@ -38,7 +38,7 @@ namespace SampleDbEntities.Chinook
      */
     [Serializable]
     [DatabaseMapping("Track")]
-    public class Track
+    public class Track : DataObject
     {
         private long _trackId;
         private string _name;

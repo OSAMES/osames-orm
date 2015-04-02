@@ -47,6 +47,7 @@
     <Compile Include="Configuration\ConfigurationLoader.cs" />
     <Compile Include="DatabaseMappingAttribute.cs" />
     <Compile Include="Configuration\Tweak\Customizer.cs" />
+    <Compile Include="DataObject.cs" />
     <Compile Include="DbManagerHelper.cs" />
     <Compile Include="PrepareCommandHelper.cs" />
     <Compile Include="OOrmDbConnectionWrapper.cs" />

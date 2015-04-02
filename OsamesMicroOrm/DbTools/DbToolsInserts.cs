@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -44,6 +43,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="tryFormat"></param>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         internal static void FormatSqlForInsert<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
+        where T : DataObject
         {
             StringBuilder sbFieldsToInsert = new StringBuilder();
             StringBuilder sbParamToInsert = new StringBuilder();
@@ -85,6 +85,7 @@ namespace OsamesMicroOrm.DbTools
         /// <returns></returns>
         /// <exception cref="OOrmHandledException">any error</exception>
         public static long Insert<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, OOrmDbTransactionWrapper transaction_ = null)
+        where T : DataObject
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;

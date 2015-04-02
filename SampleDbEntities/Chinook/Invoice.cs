@@ -39,7 +39,7 @@ namespace SampleDbEntities.Chinook
 
     [Serializable]
     [DatabaseMapping("Invoice")]
-    public class Invoice
+    public class Invoice : DataObject
     {
         private long _customerId;
         private DateTime _invoiceDate;
