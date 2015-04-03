@@ -29,6 +29,9 @@ namespace OsamesMicroOrm.Utilities
     /// </summary>
     public static class MappingTools
     {
+        //TODO trouver un nom pour ce dictionnaire.Cf. ORM-153
+        public static Dictionary<string, string[,]> MappingDictionary = new Dictionary<string, string[,]>();
+
         #region obtention du nom de la table en DB
         /// <summary>
         /// Retourne le nom de la table (protégé) pour la DbEntity paramètre.
