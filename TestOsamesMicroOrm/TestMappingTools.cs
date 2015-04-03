@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Xml.XPath;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
@@ -117,6 +115,7 @@ namespace TestOsamesMicroOrm
 
         /// <summary>
         /// ConfigurationLoader internal dictionary is populated. Test of GetMappingDefinitionsFor.
+        /// Obtention d'un dictionnaire avec [nomDeTable].[nomDeColonne].
         /// </summary>
         [TestMethod]
         [ExcludeFromCodeCoverage]
@@ -132,8 +131,8 @@ namespace TestOsamesMicroOrm
             Assert.IsNotNull(dictionary);
             Assert.AreNotEqual(0, dictionary.Keys);
             Assert.IsTrue(dictionary.ContainsKey("IdCustomer"));
-            Assert.AreEqual("[CustomerId]", dictionary["IdCustomer"]);
-            // TODO ajouter un 2e assert sur une clé et une valeur.
+            Assert.AreEqual("[Customer].[CustomerId]", dictionary["IdCustomer"]);
+            Assert.AreEqual("[Customer].[FirstName]", dictionary["FirstName"]);
         }
 
         #region cas de test de GetDbColumnNameFromMappingDictionary()

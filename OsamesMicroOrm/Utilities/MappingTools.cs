@@ -84,7 +84,7 @@ namespace OsamesMicroOrm.Utilities
         /// Retourne le nom de la colonne (non protégé) dans la table paramètre pour le nom de propriété paramètre.
         /// </summary>
         /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="propertyName_">Nom d'une propriété de dbEntity_. Ex: "CustomerId"</param>
+        /// <param name="propertyName_">Nom d'une propriété de dataObject_. Ex: "CustomerId"</param>
         /// <returns>DB column name. Ex: "id_customer"</returns>
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping pour les paramètres donnés</exception>
         internal static string GetDbColumnNameFromMappingDictionary(string mappingDictionaryName_, string propertyName_)
@@ -106,19 +106,19 @@ namespace OsamesMicroOrm.Utilities
         /// <summary>
         /// Retourne le nom de la colonne (protégé) pour la propriété du DbEntity paramètre.
         /// </summary>
-        /// <param name="dbEntity_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
-        /// <param name="propertyName_">Nom d'une propriété de dbEntity_. Ex: "CustomerId"</param>
+        /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
+        /// <param name="propertyName_">Nom d'une propriété de dataObject_. Ex: "CustomerId"</param>
         /// <returns></returns>
-        public static string GetDbColumnName<T>(T dbEntity_, string propertyName_)
+        public static string GetDbColumnName<T>(T dataObject_, string propertyName_)
         {
-            if (dbEntity_ == null)
+            if (dataObject_ == null)
                 throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "dbEntity is null");
             if (string.IsNullOrEmpty(propertyName_) || string.IsNullOrWhiteSpace(propertyName_))
                 throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property name is null");
-            if (dbEntity_.GetType().GetProperty(propertyName_) == null)
+            if (dataObject_.GetType().GetProperty(propertyName_) == null)
                 throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property does not exist in object");
 
-            return ConfigurationLoader.StartFieldEncloser + GetDbColumnNameFromMappingDictionary(GetTableNameFromMappingDictionary(dbEntity_), propertyName_) + ConfigurationLoader.EndFieldEncloser;
+            return ConfigurationLoader.StartFieldEncloser + GetDbColumnNameFromMappingDictionary(GetTableNameFromMappingDictionary(dataObject_), propertyName_) + ConfigurationLoader.EndFieldEncloser;
         }
   
         #endregion
@@ -167,17 +167,17 @@ namespace OsamesMicroOrm.Utilities
 
         /// <summary>
         /// Retourne les informations de mapping pour la table associée à une classe C# décorée d'un DatabaseMappingAttribute, sous forme de dictionnaire :
-        /// clés : propriétés de la classe C# DbEntity, valeurs : noms des colonnes en base de données, protégées.
+        /// clés : propriétés de la classe C# DbEntity, valeurs : noms des colonnes en base de données, protégées et préfixées par le nom de la table.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dbEntity_"></param>
+        /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
+        /// <typeparam name="T">type indication</typeparam>
         /// <returns></returns>
-        public static Dictionary<string, string> GetMappingDefinitionsFor<T>(T dbEntity_)
+        public static Dictionary<string, string> GetMappingDefinitionsFor<T>(T dataObject_)
         {
-            if (dbEntity_ == null)
+            if (dataObject_ == null)
                 throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "dbEntity is null");
 
-            string table = GetTableNameFromMappingDictionary(dbEntity_);
+            string table = GetTableNameFromMappingDictionary(dataObject_);
 
             return GetMappingDefinitionsForTable(table).ToDictionary(
                 item_ => item_.Key, item_ => string.Concat(
