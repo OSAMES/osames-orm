@@ -45,7 +45,7 @@ namespace SampleDbEntities.Chinook
 
     [Serializable]
     [DatabaseMapping("Employee")]
-    public class Employee : DataObject
+    public class Employee : DatabaseEntityObject
     {
         private long _employeeId;
         private string _lastName;

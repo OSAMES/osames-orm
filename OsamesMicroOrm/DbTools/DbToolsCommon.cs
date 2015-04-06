@@ -74,7 +74,7 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping ou autre erreur</exception>
         internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
-            where T : DataObject
+            where T : IDatabaseEntityObject
         {
             dbColumnName_ = MappingTools.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
 
@@ -101,7 +101,7 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping ou autre erreur</exception>
         internal static void DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, out List<string> lstDbColumnNames_, out List<KeyValuePair<string, object>> lstAdoParameterNameAndValues_)
-        where T : DataObject
+        where T : IDatabaseEntityObject
         {
             lstDbColumnNames_ = new List<string>();
             lstAdoParameterNameAndValues_ = new List<KeyValuePair<string, object>>();
