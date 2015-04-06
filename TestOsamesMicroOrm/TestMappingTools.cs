@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.XPath;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -169,7 +171,17 @@ namespace TestOsamesMicroOrm
         public void TestGetDbColumnName()
         {
             ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
+            // mesure du temps d'accès
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
             Assert.AreEqual("[CustomerId]", MappingTools.GetDbColumnName(new Customer(), "IdCustomer"));
+            watch.Stop();
+            Console.WriteLine("Première détermination de la valeur : " + watch.ElapsedMilliseconds + " ms");
+            watch.Reset();
+            watch.Start();
+            Assert.AreEqual("[CustomerId]", MappingTools.GetDbColumnName(new Customer(), "IdCustomer"));
+            watch.Stop();
+            Console.WriteLine("Deuxième détermination de la valeur : " + watch.ElapsedMilliseconds + " ms");
         }
 
         /// <summary>
@@ -225,6 +237,32 @@ namespace TestOsamesMicroOrm
 
 
         }
+
+        /// <summary>
+        /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is found.
+        /// </summary>
+        [TestMethod]
+        [ExcludeFromCodeCoverage]
+        [Owner("Barbara Post")]
+        [TestCategory("XML")]
+        [TestCategory("Configuration")]
+        [TestCategory("Mapping")]
+        public void TestGetDbTableAndColumnName()
+        {
+            ConfigurationLoader.FillMappingDictionary(new XPathDocument(_mappingFileFullPath).CreateNavigator(), "orm", "http://www.osames.org/osamesorm");
+            // mesure du temps d'accès
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            Assert.AreEqual("[Customer].[CustomerId]", MappingTools.GetDbTableAndColumnName(new Customer(), "IdCustomer"));
+            watch.Stop();
+            Console.WriteLine("Première détermination de la valeur : " + watch.ElapsedMilliseconds + " ms");
+            watch.Reset();
+            watch.Start();
+            Assert.AreEqual("[Customer].[CustomerId]", MappingTools.GetDbTableAndColumnName(new Customer(), "IdCustomer"));
+            watch.Stop();
+            Console.WriteLine("Deuxième détermination de la valeur : " + watch.ElapsedMilliseconds + " ms");
+        }
+
 
         /// <summary>
         /// ConfigurationLoader internal dictionary is populated. Test of GetDbColumnNameFromMappingDictionary : case where mapping is not found (key).
