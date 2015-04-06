@@ -29,6 +29,47 @@ namespace OsamesMicroOrm.Utilities
     /// </summary>
     public static class MappingTools
     {
+        private static Dictionary<string, string[]> MappingDictionary = new Dictionary<string, string[]>();
+
+        #region remplissage du dictionnaire pour une clé donnée
+
+        /// <summary>
+        /// Détermine les données à mettre dans le dictionnaire interne.
+        /// </summary>
+        /// <typeparam name="T">IDatabaseEntityObject</typeparam>
+        /// <param name="dictionaryKey_"></param>
+        /// <param name="dataObject_"></param>
+        /// <param name="propertyName_"></param>
+        /// <returns>Tableau des valeurs qu'on vient d'ajouter au dictionnaire</returns>
+        private static string[] FillInternalDictionary<T>(string dictionaryKey_, T dataObject_, string propertyName_)
+        {
+            string[] values = new string[2];
+            
+            if (dataObject_ == null)
+                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "dbEntity is null");
+            if (string.IsNullOrEmpty(propertyName_) || string.IsNullOrWhiteSpace(propertyName_))
+                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property name is null");
+            if (dataObject_.GetType().GetProperty(propertyName_) == null)
+                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property does not exist in object");
+
+            string tableName = GetTableNameFromMappingDictionary(dataObject_);
+            string protectedColumnName = ConfigurationLoader.StartFieldEncloser + GetDbColumnNameFromMappingDictionary(tableName, propertyName_) + ConfigurationLoader.EndFieldEncloser;
+            string protectedTableName = ConfigurationLoader.StartFieldEncloser + tableName + ConfigurationLoader.EndFieldEncloser;
+
+            // Première valeur : colonne protégée
+            values[0] = protectedColumnName;
+
+            // Deuxième valeur : colonne et table protégées
+            values[1] = protectedTableName + "." + protectedColumnName;
+
+            MappingDictionary[dictionaryKey_] = values;
+
+            return values;
+
+        }
+
+        #endregion
+
         #region obtention du nom de la table en DB
         /// <summary>
         /// Retourne le nom de la table (protégé) pour la DbEntity paramètre.
@@ -38,8 +79,9 @@ namespace OsamesMicroOrm.Utilities
         /// <typeparam name="T">type indication</typeparam>
         /// <returns>Nom de table défini par l'attribut DatabaseMapping porté par le déclaratif de la classe C# de dataObject_</returns>
         /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
-        public static string GetTableName<T>(T dataObject_)
+        public static string GetTableName<T>(T dataObject_) where T : IDatabaseEntityObject
         {
+            // TODO voir si cette méthode a un intérêt pour l'application, à mon avis non
             return ConfigurationLoader.StartFieldEncloser + GetTableNameFromMappingDictionary(dataObject_) + ConfigurationLoader.EndFieldEncloser;
         }
 
@@ -101,23 +143,28 @@ namespace OsamesMicroOrm.Utilities
         }
 
         /// <summary>
-        /// Retourne le nom de la colonne (protégé) pour la propriété du DbEntity paramètre.
+        /// Retourne le nom de la colonne protégé pour la propriété du DbEntity paramètre.
         /// </summary>
         /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
         /// <param name="propertyName_">Nom d'une propriété de dataObject_. Ex: "CustomerId"</param>
         /// <returns></returns>
-        public static string GetDbColumnName<T>(T dataObject_, string propertyName_)
+        public static string GetDbColumnName<T>(T dataObject_, string propertyName_) where T : IDatabaseEntityObject
         {
-            if (dataObject_ == null)
-                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "dbEntity is null");
-            if (string.IsNullOrEmpty(propertyName_) || string.IsNullOrWhiteSpace(propertyName_))
-                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property name is null");
-            if (dataObject_.GetType().GetProperty(propertyName_) == null)
-                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property does not exist in object");
-
-            return ConfigurationLoader.StartFieldEncloser + GetDbColumnNameFromMappingDictionary(GetTableNameFromMappingDictionary(dataObject_), propertyName_) + ConfigurationLoader.EndFieldEncloser;
+            string key = dataObject_.UniqueName + "#" + propertyName_;
+            return MappingDictionary.ContainsKey(key) ? MappingDictionary[key][0] : FillInternalDictionary(key, dataObject_, propertyName_)[0];
         }
-  
+
+        /// <summary>
+        /// Retourne le nom de la colonne protégé préfixé par le nom de la table protégé pour la propriété du DbEntity paramètre.
+        /// </summary>
+        /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
+        /// <param name="propertyName_">Nom d'une propriété de dataObject_. Ex: "CustomerId"</param>
+        /// <returns></returns>
+        public static string GetDbTableAndColumnName<T>(T dataObject_, string propertyName_) where T : IDatabaseEntityObject
+        {
+            string key = dataObject_.UniqueName + "#" + propertyName_;
+            return MappingDictionary.ContainsKey(key) ? MappingDictionary[key][1] : FillInternalDictionary(key, dataObject_, propertyName_)[1];
+        }
         #endregion
 
         #region obtention du nom de la propriété d'un DbEntity
@@ -129,6 +176,7 @@ namespace OsamesMicroOrm.Utilities
         /// <returns>DB entity C# object property name. Ex: "CustomerId"</returns>
         internal static string GetDbEntityPropertyNameFromMappingDictionary(string mappingDictionaryName_, string dbColumnName_)
         {
+            // TODO voir l'intérêt de cette méthode (pas utilisée par l'ORM à part les TUs)
             Dictionary<string, string> mappingObjectSet;
 
             if (!ConfigurationLoader.MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet))

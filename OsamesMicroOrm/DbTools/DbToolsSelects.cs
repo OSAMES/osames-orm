@@ -328,7 +328,7 @@ namespace OsamesMicroOrm.DbTools
                     }
                     else
                     {
-                        return null;
+                        return default(T);
                     }
                 }
                 return dataObject;
@@ -346,7 +346,7 @@ namespace OsamesMicroOrm.DbTools
                     }
                     else
                     {
-                        return null;
+                        return default(T);
                     }
                 }
                 return dataObject;

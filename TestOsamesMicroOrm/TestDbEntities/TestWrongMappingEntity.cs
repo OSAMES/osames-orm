@@ -3,7 +3,7 @@
 namespace TestOsamesMicroOrm.TestDbEntities
 {
     [DatabaseMapping("wrong mapping")]
-    internal class TestWrongMappingEntity
+    internal class TestWrongMappingEntity : DatabaseEntityObject
     {
     }
 }
