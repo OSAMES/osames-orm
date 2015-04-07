@@ -32,7 +32,7 @@ namespace OsamesMicroOrm.DbTools
     {
         /// <summary>
         /// Crée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET, dans le cas d'un update sur un seul objet.
-        /// Utilise le template "BaseUpdate" : <c>"UPDATE {0} SET {1} WHERE {2}"</c> ainsi que les éléments suivants :
+        /// Utilise le template du style de "BaseUpdate" : <c>"UPDATE {0} SET {1} WHERE ..."</c> ainsi que les éléments suivants :
         /// <list type="bullet">
         /// <item><description>clé du dictionnaire de mapping</description></item>
         /// <item><description>un objet de données dataObject_</description></item>
@@ -42,9 +42,9 @@ namespace OsamesMicroOrm.DbTools
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="sqlTemplate_">Contient le nom du template sql update à utiliser</param>
-        /// <param name="lstDataObjectColumnNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
+        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {0} dans le template sql</param>
+        /// <param name="sqlTemplateName_">Contient le nom du template sql update à utiliser</param>
+        /// <param name="lstDataObjectColumnNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour. Utilisé pour la partie {1} du template SQL</param>
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
@@ -54,7 +54,7 @@ namespace OsamesMicroOrm.DbTools
         /// A faux quand on appelle cette méthode pour une liste d'objets à mettre à jour : on ne fait try format que pour le premier objet, puis la sqlcommand est réutilisée</param>
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
-        internal static void FormatSqlForUpdate<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
+        internal static void FormatSqlForUpdate<T>(T dataObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
         {
             StringBuilder sbFieldsToUpdate = new StringBuilder();
             sqlCommand_ = null;
@@ -79,7 +79,7 @@ namespace OsamesMicroOrm.DbTools
 
             if (tryFormat)
             {
-                DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicUpdateSql, sqlTemplate_, out sqlCommand_, sqlPlaceholders.ToArray());
+                DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicUpdateSql, sqlTemplateName_, out sqlCommand_, sqlPlaceholders.ToArray());
             }
 
         }
@@ -95,7 +95,7 @@ namespace OsamesMicroOrm.DbTools
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="sqlTemplate_">Contient le nom du template sql update à utiliser</param>
+        /// <param name="sqlTemplateName_">Contient le nom du template sql update à utiliser</param>
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
@@ -103,13 +103,13 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">any error</exception>
-        public static uint Update<T>(T dataObject_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
+        public static uint Update<T>(T dataObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             uint nbRowsAffected = 0;
 
-            FormatSqlForUpdate(dataObject_, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters);
+            FormatSqlForUpdate(dataObject_, sqlTemplateName_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters);
 
             if (transaction_ != null)
             {
@@ -148,7 +148,7 @@ namespace OsamesMicroOrm.DbTools
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObjects_">Instance liste d'objets de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="sqlTemplate_">Contient le nom du template sql update à utiliser</param>
+        /// <param name="sqlTemplateName_">Contient le nom du template sql update à utiliser</param>
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
@@ -156,7 +156,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">any error</exception>
-        public static uint Update<T>(List<T> dataObjects_, string sqlTemplate_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<List<object>> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
+        public static uint Update<T>(List<T> dataObjects_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<List<object>> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
         {
             string sqlCommand = null;
 
@@ -170,10 +170,10 @@ namespace OsamesMicroOrm.DbTools
                 {
                     // ici le slqcommand rendu est null
                     string tmpSqlCommand;
-                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i], out tmpSqlCommand, out adoParameters, false);
+                    FormatSqlForUpdate(dataObject, sqlTemplateName_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i], out tmpSqlCommand, out adoParameters, false);
                 }
                 else
-                    FormatSqlForUpdate(dataObject, sqlTemplate_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i], out sqlCommand, out adoParameters);
+                    FormatSqlForUpdate(dataObject, sqlTemplateName_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i], out sqlCommand, out adoParameters);
 
                 if (transaction_ != null)
                 {
