@@ -29,18 +29,18 @@ namespace OsamesMicroOrm.DbTools
     public static class DbToolsSelects
     {
         /// <summary>
-        /// Dans le cas d'un select basé sur un template <c>"SELECT {0} FROM {1}...", cée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET</c>.
+        /// Dans le cas d'un select basé sur un template <c>"SELECT {0} FROM {1} [WHERE ...]", crée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET</c>.
         /// Utilise :
         /// <list type="bullet">
         /// <item><description>clé du dictionnaire de mapping</description></item>
-        /// <item><description>liste de noms de propriétés de dataObject_ à utiliser pour les champs à sélectionner</description></item>
-        /// <item><description>liste de noms de propriétés de dataObject_ ou paramètres dynamiques pour les paramètres dans la partie WHERE, ainsi que les valeurs associées.</description></item>
+        /// <item><description>liste de noms de propriétés d'une classe C# à utiliser, pour les champs à sélectionner</description></item>
+        /// <item><description>liste de noms de propriétés d'une classe C# à utiliser, ou paramètres dynamiques, ou littéraux, pour les paramètres dans la partie WHERE, ainsi que leurs valeurs associées.</description></item>
         /// </list>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {1} dans le template sql</param>
         /// <param name="sqlTemplateName_">Nom du template SQL</param>
-        /// <param name="lstDataObjectPropertyNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à sélectionner. Permet de formater {0} dans le template SQL</param>
-        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_/un paramètre dynamique/un littéral. 
+        /// <param name="lstDataObjectPropertyNames_">Noms des propriétés d'une classe C# à utiliser, pour les champs à sélectionner. Permet de formater {0} dans le template SQL</param>
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
@@ -69,24 +69,24 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Dans le cas d'un select basé sur un template "SELECT * FROM {0}...", crée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET.
+        /// Dans le cas d'un select basé sur un template "SELECT * FROM {0} [WHERE ...]", crée le texte de la commande SQL paramétrée ainsi que les paramètres ADO.NET.
         /// <para>Utilise :
         /// <list type="bullet">
         /// <item><description>clé du dictionnaire de mapping</description></item>
-        /// <item><description>liste de noms de propriétés de dataObject_ ou paramètres dynamiques pour les paramètres dans la partie WHERE, ainsi que les valeurs associées..</description></item>
+        /// <item><description>liste de noms de propriétés d'une classe C# à utiliser, ou paramètres dynamiques, ou littéraux, pour les paramètres dans la partie WHERE, ainsi que leurs valeurs associées</description></item>
         /// </list>
         /// </para>
         /// </summary>
-        /// <param name="sqlTemplateName_">Template SQL</param>
+        /// <param name="sqlTemplateName_">Nom du template SQL</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {0} dans le template sql</param>
-        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {1} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
         /// <param name="lstAdoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB à sélectionner. Sera utilisé pour le data reader</param>
         /// <param name="lstPropertiesNames_">Sortie : liste de noms de propriétés d'objet Db Entité à sélectionner. Sera utilisé pour le data reader</param>
-        /// <param name="skipAutoDetermine_">Si a vrai alors on ne fait pas d'auto détermination.</param>
+        /// <param name="skipAutoDetermine_">Si a vrai alors on ne fait pas de détermination des noms des colonnes à partir des noms des propriétéss.</param>
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         internal static void FormatSqlForSelectAutoDetermineSelectedFields(string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out  List<string> lstPropertiesNames_, out List<string> lstDbColumnNames_, bool skipAutoDetermine_ = false)
@@ -109,13 +109,13 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Lit les champs indiqués en paramètre dans le tableau de données du DataReader et positionne les valeurs sur les propriétés de dataObject_ paramètre.
+        /// Lit les champs indiqués en paramètre lstDbColumnNames_ dans le tableau de données du DataReader et positionne les valeurs sur les propriétés de lstPropertiesNames_ de l'instance dataObject_ (une classe C#) paramètre.
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Objet de données</param>
         /// <param name="reader_">IDataReader ADO.NET</param>
         /// <param name="lstDbColumnNames_">Noms des colonnes DB à lire dans le data reader paramètre</param>
-        /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
+        /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet dataObject_ de type T à utiliser pour les champs à sélectionner</param>
         /// <returns>Ne retourne rien</returns>
         /// <exception cref="OOrmHandledException">Problème de lecture du IDataReader (demande d'une colonne incorrecte...)</exception>
         private static void FillDataObjectFromDataReader<T>(T dataObject_, IDataReader reader_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_)
@@ -159,13 +159,14 @@ namespace OsamesMicroOrm.DbTools
 
         /// <summary>
         /// Retourne un objet du type T avec les données rendues par une requete SELECT dont on ne s'intéresse qu'au premier résultat retourné. Si pas de résultat retourne null.
-        /// <para>Le template sera du type <c>"SELECT {0} FROM {1} WHERE ..."</c></para>
+        /// <para>Le template sera du type <c>"SELECT {0} FROM {1} [WHERE ...]"</c></para>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
-        /// <param name="sqlTemplateName_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT {0} FROM {1} WHERE ..."</c></param>
+        /// <param name="sqlTemplateName_">Nom du template SQL</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {1} dans le template sql</param>
-        /// <param name="lstWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
+        /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne un objet de type T rempli par les donnnées du DataReader, ou null.</returns>
@@ -183,12 +184,13 @@ namespace OsamesMicroOrm.DbTools
 
         /// <summary>
         /// Retourne un objet du type T avec les données rendues par une requete SELECT dont on ne s'intéresse qu'au premier résultat retourné. Si pas de résultat retourne null.
-        /// <para>Le template sera du type <c>"SELECT * FROM {0} WHERE ..."</c></para>
+        /// <para>Le template sera du type <c>"SELECT * FROM {0} [WHERE ...]"</c></para>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
-        /// <param name="sqlTemplateName_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT * FROM {0} WHERE ..."</c></param>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {1} dans le template sql.</param>
-        /// <param name="lstWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE" </param>
+        /// <param name="sqlTemplateName_">Nom du template SQL</param>
+        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {0} dans le template sql.</param>
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
+        /// Pour formater à partir de {1} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE" </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne un objet de type T rempli par les donnnées du DataReader, ou null</returns>
@@ -207,13 +209,14 @@ namespace OsamesMicroOrm.DbTools
 
         /// <summary>
         /// Retourne une liste d'objets du type T avec les données rendues par une requete SELECT. Si pas de résultat retourne une liste vide.
-        /// <para>Le template sera du type <c>"SELECT {0} FROM {1} WHERE ..."</c></para>
+        /// <para>Le template sera du type <c>"SELECT {0} FROM {1} [WHERE ...]"</c></para>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet T à utiliser pour les champs à sélectionner</param>
-        /// <param name="sqlTemplateName_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT {0} FROM {1} WHERE ..."</c></param>
+        /// <param name="sqlTemplateName_">Nom du template SQL</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {1} dans le template sql.</param>
-        /// <param name="lstWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE". Peut être null</param>
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
+        /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne une liste composée d'objets de type T</returns>
