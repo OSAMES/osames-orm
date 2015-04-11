@@ -55,6 +55,7 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         internal static void FormatSqlForUpdate<T>(T dataObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
+        where T : IDatabaseEntityObject
         {
             StringBuilder sbFieldsToUpdate = new StringBuilder();
             sqlCommand_ = null;
@@ -104,6 +105,7 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">any error</exception>
         public static uint Update<T>(T dataObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
+       where T : IDatabaseEntityObject
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
@@ -157,6 +159,7 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">any error</exception>
         public static uint Update<T>(List<T> dataObjects_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<List<object>> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
+        where T : IDatabaseEntityObject
         {
             string sqlCommand = null;
 

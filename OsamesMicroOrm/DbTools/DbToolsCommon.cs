@@ -74,6 +74,7 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping ou autre erreur</exception>
         internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
+            where T : IDatabaseEntityObject
         {
             dbColumnName_ = MappingTools.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
 
@@ -100,6 +101,7 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping ou autre erreur</exception>
         internal static void DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, out List<string> lstDbColumnNames_, out List<KeyValuePair<string, object>> lstAdoParameterNameAndValues_)
+        where T : IDatabaseEntityObject
         {
             lstDbColumnNames_ = new List<string>();
             lstAdoParameterNameAndValues_ = new List<KeyValuePair<string, object>>();
@@ -242,9 +244,9 @@ namespace OsamesMicroOrm.DbTools
                 returnValue = new string(valueAsCharArray);
                 return string.Concat(ConfigurationLoader.StartFieldEncloser, returnValue, ConfigurationLoader.EndFieldEncloser);
             }
-            
+
             if (value_.Count(c_ => c_ == ':') > 1)
-                throw new OOrmHandledException(HResultEnum.E_INCORRECTPLACEHOLDERVALUE, null, "Value : '" + value_ +"' cannot contain more than one colon");
+                throw new OOrmHandledException(HResultEnum.E_INCORRECTPLACEHOLDERVALUE, null, "Value : '" + value_ + "' cannot contain more than one colon");
 
             string columnName;
             var temp = value_.Split(':');
@@ -303,13 +305,13 @@ namespace OsamesMicroOrm.DbTools
                 // - soit un nom de colonne protégé
                 string paramName = DeterminePlaceholderValue(lstColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex, out isDynamicParameter);
 
-                if(paramName == null)
+                if (paramName == null)
                     continue;
-                
+
                 // Ajout d'un paramètre ADO.NET dans la liste.
                 if (isDynamicParameter)
                 {
-                    if(parameterIndex > lstValues_.Count-1)
+                    if (parameterIndex > lstValues_.Count - 1)
                         throw new OOrmHandledException(HResultEnum.E_METANAMESVALUESCOUNTMISMATCH, null, "Asked for value of index " + parameterIndex + " for dynamic parameter of name '" + paramName + "' but there are only " + lstValues_.Count + " values");
                     lstAdoParameters_.Add(new KeyValuePair<string, object>(paramName, lstValues_[parameterIndex]));
                 }

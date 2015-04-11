@@ -51,6 +51,7 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         internal static void FormatSqlForInsert<T>(T dataObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
+        where T : IDatabaseEntityObject
         {
             StringBuilder sbFieldsToInsert = new StringBuilder();
             StringBuilder sbParamToInsert = new StringBuilder();
@@ -97,6 +98,7 @@ namespace OsamesMicroOrm.DbTools
         /// <returns>Retourne la valeur de la clé primaire de l'enregistrement inséré dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         public static long Insert<T>(T dataObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, OOrmDbTransactionWrapper transaction_ = null)
+        where T : IDatabaseEntityObject
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;

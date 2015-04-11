@@ -3,7 +3,8 @@
 namespace TestOsamesMicroOrm.TestDbEntities
 {
     [DatabaseMapping("")]
-    internal class TestEmptyMappingEntity
+    internal class TestEmptyMappingEntity : DatabaseEntityObject
     {
+        
     }
 }
