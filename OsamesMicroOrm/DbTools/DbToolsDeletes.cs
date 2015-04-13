@@ -39,8 +39,8 @@ namespace OsamesMicroOrm.DbTools
         /// </list>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="sqlTemplateName_">Contient le nom du template sql update à utiliser</param>
-        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
+        /// <param name="sqlTemplateName_">Nom du template SQL</param>
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {1} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
@@ -64,9 +64,9 @@ namespace OsamesMicroOrm.DbTools
         /// <summary>
         /// Exécute une requête de type "DELETE FROM {0} WHERE ...".
         /// </summary>
-        /// <param name="sqlTemplateName_">Contient le nom du template sql update à utiliser</param>
+        /// <param name="sqlTemplateName_">Nom du template SQL</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {1} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>

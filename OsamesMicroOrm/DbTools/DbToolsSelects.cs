@@ -241,9 +241,10 @@ namespace OsamesMicroOrm.DbTools
         /// <para>Le template sera du type <c>"SELECT * FROM {0} WHERE ..."</c></para>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
-        /// <param name="sqlTemplateName_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT * FROM {0} WHERE ..."</c></param>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="lstWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE". Peut être null</param>
+        /// <param name="sqlTemplateName_">Nom du template SQL</param>
+        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {0} dans le template sql.</param>
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
+        /// Pour formater à partir de {1} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Retourne une liste composée d'objets de type T</returns>
@@ -262,11 +263,12 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Exécute une requête de type "SELECT COUNT(*) FROM {0} WHERE ..." et retourne le résultat.
+        /// Exécute une requête de type "SELECT COUNT(*) FROM {0} WHERE ..." et retourne le nombre résultat.
         /// </summary>
-        /// <param name="sqlTemplateName_">Clé pour le template à utiliser. Le template sera du type <c>"SELECT COUNT(*) FROM {0} WHERE ..."</c></param>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="lstWhereMetaNames_">Noms des colonnes ou indications de paramètres dynamiques pour la partie du template après "WHERE". Peut être null</param>
+        /// <param name="sqlTemplateName_">Nom du template SQL</param>
+        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {0} dans le template sql.</param>
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
+        /// Pour formater à partir de {1} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET pour la partie du template après "WHERE". Peut être null </param>
         /// <param name="transaction_">Transaction optionelle (créée par appel à DbManager)</param>
         /// <returns>Entier long</returns>

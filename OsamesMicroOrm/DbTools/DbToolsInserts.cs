@@ -92,7 +92,7 @@ namespace OsamesMicroOrm.DbTools
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="dataObject_">Instance d'un objet de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
-        /// <param name="sqlTemplateName_">Contient le nom du template sql update à utiliser</param>
+        /// <param name="sqlTemplateName_">Nom du template SQL</param>
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à enregistrer en base de données</param>
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne la valeur de la clé primaire de l'enregistrement inséré dans la base de données.</returns>
