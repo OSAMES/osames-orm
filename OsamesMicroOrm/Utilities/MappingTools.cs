@@ -72,8 +72,9 @@ namespace OsamesMicroOrm.Utilities
 
         #region obtention du nom de la table en DB
         /// <summary>
-        /// Retourne le nom de la table (protégé) pour la DbEntity paramètre.
+        /// Retourne le nom de la table (protégé) pour la classe paramètre.
         /// Reads value of DatabaseMapping class custom attribute.
+        /// Méthode utile pour formater des requêtes SQL personnalisées à exécuter par DbManager (API de bas niveau).
         /// </summary>
         /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
         /// <typeparam name="T">type indication</typeparam>
@@ -81,7 +82,6 @@ namespace OsamesMicroOrm.Utilities
         /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
         public static string GetTableName<T>(T dataObject_) where T : IDatabaseEntityObject
         {
-            // TODO voir si cette méthode a un intérêt pour l'application, à mon avis non
             return ConfigurationLoader.StartFieldEncloser + GetTableNameFromMappingDictionary(dataObject_) + ConfigurationLoader.EndFieldEncloser;
         }
 
@@ -144,6 +144,7 @@ namespace OsamesMicroOrm.Utilities
 
         /// <summary>
         /// Retourne le nom de la colonne protégé pour la propriété du DbEntity paramètre.
+        /// Méthode utile pour formater des requêtes SQL personnalisées à exécuter par DbManager (API de bas niveau).
         /// </summary>
         /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
         /// <param name="propertyName_">Nom d'une propriété de dataObject_. Ex: "CustomerId"</param>
@@ -156,6 +157,7 @@ namespace OsamesMicroOrm.Utilities
 
         /// <summary>
         /// Retourne le nom de la colonne protégé préfixé par le nom de la table protégé pour la propriété du DbEntity paramètre.
+        /// Méthode utile pour formater des requêtes SQL personnalisées à exécuter par DbManager (API de bas niveau).
         /// </summary>
         /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
         /// <param name="propertyName_">Nom d'une propriété de dataObject_. Ex: "CustomerId"</param>
@@ -213,6 +215,7 @@ namespace OsamesMicroOrm.Utilities
         /// <summary>
         /// Retourne les informations de mapping pour la table associée à une classe C# décorée d'un DatabaseMappingAttribute, sous forme de dictionnaire :
         /// clés : propriétés de la classe C# DbEntity, valeurs : noms des colonnes en base de données, protégées et préfixées par le nom de la table.
+        /// Méthode utile pour formater des requêtes SQL personnalisées à exécuter par DbManager (API de bas niveau).
         /// </summary>
         /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
         /// <typeparam name="T">type indication</typeparam>
