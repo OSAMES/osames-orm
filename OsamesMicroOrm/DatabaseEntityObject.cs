@@ -11,8 +11,19 @@
         /// <summary>
         /// Retourne la valeur de GetType().FullName mais avec un cache pour ne construire sa valeur qu'une fois.
         /// </summary>
-        public string UniqueName {get { return FullName ?? (FullName = GetType().FullName); }
+        public string UniqueName {
+            get { return FullName ?? (FullName = GetType().FullName); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="object_"></param>
+        /// <returns></returns>
+        public void Copy<T>(T object_)
+        {
+
+        }
     }
 }

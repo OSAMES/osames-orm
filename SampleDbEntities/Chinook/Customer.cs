@@ -23,164 +23,190 @@ using OsamesMicroOrm;
 
 namespace SampleDbEntities.Chinook
 {
-    /* representation DB de l'objet Customer
-        CustomerId INTEGER NOT NULL,
-	    FirstName NVARCHAR(40) NOT NULL,
-	    LastName NVARCHAR(20) NOT NULL,
-	    Company NVARCHAR(80),
-	    Address NVARCHAR(70),
-	    City NVARCHAR(40),
-	    State NVARCHAR(40),
-	    Country NVARCHAR(40),
-	    PostalCode NVARCHAR(10),
-	    Phone NVARCHAR(24),
-	    Fax NVARCHAR(24),
-	    Email NVARCHAR(60) NOT NULL,
-	    SupportRepId INTEGER,
-	    CONSTRAINT CUSTOMER_PK PRIMARY KEY (CustomerId),
-	    CONSTRAINT CUSTOMER_FK_EMPLOYEE FOREIGN KEY (SupportRepId) REFERENCES Employee(EmployeeId)
-     */
-    /// <summary>
-    /// Objet/table "Customer" de la base de données Chinook.
-    /// </summary>
-    [Serializable]
-    [DatabaseMapping("Customer")]
-    public class Customer : DatabaseEntityObject
-    {
+	/* representation DB de l'objet Customer
+		CustomerId INTEGER NOT NULL,
+		FirstName NVARCHAR(40) NOT NULL,
+		LastName NVARCHAR(20) NOT NULL,
+		Company NVARCHAR(80),
+		Address NVARCHAR(70),
+		City NVARCHAR(40),
+		State NVARCHAR(40),
+		Country NVARCHAR(40),
+		PostalCode NVARCHAR(10),
+		Phone NVARCHAR(24),
+		Fax NVARCHAR(24),
+		Email NVARCHAR(60) NOT NULL,
+		SupportRepId INTEGER,
+		CONSTRAINT CUSTOMER_PK PRIMARY KEY (CustomerId),
+		CONSTRAINT CUSTOMER_FK_EMPLOYEE FOREIGN KEY (SupportRepId) REFERENCES Employee(EmployeeId)
+	 */
+	/// <summary>
+	/// Objet/table "Customer" de la base de données Chinook.
+	/// </summary>
+	[Serializable]
+	[DatabaseMapping("Customer")]
+	public class Customer : DatabaseEntityObject
+	{
 
-        private string _firstName;
-        private string _lastName;
-        private string _compagny;
-        private string _address;
-        private string _city;
-        private string _state;
-        private string _country;
-        private string _postalCode;
-        private string _phone;
-        private string _fax;
-        private string _email;
-        private long _supportRepId;
+		private string _firstName;
+		private string _lastName;
+		private string _compagny;
+		private string _address;
+		private string _city;
+		private string _state;
+		private string _country;
+		private string _postalCode;
+		private string _phone;
+		private string _fax;
+		private string _email;
+		private long _supportRepId;
 
-        /// <summary>
-        /// Id Customer.
-        /// </summary>
-        public long IdCustomer { get; set; }
+		/// <summary>
+		/// Id Customer.
+		/// </summary>
+		public long IdCustomer { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string FirstName
-        {
-            get { return _firstName; }
-            set { _firstName = value == null ? null : value.Trim(); }
-        }
+		/// <summary>
+		/// 
+		/// </summary>
+		public string FirstName
+		{
+			get { return _firstName; }
+			set { _firstName = value == null ? null : value.Trim(); }
+		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string LastName
-        {
-            get { return _lastName; }
-            set { _lastName = value == null ? null : value.Trim(); }
-        }
+		/// <summary>
+		/// 
+		/// </summary>
+		public string LastName
+		{
+			get { return _lastName; }
+			set { _lastName = value == null ? null : value.Trim(); }
+		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Company
-        {
-            get { return _compagny; }
-            set { _compagny = value == null ? null : value.Trim(); }
-        }
+		/// <summary>
+		/// 
+		/// </summary>
+		public string Company
+		{
+			get { return _compagny; }
+			set { _compagny = value == null ? null : value.Trim(); }
+		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Address
-        {
-            get { return _address; }
-            set { _address = value == null ? null : value.Trim(); }
-        }
+		/// <summary>
+		/// 
+		/// </summary>
+		public string Address
+		{
+			get { return _address; }
+			set { _address = value == null ? null : value.Trim(); }
+		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string City
-        {
-            get { return _city; }
-            set { _city = value == null ? null : value.Trim(); }
-        }
+		/// <summary>
+		/// 
+		/// </summary>
+		public string City
+		{
+			get { return _city; }
+			set { _city = value == null ? null : value.Trim(); }
+		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string State
-        {
-            get { return _state; }
-            set { _state = value == null ? null : value.Trim(); }
-        }
+		/// <summary>
+		/// 
+		/// </summary>
+		public string State
+		{
+			get { return _state; }
+			set { _state = value == null ? null : value.Trim(); }
+		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Country
-        {
-            get { return _country; }
-            set { _country = value == null ? null : value.Trim(); }
-        }
+		/// <summary>
+		/// 
+		/// </summary>
+		public string Country
+		{
+			get { return _country; }
+			set { _country = value == null ? null : value.Trim(); }
+		}
 
-        public string PostalCode
-        {
-            get { return _postalCode; }
-            set { _postalCode = value == null ? null : value.Trim(); }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Phone
-        {
-            get { return _phone; }
-            set { _phone = value == null ? null : value.Trim(); }
-        }
+		public string PostalCode
+		{
+			get { return _postalCode; }
+			set { _postalCode = value == null ? null : value.Trim(); }
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		public string Phone
+		{
+			get { return _phone; }
+			set { _phone = value == null ? null : value.Trim(); }
+		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Fax
-        {
-            get { return _fax; }
-            set { _fax = value == null ? null : value.Trim(); }
-        }
+		/// <summary>
+		/// 
+		/// </summary>
+		public string Fax
+		{
+			get { return _fax; }
+			set { _fax = value == null ? null : value.Trim(); }
+		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Email
-        {
-            get { return _email; }
-            set { _email = value == null ? null : value.Trim(); }
-        }
+		/// <summary>
+		/// 
+		/// </summary>
+		public string Email
+		{
+			get { return _email; }
+			set { _email = value == null ? null : value.Trim(); }
+		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public long SupportRepId
-        {
-            get { return _supportRepId; }
-            set { _supportRepId = value; }
-        }
+		/// <summary>
+		/// 
+		/// </summary>
+		public long SupportRepId
+		{
+			get { return _supportRepId; }
+			set { _supportRepId = value; }
+		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public ObservableCollection<Invoice> Invoice;
+		/// <summary>
+		/// 
+		/// </summary>
+		public ObservableCollection<Invoice> Invoice;
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public Customer()
-        {
-            Invoice = new ObservableCollection<Invoice>(new List<Invoice>());
-        }
-    }
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		public Customer()
+		{
+			Invoice = new ObservableCollection<Invoice>(new List<Invoice>());
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="object_"></param>
+		public void Copy(Customer object_)
+		{
+			if (object_ == null)
+				throw new ArgumentNullException("object_");
+
+			IdCustomer = object_.IdCustomer;
+			FirstName = object_.FirstName;
+			LastName = object_.LastName;
+			Company = object_.Company;
+			Address = object_.Address;
+			City = object_.City;
+			State = object_.State;
+			Country = object_.Country;
+			PostalCode = object_.PostalCode;
+			Phone = object_.Phone;
+			Fax = object_.Fax;
+			Email = object_.Email;
+			SupportRepId = object_.SupportRepId;
+			Invoice = object_.Invoice;
+		}
+	}
 }
+ 
