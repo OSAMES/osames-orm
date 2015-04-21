@@ -210,5 +210,28 @@ namespace SampleDbEntities.Chinook
         {
             Customer = new ObservableCollection<Customer>(new List<Customer>());
         }
+
+        public void Copy(Employee object_)
+        {
+            if (object_ == null)
+                throw new ArgumentNullException("object_");
+
+            EmployeeId = object_.EmployeeId;
+            LastName = object_.LastName;
+            FirstName = object_.FirstName;
+            Title = object_.Title;
+            ReportsTo = object_.ReportsTo;
+            BirthDate = object_.BirthDate;
+            HireDate = object_.HireDate;
+            Address = object_.Address;
+            City = object_.City;
+            State = object_.State;
+            Country = object_.Country;
+            PostalCode = object_.PostalCode;
+            Phone = object_.Phone;
+            Fax = object_.Fax;
+            Email = object_.Email;
+            Customer = object_.Customer;
+        }
     }
 }
