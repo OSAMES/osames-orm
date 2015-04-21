@@ -109,16 +109,16 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Lit les champs indiqués en paramètre lstDbColumnNames_ dans le tableau de données du DataReader et positionne les valeurs sur les propriétés de lstPropertiesNames_ de l'instance dataObject_ (une classe C#) paramètre.
+        /// Lit les champs indiqués en paramètre lstDbColumnNames_ dans le tableau de données du DataReader et positionne les valeurs sur les propriétés de lstPropertiesNames_ de l'instance databaseEntityObject_ (une classe C#) paramètre.
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
-        /// <param name="dataObject_">Objet de données</param>
+        /// <param name="databaseEntityObject_">Objet de données</param>
         /// <param name="reader_">IDataReader ADO.NET</param>
         /// <param name="lstDbColumnNames_">Noms des colonnes DB à lire dans le data reader paramètre</param>
-        /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet dataObject_ de type T à utiliser pour les champs à sélectionner</param>
+        /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet databaseEntityObject_ de type T à utiliser pour les champs à sélectionner</param>
         /// <returns>Ne retourne rien</returns>
         /// <exception cref="OOrmHandledException">Problème de lecture du IDataReader (demande d'une colonne incorrecte...)</exception>
-        private static void FillDataObjectFromDataReader<T>(T dataObject_, IDataReader reader_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_)
+        private static void FillDataObjectFromDataReader<T>(T databaseEntityObject_, IDataReader reader_, List<string> lstDbColumnNames_, List<string> lstPropertiesNames_)
        where T : IDatabaseEntityObject
         {
             // parcourir toutes les colonnes de résultat et affecter la valeur à la propriété correspondante.
@@ -149,11 +149,11 @@ namespace OsamesMicroOrm.DbTools
                 try
                 {
                     var dbValueWithType = Convert.ChangeType(dbValue, dbValueType);
-                    dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(dataObject_, dbValueWithType);
+                    databaseEntityObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(databaseEntityObject_, dbValueWithType);
                 }
                 catch (Exception ex)
                 {
-                    throw new OOrmHandledException(HResultEnum.E_CANNOTSETVALUEDATAREADERTODBENTITY, ex, "[Data raw value]: '" + dbValue + "', [C# type from data reader]: ' " + dbValueType + "', [C# type of DbEntity property]: '" + dataObject_.GetType().GetProperty(lstPropertiesNames_[i]).PropertyType.FullName + "'");
+                    throw new OOrmHandledException(HResultEnum.E_CANNOTSETVALUEDATAREADERTODBENTITY, ex, "[Data raw value]: '" + dbValue + "', [C# type from data reader]: ' " + dbValueType + "', [C# type of DbEntity property]: '" + databaseEntityObject_.GetType().GetProperty(lstPropertiesNames_[i]).PropertyType.FullName + "'");
                 }
             }
         }

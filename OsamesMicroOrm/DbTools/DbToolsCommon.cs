@@ -66,14 +66,14 @@ namespace OsamesMicroOrm.DbTools
         /// </list>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
-        /// <param name="dataObject_">Instance d'un objet de la classe T</param>
+        /// <param name="databaseEntityObject_">Instance d'un objet de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet dataObject_</param>
+        /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet databaseEntityObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
         /// <param name="adoParameterNameAndValue_">Sortie : nom/valeur du paramètre ADO.NET</param>
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping ou autre erreur</exception>
-        internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
+        internal static void DetermineDatabaseColumnNameAndAdoParameter<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
             where T : IDatabaseEntityObject
         {
             dbColumnName_ = MappingTools.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
@@ -81,7 +81,7 @@ namespace OsamesMicroOrm.DbTools
             // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
             adoParameterNameAndValue_ = new KeyValuePair<string, object>(
                                     "@" + dataObjectPropertyName_.ToLowerInvariant(),
-                                    dataObject_.GetType().GetProperty(dataObjectPropertyName_).GetValue(dataObject_)
+                                    databaseEntityObject_.GetType().GetProperty(dataObjectPropertyName_).GetValue(databaseEntityObject_)
                                     );
         }
 
@@ -93,14 +93,14 @@ namespace OsamesMicroOrm.DbTools
         /// </list>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
-        /// <param name="dataObject_">Instance d'un objet de la classe T</param>
+        /// <param name="databaseEntityObject_">Instance d'un objet de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="lstDataObjectPropertyNames_">Liste de noms des propriétés de l'objet dataObject_</param>
+        /// <param name="lstDataObjectPropertyNames_">Liste de noms des propriétés de l'objet databaseEntityObject_</param>
         /// <param name="lstDbColumnNames_">Sortie : liste de noms des colonnes en DB</param>
         /// <param name="lstAdoParameterNameAndValues_">Sortie : liste de nom/valeur des paramètres ADO.NET</param>
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping ou autre erreur</exception>
-        internal static void DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, out List<string> lstDbColumnNames_, out List<KeyValuePair<string, object>> lstAdoParameterNameAndValues_)
+        internal static void DetermineDatabaseColumnNamesAndAdoParameters<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, out List<string> lstDbColumnNames_, out List<KeyValuePair<string, object>> lstAdoParameterNameAndValues_)
         where T : IDatabaseEntityObject
         {
             lstDbColumnNames_ = new List<string>();
@@ -114,7 +114,7 @@ namespace OsamesMicroOrm.DbTools
                 // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
                 lstAdoParameterNameAndValues_.Add(new KeyValuePair<string, object>(
                                                 "@" + columnName.ToLowerInvariant(),
-                                                dataObject_.GetType().GetProperty(columnName).GetValue(dataObject_)
+                                                databaseEntityObject_.GetType().GetProperty(columnName).GetValue(databaseEntityObject_)
                                             ));
             }
         }
@@ -327,7 +327,7 @@ namespace OsamesMicroOrm.DbTools
         /// <para>nom de la colonne en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
         /// </summary>
         /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet dataObject_</param>
+        /// <param name="dataObjectPropertyName_">Nom d'une propriété de l'objet databaseEntityObject_</param>
         /// <param name="dbColumnName_">Sortie : nom de la colonne en DB</param>
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Erreur quand l'information demandée ne peut être trouvée das les données de maping</exception>

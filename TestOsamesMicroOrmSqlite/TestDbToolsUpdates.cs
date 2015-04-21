@@ -30,7 +30,7 @@ namespace TestOsamesMicroOrmSqlite
         public void TestFormatSqlForUpdate()
         {
 
-            // FormatSqlForUpdate<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
+            // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
             //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
             string sqlCommand;

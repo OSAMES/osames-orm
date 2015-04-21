@@ -38,21 +38,21 @@ namespace OsamesMicroOrm.Utilities
         /// </summary>
         /// <typeparam name="T">IDatabaseEntityObject</typeparam>
         /// <param name="dictionaryKey_"></param>
-        /// <param name="dataObject_"></param>
+        /// <param name="databaseEntityObject_"></param>
         /// <param name="propertyName_"></param>
         /// <returns>Tableau des valeurs qu'on vient d'ajouter au dictionnaire</returns>
-        private static string[] FillInternalDictionary<T>(string dictionaryKey_, T dataObject_, string propertyName_)
+        private static string[] FillInternalDictionary<T>(string dictionaryKey_, T databaseEntityObject_, string propertyName_)
         {
             string[] values = new string[2];
             
-            if (dataObject_ == null)
+            if (databaseEntityObject_ == null)
                 throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "dbEntity is null");
             if (string.IsNullOrEmpty(propertyName_) || string.IsNullOrWhiteSpace(propertyName_))
                 throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property name is null");
-            if (dataObject_.GetType().GetProperty(propertyName_) == null)
+            if (databaseEntityObject_.GetType().GetProperty(propertyName_) == null)
                 throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property does not exist in object");
 
-            string tableName = GetTableNameFromMappingDictionary(dataObject_);
+            string tableName = GetTableNameFromMappingDictionary(databaseEntityObject_);
             string protectedColumnName = ConfigurationLoader.StartFieldEncloser + GetDbColumnNameFromMappingDictionary(tableName, propertyName_) + ConfigurationLoader.EndFieldEncloser;
             string protectedTableName = ConfigurationLoader.StartFieldEncloser + tableName + ConfigurationLoader.EndFieldEncloser;
 
@@ -76,37 +76,37 @@ namespace OsamesMicroOrm.Utilities
         /// Reads value of DatabaseMapping class custom attribute.
         /// Méthode utile pour formater des requêtes SQL personnalisées à exécuter par DbManager (API de bas niveau).
         /// </summary>
-        /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
+        /// <param name="databaseEntityObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
         /// <typeparam name="T">type indication</typeparam>
-        /// <returns>Nom de table défini par l'attribut DatabaseMapping porté par le déclaratif de la classe C# de dataObject_</returns>
+        /// <returns>Nom de table défini par l'attribut DatabaseMapping porté par le déclaratif de la classe C# de databaseEntityObject_</returns>
         /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
-        public static string GetTableName<T>(T dataObject_) where T : IDatabaseEntityObject
+        public static string GetTableName<T>(T databaseEntityObject_) where T : IDatabaseEntityObject
         {
-            return ConfigurationLoader.StartFieldEncloser + GetTableNameFromMappingDictionary(dataObject_) + ConfigurationLoader.EndFieldEncloser;
+            return ConfigurationLoader.StartFieldEncloser + GetTableNameFromMappingDictionary(databaseEntityObject_) + ConfigurationLoader.EndFieldEncloser;
         }
 
         /// <summary>
         /// Retourne le nom de la table (non protégé) pour la DbEntity paramètre.
         /// Reads value of DatabaseMapping class custom attribute.
         /// </summary>
-        /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
+        /// <param name="databaseEntityObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
         /// <typeparam name="T">type indication</typeparam>
-        /// <returns>Nom de table défini par l'attribut DatabaseMapping porté par le déclaratif de la classe C# de dataObject_</returns>
+        /// <returns>Nom de table défini par l'attribut DatabaseMapping porté par le déclaratif de la classe C# de databaseEntityObject_</returns>
         /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
-        private static string GetTableNameFromMappingDictionary<T>(T dataObject_)
+        private static string GetTableNameFromMappingDictionary<T>(T databaseEntityObject_)
         {
             // Get value
-            object[] classAttributes = dataObject_.GetType().GetCustomAttributes(typeof(DatabaseMappingAttribute), false);
+            object[] classAttributes = databaseEntityObject_.GetType().GetCustomAttributes(typeof(DatabaseMappingAttribute), false);
             if (classAttributes.Length == 0)
-                throw new OOrmHandledException(HResultEnum.E_TYPENOTDEFINEDBMAPPINGATTRIBUTE, null, "C# type : '" + dataObject_.GetType().FullName + "'");
+                throw new OOrmHandledException(HResultEnum.E_TYPENOTDEFINEDBMAPPINGATTRIBUTE, null, "C# type : '" + databaseEntityObject_.GetType().FullName + "'");
 
             if (classAttributes.Length > 1)
-                throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESDBMAPPINGATTRIBUTEMOREONETIME, null, "C# type: '" + dataObject_.GetType().FullName + "'");
+                throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESDBMAPPINGATTRIBUTEMOREONETIME, null, "C# type: '" + databaseEntityObject_.GetType().FullName + "'");
 
             string dbTableName = ((DatabaseMappingAttribute)classAttributes[0]).DbTableName;
 
             if (string.IsNullOrWhiteSpace(dbTableName))
-                throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE, null, "C# type: '" + dataObject_.GetType().FullName + "'");
+                throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE, null, "C# type: '" + databaseEntityObject_.GetType().FullName + "'");
 
             // Check that value exists in mapping
             if (!ConfigurationLoader.MappingDictionnary.ContainsKey(dbTableName))
@@ -123,7 +123,7 @@ namespace OsamesMicroOrm.Utilities
         /// Retourne le nom de la colonne (non protégé) dans la table paramètre pour le nom de propriété paramètre.
         /// </summary>
         /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="propertyName_">Nom d'une propriété de dataObject_. Ex: "CustomerId"</param>
+        /// <param name="propertyName_">Nom d'une propriété de databaseEntityObject_. Ex: "CustomerId"</param>
         /// <returns>DB column name. Ex: "id_customer"</returns>
         /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping pour les paramètres donnés</exception>
         internal static string GetDbColumnNameFromMappingDictionary(string mappingDictionaryName_, string propertyName_)
@@ -146,30 +146,30 @@ namespace OsamesMicroOrm.Utilities
         /// Retourne le nom de la colonne protégé pour la propriété du DbEntity paramètre.
         /// Méthode utile pour formater des requêtes SQL personnalisées à exécuter par DbManager (API de bas niveau).
         /// </summary>
-        /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
-        /// <param name="propertyName_">Nom d'une propriété de dataObject_. Ex: "CustomerId"</param>
+        /// <param name="databaseEntityObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
+        /// <param name="propertyName_">Nom d'une propriété de databaseEntityObject_. Ex: "CustomerId"</param>
         /// <returns></returns>
-        public static string GetDbColumnName<T>(T dataObject_, string propertyName_) where T : IDatabaseEntityObject
+        public static string GetDbColumnName<T>(T databaseEntityObject_, string propertyName_) where T : IDatabaseEntityObject
         {
-            string key = dataObject_.UniqueName + "#" + propertyName_;
-            return MappingDictionary.ContainsKey(key) ? MappingDictionary[key][0] : FillInternalDictionary(key, dataObject_, propertyName_)[0];
+            string key = databaseEntityObject_.UniqueName + "#" + propertyName_;
+            return MappingDictionary.ContainsKey(key) ? MappingDictionary[key][0] : FillInternalDictionary(key, databaseEntityObject_, propertyName_)[0];
         }
 
         /// <summary>
         /// Retourne le nom de la colonne protégé préfixé par le nom de la table protégé pour la propriété du DbEntity paramètre.
         /// Méthode utile pour formater des requêtes SQL personnalisées à exécuter par DbManager (API de bas niveau).
         /// </summary>
-        /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
-        /// <param name="propertyName_">Nom d'une propriété de dataObject_. Ex: "CustomerId"</param>
+        /// <param name="databaseEntityObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
+        /// <param name="propertyName_">Nom d'une propriété de databaseEntityObject_. Ex: "CustomerId"</param>
         /// <returns></returns>
-        public static string GetDbTableAndColumnName<T>(T dataObject_, string propertyName_) where T : IDatabaseEntityObject
+        public static string GetDbTableAndColumnName<T>(T databaseEntityObject_, string propertyName_) where T : IDatabaseEntityObject
         {
-            string key = dataObject_.UniqueName + "#" + propertyName_;
-            return MappingDictionary.ContainsKey(key) ? MappingDictionary[key][1] : FillInternalDictionary(key, dataObject_, propertyName_)[1];
+            string key = databaseEntityObject_.UniqueName + "#" + propertyName_;
+            return MappingDictionary.ContainsKey(key) ? MappingDictionary[key][1] : FillInternalDictionary(key, databaseEntityObject_, propertyName_)[1];
         }
         #endregion
 
-        #region obtention de l'ensemble nom de la colonne en DB + nom de la propriété d'un DbEntity
+        #region obtention de l'ensemble nom de la propriété d'un DbEntity et nom de la colonne en DB (dictionnaire)
         /// <summary>
         /// Retourne les informations de mapping pour une table donnée sous forme de dictionnaire :
         /// clés : propriétés de la classe C# DbEntity, valeurs : noms des colonnes en base de données.
@@ -192,15 +192,15 @@ namespace OsamesMicroOrm.Utilities
         /// clés : propriétés de la classe C# DbEntity, valeurs : noms des colonnes en base de données, protégées et préfixées par le nom de la table.
         /// Méthode utile pour formater des requêtes SQL personnalisées à exécuter par DbManager (API de bas niveau).
         /// </summary>
-        /// <param name="dataObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
+        /// <param name="databaseEntityObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
         /// <typeparam name="T">type indication</typeparam>
         /// <returns></returns>
-        public static Dictionary<string, string> GetMappingDefinitionsFor<T>(T dataObject_)
+        public static Dictionary<string, string> GetMappingDefinitionsFor<T>(T databaseEntityObject_)
         {
-            if (dataObject_ == null)
+            if (databaseEntityObject_ == null)
                 throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "dbEntity is null");
 
-            string table = GetTableNameFromMappingDictionary(dataObject_);
+            string table = GetTableNameFromMappingDictionary(databaseEntityObject_);
 
             return GetMappingDefinitionsForTable(table).ToDictionary(
                 item_ => item_.Key, item_ => string.Concat(

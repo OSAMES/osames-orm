@@ -81,7 +81,7 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping GetPropertyValue")]
         public void TestDetermineDatabaseColumnNameAndAdoParameter()
         {
-            // DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
+            // DetermineDatabaseColumnNamesAndAdoParameters<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
 
             string dbColumnName;
             KeyValuePair<string, object> adoParams;
@@ -104,7 +104,7 @@ namespace TestOsamesMicroOrm
         [ExpectedException(typeof(OOrmHandledException))]
         public void TestDetermineDatabaseColumnNameAndAdoParameterWrongDictionaryName()
         {
-            // DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
+            // DetermineDatabaseColumnNamesAndAdoParameters<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
 
             string dbColumnName;
             KeyValuePair<string, object> adoParams;
@@ -118,7 +118,7 @@ namespace TestOsamesMicroOrm
         [TestCategory("Mapping GetPropertyValue")]
         public void TestDetermineDatabaseColumnNamesAndAdoParameters()
         {
-            // DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
+            // DetermineDatabaseColumnNamesAndAdoParameters<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
 
             List<string> lstDbColumnNames;
             List<KeyValuePair<string, object>> adoParams;
@@ -145,7 +145,7 @@ namespace TestOsamesMicroOrm
         {
             try
             {
-                // DetermineDatabaseColumnNamesAndAdoParameters<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
+                // DetermineDatabaseColumnNamesAndAdoParameters<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, out List<string> lstDbColumnName_, out List<KeyValuePair<string, object>> adoParameterNameAndValue_ )
 
                 List<string> lstDbColumnNames;
                 List<KeyValuePair<string, object>> adoParams;
@@ -172,7 +172,7 @@ namespace TestOsamesMicroOrm
             try
             {
 
-                // FormatSqlForUpdate<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
+                // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
                 //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
                 List<KeyValuePair<string, object>> adoParams;
@@ -202,7 +202,7 @@ namespace TestOsamesMicroOrm
             try
             {
 
-                // FormatSqlForUpdate<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
+                // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
                 //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
                 List<KeyValuePair<string, object>> adoParams;
@@ -232,7 +232,7 @@ namespace TestOsamesMicroOrm
             try
             {
 
-                // FormatSqlForUpdate<T>(T dataObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
+                // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
                 //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
 
                 List<KeyValuePair<string, object>> adoParams;

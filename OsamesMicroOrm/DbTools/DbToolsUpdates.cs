@@ -35,16 +35,16 @@ namespace OsamesMicroOrm.DbTools
         /// Utilise le template du style de "BaseUpdate" : <c>"UPDATE {0} SET {1} WHERE ..."</c> ainsi que les éléments suivants :
         /// <list type="bullet">
         /// <item><description>clé du dictionnaire de mapping</description></item>
-        /// <item><description>un objet de données dataObject_</description></item>
-        /// <item><description>liste de noms de propriétés de dataObject_ à utiliser pour les champs à mettre à jour</description></item>
-        /// <item><description>nom de la propriété de dataObject_ correspondant au champ clé primaire</description></item>
+        /// <item><description>un objet de données databaseEntityObject_</description></item>
+        /// <item><description>liste de noms de propriétés de databaseEntityObject_ à utiliser pour les champs à mettre à jour</description></item>
+        /// <item><description>nom de la propriété de databaseEntityObject_ correspondant au champ clé primaire</description></item>
         /// </list>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
-        /// <param name="dataObject_">Instance d'un objet de la classe T</param>
+        /// <param name="databaseEntityObject_">Instance d'un objet de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {0} dans le template sql</param>
         /// <param name="sqlTemplateName_">Nom du template SQL</param>
-        /// <param name="lstDataObjectColumnNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour. Utilisé pour la partie {1} du template SQL</param>
+        /// <param name="lstDataObjectColumnNames_">Noms des propriétés de l'objet databaseEntityObject_ à utiliser pour les champs à mettre à jour. Utilisé pour la partie {1} du template SQL</param>
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
@@ -54,7 +54,7 @@ namespace OsamesMicroOrm.DbTools
         /// A faux quand on appelle cette méthode pour une liste d'objets à mettre à jour : on ne fait try format que pour le premier objet, puis la sqlcommand est réutilisée</param>
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
-        internal static void FormatSqlForUpdate<T>(T dataObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
+        internal static void FormatSqlForUpdate<T>(T databaseEntityObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
         where T : IDatabaseEntityObject
         {
             StringBuilder sbFieldsToUpdate = new StringBuilder();
@@ -63,7 +63,7 @@ namespace OsamesMicroOrm.DbTools
             List<string> lstDbColumnNames;
 
             // 1. détermine les champs à mettre à jour et remplit la stringbuilder sbFieldsToUpdate
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(dataObject_, mappingDictionariesContainerKey_, lstDataObjectColumnNames_, out lstDbColumnNames, out lstAdoParameters_);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(databaseEntityObject_, mappingDictionariesContainerKey_, lstDataObjectColumnNames_, out lstDbColumnNames, out lstAdoParameters_);
 
             int iCountMinusOne = lstDbColumnNames.Count - 1;
             for (int i = 0; i < iCountMinusOne; i++)
@@ -94,24 +94,24 @@ namespace OsamesMicroOrm.DbTools
         /// </list>
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
-        /// <param name="dataObject_">Instance d'un objet de la classe T</param>
+        /// <param name="databaseEntityObject_">Instance d'un objet de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="sqlTemplateName_">Nom du template SQL</param>
-        /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
-        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de dataObject_ ou un paramètre dynamique. 
+        /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet databaseEntityObject_ à utiliser pour les champs à mettre à jour</param>
+        /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de databaseEntityObject_ ou un paramètre dynamique. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">any error</exception>
-        public static uint Update<T>(T dataObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
+        public static uint Update<T>(T databaseEntityObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
        where T : IDatabaseEntityObject
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             uint nbRowsAffected = 0;
 
-            FormatSqlForUpdate(dataObject_, sqlTemplateName_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters);
+            FormatSqlForUpdate(databaseEntityObject_, sqlTemplateName_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters);
 
             if (transaction_ != null)
             {
@@ -148,26 +148,26 @@ namespace OsamesMicroOrm.DbTools
         ///  Exécution d'une mise à jour d'objets de données vers la base de données.
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
-        /// <param name="dataObjects_">Instance liste d'objets de la classe T</param>
+        /// <param name="databaseEntityObjects_">Instance liste d'objets de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="sqlTemplateName_">Nom du template SQL</param>
-        /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet dataObject_ à utiliser pour les champs à mettre à jour</param>
+        /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet databaseEntityObject_ à utiliser pour les champs à mettre à jour</param>
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
-        /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET, une liste pour chaque objet de dataObjects_. Peut être null</param>
+        /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET, une liste pour chaque objet de databaseEntityObjects_. Peut être null</param>
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">any error</exception>
-        public static uint Update<T>(List<T> dataObjects_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<List<object>> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
+        public static uint Update<T>(List<T> databaseEntityObjects_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<List<object>> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
         where T : IDatabaseEntityObject
         {
             string sqlCommand = null;
 
             uint nbRowsAffected = 0;
 
-            for (int i = 0; i < dataObjects_.Count; i++)
+            for (int i = 0; i < databaseEntityObjects_.Count; i++)
             {
-                T dataObject = dataObjects_[i];
+                T dataObject = databaseEntityObjects_[i];
                 List<KeyValuePair<string, object>> adoParameters;
                 if (i != 0)
                 {
