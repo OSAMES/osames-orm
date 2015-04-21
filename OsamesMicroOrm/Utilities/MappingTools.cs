@@ -169,31 +169,6 @@ namespace OsamesMicroOrm.Utilities
         }
         #endregion
 
-        #region obtention du nom de la propriété d'un DbEntity
-        /// <summary>
-        /// Asks mapping dictionary for a Db entity object property name, given a DB column name.
-        /// </summary>
-        /// <param name="mappingDictionaryName_">Nom du dictionnaire de mapping à utiliser</param>
-        /// <param name="dbColumnName_">DB column name. Ex: "id_customer"</param>
-        /// <returns>DB entity C# object property name. Ex: "CustomerId"</returns>
-        internal static string GetDbEntityPropertyNameFromMappingDictionary(string mappingDictionaryName_, string dbColumnName_)
-        {
-            // TODO voir l'intérêt de cette méthode (pas utilisée par l'ORM à part les TUs)
-            Dictionary<string, string> mappingObjectSet;
-
-            if (!ConfigurationLoader.MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet))
-                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
-
-            string resultPropertyName = (from mapping in mappingObjectSet where mapping.Value == dbColumnName_ select mapping.Value).FirstOrDefault();
-
-            if (resultPropertyName == null)
-                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEYANDCOLUMN, null, "[No column '" + dbColumnName_ + "' in dictionary " + mappingDictionaryName_ + "]");
-
-            return resultPropertyName;
-        }
-
-        #endregion
-
         #region obtention de l'ensemble nom de la colonne en DB + nom de la propriété d'un DbEntity
         /// <summary>
         /// Retourne les informations de mapping pour une table donnée sous forme de dictionnaire :
