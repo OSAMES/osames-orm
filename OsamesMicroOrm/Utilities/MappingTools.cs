@@ -86,6 +86,17 @@ namespace OsamesMicroOrm.Utilities
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="databaseEntityObject_"></param>
+        /// <returns></returns>
+        public static string GetUnpotectedTableName<T>(T databaseEntityObject_) where T : IDatabaseEntityObject
+        {
+            return GetTableNameFromMappingDictionary(databaseEntityObject_);
+        }
+
+        /// <summary>
         /// Retourne le nom de la table (non protégé) pour la DbEntity paramètre.
         /// Reads value of DatabaseMapping class custom attribute.
         /// </summary>
