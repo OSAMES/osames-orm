@@ -139,5 +139,10 @@ namespace SampleDbEntities.Chinook
         {
             InvoiceLine = new ObservableCollection<InvoiceLine>(new List<InvoiceLine>());
         }
+
+        public override void Copy<T>(T object_)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

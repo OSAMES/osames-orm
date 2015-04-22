@@ -120,5 +120,10 @@ namespace SampleDbEntities.Chinook
             get { return _unitPrice; }
             set { _unitPrice = value; }
         }
+
+        public override void Copy<T>(T object_)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

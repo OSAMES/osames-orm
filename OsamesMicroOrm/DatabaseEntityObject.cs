@@ -16,14 +16,12 @@
         }
 
         /// <summary>
-        /// 
+        /// Copie des valeurs de l'objet paramètre vers l'objet courant.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="object_"></param>
         /// <returns></returns>
-        public void Copy<T>(T object_)
-        {
-
-        }
+        public abstract void Copy<T>(T object_);
+        
     }
 }

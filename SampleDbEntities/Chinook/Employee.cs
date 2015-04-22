@@ -210,28 +210,37 @@ namespace SampleDbEntities.Chinook
         {
             Customer = new ObservableCollection<Customer>(new List<Customer>());
         }
-
-        public void Copy(Employee object_)
+        /// <summary>
+        /// Copie des valeurs de l'objet paramètre vers l'objet courant.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="object_"></param>
+        public override void Copy<T>(T object_)
         {
             if (object_ == null)
                 throw new ArgumentNullException("object_");
 
-            EmployeeId = object_.EmployeeId;
-            LastName = object_.LastName;
-            FirstName = object_.FirstName;
-            Title = object_.Title;
-            ReportsTo = object_.ReportsTo;
-            BirthDate = object_.BirthDate;
-            HireDate = object_.HireDate;
-            Address = object_.Address;
-            City = object_.City;
-            State = object_.State;
-            Country = object_.Country;
-            PostalCode = object_.PostalCode;
-            Phone = object_.Phone;
-            Fax = object_.Fax;
-            Email = object_.Email;
-            Customer = object_.Customer;
+            if (typeof(T) != GetType())
+                throw new ArgumentException("object_ of wrong type: " + object_.GetType());
+
+            Employee param = (Employee)Convert.ChangeType(object_, GetType());
+
+            EmployeeId = param.EmployeeId;
+            LastName = param.LastName;
+            FirstName = param.FirstName;
+            Title = param.Title;
+            ReportsTo = param.ReportsTo;
+            BirthDate = param.BirthDate;
+            HireDate = param.HireDate;
+            Address = param.Address;
+            City = param.City;
+            State = param.State;
+            Country = param.Country;
+            PostalCode = param.PostalCode;
+            Phone = param.Phone;
+            Fax = param.Fax;
+            Email = param.Email;
+            Customer = param.Customer;
         }
     }
 }

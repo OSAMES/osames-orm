@@ -176,7 +176,7 @@ namespace SampleDbEntities.Chinook
 		public ObservableCollection<Invoice> Invoice;
 
 		/// <summary>
-		/// Constructor
+		/// Constructorbah s
 		/// </summary>
 		public Customer()
 		{
@@ -184,29 +184,35 @@ namespace SampleDbEntities.Chinook
 		}
 
 		/// <summary>
-		/// 
+        /// Copie des valeurs de l'objet paramètre vers l'objet courant. 
 		/// </summary>
 		/// <param name="object_"></param>
-		public void Copy(Customer object_)
+		public override void Copy<T>(T object_)
 		{
 			if (object_ == null)
 				throw new ArgumentNullException("object_");
 
-			IdCustomer = object_.IdCustomer;
-			FirstName = object_.FirstName;
-			LastName = object_.LastName;
-			Company = object_.Company;
-			Address = object_.Address;
-			City = object_.City;
-			State = object_.State;
-			Country = object_.Country;
-			PostalCode = object_.PostalCode;
-			Phone = object_.Phone;
-			Fax = object_.Fax;
-			Email = object_.Email;
-			SupportRepId = object_.SupportRepId;
-			Invoice = object_.Invoice;
+            if(typeof(T) !=  GetType())
+                throw new ArgumentException("object_ of wrong type: " + object_.GetType());
+
+            Customer param = (Customer) Convert.ChangeType(object_, GetType());
+
+			IdCustomer = param.IdCustomer;
+			FirstName = param.FirstName;
+			LastName = param.LastName;
+			Company = param.Company;
+			Address = param.Address;
+			City = param.City;
+			State = param.State;
+			Country = param.Country;
+			PostalCode = param.PostalCode;
+			Phone = param.Phone;
+			Fax = param.Fax;
+			Email = param.Email;
+			SupportRepId = param.SupportRepId;
+			Invoice = param.Invoice;
 		}
+
 	}
 }
  

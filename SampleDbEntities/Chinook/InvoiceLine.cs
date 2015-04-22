@@ -95,5 +95,10 @@ namespace SampleDbEntities.Chinook
         {
             Track = new Track();
         }
+
+        public override void Copy<T>(T object_)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
