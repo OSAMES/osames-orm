@@ -132,7 +132,7 @@ namespace OsamesMicroOrm.Utilities
             string resultColumnName;
 
             if (!ConfigurationLoader.MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet))
-                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "'" + mappingDictionaryName_ + "'");
 
             mappingObjectSet.TryGetValue(propertyName_, out resultColumnName);
 
@@ -183,7 +183,7 @@ namespace OsamesMicroOrm.Utilities
             Dictionary<string, string> mappingObjectSet;
 
             if (!ConfigurationLoader.MappingDictionnary.TryGetValue(mappingDictionaryName_, out mappingObjectSet))
-                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "[" + mappingDictionaryName_ + "]");
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "'" + mappingDictionaryName_ + "'");
             return mappingObjectSet;
         }
 
