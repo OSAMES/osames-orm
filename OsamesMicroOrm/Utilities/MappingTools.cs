@@ -91,7 +91,7 @@ namespace OsamesMicroOrm.Utilities
         /// <typeparam name="T"></typeparam>
         /// <param name="databaseEntityObject_"></param>
         /// <returns></returns>
-        public static string GetUnpotectedTableName<T>(T databaseEntityObject_) where T : IDatabaseEntityObject
+        public static string GetUnprotectedTableName<T>(T databaseEntityObject_) where T : IDatabaseEntityObject
         {
             return GetTableNameFromMappingDictionary(databaseEntityObject_);
         }
