@@ -19,6 +19,9 @@ namespace TestOsamesMicroOrmSqlite
     {
         private readonly string _incorrectMappingFileFullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CommonSqlite.CST_INCORRECT_MAPPING_CUSTOMER);
 
+        private readonly string _incorrectMappingFileFullPath2 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CommonSqlite.CST_INCORRECT_MAPPING_CUSTOMER2);
+
+
         /// <summary>
         /// Test de haut niveau du Select avec auto-détermination des propriétés et colonnes.
         /// Test ORM-37. Configuration incorrecte du mapping : exception attendue.
@@ -56,10 +59,11 @@ namespace TestOsamesMicroOrmSqlite
             }
         }
 
+     
         /// <summary>
         /// Test de haut niveau du Select.
         /// Test ORM-37. Configuration incorrecte du mapping : exception attendue.
-        /// Le mapping définit une propriété CustomerId, une colonne IdCustomer alors que le nom de la colonne en base est CustomerId.
+        /// Le mapping définit une propriété IdCustomer, une colonne IdCustomer alors que le nom de la colonne en base est CustomerId.
         /// C'est la requête SQL qui part en erreur.
         /// </summary>
         [TestMethod]
@@ -73,6 +77,41 @@ namespace TestOsamesMicroOrmSqlite
             {
                 // Customization
                 Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.mappingFileName.ToString(), _incorrectMappingFileFullPath);
+                // Reload modified configuration
+                ConfigurationLoader.Clear();
+                _config = ConfigurationLoader.Instance;
+                // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
+                Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "IdCustomer", "FirstName", "LastName" }, "BaseReadWhere", "Customer",
+                    new List<string> { "City", "#" }, new List<object> { "Paris" }, _transaction);
+                Assert.IsNotNull(customer, "Requête incorrecte");
+            }
+            catch (OOrmHandledException ex)
+            {
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_EXECUTEREADERFAILED, ex);
+                throw;
+            }
+            finally
+            {
+                Customizer.ConfigurationManagerRestoreKey(Customizer.AppSettingsKeys.mappingFileName.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Test de haut niveau du Select.
+        /// Test ORM-156. Configuration incorrecte du mapping : exception attendue.
+        /// Le mapping définit une propriété CustomerId, une colonne CustomerId alors que le nom de la propriété de Customer est IdCustomer.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("SqLite")]
+        [TestCategory("Mapping")]
+        [TestCategory("Select")]
+        [ExpectedException(typeof(OOrmHandledException))]
+        public void TestSelectSingleIncorrectMapping2()
+        {
+            try
+            {
+                // Customization
+                Customizer.ConfigurationManagerSetKeyValue(Customizer.AppSettingsKeys.mappingFileName.ToString(), _incorrectMappingFileFullPath2);
                 // Reload modified configuration
                 ConfigurationLoader.Clear();
                 _config = ConfigurationLoader.Instance;

@@ -21,8 +21,8 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 
 <orm:Tables xmlns:orm="http://www.osames.org/osamesorm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osames.org/osamesorm xml_schemas\omo-mapping.xsd">
   <orm:Table name="Customer">
-    <!-- wrong "IdCustomer" column (but property is OK) -->
-    <orm:MappingObject property="IdCustomer" column="IdCustomer"/>
+    <!-- wrong "CustomerId" property (but column is OK) -->
+    <orm:MappingObject property="CustomerId" column="CustomerId"/>
     <orm:MappingObject property="FirstName" column="FirstName"/>
   	<orm:MappingObject property="LastName" column="LastName"/>
   	<orm:MappingObject property="Company" column="Company"/>
@@ -37,10 +37,4 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
   	<orm:MappingObject property="SupportRepId" column="SupportRepId"/>
   </orm:Table>
 
-  <orm:Table name="Employee">
-    <orm:MappingObject property="EmployeeId" column="EmployeeId"/>
-    <orm:MappingObject property="LastName" column="LastName"/>
-    <orm:MappingObject property="FirstName" column="FirstName"/>
-    <orm:MappingObject property="BirthDate" column="LastName"/>
-   </orm:Table>
 </orm:Tables>

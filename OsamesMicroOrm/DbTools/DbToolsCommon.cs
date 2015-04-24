@@ -106,15 +106,15 @@ namespace OsamesMicroOrm.DbTools
             lstDbColumnNames_ = new List<string>();
             lstAdoParameterNameAndValues_ = new List<KeyValuePair<string, object>>();
 
-            foreach (string columnName in lstDataObjectPropertyNames_)
+            foreach (string propertyName in lstDataObjectPropertyNames_)
             {
                 //lstDbColumnNames_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
-                lstDbColumnNames_.Add(MappingTools.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
+                lstDbColumnNames_.Add(MappingTools.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, propertyName));
 
                 // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
                 lstAdoParameterNameAndValues_.Add(new KeyValuePair<string, object>(
-                                                "@" + columnName.ToLowerInvariant(),
-                                                databaseEntityObject_.GetType().GetProperty(columnName).GetValue(databaseEntityObject_)
+                                                "@" + propertyName.ToLowerInvariant(),
+                                                databaseEntityObject_.GetType().GetProperty(propertyName).GetValue(databaseEntityObject_)
                                             ));
             }
         }

@@ -22,7 +22,7 @@ namespace TestOsamesMicroOrmMsSql
         /// <summary>
         /// Test de haut niveau du Select.
         /// Test ORM-37. Configuration incorrecte du mapping : exception attendue.
-        /// Le mapping définit une propriété CustomerId, une colonne IdCustomer alors que le nom de la colonne en base est CustomerId.
+        /// Le mapping définit une propriété IdCustomer, une colonne IdCustomer alors que le nom de la colonne en base est CustomerId.
         /// C'est la requête SQL qui part en erreur.
         /// </summary>
         [TestMethod]
@@ -40,7 +40,7 @@ namespace TestOsamesMicroOrmMsSql
                 ConfigurationLoader.Clear();
                 _config = ConfigurationLoader.Instance;
                 // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
-                Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "CustomerId", "FirstName", "LastName" }, "BaseReadWhere", "Customer",
+                Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "IdCustomer", "FirstName", "LastName" }, "BaseReadWhere", "Customer",
                     new List<string> { "City", "#" }, new List<object> { "Paris" }, _transaction);
                 Assert.IsNotNull(customer, "Requête incorrecte");
             }

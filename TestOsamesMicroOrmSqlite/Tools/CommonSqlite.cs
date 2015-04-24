@@ -18,6 +18,11 @@
         /// <summary>
         /// Relative path for runtime deployed configuration.
         /// </summary>
+        public const string CST_INCORRECT_MAPPING_CUSTOMER2 = @"Config\incorrect-mapping2.xml";
+
+        /// <summary>
+        /// Relative path for runtime deployed configuration.
+        /// </summary>
         public const string CST_POTENTIAL_SQL_INJECTION_MAPPING_CUSTOMER = @"Config\mapping-potential-sql-injection.xml";
    
         
