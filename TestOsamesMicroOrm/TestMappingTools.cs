@@ -47,6 +47,21 @@ namespace TestOsamesMicroOrm
         }
 
         /// <summary>
+        /// Case OK.
+        /// </summary>
+        [ExcludeFromCodeCoverage]
+        [TestCategory("Mapping")]
+        [Owner("Barbara Post")]
+        [TestMethod]
+        public void TestGetDbEntityUnprotectedTableNameOk()
+        {
+            Employee entityEmployee = new Employee();
+            Assert.AreEqual("Employee", MappingTools.GetUnprotectedTableName(entityEmployee));
+           
+        }
+
+
+        /// <summary>
         /// Case NOK, no mapping attribute on this class.
         /// </summary>
         [ExcludeFromCodeCoverage]
