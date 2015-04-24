@@ -220,7 +220,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_PARAMETERNULLVALUE, ex);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_TYPEDOESNTDEFINEPROPERTY, ex);
                 throw;
             }
         }
