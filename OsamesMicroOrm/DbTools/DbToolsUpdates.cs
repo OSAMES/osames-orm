@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -44,7 +45,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="databaseEntityObject_">Instance d'un objet de la classe T</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {0} dans le template sql</param>
         /// <param name="sqlTemplateName_">Nom du template SQL</param>
-        /// <param name="lstDataObjectColumnNames_">Noms des propriétés de l'objet databaseEntityObject_ à utiliser pour les champs à mettre à jour. Utilisé pour la partie {1} du template SQL</param>
+        /// <param name="lstDataObjectPropertiesNames_">Noms des propriétés de l'objet databaseEntityObject_ à utiliser pour les champs à mettre à jour. Utilisé pour la partie {1} du template SQL</param>
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
@@ -54,7 +55,7 @@ namespace OsamesMicroOrm.DbTools
         /// A faux quand on appelle cette méthode pour une liste d'objets à mettre à jour : on ne fait try format que pour le premier objet, puis la sqlcommand est réutilisée</param>
         /// <returns>Ne renvoie rien</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
-        internal static void FormatSqlForUpdate<T>(T databaseEntityObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
+        internal static void FormatSqlForUpdate<T>(T databaseEntityObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertiesNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
         where T : IDatabaseEntityObject
         {
             StringBuilder sbFieldsToUpdate = new StringBuilder();
@@ -63,7 +64,7 @@ namespace OsamesMicroOrm.DbTools
             List<string> lstDbColumnNames;
 
             // 1. détermine les champs à mettre à jour et remplit la stringbuilder sbFieldsToUpdate
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(databaseEntityObject_, mappingDictionariesContainerKey_, lstDataObjectColumnNames_, out lstDbColumnNames, out lstAdoParameters_);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(databaseEntityObject_, mappingDictionariesContainerKey_, lstDataObjectPropertiesNames_, out lstDbColumnNames, out lstAdoParameters_);
 
             int iCountMinusOne = lstDbColumnNames.Count - 1;
             for (int i = 0; i < iCountMinusOne; i++)
@@ -107,6 +108,12 @@ namespace OsamesMicroOrm.DbTools
         public static uint Update<T>(T databaseEntityObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
        where T : IDatabaseEntityObject
         {
+            if (lstPropertiesNames_ == null)
+            {
+                Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_UPDATEFIELDSLISTEMPTY).Value);
+                return 0;
+            }
+
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             uint nbRowsAffected = 0;
@@ -119,7 +126,7 @@ namespace OsamesMicroOrm.DbTools
                 if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) != 0)
                     nbRowsAffected++;
                 else
-                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
+                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
 
                 return nbRowsAffected;
             }
@@ -132,7 +139,7 @@ namespace OsamesMicroOrm.DbTools
                 if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) != 0)
                     nbRowsAffected++;
                 else
-                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
+                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
 
                 return nbRowsAffected;
             }
@@ -161,6 +168,12 @@ namespace OsamesMicroOrm.DbTools
         public static uint Update<T>(List<T> databaseEntityObjects_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<List<object>> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
         where T : IDatabaseEntityObject
         {
+            if (lstPropertiesNames_ == null)
+            {
+                Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_UPDATEFIELDSLISTEMPTY).Value);
+                return 0;
+            }
+
             string sqlCommand = null;
 
             uint nbRowsAffected = 0;
@@ -184,7 +197,7 @@ namespace OsamesMicroOrm.DbTools
                     if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) != 0)
                         nbRowsAffected++;
                     else
-                        Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
+                        Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
 
                     continue;
                 }
@@ -197,7 +210,7 @@ namespace OsamesMicroOrm.DbTools
                     if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) != 0)
                         nbRowsAffected++;
                     else
-                        Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
+                        Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
                 }
                 finally
                 {

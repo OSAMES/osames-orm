@@ -84,7 +84,7 @@ namespace OsamesMicroOrm.DbTools
                 if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) != 0)
                     nbRowsAffected++;
                 else
-                    Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
+                    Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
 
                 return nbRowsAffected;
             }
@@ -97,7 +97,7 @@ namespace OsamesMicroOrm.DbTools
                 if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) != 0)
                     nbRowsAffected++;
                 else
-                    Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.E_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
+                    Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
 
                 return nbRowsAffected;
             }

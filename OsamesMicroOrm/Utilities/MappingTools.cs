@@ -46,11 +46,11 @@ namespace OsamesMicroOrm.Utilities
             string[] values = new string[2];
             
             if (databaseEntityObject_ == null)
-                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "dbEntity is null");
+                throw new OOrmHandledException(HResultEnum.E_PARAMETERNULLVALUE, null, "dbEntity is null");
             if (string.IsNullOrEmpty(propertyName_) || string.IsNullOrWhiteSpace(propertyName_))
-                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property name is null");
+                throw new OOrmHandledException(HResultEnum.E_PARAMETERNULLVALUE, null, "Property name is null");
             if (databaseEntityObject_.GetType().GetProperty(propertyName_) == null)
-                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "Property does not exist in object");
+                throw new OOrmHandledException(HResultEnum.E_TYPEDOESNTDEFINEPROPERTY, null, "Class name : " + databaseEntityObject_.GetType().FullName + " Property name : " + propertyName_);
 
             string tableName = GetTableNameFromMappingDictionary(databaseEntityObject_);
             string protectedColumnName = ConfigurationLoader.StartFieldEncloser + GetDbColumnNameFromMappingDictionary(tableName, propertyName_) + ConfigurationLoader.EndFieldEncloser;
@@ -209,7 +209,7 @@ namespace OsamesMicroOrm.Utilities
         public static Dictionary<string, string> GetMappingDefinitionsFor<T>(T databaseEntityObject_)
         {
             if (databaseEntityObject_ == null)
-                throw new OOrmHandledException(HResultEnum.E_NULLVALUE, null, "dbEntity is null");
+                throw new OOrmHandledException(HResultEnum.E_PARAMETERNULLVALUE, null, "dbEntity is null");
 
             string table = GetTableNameFromMappingDictionary(databaseEntityObject_);
 

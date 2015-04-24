@@ -205,7 +205,7 @@ namespace TestOsamesMicroOrm
             }
             catch (OOrmHandledException ex)
             {
-                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_NULLVALUE, ex);
+                Common.AssertOnHresultAndWriteToConsole(HResultEnum.E_PARAMETERNULLVALUE, ex);
                 throw;
             }
         }

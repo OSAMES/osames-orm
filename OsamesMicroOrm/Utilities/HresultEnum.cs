@@ -11,7 +11,7 @@ using System.CodeDom.Compiler;
 namespace OsamesMicroOrm
 {
 	/// <summary>
-	/// Auto generated date: 03/07/2015 21:50:23
+	/// Auto generated date: 04/24/2015 13:38:15
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
 	public enum HResultEnum
@@ -55,7 +55,7 @@ namespace OsamesMicroOrm
 		/// <summary>
 		/// Query didn't update any row
 		/// </summary>
-		E_NOROWUPDATED,
+		W_NOROWUPDATED,
 	                    
 		/// <summary>
 		/// Error during execution of an SQL query (ExecuteScalar). See log file for details.
@@ -71,6 +71,11 @@ namespace OsamesMicroOrm
 		/// Error during execution of an SQL query (Fill DataSet). See log file for details.
 		/// </summary>
 		E_FILLDATASETFAILED,
+	                    
+		/// <summary>
+		/// [UPDATE] List fields to update is empty
+		/// </summary>
+		W_UPDATEFIELDSLISTEMPTY,
 	                    
 		/// <summary>
 		/// Returned last insert ID value could not be parsed to Long number
@@ -110,7 +115,7 @@ namespace OsamesMicroOrm
 		/// <summary>
 		/// [PARAMETER] Value cannot be null
 		/// </summary>
-		E_NULLVALUE,
+		E_PARAMETERNULLVALUE,
 	                    
 		/// <summary>
 		/// [PARAMETER] Placeholder value isn't syntactically correct according to our parsing rules. See log file for details
@@ -216,6 +221,11 @@ namespace OsamesMicroOrm
 		/// Cannot set value from data reader to C# DbEntity : types defined by data reader and C# DbEntity property are not compatible
 		/// </summary>
 		E_CANNOTSETVALUEDATAREADERTODBENTITY,
+	                    
+		/// <summary>
+		/// [PARAMETER] Property doesn't exist in C# object
+		/// </summary>
+		E_TYPEDOESNTDEFINEPROPERTY,
 	                    
 		// ReSharper restore InconsistentNaming
 	}
