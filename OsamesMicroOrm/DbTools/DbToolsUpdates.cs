@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Text;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Logging;
+using OsamesMicroOrm.Utilities;
 
 namespace OsamesMicroOrm.DbTools
 {
@@ -96,7 +97,6 @@ namespace OsamesMicroOrm.DbTools
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="databaseEntityObject_">Instance d'un objet de la classe T</param>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="sqlTemplateName_">Nom du template SQL</param>
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet databaseEntityObject_ à utiliser pour les champs à mettre à jour</param>
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : indication d'une propriété de databaseEntityObject_ ou un paramètre dynamique. 
@@ -105,7 +105,7 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">any error</exception>
-        public static uint Update<T>(T databaseEntityObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
+        public static uint Update<T>(T databaseEntityObject_, string sqlTemplateName_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
        where T : IDatabaseEntityObject
         {
             if (lstPropertiesNames_ == null || lstPropertiesNames_.Count == 0)
@@ -117,8 +117,9 @@ namespace OsamesMicroOrm.DbTools
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             uint nbRowsAffected = 0;
+            string mappingDictionariesContainerKey = MappingTools.GetTableNameFromMappingDictionary(typeof(T));
 
-            FormatSqlForUpdate(databaseEntityObject_, sqlTemplateName_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters);
+            FormatSqlForUpdate(databaseEntityObject_, sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters);
 
             if (transaction_ != null)
             {
@@ -156,7 +157,6 @@ namespace OsamesMicroOrm.DbTools
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="databaseEntityObjects_">Instance liste d'objets de la classe T</param>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="sqlTemplateName_">Nom du template SQL</param>
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet databaseEntityObject_ à utiliser pour les champs à mettre à jour</param>
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
@@ -165,18 +165,20 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne le nombre d'enregistrements modifiés dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">any error</exception>
-        public static uint Update<T>(List<T> databaseEntityObjects_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<List<object>> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
+        public static uint Update<T>(List<T> databaseEntityObjects_, string sqlTemplateName_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<List<object>> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
         where T : IDatabaseEntityObject
         {
             if (lstPropertiesNames_ == null || lstPropertiesNames_.Count == 0)
             {
-                Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_UPDATEFIELDSLISTEMPTY).Value);
+                Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_UPDATEFIELDSLISTEMPTY).Value);
                 return 0;
             }
 
             string sqlCommand = null;
 
             uint nbRowsAffected = 0;
+            string mappingDictionariesContainerKey = MappingTools.GetTableNameFromMappingDictionary(typeof(T));
+
 
             for (int i = 0; i < databaseEntityObjects_.Count; i++)
             {
@@ -186,10 +188,10 @@ namespace OsamesMicroOrm.DbTools
                 {
                     // ici le slqcommand rendu est null
                     string tmpSqlCommand;
-                    FormatSqlForUpdate(dataObject, sqlTemplateName_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i], out tmpSqlCommand, out adoParameters, false);
+                    FormatSqlForUpdate(dataObject, sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i], out tmpSqlCommand, out adoParameters, false);
                 }
                 else
-                    FormatSqlForUpdate(dataObject, sqlTemplateName_, mappingDictionariesContainerKey_, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i], out sqlCommand, out adoParameters);
+                    FormatSqlForUpdate(dataObject, sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i], out sqlCommand, out adoParameters);
 
                 if (transaction_ != null)
                 {

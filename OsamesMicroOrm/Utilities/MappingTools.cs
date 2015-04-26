@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OsamesMicroOrm.Configuration;
@@ -97,8 +98,37 @@ namespace OsamesMicroOrm.Utilities
         }
 
         /// <summary>
-        /// Retourne le nom de la table (non protégé) pour la DbEntity paramètre.
-        /// Reads value of DatabaseMapping class custom attribute.
+        /// Retourne le nom de la table (non protégé) pour le databaseEntityObject paramètre en lisant la valeur de l'attribut personnalisé de classe DatabaseMapping.
+        /// </summary>
+        /// <param name="type_">Type de l'objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
+        /// <typeparam name="T">type indication</typeparam>
+        /// <returns>Nom de table défini par l'attribut DatabaseMapping porté par le déclaratif de la classe C# de databaseEntityObject_</returns>
+        /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
+        internal static string GetTableNameFromMappingDictionary(Type type_)
+        {
+            // Get value
+            object[] classAttributes = type_.GetCustomAttributes(typeof(DatabaseMappingAttribute), false);
+            if (classAttributes.Length == 0)
+                throw new OOrmHandledException(HResultEnum.E_TYPENOTDEFINEDBMAPPINGATTRIBUTE, null, "C# type : '" + type_.FullName + "'");
+
+            if (classAttributes.Length > 1)
+                throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESDBMAPPINGATTRIBUTEMOREONETIME, null, "C# type: '" + type_.FullName + "'");
+
+            string dbTableName = ((DatabaseMappingAttribute)classAttributes[0]).DbTableName;
+
+            if (string.IsNullOrWhiteSpace(dbTableName))
+                throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE, null, "C# type: '" + type_.FullName + "'");
+
+            // Check that value exists in mapping
+            if (!ConfigurationLoader.MappingDictionnary.ContainsKey(dbTableName))
+                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "Key (table name): '" + dbTableName + "'");
+
+            return dbTableName;
+
+        }
+
+        /// <summary>
+        /// Retourne le nom de la table (non protégé) pour le databaseEntityObject paramètre en lisant la valeur de l'attribut personnalisé de classe DatabaseMapping.
         /// </summary>
         /// <param name="databaseEntityObject_">Objet de données, classe C# dont on s'attend à ce qu'elle soit décorée par DatabaseMappingAttribute</param>
         /// <typeparam name="T">type indication</typeparam>
@@ -106,24 +136,7 @@ namespace OsamesMicroOrm.Utilities
         /// <exception cref="OOrmHandledException">Attribut défini de manière incorrecte</exception>
         private static string GetTableNameFromMappingDictionary<T>(T databaseEntityObject_)
         {
-            // Get value
-            object[] classAttributes = databaseEntityObject_.GetType().GetCustomAttributes(typeof(DatabaseMappingAttribute), false);
-            if (classAttributes.Length == 0)
-                throw new OOrmHandledException(HResultEnum.E_TYPENOTDEFINEDBMAPPINGATTRIBUTE, null, "C# type : '" + databaseEntityObject_.GetType().FullName + "'");
-
-            if (classAttributes.Length > 1)
-                throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESDBMAPPINGATTRIBUTEMOREONETIME, null, "C# type: '" + databaseEntityObject_.GetType().FullName + "'");
-
-            string dbTableName = ((DatabaseMappingAttribute)classAttributes[0]).DbTableName;
-
-            if (string.IsNullOrWhiteSpace(dbTableName))
-                throw new OOrmHandledException(HResultEnum.E_TYPEDEFINESEMPTYDBMAPPINGATTRIBUTE, null, "C# type: '" + databaseEntityObject_.GetType().FullName + "'");
-
-            // Check that value exists in mapping
-            if (!ConfigurationLoader.MappingDictionnary.ContainsKey(dbTableName))
-                throw new OOrmHandledException(HResultEnum.E_NOMAPPINGKEY, null, "Key (table name): '" + dbTableName + "'");
-
-            return dbTableName;
+            return GetTableNameFromMappingDictionary(databaseEntityObject_.GetType());
         }
 
         #endregion

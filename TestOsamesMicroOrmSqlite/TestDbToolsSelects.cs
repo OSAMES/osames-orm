@@ -44,7 +44,7 @@ namespace TestOsamesMicroOrmSqlite
                 ConfigurationLoader.Clear();
                 _config = ConfigurationLoader.Instance;
                 // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
-                Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAll", "Customer",
+                Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAll", 
                     new List<string> { "City" }, new List<object> { "Paris" }, _transaction);
                 Assert.IsNotNull(customer, "Requête incorrecte");
             }
@@ -81,7 +81,7 @@ namespace TestOsamesMicroOrmSqlite
                 ConfigurationLoader.Clear();
                 _config = ConfigurationLoader.Instance;
                 // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
-                Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "IdCustomer", "FirstName", "LastName" }, "BaseReadWhere", "Customer",
+                Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "IdCustomer", "FirstName", "LastName" }, "BaseReadWhere", 
                     new List<string> { "City", "#" }, new List<object> { "Paris" }, _transaction);
                 Assert.IsNotNull(customer, "Requête incorrecte");
             }
@@ -116,7 +116,7 @@ namespace TestOsamesMicroOrmSqlite
                 ConfigurationLoader.Clear();
                 _config = ConfigurationLoader.Instance;
                 // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
-                Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "CustomerId", "FirstName", "LastName" }, "BaseReadWhere", "Customer",
+                Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "CustomerId", "FirstName", "LastName" }, "BaseReadWhere", 
                     new List<string> { "City", "#" }, new List<object> { "Paris" }, _transaction);
                 Assert.IsNotNull(customer, "Requête incorrecte");
             }
@@ -141,7 +141,7 @@ namespace TestOsamesMicroOrmSqlite
         public void TestSelectSingleAllColumns()
         {
             _config = ConfigurationLoader.Instance;
-            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer",
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", 
                 new List<string> { "IdCustomer", "#" }, new List<object> { 1 }, _transaction);
             Assert.IsNotNull(customer, "Pas d'enregistrement trouvé, requête select à corriger");
 
@@ -158,7 +158,7 @@ namespace TestOsamesMicroOrmSqlite
         public void TestSelectSingleAllColumnsNoMatch()
         {
             _config = ConfigurationLoader.Instance;
-            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer",
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", 
                 new List<string> { "IdCustomer", "#" }, new List<object> { -1 }, _transaction);
             Assert.IsNull(customer, "Doit retourner null");
         }
@@ -173,7 +173,7 @@ namespace TestOsamesMicroOrmSqlite
         public void TestSelectManyAllColumnsNoMatch()
         {
             _config = ConfigurationLoader.Instance;
-            List<Customer> customers = DbToolsSelects.SelectAllColumns<Customer>("BaseReadAllWhereLessThan", "Customer",
+            List<Customer> customers = DbToolsSelects.SelectAllColumns<Customer>("BaseReadAllWhereLessThan", 
                 new List<string> { "IdCustomer", "#" }, new List<object> { 0 }, _transaction);
             Assert.AreEqual(0, customers.Count, "Doit retourner une liste vide");
         }
@@ -205,7 +205,7 @@ namespace TestOsamesMicroOrmSqlite
             {
                 // "BaseReadAllWhereBetween" : SELECT * FROM {0} WHERE {1} between {2} and {3};
                 // Il manque le premier élément de la liste des valeurs qui doit être "CustomerId".
-                List<Customer> customers = DbToolsSelects.SelectAllColumns<Customer>("BaseReadAllWhereBetween", "Customer", new List<string> { "%CustomerId", "#", "#" }, new List<object> { 3, 4 });
+                List<Customer> customers = DbToolsSelects.SelectAllColumns<Customer>("BaseReadAllWhereBetween",  new List<string> { "%CustomerId", "#", "#" }, new List<object> { 3, 4 });
                 Console.WriteLine("[0] : ID " + customers[0].IdCustomer + " Nom : " + customers[0].LastName + " prénom : " + customers[0].FirstName);
                 Console.WriteLine("[1] : ID " + customers[1].IdCustomer + " Nom : " + customers[1].LastName + " prénom : " + customers[1].FirstName);
             }
@@ -227,7 +227,7 @@ namespace TestOsamesMicroOrmSqlite
         [TestCategory("Select")]
         public void TestSelectDateData()
         {
-            Employee employee = DbToolsSelects.SelectSingle<Employee>(new List<string> { "FirstName", "LastName", "BirthDate" }, "BaseReadWhereAndWhere", "Employee",
+            Employee employee = DbToolsSelects.SelectSingle<Employee>(new List<string> { "FirstName", "LastName", "BirthDate" }, "BaseReadWhereAndWhere", 
                 new List<string> { "FirstName", "#", "LastName", "#" }, new List<object> { "Andrew", "Adams" });
             Console.WriteLine(employee.BirthDate);
             Assert.AreEqual(new DateTime(1962, 2, 18), employee.BirthDate);
@@ -253,7 +253,7 @@ namespace TestOsamesMicroOrmSqlite
                 ConfigurationLoader.Clear();
                 _config = ConfigurationLoader.Instance;
 
-                Employee employee = DbToolsSelects.SelectSingle<Employee>(new List<string> {"FirstName", "LastName", "BirthDate"}, "BaseReadWhereAndWhere", "Employee",
+                Employee employee = DbToolsSelects.SelectSingle<Employee>(new List<string> {"FirstName", "LastName", "BirthDate"}, "BaseReadWhereAndWhere", 
                     new List<string> {"FirstName", "#", "LastName", "#"}, new List<object> {"Andrew", "Adams"});
                 Console.WriteLine(employee.BirthDate);
                 Assert.AreEqual(new DateTime(1962, 2, 18), employee.BirthDate);

@@ -40,7 +40,7 @@ namespace TestOsamesMicroOrmMsSql
                 ConfigurationLoader.Clear();
                 _config = ConfigurationLoader.Instance;
                 // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
-                Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "IdCustomer", "FirstName", "LastName" }, "BaseReadWhere", "Customer",
+                Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "IdCustomer", "FirstName", "LastName" }, "BaseReadWhere", 
                     new List<string> { "City", "#" }, new List<object> { "Paris" }, _transaction);
                 Assert.IsNotNull(customer, "Requête incorrecte");
             }
@@ -75,7 +75,7 @@ namespace TestOsamesMicroOrmMsSql
                 ConfigurationLoader.Clear();
                 _config = ConfigurationLoader.Instance;
                 // Dans la DB j'ai vérifié que cette requête donne un résultat, 'City' de valeur 'Paris'
-                Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAll", "Customer",
+                Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAll", 
                     new List<string> { "City" }, new List<object> { "Paris" }, _transaction);
                 Assert.IsNotNull(customer, "Requête incorrecte");
             }
@@ -100,7 +100,7 @@ namespace TestOsamesMicroOrmMsSql
         [TestCategory("Select")]
         public void TestSelectDateData()
         {
-            Employee employee = DbToolsSelects.SelectSingle<Employee>(new List<string> {"FirstName", "LastName", "BirthDate"}, "BaseReadWhereAndWhere", "Employee",
+            Employee employee = DbToolsSelects.SelectSingle<Employee>(new List<string> {"FirstName", "LastName", "BirthDate"}, "BaseReadWhereAndWhere", 
                 new List<string> {"FirstName", "#", "LastName", "#"}, new List<object> {"Andrew", "Adams"});
             Console.WriteLine(employee.BirthDate);
             Assert.AreEqual(new DateTime(1962,2,18), employee.BirthDate);
@@ -126,7 +126,7 @@ namespace TestOsamesMicroOrmMsSql
                 ConfigurationLoader.Clear();
                 _config = ConfigurationLoader.Instance;
 
-                Employee employee = DbToolsSelects.SelectSingle<Employee>(new List<string> { "FirstName", "LastName", "BirthDate" }, "BaseReadWhereAndWhere", "Employee",
+                Employee employee = DbToolsSelects.SelectSingle<Employee>(new List<string> { "FirstName", "LastName", "BirthDate" }, "BaseReadWhereAndWhere",
                     new List<string> { "FirstName", "#", "LastName", "#" }, new List<object> { "Andrew", "Adams" });
                 Console.WriteLine(employee.BirthDate);
                 Assert.AreEqual(new DateTime(1962, 2, 18), employee.BirthDate);

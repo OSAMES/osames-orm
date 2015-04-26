@@ -28,7 +28,7 @@ namespace TestOsamesMicroOrmMsSql
             testCustomer.LastName = "Nolmans";
             testCustomer.Email = "pas@mail";
 
-            long newRecordId = DbToolsInserts.Insert<Customer>(testCustomer, "BaseInsert", "Customer", new List<string> { "Address", "City", "FirstName", "LastName", "Email" }, _transaction);
+            long newRecordId = DbToolsInserts.Insert<Customer>(testCustomer, "BaseInsert",  new List<string> { "Address", "City", "FirstName", "LastName", "Email" }, _transaction);
 
             Console.WriteLine(newRecordId);
 
@@ -51,7 +51,7 @@ namespace TestOsamesMicroOrmMsSql
             testCustomer.LastName = "Nolmans";
             testCustomer.Email = "pas@mail";
 
-            long newRecordId = DbToolsInserts.Insert<Customer>(testCustomer, "BaseInsert", "Customer", new List<string> { "Address", "City", "FirstName", "LastName", "Email" });
+            long newRecordId = DbToolsInserts.Insert<Customer>(testCustomer, "BaseInsert",  new List<string> { "Address", "City", "FirstName", "LastName", "Email" });
 
             Console.WriteLine(newRecordId);
 

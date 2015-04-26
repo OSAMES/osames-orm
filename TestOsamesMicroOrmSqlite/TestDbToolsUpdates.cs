@@ -63,7 +63,7 @@ namespace TestOsamesMicroOrmSqlite
             _config = ConfigurationLoader.Instance;
 
             // Lecture initiale
-            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere",  new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
 
             string nomInitial = customer.LastName;
             string prenomInitial = customer.FirstName;
@@ -77,14 +77,14 @@ namespace TestOsamesMicroOrmSqlite
             customer.LastName = "Nolmans";
 
             // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
-            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
+            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", 
                 new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer }, _transaction);
 
             // il faut caster car sinon "1" est de type int.
             Assert.AreEqual((uint) 1, testing);
 
             // Refaire un select, on lit la nouvelle valeur
-            Customer reReadcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
+            Customer reReadcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
 
             string nomUpdated = reReadcustomer.LastName;
             string prenomUpdated = reReadcustomer.FirstName;
@@ -103,7 +103,7 @@ namespace TestOsamesMicroOrmSqlite
             // (chose que l'on ne peut faire car cette methode est internal)
             _transaction = DbManager.Instance.OpenTransaction(_transaction.ConnectionWrapper);
 
-            Customer reReadInitialcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
+            Customer reReadInitialcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere",  new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
 
             string nomNonModifie = reReadInitialcustomer.LastName;
             string prenomNonModifie = reReadInitialcustomer.FirstName;
@@ -132,11 +132,11 @@ namespace TestOsamesMicroOrmSqlite
             _config = ConfigurationLoader.Instance;
 
             // Lecture initiale
-            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> {"IdCustomer", "#"}, new List<object> {testCustomerId}, _transaction);
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere",  new List<string> {"IdCustomer", "#"}, new List<object> {testCustomerId}, _transaction);
 
             // Partie where : "propriété LastName = @p0", donc paramètres "LastName" et "#" pour paramètre dynamique
             // Ici on met pour valeur de "@p0" une valeur qui fera qu'on ne trouve pas de ligne correspondante.
-            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
+            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", 
                 new List<string> {"FirstName", "LastName"}, new List<string> {"LastName", "#"}, new List<object> {"???" + customer.LastName + "??"}, _transaction);
 
             // il faut caster car sinon "0" est de type int.
@@ -159,11 +159,11 @@ namespace TestOsamesMicroOrmSqlite
             _config = ConfigurationLoader.Instance;
 
             // Lecture initiale
-            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere",  new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
  
             // Partie where : "propriété LastName = @p0", donc paramètres "LastName" et "#" pour paramètre dynamique
             // Ici on met pour valeur de "@p0" une valeur qui fera qu'on ne trouve pas de ligne correspondante.
-            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
+            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", 
                 new List<string>(), new List<string> { "LastName", "#" }, new List<object> { "???" + customer.LastName + "??" }, _transaction);
 
             // il faut caster car sinon "0" est de type int.
@@ -185,7 +185,7 @@ namespace TestOsamesMicroOrmSqlite
             _config = ConfigurationLoader.Instance;
 
             // Lecture initiale
-            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId });
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere",  new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId });
 
             string nomInitial = customer.LastName;
             string prenomInitial = customer.FirstName;
@@ -196,7 +196,7 @@ namespace TestOsamesMicroOrmSqlite
             customer.LastName = "Nolmans";
 
             // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
-            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
+            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", 
                 new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer });
 
             // il faut caster car sinon "1" est de type int.
@@ -219,7 +219,7 @@ namespace TestOsamesMicroOrmSqlite
             _config = ConfigurationLoader.Instance;
 
             // Lecture initiale
-            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere",  new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
 
             string nomInitial = customer.LastName;
             string prenomInitial = customer.FirstName;
@@ -235,7 +235,7 @@ namespace TestOsamesMicroOrmSqlite
             try
             {
                 // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
-                DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer",
+                DbToolsUpdates.Update(customer, "BaseUpdateOne", 
                     new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer }, _transaction);
             }
             catch (OOrmHandledException ex)
@@ -263,7 +263,7 @@ namespace TestOsamesMicroOrmSqlite
                 _config = ConfigurationLoader.Instance;
 
                 // Lecture initiale
-                Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
+                Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere",  new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
 
                 string nomInitial = customer.LastName;
                 string prenomInitial = customer.FirstName;
@@ -278,7 +278,7 @@ namespace TestOsamesMicroOrmSqlite
 
 
                 // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
-                DbToolsUpdates.Update(customer, "IncorrectUpdate", "Customer",
+                DbToolsUpdates.Update(customer, "IncorrectUpdate", 
                     new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer }, _transaction);
             }
             catch (OOrmHandledException ex)
@@ -308,8 +308,8 @@ namespace TestOsamesMicroOrmSqlite
             _config = ConfigurationLoader.Instance;
 
             // Lecture initiale
-            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
-            Customer otherCustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testOtherCustomerId }, _transaction);
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere",  new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
+            Customer otherCustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere",  new List<string> { "IdCustomer", "#" }, new List<object> { testOtherCustomerId }, _transaction);
 
             string nomInitial = customer.LastName;
             string prenomInitial = customer.FirstName;
@@ -328,7 +328,7 @@ namespace TestOsamesMicroOrmSqlite
             otherCustomer.LastName = "Lavazza";
 
             // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
-            uint updated = DbToolsUpdates.Update(new List<Customer> { customer, otherCustomer }, "BaseUpdateOne", "Customer",
+            uint updated = DbToolsUpdates.Update(new List<Customer> { customer, otherCustomer }, "BaseUpdateOne", 
                 new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<List<object>> { new List<object> { customer.IdCustomer }, new List<object> { otherCustomer.IdCustomer } }, _transaction);
 
             // il faut caster car sinon "1" est de type int.
@@ -336,7 +336,7 @@ namespace TestOsamesMicroOrmSqlite
 
             // Relecture
             // "BaseReadAllWhereBetween" : SELECT * FROM {0} WHERE {1} between {2} and {3};
-            List<Customer> customers = DbToolsSelects.SelectAllColumns<Customer>("BaseReadAllWhereBetween", "Customer", new List<string> {"%CustomerId", "#", "#"}, new List<object> {"CustomerId", 3, 4});
+            List<Customer> customers = DbToolsSelects.SelectAllColumns<Customer>("BaseReadAllWhereBetween",  new List<string> {"%CustomerId", "#", "#"}, new List<object> {"CustomerId", 3, 4});
             Console.WriteLine("En fin de test [0] : ID " + customers[0].IdCustomer + " Nom : " + customers[0].LastName + " prénom : " + customers[0].FirstName);
             Console.WriteLine("En fin de test [1] : ID " + customers[1].IdCustomer + " Nom : " + customers[1].LastName + " prénom : " + customers[1].FirstName);
 

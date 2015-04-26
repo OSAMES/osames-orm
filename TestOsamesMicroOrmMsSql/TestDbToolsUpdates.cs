@@ -32,7 +32,7 @@ namespace TestOsamesMicroOrmMsSql
             _config = ConfigurationLoader.Instance;
 
             // Lecture initiale
-            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> {"IdCustomer", "#"}, new List<object> {testCustomerId}, _transaction);
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere",  new List<string> {"IdCustomer", "#"}, new List<object> {testCustomerId}, _transaction);
 
             string nomInitial = customer.LastName;
             string prenomInitial = customer.FirstName;
@@ -46,14 +46,14 @@ namespace TestOsamesMicroOrmMsSql
             customer.LastName = "Nolmans";
                        
             // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
-            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne", "Customer", 
+            uint testing = DbToolsUpdates.Update(customer, "BaseUpdateOne",  
                 new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { customer.IdCustomer }, _transaction);
 
             // il faut caster car sinon "1" est de type int.
             Assert.AreEqual((uint)1, testing);
 
             // Refaire un select, on lit la nouvelle valeur
-            Customer reReadcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
+            Customer reReadcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere",  new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
 
             string nomUpdated = reReadcustomer.LastName;
             string prenomUpdated = reReadcustomer.FirstName;
@@ -72,7 +72,7 @@ namespace TestOsamesMicroOrmMsSql
             // (chose que l'on ne peut faire car cette methode est internal)
             _transaction = DbManager.Instance.OpenTransaction(_transaction.ConnectionWrapper);
 
-            Customer reReadInitialcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", "Customer", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
+            Customer reReadInitialcustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere",  new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
 
             string nomNonModifie = reReadInitialcustomer.LastName;
             string prenomNonModifie = reReadInitialcustomer.FirstName;

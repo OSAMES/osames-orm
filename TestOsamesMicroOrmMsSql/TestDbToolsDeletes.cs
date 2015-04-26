@@ -26,7 +26,7 @@ namespace TestOsamesMicroOrmMsSql
         public void TestDelete()
         {
             Customer toto = new Customer {FirstName = "toto", LastName = "toto", Email = "hop@test.com"};
-            DbToolsInserts.Insert(toto, "BaseInsert", "Customer", new List<string> {"FirstName", "LastName", "Email"}, _transaction);
+            DbToolsInserts.Insert(toto, "BaseInsert", new List<string> {"FirstName", "LastName", "Email"}, _transaction);
             long nb = DbToolsDeletes.Delete("BaseDeleteWhere", "Customer", new List<string> { "FirstName", "#" }, new List<object> { "toto" }, _transaction);
             Assert.AreEqual(1, nb, "1 ligne doit être effacée");
         }

@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Text;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Logging;
+using OsamesMicroOrm.Utilities;
 
 namespace OsamesMicroOrm.DbTools
 {
@@ -82,7 +83,7 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
-        /// Exécution d'un enregistrement d'un objet de données vers la base de données
+        /// Exécution d'un enregistrement d'un objet de données vers la base de données.
         /// <list type="bullet">
         /// <item><description>formatage des éléments nécessaires par appel à <c>FormatSqlForInsert &lt;T&gt;()</c></description></item>
         /// <item><description>appel de bas niveau ADO.NET</description></item>
@@ -91,20 +92,20 @@ namespace OsamesMicroOrm.DbTools
         /// </summary>
         /// <typeparam name="T">Type C#</typeparam>
         /// <param name="databaseEntityObject_">Instance d'un objet de la classe T</param>
-        /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping</param>
         /// <param name="sqlTemplateName_">Nom du template SQL</param>
         /// <param name="lstPropertiesNames_">Noms des propriétés de l'objet databaseEntityObject_ à utiliser pour les champs à enregistrer en base de données</param>
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         /// <returns>Retourne la valeur de la clé primaire de l'enregistrement inséré dans la base de données.</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
-        public static long Insert<T>(T databaseEntityObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, OOrmDbTransactionWrapper transaction_ = null)
-        where T : IDatabaseEntityObject
+        public static long Insert<T>(T databaseEntityObject_, string sqlTemplateName_, List<string> lstPropertiesNames_, OOrmDbTransactionWrapper transaction_ = null)
+        where T : IDatabaseEntityObject, new()
         {
             string sqlCommand;
             List<KeyValuePair<string, object>> adoParameters;
             long newRecordId;
+            string mappingDictionariesContainerKey = MappingTools.GetTableNameFromMappingDictionary(typeof(T));
 
-            FormatSqlForInsert(databaseEntityObject_, sqlTemplateName_, mappingDictionariesContainerKey_, lstPropertiesNames_, out sqlCommand, out adoParameters);
+            FormatSqlForInsert(databaseEntityObject_, sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, out sqlCommand, out adoParameters);
 
             if (transaction_ != null)
             {
