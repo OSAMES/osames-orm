@@ -108,7 +108,7 @@ namespace OsamesMicroOrm.DbTools
         public static uint Update<T>(T databaseEntityObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
        where T : IDatabaseEntityObject
         {
-            if (lstPropertiesNames_ == null)
+            if (lstPropertiesNames_ == null || lstPropertiesNames_.Count == 0)
             {
                 Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_UPDATEFIELDSLISTEMPTY).Value);
                 return 0;
@@ -168,7 +168,7 @@ namespace OsamesMicroOrm.DbTools
         public static uint Update<T>(List<T> databaseEntityObjects_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstPropertiesNames_, List<string> lstWhereMetaNames_, List<List<object>> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
         where T : IDatabaseEntityObject
         {
-            if (lstPropertiesNames_ == null)
+            if (lstPropertiesNames_ == null || lstPropertiesNames_.Count == 0)
             {
                 Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_UPDATEFIELDSLISTEMPTY).Value);
                 return 0;
