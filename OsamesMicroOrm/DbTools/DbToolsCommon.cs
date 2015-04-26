@@ -19,6 +19,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Utilities;
@@ -77,6 +78,10 @@ namespace OsamesMicroOrm.DbTools
             where T : IDatabaseEntityObject
         {
             dbColumnName_ = MappingTools.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, dataObjectPropertyName_);
+            var databaseEntityObject = databaseEntityObject_.GetType().GetProperty(dataObjectPropertyName_);
+
+            if (databaseEntityObject == null)
+                throw new OOrmHandledException(HResultEnum.E_TYPEDOESNTDEFINEPROPERTY, null, "Class name : " + databaseEntityObject_.GetType().FullName + " Property name : " + dataObjectPropertyName_);
 
             // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
             adoParameterNameAndValue_ = new KeyValuePair<string, object>(
@@ -105,17 +110,20 @@ namespace OsamesMicroOrm.DbTools
         {
             lstDbColumnNames_ = new List<string>();
             lstAdoParameterNameAndValues_ = new List<KeyValuePair<string, object>>();
+            PropertyInfo databaseEntityObject;
 
             foreach (string propertyName in lstDataObjectPropertyNames_)
             {
+                databaseEntityObject = databaseEntityObject_.GetType().GetProperty(propertyName);
+
+                if (databaseEntityObject == null)
+                    throw new OOrmHandledException(HResultEnum.E_TYPEDOESNTDEFINEPROPERTY, null, "Class name : " + databaseEntityObject_.GetType().FullName + " Property name : " + propertyName);
+
                 //lstDbColumnNames_.Add(ConfigurationLoader.Instance.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, columnName));
                 lstDbColumnNames_.Add(MappingTools.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, propertyName));
 
                 // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
-                lstAdoParameterNameAndValues_.Add(new KeyValuePair<string, object>(
-                                                "@" + propertyName.ToLowerInvariant(),
-                                                databaseEntityObject_.GetType().GetProperty(propertyName).GetValue(databaseEntityObject_)
-                                            ));
+                lstAdoParameterNameAndValues_.Add(new KeyValuePair<string, object>("@" + propertyName.ToLowerInvariant(), databaseEntityObject.GetValue(databaseEntityObject_)));
             }
         }
 

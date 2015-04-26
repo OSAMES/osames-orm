@@ -127,6 +127,8 @@ namespace OsamesMicroOrm.DbTools
             {
                 string columnName = lstDbColumnNames_[i];
                 int dataInReaderIndex;
+                var databaseEntityObject = databaseEntityObject_.GetType().GetProperty(lstPropertiesNames_[i]);
+
                 try
                 {
                     dataInReaderIndex = reader_.GetOrdinal(columnName);
@@ -147,14 +149,17 @@ namespace OsamesMicroOrm.DbTools
                 // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
                 if (dbValue is DBNull) continue;
 
+                if (databaseEntityObject == null)
+                    throw new OOrmHandledException(HResultEnum.E_TYPEDOESNTDEFINEPROPERTY, null, "Class name : " + databaseEntityObject_.GetType().FullName + " Property name : " + lstPropertiesNames_[i]);
+
                 try
                 {
                     var dbValueWithType = Convert.ChangeType(dbValue, dbValueType);
-                    databaseEntityObject_.GetType().GetProperty(lstPropertiesNames_[i]).SetValue(databaseEntityObject_, dbValueWithType);
+                    databaseEntityObject.SetValue(databaseEntityObject_, dbValueWithType);
                 }
                 catch (Exception ex)
                 {
-                    throw new OOrmHandledException(HResultEnum.E_CANNOTSETVALUEDATAREADERTODBENTITY, ex, "[Data raw value]: '" + dbValue + "', [C# type from data reader]: ' " + dbValueType + "', [C# type of DbEntity property]: '" + databaseEntityObject_.GetType().GetProperty(lstPropertiesNames_[i]).PropertyType.FullName + "'");
+                    throw new OOrmHandledException(HResultEnum.E_CANNOTSETVALUEDATAREADERTODBENTITY, ex, "[Data raw value]: '" + dbValue + "', [C# type from data reader]: ' " + dbValueType + "', [C# type of DbEntity property]: '" + databaseEntityObject.PropertyType.FullName + "'");
                 }
             }
         }
