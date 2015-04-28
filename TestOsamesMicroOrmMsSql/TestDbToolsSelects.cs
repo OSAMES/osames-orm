@@ -23,7 +23,7 @@ namespace TestOsamesMicroOrmMsSql
         /// Test de haut niveau du Select.
         /// Test ORM-37. Configuration incorrecte du mapping : exception attendue.
         /// Le mapping définit une propriété IdCustomer, une colonne IdCustomer alors que le nom de la colonne en base est CustomerId.
-        /// C'est la requête SQL qui part en erreur.
+        /// C'est la requête SQL qui part en erreur sur demande d'une colonne inexistante.
         /// </summary>
         [TestMethod]
         [TestCategory("MsSql")]

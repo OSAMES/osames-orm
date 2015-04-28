@@ -59,7 +59,9 @@
     <Compile Include="TestDbEntities\TestUnmappedEntity.cs" />
     <Compile Include="TestDbEntities\TestEmptyMappingEntity.cs" />
     <Compile Include="TestDbEntities\TestWrongMappingEntity.cs" />
-    <Compile Include="TestDbTools.cs" />
+    <Compile Include="TestDbToolsSelects.cs" />
+    <Compile Include="TestDbToolsUpdates.cs" />
+    <Compile Include="TestDbToolsCommon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestMappingTools.cs" />
     <Compile Include="TestXmlValidator.cs" />

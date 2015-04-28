@@ -19,6 +19,7 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Reflection;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Utilities;
 
@@ -127,7 +128,7 @@ namespace OsamesMicroOrm.DbTools
             {
                 string columnName = lstDbColumnNames_[i];
                 int dataInReaderIndex;
-                var databaseEntityObject = databaseEntityObject_.GetType().GetProperty(lstPropertiesNames_[i]);
+                PropertyInfo databaseEntityObjectProperty = databaseEntityObject_.GetType().GetProperty(lstPropertiesNames_[i]);
 
                 try
                 {
@@ -149,17 +150,17 @@ namespace OsamesMicroOrm.DbTools
                 // affecter la valeur à la propriété de T sauf si System.DbNull (la propriété est déjà à null)
                 if (dbValue is DBNull) continue;
 
-                if (databaseEntityObject == null)
+                if (databaseEntityObjectProperty == null)
                     throw new OOrmHandledException(HResultEnum.E_TYPEDOESNTDEFINEPROPERTY, null, "Class name : " + databaseEntityObject_.GetType().FullName + " Property name : " + lstPropertiesNames_[i]);
 
                 try
                 {
                     var dbValueWithType = Convert.ChangeType(dbValue, dbValueType);
-                    databaseEntityObject.SetValue(databaseEntityObject_, dbValueWithType);
+                    databaseEntityObjectProperty.SetValue(databaseEntityObject_, dbValueWithType);
                 }
                 catch (Exception ex)
                 {
-                    throw new OOrmHandledException(HResultEnum.E_CANNOTSETVALUEDATAREADERTODBENTITY, ex, "[Data raw value]: '" + dbValue + "', [C# type from data reader]: ' " + dbValueType + "', [C# type of DbEntity property]: '" + databaseEntityObject.PropertyType.FullName + "'");
+                    throw new OOrmHandledException(HResultEnum.E_CANNOTSETVALUEDATAREADERTODBENTITY, ex, "[Data raw value]: '" + dbValue + "', [C# type from data reader]: ' " + dbValueType + "', [C# type of DbEntity property]: '" + databaseEntityObjectProperty.PropertyType.FullName + "'");
                 }
             }
         }
