@@ -84,10 +84,11 @@ namespace OsamesMicroOrm.DbTools
                 throw new OOrmHandledException(HResultEnum.E_TYPEDOESNTDEFINEPROPERTY, null, "Class name : " + databaseEntityObject_.GetType().FullName + " Property name : " + dataObjectPropertyName_);
 
             // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
-            adoParameterNameAndValue_ = new KeyValuePair<string, object>(
-                                    "@" + dataObjectPropertyName_.ToLowerInvariant(),
-                                    databaseEntityObject_.GetType().GetProperty(dataObjectPropertyName_).GetValue(databaseEntityObject_)
-                                    );
+            // la valeur du paramètre ADO.NET est mise à NULL si chaîne vide
+            var paramValue = databaseEntityObject_.GetType().GetProperty(dataObjectPropertyName_).GetValue(databaseEntityObject_);
+            if (paramValue.ToString() == "")
+                paramValue = null;
+            adoParameterNameAndValue_ = new KeyValuePair<string, object>("@" + dataObjectPropertyName_.ToLowerInvariant(), paramValue);
         }
 
         /// <summary>
@@ -121,7 +122,11 @@ namespace OsamesMicroOrm.DbTools
                 lstDbColumnNames_.Add(MappingTools.GetDbColumnNameFromMappingDictionary(mappingDictionariesContainerKey_, propertyName));
 
                 // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
-                lstAdoParameterNameAndValues_.Add(new KeyValuePair<string, object>("@" + propertyName.ToLowerInvariant(), databaseEntityObjectProperty.GetValue(databaseEntityObject_)));
+                // la valeur du paramètre ADO.NET est mise à NULL si chaîne vide
+                var paramValue = databaseEntityObjectProperty.GetValue(databaseEntityObject_);
+                if (paramValue.ToString() == "")
+                    paramValue = null;
+                lstAdoParameterNameAndValues_.Add(new KeyValuePair<string, object>("@" + propertyName.ToLowerInvariant(), paramValue));
             }
         }
 

@@ -93,6 +93,29 @@ namespace TestOsamesMicroOrm
         }
 
         /// <summary>
+        /// Test of DetermineDatabaseColumnNamesAndAdoParameters<T> with a single property and an empty string value.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Mapping GetPropertyValue")]
+        public void TestDetermineDatabaseColumnNameAndAdoParameter2()
+        {
+            // DetermineDatabaseColumnNamesAndAdoParameters<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, string dataObjectPropertyName_, out string dbColumnName_, out KeyValuePair<string, object> adoParameterNameAndValue_)
+
+            string dbColumnName;
+            KeyValuePair<string, object> adoParams;
+            Employee.LastName = "";
+            DbToolsCommon.DetermineDatabaseColumnNameAndAdoParameter(Employee, "Employee", "LastName", out dbColumnName, out adoParams);
+
+            // Ici on devra faire un Assert.IsTrue du retour de la méthode (méthode à modifier pour retourner true/false) - ORM #85
+
+            Assert.AreEqual("LastName", dbColumnName);
+
+            Assert.AreEqual("@lastname", adoParams.Key);
+            Assert.AreEqual(null, adoParams.Value);
+            Assert.AreNotEqual(Employee.LastName, adoParams.Value);
+        }
+
+        /// <summary>
         /// Test of DetermineDatabaseColumnNamesAndAdoParameters<T> with a single property.
         /// </summary>
         [TestMethod]
