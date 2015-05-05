@@ -259,9 +259,10 @@ namespace OsamesMicroOrm.Configuration
 
             // Sur ce noeud, attributs pour définir les field enclosers
             // Assignation aux variables de classe StartFieldEncloser et EndFieldEncloser
-            StartFieldEncloser = xPathNodeIteratorProviderNode.Current.GetAttribute("StartFieldEncloser", "");
-            EndFieldEncloser = xPathNodeIteratorProviderNode.Current.GetAttribute("EndFieldEncloser", "");
-            string singleFieldEncloser = xPathNodeIteratorProviderNode.Current.GetAttribute("FieldEncloser", "");
+            // Replace("\"", "\"") est utilisé pour les délimiteurs " (comme pour Postgresql)
+            StartFieldEncloser = System.Web.HttpUtility.HtmlDecode(xPathNodeIteratorProviderNode.Current.GetAttribute("StartFieldEncloser", "")).Replace("\"", "\"");
+            EndFieldEncloser = System.Web.HttpUtility.HtmlDecode(xPathNodeIteratorProviderNode.Current.GetAttribute("EndFieldEncloser", "")).Replace("\"", "\"");
+            string singleFieldEncloser = System.Web.HttpUtility.HtmlDecode(xPathNodeIteratorProviderNode.Current.GetAttribute("FieldEncloser", "")).Replace("\"", "\"");
             if (!string.IsNullOrEmpty(singleFieldEncloser))
             {
                 // Si l'attribut "FieldEncloser" est défini, alors il écrase la valeur des deux autres
