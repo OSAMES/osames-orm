@@ -55,6 +55,10 @@ along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
     <orm:Provider xsi:type="orm:DoubleFE" name="System.Data.SqlClient" StartFieldEncloser="[" EndFieldEncloser="]">
         <orm:Select name="getlastinsertid">select scope_identity();</orm:Select>
     </orm:Provider>
+    <!-- POSTGRESQL -->
+    <orm:Provider xsi:type="orm:SingleFE" name="Npgsql" FieldEncloser="&quot;">
+      <orm:Select name="getlastinsertid">select lastval();</orm:Select>
+    </orm:Provider>
     <!-- Oracle -->
     <orm:Provider xsi:type="orm:DoubleFE" name="### ORACLE ###" StartFieldEncloser="" EndFieldEncloser="">
     </orm:Provider>
