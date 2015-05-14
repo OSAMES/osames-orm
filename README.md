@@ -9,13 +9,13 @@ Developed with .NET 4.5 and also built with matching Mono version.
 **Mapping:**
 
 ```xml
-    <orm:MappingObject property="IdCustomer" column="CustomerId"/>
+<orm:MappingObject property="IdCustomer" column="CustomerId"/>
 ```
 	
 **Template:**
 
 ```xml
-	<orm:Select name="BaseReadWhere">SELECT {0} FROM {1} WHERE {2} = {3}</orm:Select>
+<orm:Select name="BaseReadWhere">SELECT {0} FROM {1} WHERE {2} = {3}</orm:Select>
 ```
 
 **C# code:**
