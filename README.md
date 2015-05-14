@@ -2,7 +2,7 @@
 
 OSAMES ORM is a C# lightweight ORM based on ADO.NET.
 
-Developed with .NET 4.5 and also built with matching Mono version.
+It's developed with .NET 4.5 and also built with matching Mono version.
 
 ## Code Example
 
@@ -28,10 +28,10 @@ Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "Id
 
 ## Motivation
 
-We want to provide a lightweight ORM, where you can:
-* have a maintainable SQL templates list and simple XML database to object mapping
-* quickly switch to another provider thanks to ADO.NET API
-* have robustness against connection pool starvation
+This lightweight ORM aims at:
+* having a maintainable SQL templates list and simple database to object mapping XML definition,
+* allowing to quickly switch to another provider thanks to ADO.NET API
+* providing robustness against connection pool starvation
 
 ## Installation
 
@@ -45,7 +45,7 @@ Check out documentation (see link in Installation above). A complete API referen
 
 ## Tests
 
-We initially wrote unit tests using MS Tests, but only a few changes make them portable to NUnit.
+Unit tests were initially written using MS Tests, but only a few changes make them portable to NUnit.
 
 ## Contributors
 
