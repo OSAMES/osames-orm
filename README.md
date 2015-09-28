@@ -11,7 +11,7 @@ It's developed with .NET 4.5 and also built with matching Mono version.
 ```xml
 <orm:MappingObject property="IdCustomer" column="CustomerId"/>
 ```
-	
+
 **Template:**
 
 ```xml
@@ -22,7 +22,7 @@ It's developed with .NET 4.5 and also built with matching Mono version.
 
 ```csharp
 _config = ConfigurationLoader.Instance;
-Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "IdCustomer", "FirstName", "LastName" }, "BaseReadWhere", 
+Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "IdCustomer", "FirstName", "LastName" }, "BaseReadWhere",
     new List<string> { "City", "#" }, new List<object> { "Paris" }, _transaction);
 ```
 
@@ -37,7 +37,7 @@ This lightweight ORM aims at:
 
 Compile the DLL and include it in your application, along with its configuration.
 
-Check out [documentation](http://confluence.osames.org/pages/viewpage.action?pageId=26542093) (in French for now, English version will follow).
+Check out [documentation](http://confluence.osames.org/display/OOF/Osames+Orm+Documentation) (in French for now, English version will follow).
 
 ## API Reference
 
