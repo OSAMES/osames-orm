@@ -45,15 +45,11 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
-        /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
-        /// <param name="lstAdoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB. Sera utilisé pour le data reader</param>
-        /// <returns>Ne renvoie rien</returns>
+        /// <returns>Sortie : structure contenant : texte de la commande SQL paramétrée, clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
-        internal static void FormatSqlForSelect(string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out List<string> lstDbColumnNames_)
+        internal static InternalPreparedStatement FormatSqlForSelect(string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out List<string> lstDbColumnNames_)
         {
-            lstAdoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
-
             // 1. Détermine les colonnes pour les champs à sélectionner.
             // lstDbColumnNames_ sert de fournisseur pour remplir sbSqlSelectFieldsCommand
             DbToolsCommon.DetermineDatabaseColumnNames(mappingDictionariesContainerKey_, lstDataObjectPropertyNames_, out lstDbColumnNames_);
@@ -63,11 +59,15 @@ namespace OsamesMicroOrm.DbTools
             // 2. Positionne les deux premiers placeholders : chaîne pour les champs à sélectionner, nom de la table
             List<string> sqlPlaceholders = new List<string> { sbSqlSelectFieldsCommand, string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
+            List<KeyValuePair<string, object>> lstAdoParameters = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
+
             // 3. Détermine les noms des paramètres pour le where
-            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters_);
+            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters);
 
-            DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicSelectSql, sqlTemplateName_, out sqlCommand_, sqlPlaceholders.ToArray());
+            string sqlCommand;
+            DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicSelectSql, sqlTemplateName_, out sqlCommand, sqlPlaceholders.ToArray());
 
+            return new InternalPreparedStatement(new PreparedStatement(sqlCommand, lstAdoParameters.Count), lstAdoParameters);
         }
 
         /// <summary>
@@ -181,14 +181,12 @@ namespace OsamesMicroOrm.DbTools
         public static T SelectSingle<T>(List<string> lstPropertiesNames_, string sqlTemplateName_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null)
             where T : IDatabaseEntityObject, new()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
             string mappingDictionariesContainerKey = MappingTools.GetTableNameFromMappingDictionary(typeof(T));
 
-            FormatSqlForSelect(sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters, out lstDbColumnNames);
+            InternalPreparedStatement statement = FormatSqlForSelect(sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out lstDbColumnNames);
 
-            return GetDataObject<T>(transaction_, sqlCommand, lstDbColumnNames, lstPropertiesNames_, adoParameters);
+            return GetDataObject<T>(transaction_, statement.PreparedStatement.PreparedSqlCommand, lstDbColumnNames, lstPropertiesNames_, statement.AdoParameters);
         }
 
         /// <summary>
@@ -233,14 +231,12 @@ namespace OsamesMicroOrm.DbTools
         public static List<T> Select<T>(List<string> lstPropertiesNames_, string sqlTemplateName_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null)
             where T : IDatabaseEntityObject, new()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
             string mappingDictionariesContainerKey = MappingTools.GetTableNameFromMappingDictionary(typeof(T));
 
-            FormatSqlForSelect(sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters, out lstDbColumnNames);
+            InternalPreparedStatement statement = FormatSqlForSelect(sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out lstDbColumnNames);
 
-            return GetListDataObject<T>(transaction_, sqlCommand, lstDbColumnNames, lstPropertiesNames_, adoParameters);
+            return GetListDataObject<T>(transaction_, statement.PreparedStatement.PreparedSqlCommand, lstDbColumnNames, lstPropertiesNames_, statement.AdoParameters);
         }
 
         /// <summary>
