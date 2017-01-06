@@ -73,6 +73,7 @@
     <Compile Include="OOrmDbTransactionWrapper.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="OOrmHandledException.cs" />
+    <Compile Include="InternalPreparedStatement.cs" />
     <Compile Include="PreparedStatement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\Common.cs" />
