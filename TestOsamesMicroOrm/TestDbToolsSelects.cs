@@ -83,17 +83,14 @@ namespace TestOsamesMicroOrm
         [TestCategory("Sql formatting for Select")]
         public void TestFormatSqlForSelectAutoDetermineSelectedFields()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParams;
-            // cette liste va être créée par la méthode testée
             List<string> lstDbEntityPropertyNames;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("BaseReadAllWhere", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
+            InternalPreparedStatement statement = DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("BaseReadAllWhere", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out lstDbEntityPropertyNames, out lstDbColumnNames);
 
-            Assert.AreEqual("SELECT * FROM [Employee] WHERE [EmployeeId] = @p0;", sqlCommand);
-            Assert.AreEqual(1, adoParams.Count);
-            Assert.AreEqual("@p0", adoParams[0].Key);
-            Assert.AreEqual(5, adoParams[0].Value);
+            Assert.AreEqual("SELECT * FROM [Employee] WHERE [EmployeeId] = @p0;", statement.PreparedStatement.PreparedSqlCommand);
+            Assert.AreEqual(1, statement.AdoParameters.Count);
+            Assert.AreEqual("@p0", statement.AdoParameters[0].Key);
+            Assert.AreEqual(5, statement.AdoParameters[0].Value);
             Assert.AreEqual(15, lstDbColumnNames.Count, "Epected number of public properties of Employee C# class");
 
         }
@@ -139,12 +136,9 @@ namespace TestOsamesMicroOrm
         {
             try
             {
-                string sqlCommand;
-                List<KeyValuePair<string, object>> adoParams;
-                // cette liste va être créée par la méthode testée
                 List<string> lstDbColumnNames;
                 List<string> lstDbEntityPropertyNames;
-                DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("ThisTemplateDoesntExist", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbEntityPropertyNames,
+                InternalPreparedStatement statement = DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("ThisTemplateDoesntExist", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out lstDbEntityPropertyNames,
                     out lstDbColumnNames);
 
             }

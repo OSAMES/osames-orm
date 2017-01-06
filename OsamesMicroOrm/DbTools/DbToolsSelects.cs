@@ -84,16 +84,13 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {1} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
-        /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
-        /// <param name="lstAdoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
         /// <param name="lstDbColumnNames_">Sortie : liste des noms des colonnes DB à sélectionner. Sera utilisé pour le data reader</param>
         /// <param name="lstPropertiesNames_">Sortie : liste de noms de propriétés d'objet Db Entité à sélectionner. Sera utilisé pour le data reader</param>
         /// <param name="skipAutoDetermine_">Si a vrai alors on ne fait pas de détermination des noms des colonnes à partir des noms des propriétéss.</param>
-        /// <returns>Ne renvoie rien</returns>
+        /// <returns>Sortie : structure contenant : texte de la commande SQL paramétrée, clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
-        internal static void FormatSqlForSelectAutoDetermineSelectedFields(string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, out  List<string> lstPropertiesNames_, out List<string> lstDbColumnNames_, bool skipAutoDetermine_ = false)
+        internal static InternalPreparedStatement FormatSqlForSelectAutoDetermineSelectedFields(string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out  List<string> lstPropertiesNames_, out List<string> lstDbColumnNames_, bool skipAutoDetermine_ = false)
         {
-            lstAdoParameters_ = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
             lstDbColumnNames_ = new List<string>(); // Noms des colonnes DB, à construire
             lstPropertiesNames_ = new List<string>(); // Propriétés de l'objet de données, à construire
 
@@ -103,11 +100,15 @@ namespace OsamesMicroOrm.DbTools
             // 1. Positionne le premier placeholder : nom de la table
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
+            List<KeyValuePair<string, object>> lstAdoParameters = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à construire
+
             // 2. Détermine les noms des paramètres pour le where
-            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters_);
+            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters);
 
-            DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicSelectSql, sqlTemplateName_, out sqlCommand_, sqlPlaceholders.ToArray());
+            string sqlCommand;
+            DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicSelectSql, sqlTemplateName_, out sqlCommand, sqlPlaceholders.ToArray());
 
+            return new InternalPreparedStatement(new PreparedStatement(sqlCommand, lstAdoParameters.Count), lstAdoParameters);
         }
 
         /// <summary>
@@ -204,15 +205,13 @@ namespace OsamesMicroOrm.DbTools
         public static T SelectSingleAllColumns<T>(string sqlTemplateName_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null)
             where T : IDatabaseEntityObject, new()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
             List<string> lstPropertiesNames;
             string mappingDictionariesContainerKey = MappingTools.GetTableNameFromMappingDictionary(typeof(T));
 
-            FormatSqlForSelectAutoDetermineSelectedFields(sqlTemplateName_, mappingDictionariesContainerKey, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters, out lstPropertiesNames, out lstDbColumnNames);
+            InternalPreparedStatement statement = FormatSqlForSelectAutoDetermineSelectedFields(sqlTemplateName_, mappingDictionariesContainerKey, lstWhereMetaNames_, lstWhereValues_, out lstPropertiesNames, out lstDbColumnNames);
 
-            return GetDataObject<T>(transaction_, sqlCommand, lstDbColumnNames, lstPropertiesNames, adoParameters);
+            return GetDataObject<T>(transaction_, statement.PreparedStatement.PreparedSqlCommand, lstDbColumnNames, lstPropertiesNames, statement.AdoParameters);
         }
 
         /// <summary>
@@ -254,15 +253,13 @@ namespace OsamesMicroOrm.DbTools
         public static List<T> SelectAllColumns<T>(string sqlTemplateName_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null)
             where T : IDatabaseEntityObject, new()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
             List<string> lstPropertiesNames;
             string mappingDictionariesContainerKey = MappingTools.GetTableNameFromMappingDictionary(typeof(T));
 
-            FormatSqlForSelectAutoDetermineSelectedFields(sqlTemplateName_, mappingDictionariesContainerKey, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters, out lstPropertiesNames, out lstDbColumnNames);
+            InternalPreparedStatement statement = FormatSqlForSelectAutoDetermineSelectedFields(sqlTemplateName_, mappingDictionariesContainerKey, lstWhereMetaNames_, lstWhereValues_, out lstPropertiesNames, out lstDbColumnNames);
 
-            return GetListDataObject<T>(transaction_, sqlCommand, lstDbColumnNames, lstPropertiesNames, adoParameters);
+            return GetListDataObject<T>(transaction_, statement.PreparedStatement.PreparedSqlCommand, lstDbColumnNames, lstPropertiesNames, statement.AdoParameters);
         }
 
         /// <summary>
@@ -278,28 +275,26 @@ namespace OsamesMicroOrm.DbTools
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
         public static long Count(string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_ = null, List<object> lstWhereValues_ = null, OOrmDbTransactionWrapper transaction_ = null)
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParameters;
             List<string> lstDbColumnNames;
             List<string> lstPropertiesNames;
             long count;
 
-            FormatSqlForSelectAutoDetermineSelectedFields(sqlTemplateName_, mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand,
-                out adoParameters, out lstPropertiesNames, out lstDbColumnNames, true);
+            InternalPreparedStatement statement = FormatSqlForSelectAutoDetermineSelectedFields(sqlTemplateName_, mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, 
+                out lstPropertiesNames, out lstDbColumnNames, true);
 
             // Transaction
             if (transaction_ != null)
             {
-                long.TryParse(DbManager.Instance.ExecuteScalar(transaction_, sqlCommand, adoParameters).ToString(), out count);
+                long.TryParse(DbManager.Instance.ExecuteScalar(transaction_, statement.PreparedStatement.PreparedSqlCommand, statement.AdoParameters).ToString(), out count);
                 return count;
-
+            
             }
             // Pas de transaction
             OOrmDbConnectionWrapper conn = null;
             try
             {
                 conn = DbManager.Instance.CreateConnection();
-                long.TryParse(DbManager.Instance.ExecuteScalar(conn, sqlCommand, adoParameters).ToString(), out count);
+                long.TryParse(DbManager.Instance.ExecuteScalar(conn, statement.PreparedStatement.PreparedSqlCommand, statement.AdoParameters).ToString(), out count);
                 return count;
             }
             finally
