@@ -65,6 +65,7 @@ namespace OsamesMicroOrm.Configuration
         /// Mapping is stored as follows : an external dictionary and an internal dictionary.
         /// External dictionary : key is a database table name, value is dictionary.
         /// Internal dictionary : key is a C# object property name, value is a database column name.
+        /// Summary: database table name -> N * C# object property name -> database column name.
         /// </summary>
         internal static readonly Dictionary<string, Dictionary<string, string>> MappingDictionnary = new Dictionary<string, Dictionary<string, string>>();
 
