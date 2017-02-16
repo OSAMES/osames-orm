@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with OSAMES Micro ORM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -50,40 +49,36 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {2} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
-        /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
-        /// <param name="lstAdoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
-        /// <param name="tryFormat">Si a vrai, on fait un try format sur le sqlcommand.
-        /// A faux quand on appelle cette méthode pour une liste d'objets à mettre à jour : on ne fait try format que pour le premier objet, puis la sqlcommand est réutilisée</param>
-        /// <returns>Ne renvoie rien</returns>
+        /// <returns>Sortie : structure contenant : texte de la commande SQL paramétrée, clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
-        internal static void FormatSqlForUpdate<T>(T databaseEntityObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertiesNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
+        internal static InternalPreparedStatement FormatSqlForUpdate<T>(T databaseEntityObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertiesNames_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_)
         where T : IDatabaseEntityObject
         {
             StringBuilder sbFieldsToUpdate = new StringBuilder();
-            sqlCommand_ = null;
+            string sqlCommand;
 
             List<string> lstDbColumnNames;
+            List<KeyValuePair<string, object>> lstAdoParameters; // Paramètres ADO.NET, à construire
 
             // 1. détermine les champs à mettre à jour et remplit la stringbuilder sbFieldsToUpdate
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(databaseEntityObject_, mappingDictionariesContainerKey_, lstDataObjectPropertiesNames_, out lstDbColumnNames, out lstAdoParameters_);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(databaseEntityObject_, mappingDictionariesContainerKey_, lstDataObjectPropertiesNames_, out lstDbColumnNames, out lstAdoParameters);
 
             int iCountMinusOne = lstDbColumnNames.Count - 1;
             for (int i = 0; i < iCountMinusOne; i++)
             {
-                sbFieldsToUpdate.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(lstAdoParameters_[i].Key).Append(", ");
+                sbFieldsToUpdate.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(lstAdoParameters[i].Key).Append(", ");
             }
-            sbFieldsToUpdate.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames[iCountMinusOne]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(lstAdoParameters_[iCountMinusOne].Key);
+            sbFieldsToUpdate.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames[iCountMinusOne]).Append(ConfigurationLoader.EndFieldEncloser).Append(" = ").Append(lstAdoParameters[iCountMinusOne].Key);
 
             // 2. Positionne les deux premiers placeholders : nom de la table, chaîne pour les champs à mettre à jour
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbFieldsToUpdate.ToString() };
 
             // 3. Détermine les noms des paramètres pour le where
-            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters_);
+            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters);
 
-            if (tryFormat)
-            {
-                DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicUpdateSql, sqlTemplateName_, out sqlCommand_, sqlPlaceholders.ToArray());
-            }
+            DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicUpdateSql, sqlTemplateName_, out sqlCommand, sqlPlaceholders.ToArray());
+
+            return new InternalPreparedStatement(new PreparedStatement(sqlCommand, lstAdoParameters.Count), lstAdoParameters);
 
         }
 
@@ -119,15 +114,15 @@ namespace OsamesMicroOrm.DbTools
             uint nbRowsAffected = 0;
             string mappingDictionariesContainerKey = MappingTools.GetTableNameFromMappingDictionary(typeof(T));
 
-            FormatSqlForUpdate(databaseEntityObject_, sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters);
+            InternalPreparedStatement statement = FormatSqlForUpdate(databaseEntityObject_, sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_);
 
             if (transaction_ != null)
             {
                 // Présence d'une transaction
-                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) != 0)
+                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, statement.PreparedStatement.PreparedSqlCommand, statement.AdoParameters) != 0)
                     nbRowsAffected++;
                 else
-                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
+                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + statement.PreparedStatement.PreparedSqlCommand + "'");
 
                 return nbRowsAffected;
             }
@@ -137,10 +132,10 @@ namespace OsamesMicroOrm.DbTools
             try
             {
                 conn = DbManager.Instance.CreateConnection();
-                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) != 0)
+                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, statement.PreparedStatement.PreparedSqlCommand, statement.AdoParameters) != 0)
                     nbRowsAffected++;
                 else
-                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
+                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + statement.PreparedStatement.PreparedSqlCommand + "'");
 
                 return nbRowsAffected;
             }
@@ -183,23 +178,15 @@ namespace OsamesMicroOrm.DbTools
             for (int i = 0; i < databaseEntityObjects_.Count; i++)
             {
                 T dataObject = databaseEntityObjects_[i];
-                List<KeyValuePair<string, object>> adoParameters;
-                if (i != 0)
-                {
-                    // ici le slqcommand rendu est null
-                    string tmpSqlCommand;
-                    FormatSqlForUpdate(dataObject, sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i], out tmpSqlCommand, out adoParameters, false);
-                }
-                else
-                    FormatSqlForUpdate(dataObject, sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i], out sqlCommand, out adoParameters);
-
+                InternalPreparedStatement statement = FormatSqlForUpdate(dataObject, sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i]);
+               
                 if (transaction_ != null)
                 {
                     // Présence d'une transaction
-                    if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) != 0)
+                    if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, statement.PreparedStatement.PreparedSqlCommand, statement.AdoParameters) != 0)
                         nbRowsAffected++;
                     else
-                        Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
+                        Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + statement.PreparedStatement.PreparedSqlCommand + "'");
 
                     continue;
                 }
@@ -209,10 +196,10 @@ namespace OsamesMicroOrm.DbTools
                 try
                 {
                     conn = DbManager.Instance.CreateConnection();
-                    if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) != 0)
+                    if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, statement.PreparedStatement.PreparedSqlCommand, statement.AdoParameters) != 0)
                         nbRowsAffected++;
                     else
-                        Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
+                        Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + statement.PreparedStatement.PreparedSqlCommand + "'");
                 }
                 finally
                 {

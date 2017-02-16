@@ -59,14 +59,12 @@ namespace TestOsamesMicroOrm
         [TestCategory("Sql formatting for Update")]
         public void TestFormatSqlForUpdate()
         {
-            // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
-            //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+            // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_)
 
-            List<KeyValuePair<string, object>> adoParams;
-            string sqlCommand;
-            DbToolsUpdates.FormatSqlForUpdate(Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams);
+            InternalPreparedStatement statement =
+            DbToolsUpdates.FormatSqlForUpdate(Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 });
 
-            Assert.IsNotNull(sqlCommand);
+            Assert.IsNotNull(statement.PreparedStatement.PreparedSqlCommand);
 
         }
 
@@ -84,12 +82,10 @@ namespace TestOsamesMicroOrm
             try
             {
 
-                // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
-                //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+                // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_)
 
-                List<KeyValuePair<string, object>> adoParams;
-                string sqlCommand;
-                DbToolsUpdates.FormatSqlForUpdate(Employee, "ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams);
+                InternalPreparedStatement statement =
+                DbToolsUpdates.FormatSqlForUpdate(Employee, "ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 });
 
             }
             catch (OOrmHandledException ex)
@@ -114,12 +110,10 @@ namespace TestOsamesMicroOrm
             try
             {
 
-                // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
-                //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+                // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_)
 
-                List<KeyValuePair<string, object>> adoParams;
-                string sqlCommand;
-                DbToolsUpdates.FormatSqlForUpdate(Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId" }, new List<object> { 2 }, out sqlCommand, out adoParams);
+                InternalPreparedStatement statement =
+                DbToolsUpdates.FormatSqlForUpdate(Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId" }, new List<object> { 2 });
 
             }
             catch (OOrmHandledException ex)
@@ -144,12 +138,10 @@ namespace TestOsamesMicroOrm
             try
             {
 
-                // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
-                //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+                // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_)
 
-                List<KeyValuePair<string, object>> adoParams;
-                string sqlCommand;
-                DbToolsUpdates.FormatSqlForUpdate(Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "Test" }, new List<object> { 2 }, out sqlCommand, out adoParams);
+                InternalPreparedStatement statement =
+                DbToolsUpdates.FormatSqlForUpdate(Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "Test" }, new List<object> { 2 });
 
             }
             catch (OOrmHandledException ex)
@@ -172,12 +164,10 @@ namespace TestOsamesMicroOrm
         {
             try
             {
-                // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
-                //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+                // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_)
 
-                List<KeyValuePair<string, object>> adoParams;
-                string sqlCommand;
-                DbToolsUpdates.FormatSqlForUpdate(Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "NotAFirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams);
+                InternalPreparedStatement statement =
+                DbToolsUpdates.FormatSqlForUpdate(Employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "NotAFirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 });
 
             }
             catch (OOrmHandledException ex)
