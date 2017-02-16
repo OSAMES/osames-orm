@@ -43,22 +43,22 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="lstWhereMetaNames_">Pour les colonnes de la clause where : valeur dont la syntaxe indique qu'il s'agit d'une propriété de classe C#/un paramètre dynamique/un littéral. 
         /// Pour formater à partir de {1} dans le template SQL. Peut être null</param>
         /// <param name="lstWhereValues_">Valeurs pour les paramètres ADO.NET. Peut être null</param>
-        /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
-        /// <param name="lstAdoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
-        ///  <returns>Ne renvoie rien</returns>
+        /// <returns>Sortie : structure contenant : texte de la commande SQL paramétrée, clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
-        internal static void FormatSqlForDelete(string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_)
+        internal static InternalPreparedStatement FormatSqlForDelete(string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_)
         {
-            lstAdoParameters_ = new List<KeyValuePair<string, object>>();
+            string sqlCommand;
+            List<KeyValuePair<string, object>> lstAdoParameters = new List<KeyValuePair<string, object>>(); // Paramètres ADO.NET, à remplir
 
             // 2. Positionne le premier placeholders
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser) };
 
             // 3. Détermine les noms des paramètres pour le where
-            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters_);
+            DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, sqlPlaceholders, lstAdoParameters);
 
-            DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicDeleteSql, sqlTemplateName_, out sqlCommand_, sqlPlaceholders.ToArray());
+            DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicDeleteSql, sqlTemplateName_, out sqlCommand, sqlPlaceholders.ToArray());
 
+            return new InternalPreparedStatement(new PreparedStatement(sqlCommand, lstAdoParameters.Count), lstAdoParameters);
         }
 
         /// <summary>
@@ -72,19 +72,17 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="transaction_">Transaction optionnelle (obtenue par appel à DbManager)</param>
         public static long Delete(string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstWhereMetaNames_, List<object> lstWhereValues_, OOrmDbTransactionWrapper transaction_ = null)
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParameters;
             long nbRowsAffected = 0;
 
-            FormatSqlForDelete(sqlTemplateName_, mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_, out sqlCommand, out adoParameters);
+            InternalPreparedStatement statement = FormatSqlForDelete(sqlTemplateName_, mappingDictionariesContainerKey_, lstWhereMetaNames_, lstWhereValues_);
 
             if (transaction_ != null)
             {
                 // Présence d'une transaction
-                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters) != 0)
+                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, statement.PreparedStatement.PreparedSqlCommand, statement.AdoParameters) != 0)
                     nbRowsAffected++;
                 else
-                    Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
+                    Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + statement.PreparedStatement.PreparedSqlCommand + "'");
 
                 return nbRowsAffected;
             }
@@ -94,10 +92,10 @@ namespace OsamesMicroOrm.DbTools
             try
             {
                 conn = DbManager.Instance.CreateConnection();
-                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters) != 0)
+                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, statement.PreparedStatement.PreparedSqlCommand, statement.AdoParameters) != 0)
                     nbRowsAffected++;
                 else
-                    Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + sqlCommand + "'");
+                    Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + statement.PreparedStatement.PreparedSqlCommand + "'");
 
                 return nbRowsAffected;
             }

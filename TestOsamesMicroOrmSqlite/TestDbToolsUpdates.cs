@@ -30,22 +30,19 @@ namespace TestOsamesMicroOrmSqlite
         public void TestFormatSqlForUpdate()
         {
 
-            // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
-            //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+            // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_)
 
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParams;
             Employee employee = new Employee { LastName = "Doe", FirstName = "John" };
-            DbToolsUpdates.FormatSqlForUpdate(employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams);
+            InternalPreparedStatement statement = DbToolsUpdates.FormatSqlForUpdate(employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 });
 
-            Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", sqlCommand);
-            Assert.AreEqual(3, adoParams.Count, "no parameters generated");
-            Assert.AreEqual("@lastname", adoParams[0].Key);
-            Assert.AreEqual(employee.LastName, adoParams[0].Value);
-            Assert.AreEqual("@firstname", adoParams[1].Key);
-            Assert.AreEqual(employee.FirstName, adoParams[1].Value);
-            Assert.AreEqual("@p0", adoParams[2].Key);
-            Assert.AreEqual(2, adoParams[2].Value);
+            Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", statement.PreparedStatement.PreparedSqlCommand);
+            Assert.AreEqual(3, statement.AdoParameters.Count, "no parameters generated");
+            Assert.AreEqual("@lastname", statement.AdoParameters[0].Key);
+            Assert.AreEqual(employee.LastName, statement.AdoParameters[0].Value);
+            Assert.AreEqual("@firstname", statement.AdoParameters[1].Key);
+            Assert.AreEqual(employee.FirstName, statement.AdoParameters[1].Value);
+            Assert.AreEqual("@p0", statement.AdoParameters[2].Key);
+            Assert.AreEqual(2, statement.AdoParameters[2].Value);
         }
 
         /// <summary>

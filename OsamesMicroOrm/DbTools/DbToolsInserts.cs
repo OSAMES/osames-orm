@@ -52,8 +52,8 @@ namespace OsamesMicroOrm.DbTools
         {
             StringBuilder sbFieldsToInsert = new StringBuilder();
             StringBuilder sbParamToInsert = new StringBuilder();
-            string sqlCommand;
 
+            string sqlCommand;
             List<string> lstDbColumnNames;
             List<KeyValuePair<string, object>> lstAdoParameters; // Paramètres ADO.NET, à construire
 
