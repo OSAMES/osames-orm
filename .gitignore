@@ -171,3 +171,5 @@ Application/*.vsmdi
 *.chk
 *.jrs
 *.ide
+packages/
+WebEssentials2015-Settings.json

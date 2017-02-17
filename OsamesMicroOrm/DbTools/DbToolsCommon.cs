@@ -124,7 +124,7 @@ namespace OsamesMicroOrm.DbTools
                 // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
                 // la valeur du paramètre ADO.NET est mise à NULL si chaîne vide
                 var paramValue = databaseEntityObjectProperty.GetValue(databaseEntityObject_);
-                if (paramValue.ToString() == "")
+                if (paramValue != null && paramValue.ToString() == "")
                     paramValue = null;
                 lstAdoParameterNameAndValues_.Add(new KeyValuePair<string, object>("@" + propertyName.ToLowerInvariant(), paramValue));
             }
@@ -208,10 +208,10 @@ namespace OsamesMicroOrm.DbTools
         /// <item><description>si chaîne vide : retourner chaîne vide</description></item>
         /// <item><description>si commence par "%UL%" : retourner la string sans le préfixe "%UL%"</description></item>
         /// <item><description>si commence par "%" : retourner la string telle quelle en enlevant les espaces et le préfixe %, et en la protégeant avec les fields enclosers</description></item>
-        /// <item><description>si chaîne avec un ":" : retourner le nom d'une colonne DB issu du mapping, en la protégeant avec les fields enclosers, 
+        /// <item><description>si chaîne avec un ":" : retourner le nom d'une colonne DB issu du mapping, en la protégeant avec les fields enclosers,
         /// en supposant que le chaîne avant le ":" est un nom de dictionnaire de mapping (table DB).
         ///  Ex. "Track:TrackID"</description></item>
-        /// <item><description>si chaîne sans ":" : retourner le nom d'une colonne DB issu du mapping, en la protégeant avec les fields enclosers, 
+        /// <item><description>si chaîne sans ":" : retourner le nom d'une colonne DB issu du mapping, en la protégeant avec les fields enclosers,
         /// en utilisant mappingDictionariesContainerKey_ comme nom de dictionnaire de mapping (table DB).
         ///  Ex. "TrackID"</description></item>
         /// <item><description>sinon lance une exception</description></item>
@@ -226,7 +226,7 @@ namespace OsamesMicroOrm.DbTools
         /// Sert aussi pour le nom du paramètre dynamique si on avait passé "#".</param>
         /// <param name="isDynamicParameter_">Indique si le littéral doit être protégé avec les fields encloser. Vrai pour non protégé. Gère aussi le fait d'avoir une valeur null ou whitespace</param>
         /// <returns>Nom de colonne DB</returns>
-        /// <exception cref="OOrmHandledException">Erreurs possibles : 
+        /// <exception cref="OOrmHandledException">Erreurs possibles :
         /// <list type="bullet">
         /// <item><description>pas de correspondance dans le mapping pour mappingDictionariesContainerKey_.</description></item>
         /// <item><description>value_ n'as pas une syntaxe interprétable, par exemple contient deux ":", etc</description></item>
@@ -341,10 +341,10 @@ namespace OsamesMicroOrm.DbTools
 
                 bool isDynamicParameter;
                 // Analyse la chaine courante de strColumnNames_ et retourne :
-                // - soit un @pN 
+                // - soit un @pN
                 // - soit @nomcolonne
-                // - soit un unprotected litéral 
-                // - soit un litéral protégé 
+                // - soit un unprotected litéral
+                // - soit un litéral protégé
                 // - soit un nom de colonne protégé
                 string paramName = DeterminePlaceholderValue(lstColumnNames_[i], mappingDictionariesContainerKey_, ref parameterIndex, ref parameterAutomaticNameIndex, out isDynamicParameter);
 
