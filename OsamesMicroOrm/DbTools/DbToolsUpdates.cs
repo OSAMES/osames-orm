@@ -105,12 +105,10 @@ namespace OsamesMicroOrm.DbTools
         {
             if (lstPropertiesNames_ == null || lstPropertiesNames_.Count == 0)
             {
-                Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_UPDATEFIELDSLISTEMPTY).Value);
+                Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_UPDATEFIELDSLISTEMPTY).Value);
                 return 0;
             }
 
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParameters;
             uint nbRowsAffected = 0;
             string mappingDictionariesContainerKey = MappingTools.GetTableNameFromMappingDictionary(typeof(T));
 
@@ -122,7 +120,7 @@ namespace OsamesMicroOrm.DbTools
                 if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, statement.PreparedStatement.PreparedSqlCommand, statement.AdoParameters) != 0)
                     nbRowsAffected++;
                 else
-                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + statement.PreparedStatement.PreparedSqlCommand + "'");
+                    Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + statement.PreparedStatement.PreparedSqlCommand + "'");
 
                 return nbRowsAffected;
             }
@@ -135,7 +133,7 @@ namespace OsamesMicroOrm.DbTools
                 if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, statement.PreparedStatement.PreparedSqlCommand, statement.AdoParameters) != 0)
                     nbRowsAffected++;
                 else
-                    Logger.Log(TraceEventType.Warning, Utilities.OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + statement.PreparedStatement.PreparedSqlCommand + "'");
+                    Logger.Log(TraceEventType.Warning, OOrmErrorsHandler.FindHResultAndDescriptionByCode(HResultEnum.W_NOROWUPDATED).Value + " : '" + statement.PreparedStatement.PreparedSqlCommand + "'");
 
                 return nbRowsAffected;
             }
@@ -169,17 +167,29 @@ namespace OsamesMicroOrm.DbTools
                 return 0;
             }
 
-            string sqlCommand = null;
-
             uint nbRowsAffected = 0;
             string mappingDictionariesContainerKey = MappingTools.GetTableNameFromMappingDictionary(typeof(T));
 
-
+            InternalPreparedStatement firstStatement = null;
             for (int i = 0; i < databaseEntityObjects_.Count; i++)
             {
                 T dataObject = databaseEntityObjects_[i];
-                InternalPreparedStatement statement = FormatSqlForUpdate(dataObject, sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i]);
-               
+                InternalPreparedStatement statement;
+                if (i == 0)
+                {
+                    firstStatement = FormatSqlForUpdate(dataObject, sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, lstWhereMetaNames_, lstWhereValues_[i]);
+                    statement = firstStatement;
+                }
+                else
+                {
+                    // paramètres ado.net pour les champs à mettre à jour
+                    List<KeyValuePair<string, object>> lstAdoParameters = DbToolsCommon.DetermineAdoParameters(dataObject, mappingDictionariesContainerKey, lstPropertiesNames_);
+                    // paramètres ado.net pour la partie "where"
+                    DbToolsCommon.FillPlaceHoldersAndAdoParametersNamesAndValues(mappingDictionariesContainerKey, lstWhereMetaNames_, lstWhereValues_[i], new List<string>(), lstAdoParameters);
+
+                    statement = new InternalPreparedStatement(firstStatement.PreparedStatement, lstAdoParameters); 
+                }
+            
                 if (transaction_ != null)
                 {
                     // Présence d'une transaction

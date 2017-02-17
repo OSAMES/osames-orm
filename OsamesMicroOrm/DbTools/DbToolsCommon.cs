@@ -131,6 +131,38 @@ namespace OsamesMicroOrm.DbTools
         }
 
         /// <summary>
+        /// En connaissant un objet et le nom de ses propriétés, génération en sortie de l'information suivante :
+        /// <para>nom et valeur des paramètres ADO.NET correspondant aux propriétés</para>
+        /// </summary>
+        /// <typeparam name="T">Type C#</typeparam>
+        /// <param name="databaseEntityObject_">Instance d'un objet de la classe T</param>
+        /// <param name="mappingDictionariesContainerKey_">Nom du dictionnaire de mapping à utiliser</param>
+        /// <param name="lstDataObjectPropertyNames_">Liste de noms des propriétés de l'objet databaseEntityObject_</param>
+        /// <returns>Sortie : liste de nom/valeur des paramètres ADO.NET</returns>
+        /// <exception cref="OOrmHandledException">Pas de correspondance dans le mapping ou autre erreur</exception>
+        internal static List<KeyValuePair<string, object>>  DetermineAdoParameters<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyNames_)
+        where T : IDatabaseEntityObject
+        {
+            List<KeyValuePair<string, object>> lstAdoParameterNameAndValues = new List<KeyValuePair<string, object>>();
+
+            foreach (string propertyName in lstDataObjectPropertyNames_)
+            {
+                PropertyInfo databaseEntityObjectProperty = databaseEntityObject_.GetType().GetProperty(propertyName);
+
+                if (databaseEntityObjectProperty == null)
+                    throw new OOrmHandledException(HResultEnum.E_TYPEDOESNTDEFINEPROPERTY, null, "Class name : " + databaseEntityObject_.GetType().FullName + " Property name : " + propertyName);
+
+                // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
+                // la valeur du paramètre ADO.NET est mise à NULL si chaîne vide
+                var paramValue = databaseEntityObjectProperty.GetValue(databaseEntityObject_);
+                if (paramValue.ToString() == "")
+                    paramValue = null;
+                lstAdoParameterNameAndValues.Add(new KeyValuePair<string, object>("@" + propertyName.ToLowerInvariant(), paramValue));
+            }
+            return lstAdoParameterNameAndValues;
+        }
+
+        /// <summary>
         /// En connaissant le nom du mapping associé à un objet et le nom de ses propriétés, génération en sortie de l'information suivante :
         /// <para>noms des colonnes en DB (utilisation de mappingDictionariesContainerKey_ pour interroger le mapping)</para>
         /// </summary>

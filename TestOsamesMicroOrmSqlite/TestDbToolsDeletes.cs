@@ -26,7 +26,6 @@ namespace TestOsamesMicroOrmSqlite
             Assert.AreEqual(1, nb, "1 ligne doit être effacée");
         }
 
-
         /// <summary>
         /// Delete d'un objet inexistant.
         /// </summary>
