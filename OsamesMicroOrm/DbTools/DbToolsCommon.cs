@@ -86,7 +86,7 @@ namespace OsamesMicroOrm.DbTools
             // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
             // la valeur du paramètre ADO.NET est mise à NULL si chaîne vide
             var paramValue = databaseEntityObject_.GetType().GetProperty(dataObjectPropertyName_).GetValue(databaseEntityObject_);
-            if (paramValue.ToString() == "")
+            if (paramValue != null && paramValue.ToString() == "")
                 paramValue = null;
             adoParameterNameAndValue_ = new KeyValuePair<string, object>("@" + dataObjectPropertyName_.ToLowerInvariant(), paramValue);
         }
@@ -155,7 +155,7 @@ namespace OsamesMicroOrm.DbTools
                 // le nom du paramètre ADO.NET est détermine à partir du nom de la propriété : mise en lower case et ajout d'un préfixe "@"
                 // la valeur du paramètre ADO.NET est mise à NULL si chaîne vide
                 var paramValue = databaseEntityObjectProperty.GetValue(databaseEntityObject_);
-                if (paramValue.ToString() == "")
+                if (paramValue != null && paramValue.ToString() == "")
                     paramValue = null;
                 lstAdoParameterNameAndValues.Add(new KeyValuePair<string, object>("@" + propertyName.ToLowerInvariant(), paramValue));
             }
