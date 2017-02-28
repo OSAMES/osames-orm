@@ -1,0 +1,55 @@
+{
+    "version": "0.1.0",
+    "command": "cmd",
+    "isShellCommand": true,
+    "args": [
+        "/c"
+    ],
+    "showOutput": "always",
+    "echoCommand": true,
+    "tasks": [{
+            "isBuildCommand": true, // triggered via Ctrl+Shift+b
+            "taskName": "MS Build Solution",
+            "command": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\msbuild.exe", //change
+            "args": [
+                "${workspaceRoot}\\OsamesMicroOrm.sln",
+                "/t:Clean,Build",
+                "/p:Configuration=Debug;Platform=Any CPU;GenerateFullPaths=true",
+                "/m"
+            ],
+            "showOutput": "always",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "isBuildCommand": true,
+            "taskName": "MS ReBuild Solution",
+            "command": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\msbuild.exe",
+            "args": [
+                "${workspaceRoot}\\OsamesMicroOrm.sln",
+                "/t:Rebuild",
+                "/p:Configuration=Debug;Platform=Any CPU;GenerateFullPaths=true",
+                "/m"
+            ],
+            "showOutput": "always",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "isBuildCommand": false,
+            "taskName": "Copy debug dll",
+            "isShellCommand": true,
+            "suppressTaskName": true,
+            "command": "copy",
+            "args": [
+                "\"C:\\Program Files\\dotnet\\sdk\\1.0.0-preview2-003131\\hostpolicy.dll\" ${workspaceRoot}\\OsamesMicroOrm\\bin\\debug"
+            ],
+            "showOutput": "always"
+        },
+        {
+            "taskName": "nunit3-console.exe",
+            "args": [
+                "${workspaceRoot}/src/Example.sln"
+            ],
+            "showOutput": "always"
+        }
+    ]
+}

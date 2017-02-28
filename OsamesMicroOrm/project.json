@@ -1,0 +1,20 @@
+{
+    "dependencies": {
+        "System.Data.Common": "4.3.0",
+        "System.Xml.XPath": "4.3.0",
+        //"NETStandard.Library": "1.6.1",
+        "System.Configuration.Abstractions": "2.0.2.3"
+    },
+    "frameworks": {
+        "net46": {
+            "frameworkAssemblies": {
+                "System.Windows.Forms": {},
+                "System.Web": {}
+            }
+        }
+    },
+    "runtimes": {
+        "win-anycpu": {},
+        "win": {}
+    }
+}
