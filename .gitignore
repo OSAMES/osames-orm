@@ -173,3 +173,4 @@ Application/*.vsmdi
 *.ide
 packages/
 WebEssentials2015-Settings.json
+project.lock.json
