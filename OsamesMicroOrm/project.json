@@ -1,4 +1,18 @@
+// reference https://docs.microsoft.com/en-us/dotnet/articles/core/tools/project-json
 {
+    "name": "OsamesMicroOrm",
+    "version": "0.3.0-*",
+    "description": "This is my library and it's really great!",
+    "copyright": "Osames 2016",
+    "testRunner": "MSTest",
+    "authors": ["Benjamin Nolmans", "Barbar Post"],
+    "language": "en-US",
+    "embedInteropTypes": false,
+
+    "compilationOptions": {
+        "emitEntryPoint": true
+    },
+
     "dependencies": {
         "System.Data.Common": "4.3.0",
         "System.Xml.XPath": "4.3.0",
@@ -16,5 +30,15 @@
     "runtimes": {
         "win-anycpu": {},
         "win": {}
+    },
+
+    "buildOptions": {
+        "nowarn": [""], // "CS0168", "CS0219"
+        "optimize": true
+    },
+
+    "scripts": {
+        "precompile": "",
+        "postcompile": [""] // "", ""
     }
 }
