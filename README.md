@@ -2,7 +2,7 @@
 
 OSAMES ORM is a C# lightweight ORM based on ADO.NET.
 
-It's developed with .NET 4.6.1 and also built with matching Mono version and .NET Core 1
+It's developed with .NET 4.6.1. We are working on building it with Mono and .NET Core 1 too (not usable for now).
 
 ## Code Example
 
@@ -38,7 +38,7 @@ This lightweight ORM aims at:
 
 Compile the DLL and include it in your application, along with its configuration.
 
-Check out [documentation](http://confluence.osames.org/pages/viewpage.action?pageId=26542093) (in French for now, English version will follow).
+Check out [documentation](http://confluence.osames.org/pages/viewpage.action?pageId=26542093) (mostly in French, English translation coming now and then).
 
 ### .NET Core
 
@@ -53,7 +53,7 @@ Restore package: ```nuget.exe restore``` in project or solution folder. For more
 
 ##### Linux/Osx
 
-Comming soon.
+Coming soon.
 
 ## API Reference
 
@@ -61,11 +61,12 @@ Check out documentation (see link in Installation above). A complete API referen
 
 ## Tests
 
-Unit tests were initially written using MS Tests, but only a few changes make them portable to NUnit.
+Unit tests were initially written using MS Tests, but only a few changes make them portable to nUnit/xUnit.
+We are working on porting them to xUnit.
 
 ## Contributors
 
-[Issue tracker](http://issues.osames.org/browse/ORM-170?filter=-4&jql=project%20%3D%20ORM%20AND%20status%20in%20%28Open%2C%20%22In%20Progress%22%2C%20Reopened%2C%20Resolved%2C%20%22In%20Review%22%2C%20%22Waiting%20for%20Unit%20Test%22%2C%20%22In%20Unit%20Test%22%2C%20%22In%20analysis%22%2C%20Analyzed%2C%20%22Waiting%20for%20review%22%29%20ORDER%20BY%20createdDate%20DESC)
+[Issue tracker](http://issues.osames.org/projects/ORM)
 
 ## License
 
