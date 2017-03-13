@@ -55,6 +55,21 @@ Restore package: ```nuget.exe restore``` in project or solution folder. For more
 
 Coming soon.
 
+### .NET Core
+
+You need .NET Core: <https://dotnet.github.io/>
+
+#### Nuget Package
+
+##### Windows
+
+Download Nuget.exe on <https://dist.nuget.org/index.html>
+Restore package: ```nuget.exe restore``` in project or solution folder. For more informations to restore needed packages, read Omnisharp output.
+
+##### Linux/Osx
+
+Comming soon.
+
 ## API Reference
 
 Check out documentation (see link in Installation above). A complete API reference will be provided soon.

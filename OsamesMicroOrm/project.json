@@ -16,7 +16,6 @@
     "dependencies": {
         "System.Data.Common": "4.3.0",
         "System.Xml.XPath": "4.3.0",
-        //"NETStandard.Library": "1.6.1",
         "System.Configuration.Abstractions": "2.0.2.3"
     },
     "frameworks": {
@@ -33,12 +32,13 @@
     },
 
     "buildOptions": {
-        "nowarn": [""], // "CS0168", "CS0219"
-        "optimize": true
+        // "nowarn": [""], // "CS0168", "CS0219"
+        "optimize": true,
+        "debugType": "portable"
     },
 
     "scripts": {
-        "precompile": "",
-        "postcompile": [""] // "", ""
+        // "precompile": "",
+        // "postcompile": [""] // "", ""
     }
 }
