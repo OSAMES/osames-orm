@@ -154,6 +154,25 @@ namespace TestOsamesMicroOrm
         }
 
         /// <summary>
+        /// Test of DetermineAdoParameters<T> with 2 properties.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Mapping GetPropertyValue")]
+        public void TestDetermineAdoParameters()
+        {
+            // DetermineAdoParameters<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_)
+
+            List<KeyValuePair<string, object>> adoParams =
+            DbToolsCommon.DetermineAdoParameters(Employee, "Employee", new List<string> { "LastName", "FirstName" });
+
+            Assert.AreEqual(2, adoParams.Count, "no parameters generated");
+            Assert.AreEqual("@lastname", adoParams[0].Key);
+            Assert.AreEqual(Employee.LastName, adoParams[0].Value);
+            Assert.AreEqual("@firstname", adoParams[1].Key);
+            Assert.AreEqual(Employee.FirstName, adoParams[1].Value);
+        }
+
+        /// <summary>
         /// Test of DetermineDatabaseColumnNamesAndAdoParameters<T> with 2 properties.
         /// Mauvais nom de dictionnaire.
         /// </summary>

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OsamesMicroOrm;
 using OsamesMicroOrm.Configuration;
 using OsamesMicroOrm.Configuration.Tweak;
 using OsamesMicroOrm.DbTools;
-using OsamesMicroOrm.Utilities;
 using SampleDbEntities.Chinook;
 using Common = TestOsamesMicroOrm.Tools.Common;
 
@@ -30,22 +30,19 @@ namespace TestOsamesMicroOrmSqlite
         public void TestFormatSqlForUpdate()
         {
 
-            // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_, 
-            //                        out string sqlCommand_, out List<KeyValuePair<string, object>> adoParameters_)
+            // FormatSqlForUpdate<T>(T databaseEntityObject_, string mappingDictionariesContainerKey_, List<string> lstDataObjectPropertyName_, string primaryKeyPropertyName_)
 
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParams;
             Employee employee = new Employee { LastName = "Doe", FirstName = "John" };
-            DbToolsUpdates.FormatSqlForUpdate(employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 }, out sqlCommand, out adoParams);
+            InternalPreparedStatement statement = DbToolsUpdates.FormatSqlForUpdate(employee, "BaseUpdateOne", "Employee", new List<string> { "LastName", "FirstName" }, new List<string> { "EmployeeId", "#" }, new List<object> { 2 });
 
-            Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", sqlCommand);
-            Assert.AreEqual(3, adoParams.Count, "no parameters generated");
-            Assert.AreEqual("@lastname", adoParams[0].Key);
-            Assert.AreEqual(employee.LastName, adoParams[0].Value);
-            Assert.AreEqual("@firstname", adoParams[1].Key);
-            Assert.AreEqual(employee.FirstName, adoParams[1].Value);
-            Assert.AreEqual("@p0", adoParams[2].Key);
-            Assert.AreEqual(2, adoParams[2].Value);
+            Assert.AreEqual("UPDATE [Employee] SET [LastName] = @lastname, [FirstName] = @firstname WHERE [EmployeeId] = @p0;", statement.PreparedStatement.PreparedSqlCommand);
+            Assert.AreEqual(3, statement.AdoParameters.Count, "no parameters generated");
+            Assert.AreEqual("@lastname", statement.AdoParameters[0].Key);
+            Assert.AreEqual(employee.LastName, statement.AdoParameters[0].Value);
+            Assert.AreEqual("@firstname", statement.AdoParameters[1].Key);
+            Assert.AreEqual(employee.FirstName, statement.AdoParameters[1].Value);
+            Assert.AreEqual("@p0", statement.AdoParameters[2].Key);
+            Assert.AreEqual(2, statement.AdoParameters[2].Value);
         }
 
         /// <summary>
@@ -347,6 +344,82 @@ namespace TestOsamesMicroOrmSqlite
             Assert.AreEqual(4, customers[1].IdCustomer);
             Assert.AreEqual("Pietro", customers[1].FirstName);
             Assert.AreEqual("Lavazza", customers[1].LastName);
+
+        }
+
+        /// <summary>
+        /// Update de deux objets à la fois. Mesure du temps par rapport à l'update d'un seul objet.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("SqLite")]
+        [TestCategory("Update")]
+        [TestCategory("Performance")]
+        [Owner("Barbara Post")]
+        public void TestMeasureTimeUpdateTwoObjectsSqlite()
+        {
+            const uint testCustomerId = 3;
+            const uint testOtherCustomerId = 4;
+            const uint testThirdCustomerId = 4;
+
+            _config = ConfigurationLoader.Instance;
+
+            // Lecture initiale
+            Customer customer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", new List<string> { "IdCustomer", "#" }, new List<object> { testCustomerId }, _transaction);
+            Customer otherCustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", new List<string> { "IdCustomer", "#" }, new List<object> { testOtherCustomerId }, _transaction);
+            Customer thirdCustomer = DbToolsSelects.SelectSingleAllColumns<Customer>("BaseReadAllWhere", new List<string> { "IdCustomer", "#" }, new List<object> { testThirdCustomerId }, _transaction);
+
+            customer.FirstName = "Jane";
+            customer.LastName = "Birkin";
+
+            otherCustomer.FirstName = "Pietro";
+            otherCustomer.LastName = "Lavazza";
+
+            thirdCustomer.FirstName = "Janet";
+            thirdCustomer.LastName = "Jackson";
+
+            // Une première fois lq query à blanc pour être sûr que tout est bien initialisé
+
+            // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
+            uint updated = DbToolsUpdates.Update(thirdCustomer, "BaseUpdateOne",
+                new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { thirdCustomer.IdCustomer }, _transaction);
+
+            // il faut caster car sinon "1" est de type int.
+            Assert.AreEqual((uint)1, updated);
+
+            // Maintenant la mesure du temps pour update de 1 customer
+
+            thirdCustomer.FirstName = "Janette";
+            thirdCustomer.LastName = "Jacqueson";
+
+            Stopwatch watchUpdateOneCustomer = new Stopwatch();
+            watchUpdateOneCustomer.Start();
+
+            // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
+            updated = DbToolsUpdates.Update(thirdCustomer, "BaseUpdateOne",
+                new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<object> { thirdCustomer.IdCustomer }, _transaction);
+
+            watchUpdateOneCustomer.Stop();
+
+            // il faut caster car sinon "1" est de type int.
+            Assert.AreEqual((uint)1, updated);
+
+            // Maintenant la mesure du temps pour update de 2 customer
+
+            Stopwatch watchUpdateTwoCustomers = new Stopwatch();
+            watchUpdateTwoCustomers.Start();
+
+            // Partie where : "propriété IdCustomer = @xxx", donc paramètres "IdCustomer" et "#" pour paramètre dynamique
+            updated = DbToolsUpdates.Update(new List<Customer> { customer, otherCustomer }, "BaseUpdateOne",
+                new List<string> { "FirstName", "LastName" }, new List<string> { "IdCustomer", "#" }, new List<List<object>> { new List<object> { customer.IdCustomer }, new List<object> { otherCustomer.IdCustomer } }, _transaction);
+
+            watchUpdateTwoCustomers.Stop();
+
+            // il faut caster car sinon "2" est de type int.
+            Assert.AreEqual((uint)2, updated);
+
+            Console.WriteLine("Temps pour mettre à jour 1 customer: " + watchUpdateOneCustomer.ElapsedMilliseconds + " ms, et pour deux customers: " + watchUpdateTwoCustomers.ElapsedMilliseconds + " ms");
+
+            //Assert.IsTrue(watchUpdateTwoCustomers.ElapsedMilliseconds <= (watchUpdateOneCustomer.ElapsedMilliseconds * 2));
 
         }
 

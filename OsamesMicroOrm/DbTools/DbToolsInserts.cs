@@ -45,41 +45,41 @@ namespace OsamesMicroOrm.DbTools
         /// <param name="sqlTemplateName_">Nom du template SQL</param>
         /// <param name="mappingDictionariesContainerKey_">Clé pour le dictionnaire de mapping. Toujours {0} dans le template sql</param>
         /// <param name="lstDataObjectColumnNames_">Noms des propriétés de l'objet databaseEntityObject_ à utiliser pour les champs à enregistrer en base de données. Utilisé pour la partie {1} du template SQL</param>
-        /// <param name="sqlCommand_">Sortie : texte de la commande SQL paramétrée</param>
-        /// <param name="lstAdoParameters_">Sortie : clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</param>
-        /// <param name="tryFormat">Si a vrai, on fait un try format sur le sqlcommand.
-        /// A faux quand on appelle cette méthode pour une liste d'objets à enregistrer : on ne fait try format que pour le premier objet, puis la sqlcommand est réutilisée</param>
-        /// <returns>Ne renvoie rien</returns>
+        /// <returns>Sortie : structure contenant : texte de la commande SQL paramétrée, clé/valeur des paramètres ADO.NET pour la commande SQL paramétrée</returns>
         /// <exception cref="OOrmHandledException">Toute sorte d'erreur</exception>
-        internal static void FormatSqlForInsert<T>(T databaseEntityObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_, out string sqlCommand_, out List<KeyValuePair<string, object>> lstAdoParameters_, bool tryFormat = true)
+        internal static InternalPreparedStatement FormatSqlForInsert<T>(T databaseEntityObject_, string sqlTemplateName_, string mappingDictionariesContainerKey_, List<string> lstDataObjectColumnNames_)
         where T : IDatabaseEntityObject
         {
             StringBuilder sbFieldsToInsert = new StringBuilder();
             StringBuilder sbParamToInsert = new StringBuilder();
-            sqlCommand_ = null;
 
+            string sqlCommand;
             List<string> lstDbColumnNames;
+            List<KeyValuePair<string, object>> lstAdoParameters; // Paramètres ADO.NET, à construire
 
             // 1. détermine les champs à mettre à jour et remplit la stringbuilder sbFieldsToInsert
-            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(databaseEntityObject_, mappingDictionariesContainerKey_, lstDataObjectColumnNames_, out lstDbColumnNames, out lstAdoParameters_);
+            DbToolsCommon.DetermineDatabaseColumnNamesAndAdoParameters(databaseEntityObject_, mappingDictionariesContainerKey_, lstDataObjectColumnNames_, out lstDbColumnNames, out lstAdoParameters);
 
             int iCountMinusOne = lstDbColumnNames.Count - 1;
             for (int i = 0; i < iCountMinusOne; i++)
             {
                 sbFieldsToInsert.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames[i]).Append(ConfigurationLoader.EndFieldEncloser).Append(", ");
-                sbParamToInsert.Append(lstAdoParameters_[i].Key).Append(", ");
+                sbParamToInsert.Append(lstAdoParameters[i].Key).Append(", ");
             }
 
             sbFieldsToInsert.Append(ConfigurationLoader.StartFieldEncloser).Append(lstDbColumnNames[iCountMinusOne]).Append(ConfigurationLoader.EndFieldEncloser);
-            sbParamToInsert.Append(lstAdoParameters_[iCountMinusOne].Key);
+            sbParamToInsert.Append(lstAdoParameters[iCountMinusOne].Key);
 
             // 2. Positionne les deux premiers placeholders : nom de la table, chaîne pour les champs à mettre à jour
             List<string> sqlPlaceholders = new List<string> { string.Concat(ConfigurationLoader.StartFieldEncloser, mappingDictionariesContainerKey_, ConfigurationLoader.EndFieldEncloser), sbFieldsToInsert.ToString(), sbParamToInsert.ToString() };
 
-            if (tryFormat)
-            {
-                DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicInsertSql, sqlTemplateName_, out sqlCommand_, sqlPlaceholders.ToArray());
-            }
+            string templateText;
+            if (!ConfigurationLoader.DicInsertSql.TryGetValue(sqlTemplateName_, out templateText))
+                throw new OOrmHandledException(HResultEnum.E_NOTEMPLATE, null, "Template: " + sqlTemplateName_);
+
+            DbToolsCommon.TryFormatTemplate(ConfigurationLoader.DicInsertSql, sqlTemplateName_, out sqlCommand, sqlPlaceholders.ToArray());
+
+            return new InternalPreparedStatement(new PreparedStatement(sqlCommand, lstAdoParameters.Count), lstAdoParameters);
         }
 
         /// <summary>
@@ -100,18 +100,16 @@ namespace OsamesMicroOrm.DbTools
         public static long Insert<T>(T databaseEntityObject_, string sqlTemplateName_, List<string> lstPropertiesNames_, OOrmDbTransactionWrapper transaction_ = null)
         where T : IDatabaseEntityObject, new()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParameters;
             long newRecordId;
             string mappingDictionariesContainerKey = MappingTools.GetTableNameFromMappingDictionary(typeof(T));
 
-            FormatSqlForInsert(databaseEntityObject_, sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_, out sqlCommand, out adoParameters);
+            InternalPreparedStatement statement = FormatSqlForInsert(databaseEntityObject_, sqlTemplateName_, mappingDictionariesContainerKey, lstPropertiesNames_);
 
             if (transaction_ != null)
             {
                 // Présence d'une transaction
-                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, sqlCommand, adoParameters, out newRecordId) == 0)
-                    Logger.Log(TraceEventType.Warning, "Query didn't insert any row: '" + sqlCommand + "'");
+                if (DbManager.Instance.ExecuteNonQuery(transaction_, CommandType.Text, statement.PreparedStatement.PreparedSqlCommand, statement.AdoParameters, out newRecordId) == 0)
+                    Logger.Log(TraceEventType.Warning, "Query didn't insert any row: '" + statement.PreparedStatement.PreparedSqlCommand + "'");
                 return newRecordId;
             }
 
@@ -121,8 +119,8 @@ namespace OsamesMicroOrm.DbTools
             {
                 conn = DbManager.Instance.CreateConnection();
 
-                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, sqlCommand, adoParameters, out newRecordId) == 0)
-                    Logger.Log(TraceEventType.Warning, "Query didn't insert any row: '" + sqlCommand + "'");
+                if (DbManager.Instance.ExecuteNonQuery(conn, CommandType.Text, statement.PreparedStatement.PreparedSqlCommand, statement.AdoParameters, out newRecordId) == 0)
+                    Logger.Log(TraceEventType.Warning, "Query didn't insert any row: '" + statement.PreparedStatement.PreparedSqlCommand + "'");
                 return newRecordId;
             }
             finally

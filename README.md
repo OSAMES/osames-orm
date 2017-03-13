@@ -1,8 +1,8 @@
-## Synopsis
+# Synopsis
 
 OSAMES ORM is a C# lightweight ORM based on ADO.NET.
 
-It's developed with .NET 4.5 and also built with matching Mono version.
+It's developed with .NET 4.6.1 and also built with matching Mono version and .NET Core 1
 
 ## Code Example
 
@@ -29,6 +29,7 @@ Customer customer = DbToolsSelects.SelectSingle<Customer>(new List<string> { "Id
 ## Motivation
 
 This lightweight ORM aims at:
+
 * having a maintainable SQL templates list and simple database to object mapping XML definition,
 * allowing to quickly switch to another provider thanks to ADO.NET API
 * providing robustness against connection pool starvation
@@ -37,7 +38,22 @@ This lightweight ORM aims at:
 
 Compile the DLL and include it in your application, along with its configuration.
 
-Check out [documentation](http://confluence.osames.org/display/OOF/Osames+Orm+Documentation) (in French for now, English version will follow).
+Check out [documentation](http://confluence.osames.org/pages/viewpage.action?pageId=26542093) (in French for now, English version will follow).
+
+### .NET Core
+
+You need .NET Core: <https://dotnet.github.io/>
+
+#### Nuget Package
+
+##### Windows
+
+Download Nuget.exe on <https://dist.nuget.org/index.html>
+Restore package: ```nuget.exe restore``` in project or solution folder. For more informations to restore needed packages, read Omnisharp output.
+
+##### Linux/Osx
+
+Comming soon.
 
 ## API Reference
 
@@ -55,4 +71,4 @@ Unit tests were initially written using MS Tests, but only a few changes make th
 
 GNU Affero General Public License version 3 or later.
 
-http://www.gnu.org/licenses/agpl-3.0.html
+<http://www.gnu.org/licenses/agpl-3.0.html>

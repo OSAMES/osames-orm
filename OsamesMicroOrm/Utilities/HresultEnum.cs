@@ -29,7 +29,7 @@ using System.CodeDom.Compiler;
 namespace OsamesMicroOrm
 {
 	/// <summary>
-	/// Auto generated date: 05/04/2015 09:49:29
+	/// Auto generated date: 07/04/2016 14:10:15
 	/// </summary>
 	[GeneratedCode("HResultToEnumGenerator", "1.0")]
 	public enum HResultEnum

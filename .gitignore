@@ -95,7 +95,7 @@ publish/
 
 # NuGet Packages Directory
 ## TODO: If you have NuGet Package Restore enabled, uncomment the next line
-#packages/
+packages/
 
 # Windows Azure Build Output
 csx
@@ -171,3 +171,6 @@ Application/*.vsmdi
 *.chk
 *.jrs
 *.ide
+packages/
+WebEssentials2015-Settings.json
+project.lock.json

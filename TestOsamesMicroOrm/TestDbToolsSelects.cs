@@ -62,16 +62,14 @@ namespace TestOsamesMicroOrm
         [TestCategory("Sql formatting for Select")]
         public void TestFormatSqlForSelect()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
 
-            DbToolsSelects.FormatSqlForSelect("BaseReadWhere", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
+            InternalPreparedStatement statement = DbToolsSelects.FormatSqlForSelect("BaseReadWhere", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out lstDbColumnNames);
 
-            Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @p0;", sqlCommand);
-            Assert.AreEqual(1, adoParams.Count);
-            Assert.AreEqual("@p0", adoParams[0].Key);
-            Assert.AreEqual(5, adoParams[0].Value);
+            Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @p0;", statement.PreparedStatement.PreparedSqlCommand);
+            Assert.AreEqual(1, statement.AdoParameters.Count);
+            Assert.AreEqual("@p0", statement.AdoParameters[0].Key);
+            Assert.AreEqual(5, statement.AdoParameters[0].Value);
             Assert.AreEqual(3, lstDbColumnNames.Count);
 
         }
@@ -85,17 +83,14 @@ namespace TestOsamesMicroOrm
         [TestCategory("Sql formatting for Select")]
         public void TestFormatSqlForSelectAutoDetermineSelectedFields()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParams;
-            // cette liste va être créée par la méthode testée
             List<string> lstDbEntityPropertyNames;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("BaseReadAllWhere", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbEntityPropertyNames, out lstDbColumnNames);
+            InternalPreparedStatement statement = DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("BaseReadAllWhere", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out lstDbEntityPropertyNames, out lstDbColumnNames);
 
-            Assert.AreEqual("SELECT * FROM [Employee] WHERE [EmployeeId] = @p0;", sqlCommand);
-            Assert.AreEqual(1, adoParams.Count);
-            Assert.AreEqual("@p0", adoParams[0].Key);
-            Assert.AreEqual(5, adoParams[0].Value);
+            Assert.AreEqual("SELECT * FROM [Employee] WHERE [EmployeeId] = @p0;", statement.PreparedStatement.PreparedSqlCommand);
+            Assert.AreEqual(1, statement.AdoParameters.Count);
+            Assert.AreEqual("@p0", statement.AdoParameters[0].Key);
+            Assert.AreEqual(5, statement.AdoParameters[0].Value);
             Assert.AreEqual(15, lstDbColumnNames.Count, "Epected number of public properties of Employee C# class");
 
         }
@@ -114,11 +109,9 @@ namespace TestOsamesMicroOrm
         {
             try
             {
-                string sqlCommand;
-                List<KeyValuePair<string, object>> adoParams;
                 List<string> lstDbColumnNames;
 
-                DbToolsSelects.FormatSqlForSelect("ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams,
+                InternalPreparedStatement statement = DbToolsSelects.FormatSqlForSelect("ThisTemplateDoesntExist", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, 
                     out lstDbColumnNames);
             }
             catch (OOrmHandledException ex)
@@ -143,12 +136,9 @@ namespace TestOsamesMicroOrm
         {
             try
             {
-                string sqlCommand;
-                List<KeyValuePair<string, object>> adoParams;
-                // cette liste va être créée par la méthode testée
                 List<string> lstDbColumnNames;
                 List<string> lstDbEntityPropertyNames;
-                DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("ThisTemplateDoesntExist", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbEntityPropertyNames,
+                InternalPreparedStatement statement = DbToolsSelects.FormatSqlForSelectAutoDetermineSelectedFields("ThisTemplateDoesntExist", "Employee", new List<string> { "EmployeeId", "#" }, new List<object> { 5 }, out lstDbEntityPropertyNames,
                     out lstDbColumnNames);
 
             }
@@ -169,15 +159,13 @@ namespace TestOsamesMicroOrm
         [TestCategory("Sql formatting for Select")]
         public void TestFormatSqlForSelectNamedDynamicParameter()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelect("BaseReadWhere", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", "@employeeId" }, new List<object> { 5 }, out sqlCommand, out adoParams, out lstDbColumnNames);
+            InternalPreparedStatement statement = DbToolsSelects.FormatSqlForSelect("BaseReadWhere", "Employee", new List<string> { "LastName", "FirstName", "Address" }, new List<string> { "EmployeeId", "@employeeId" }, new List<object> { 5 }, out lstDbColumnNames);
 
-            Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @employeeid;", sqlCommand);
-            Assert.AreEqual(1, adoParams.Count);
-            Assert.AreEqual("@employeeid", adoParams[0].Key);
-            Assert.AreEqual(5, adoParams[0].Value);
+            Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee] WHERE [EmployeeId] = @employeeid;", statement.PreparedStatement.PreparedSqlCommand);
+            Assert.AreEqual(1, statement.AdoParameters.Count);
+            Assert.AreEqual("@employeeid", statement.AdoParameters[0].Key);
+            Assert.AreEqual(5, statement.AdoParameters[0].Value);
             Assert.AreEqual(3, lstDbColumnNames.Count);
 
         }
@@ -190,19 +178,15 @@ namespace TestOsamesMicroOrm
         [TestCategory("Sql formatting for Select")]
         public void TestFormatSqlForSelectMultipleRecordsWithoutWhere()
         {
-            string sqlCommand;
-            List<KeyValuePair<string, object>> adoParams;
             List<string> lstDbColumnNames;
-            DbToolsSelects.FormatSqlForSelect("BaseRead", "Employee", new List<string> { "LastName", "FirstName", "Address" }, null, null, out sqlCommand, out adoParams, out lstDbColumnNames);
+            InternalPreparedStatement statement = DbToolsSelects.FormatSqlForSelect("BaseRead", "Employee", new List<string> { "LastName", "FirstName", "Address" }, null, null, out lstDbColumnNames);
 
-            Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee];", sqlCommand);
-            Assert.AreEqual(0, adoParams.Count);
+            Assert.AreEqual("SELECT [LastName], [FirstName], [Address] FROM [Employee];", statement.PreparedStatement.PreparedSqlCommand);
+            Assert.AreEqual(0, statement.AdoParameters.Count);
             Assert.AreEqual(3, lstDbColumnNames.Count);
 
         }
 
         #endregion
-
- 
     }
 }
