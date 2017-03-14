@@ -42,7 +42,7 @@ Check out [documentation](http://confluence.osames.org/pages/viewpage.action?pag
 
 ### .NET Core
 
-You need .NET Core: <https://dotnet.github.io/>
+You need [.NET Core](https://www.microsoft.com/net/core#windowsvs2017)
 
 #### Nuget Package
 
